@@ -1,10 +1,11 @@
+
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI短信模拟器 v3.2</title>
+    <title>AI短信模拟器 v3.3</title>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.15);
@@ -572,7 +573,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* ===== 修复后的消息气泡样式 - iOS iMessage风格 ===== */
         .message-wrapper {
             display: flex;
             align-items: flex-end;
@@ -1517,7 +1517,7 @@
                             <span class="settings-icon purple">📱</span>
                             <span class="settings-item-label">版本</span>
                         </div>
-                        <div class="settings-item-value"><span>3.2.0</span></div>
+                        <div class="settings-item-value"><span>3.3.0</span></div>
                     </div>
                 </div>
 
@@ -1863,8 +1863,6 @@
                 wallpaper: 'gradient1'
             }
         };
-
-        const MESSAGE_SEPARATOR = '|||';
 
         document.addEventListener('DOMContentLoaded', function() {
             loadAllData();
@@ -2361,24 +2359,69 @@
             autoResizeTextarea(input);
         }
 
-        function cleanAIResponse(text, characterName) {
-            if (!text) return '';
-            let cleaned = text;
-            const prefixPatterns = [
-                new RegExp(`^\\s*\\[${escapeRegExp(characterName)}\\]\\s*[:：]\\s*`, 'gi'),
-                new RegExp(`^\\s*【${escapeRegExp(characterName)}】\\s*[:：]?\\s*`, 'gi'),
-                new RegExp(`^\\s*${escapeRegExp(characterName)}\\s*[:：]\\s*`, 'gi'),
-                /^\s*\[[^\]]+\]\s*[:：]\s*/gi,
-                /^\s*【[^】]+】\s*[:：]?\s*/gi,
-            ];
-            for (const pattern of prefixPatterns) cleaned = cleaned.replace(pattern, '');
-            cleaned = cleaned.replace(/^["「『"]+/, '');
-            cleaned = cleaned.replace(/["」』"]+$/, '');
-            return cleaned.trim();
-        }
+        function parseAIResponseToMessages(rawText) {
+            if (!rawText || typeof rawText !== 'string') return ['...'];
 
-        function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            let cleaned = rawText.trim();
+
+            // 移除常见的角色名前缀格式
+            cleaned = cleaned.replace(/^\s*\[[^\]]*\]\s*[:：]\s*/g, '');
+            cleaned = cleaned.replace(/^\s*【[^】]*】\s*[:：]?\s*/g, '');
+            cleaned = cleaned.replace(/^[^:：\n]{1,20}[:：]\s*/g, '');
+
+            // 优先级分隔符列表（按优先级从高到低）
+            const separators = [
+                /\s*\|\|\|\s*/g,      // |||
+                /\s*\|\|\s*/g,        // ||
+                /\s*\|\s*/g,          // |
+                /\n\n+/g,             // 双换行
+                /\n/g                 // 单换行
+            ];
+
+            let messageParts = [cleaned];
+
+            // 尝试用分隔符拆分
+            for (const sep of separators) {
+                const testParts = cleaned.split(sep).map(s => s.trim()).filter(s => s.length > 0);
+                if (testParts.length > 1) {
+                    messageParts = testParts;
+                    break;
+                }
+            }
+
+            // 如果仍然只有一条且超过80字符，尝试按句子拆分
+            if (messageParts.length === 1 && messageParts[0].length > 80) {
+                const sentencePattern = /([^。！？!?]+[。！？!?]+)/g;
+                const sentences = messageParts[0].match(sentencePattern);
+                if (sentences && sentences.length > 1) {
+                    // 合并短句
+                    const merged = [];
+                    let current = '';
+                    for (const s of sentences) {
+                        if (current.length + s.length < 60) {
+                            current += s;
+                        } else {
+                            if (current) merged.push(current.trim());
+                            current = s;
+                        }
+                    }
+                    if (current) merged.push(current.trim());
+                    if (merged.length > 1) {
+                        messageParts = merged;
+                    }
+                }
+            }
+
+            // 清理每条消息
+            return messageParts.map(part => {
+                let msg = part.trim();
+                // 再次清理可能残留的前缀
+                msg = msg.replace(/^\s*\[[^\]]*\]\s*[:：]\s*/g, '');
+                msg = msg.replace(/^\s*【[^】]*】\s*[:：]?\s*/g, '');
+                // 移除首尾引号
+                msg = msg.replace(/^["「『"]+/, '').replace(/["」』"]+$/, '');
+                return msg.trim();
+            }).filter(msg => msg.length > 0);
         }
 
         async function triggerAIReply() {
@@ -2414,24 +2457,14 @@
                     throw new Error(error.error?.message || `HTTP ${response.status}`);
                 }
                 const data = await response.json();
-                let aiReply = data.choices[0].message.content;
-                aiReply = cleanAIResponse(aiReply, character.name);
-                const messageParts = aiReply.split(MESSAGE_SEPARATOR).map(s => cleanAIResponse(s.trim(), character.name)).filter(s => s.length > 0);
-                if (messageParts.length === 0) {
-                    const altParts = aiReply.split(/\s*\|\s*/).map(s => cleanAIResponse(s.trim(), character.name)).filter(s => s.length > 0);
-                    if (altParts.length > 0) {
-                        for (let i = 0; i < altParts.length; i++) {
-                            if (i > 0) await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 300));
-                            addMessage(altParts[i], 'received');
-                        }
-                    } else {
-                        addMessage(aiReply || '...', 'received');
-                    }
-                } else {
-                    for (let i = 0; i < messageParts.length; i++) {
-                        if (i > 0) await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 300));
-                        addMessage(messageParts[i], 'received');
-                    }
+                const aiReply = data.choices[0].message.content;
+
+                // 使用智能解析函数
+                const messageParts = parseAIResponseToMessages(aiReply);
+
+                for (let i = 0; i < messageParts.length; i++) {
+                    if (i > 0) await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 400));
+                    addMessage(messageParts[i], 'received');
                 }
             } catch (e) {
                 document.getElementById('typingIndicator')?.remove();
@@ -2442,28 +2475,41 @@
 
         function buildMessagesForAPI(character) {
             const messages = [];
-            let systemPrompt = `你是"${character.name}"，正在通过手机短信和用户聊天。
 
-【重要规则】
-1. 直接用短信内容回复，不要加任何前缀标记
-2. 如果要发多条短信，用 ||| 分隔
+            // 核心系统提示词 - 强调分隔符格式
+            let systemPrompt = `你正在扮演"${character.name}"，通过手机短信与用户聊天。
+
+【输出格式 - 极其重要】
+你的回复会被自动拆分成多条短信显示。请使用 ||| 分隔每条短信。
+
+正确示例：
+在呢|||怎么了?|||想我啦?😊
+
+错误示例（不要这样）：
+[${character.name}]: 在呢，怎么了?想我啦?
+
+【规则】
+1. 直接输出短信内容，不要加任何前缀、角色名、括号
+2. 用 ||| 分隔不同的短信
 3. 像真人发短信一样简短自然
+4. 可以发1-5条短信，根据情境决定
+5. 每条短信尽量简短，模拟真实聊天节奏
 
-【示例】
-正确: 在呢|||怎么了|||想我了？😊
-错误: [${character.name}]: 在呢
+【角色设定】
+${character.description || '一个友善有趣的朋友'}`;
 
-【你的设定】
-${character.description || '一个友善的聊天对象'}`;
-            if (character.scenario) systemPrompt += `\n\n【当前情景】\n${character.scenario}`;
-            if (character.userNick) systemPrompt += `\n\n【用户称呼】称呼用户为"${character.userNick}"`;
-            if (character.systemPrompt) systemPrompt += `\n\n【额外设定】\n${character.systemPrompt}`;
+            if (character.scenario) systemPrompt += `\n\n【当前情景】${character.scenario}`;
+            if (character.userNick) systemPrompt += `\n\n【称呼用户为】${character.userNick}`;
+            if (character.systemPrompt) systemPrompt += `\n\n【额外设定】${character.systemPrompt}`;
+
             const worldbook = AppState.worldbooks.find(w => w.id === character.worldbookId);
             if (worldbook && worldbook.content) {
                 const shouldInject = worldbook.alwaysActive || (worldbook.keywords && character.messages.some(m => worldbook.keywords.split(',').some(kw => m.content.toLowerCase().includes(kw.trim().toLowerCase()))));
-                if (shouldInject) systemPrompt += `\n\n【世界设定】\n${worldbook.content}`;
+                if (shouldInject) systemPrompt += `\n\n【世界设定】${worldbook.content}`;
             }
+
             messages.push({ role: 'system', content: systemPrompt });
+
             const maxContext = AppState.settings.maxContextMessages || 200;
             const historyMessages = character.messages.slice(-maxContext);
             historyMessages.forEach(msg => {
@@ -2477,6 +2523,8 @@ ${character.description || '一个友善的聊天对象'}`;
             if (!character) return;
             toggleExtensionPanel();
             if (character.messages.length === 0) { showToast('当前没有任何聊天记录', 'warning'); return; }
+
+            // 检查是否有记录的本轮AI回复起始位置
             if (AppState.lastAIReplyStartIndex >= 0 && AppState.lastAIReplyStartIndex < character.messages.length) {
                 let allAssistant = true;
                 for (let i = AppState.lastAIReplyStartIndex; i < character.messages.length; i++) {
@@ -2493,13 +2541,23 @@ ${character.description || '一个友善的聊天对象'}`;
                     return;
                 }
             }
-            if (character.messages[character.messages.length - 1].role !== 'assistant') { showToast('最后一条消息不是AI回复', 'warning'); return; }
-            let firstAIIndex = -1;
-            for (let i = character.messages.length - 1; i >= 0; i--) {
-                if (character.messages[i].role === 'assistant') firstAIIndex = i;
-                else break;
+
+            // 如果没有记录，则从末尾查找连续的AI回复
+            if (character.messages[character.messages.length - 1].role !== 'assistant') {
+                showToast('最后一条消息不是AI回复，无法重新生成', 'warning');
+                return;
             }
-            if (firstAIIndex === -1) { showToast('没有找到AI回复消息', 'warning'); return; }
+
+            // 向前查找连续的assistant消息
+            let firstAIIndex = character.messages.length - 1;
+            for (let i = character.messages.length - 1; i >= 0; i--) {
+                if (character.messages[i].role === 'assistant') {
+                    firstAIIndex = i;
+                } else {
+                    break;
+                }
+            }
+
             const deleteCount = character.messages.length - firstAIIndex;
             character.messages.splice(firstAIIndex, deleteCount);
             saveAllData();
@@ -2770,7 +2828,7 @@ ${character.description || '一个友善的聊天对象'}`;
                 settings: AppState.settings,
                 appIcons: AppState.appIcons,
                 exportedAt: new Date().toISOString(),
-                version: '3.2.0'
+                version: '3.3.0'
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
