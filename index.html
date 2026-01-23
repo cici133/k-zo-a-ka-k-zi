@@ -573,10 +573,10 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* 修复后的消息气泡样式 */
+        /* ===== 修复后的消息气泡样式 ===== */
         .message {
             display: inline-block;
-            max-width: 85%;
+            max-width: 75%;
             padding: 10px 14px;
             border-radius: 18px;
             font-size: 16px;
@@ -677,7 +677,7 @@
             border-radius: 18px;
             border-bottom-left-radius: 4px;
             align-self: flex-start;
-            max-width: fit-content;
+            width: fit-content;
         }
 
         .typing-indicator span {
@@ -1233,6 +1233,27 @@
             color: var(--text-secondary);
         }
 
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-indicator.connected { background: rgba(52, 199, 89, 0.2); color: var(--success-color); }
+        .status-indicator.disconnected { background: rgba(255, 59, 48, 0.2); color: var(--danger-color); }
+        .status-indicator.pending { background: rgba(255, 149, 0, 0.2); color: var(--warning-color); }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
         .date-separator {
             display: flex;
             align-items: center;
@@ -1366,7 +1387,7 @@
 
         <div class="home-indicator"></div>
 
-        <!-- 设置页面 -->
+        <!-- ==================== 设置页面 ==================== -->
         <div class="page" id="settingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('settingsPage')">
@@ -1386,8 +1407,11 @@
                     </div>
 
                     <div class="input-group">
-                        <label class="input-label">API 基础地址</label>
+                        <label class="input-label">API 基础地址 (Base URL)</label>
                         <input type="text" class="input-field" id="apiBaseUrl" placeholder="https://api.example.com">
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
+                            💡 只需输入基础地址，系统自动处理路径
+                        </div>
                     </div>
 
                     <div class="input-group">
@@ -1396,25 +1420,32 @@
                     </div>
 
                     <div class="btn-stack">
-                        <button class="btn btn-warning" onclick="fetchModels()" id="fetchModelsBtn">📋 拉取模型列表</button>
+                        <button class="btn btn-warning" onclick="fetchModels()" id="fetchModelsBtn">
+                            📋 拉取模型列表
+                        </button>
                     </div>
 
                     <div id="modelListContainer" style="display: none;">
-                        <label class="input-label" style="margin-top: 16px;">可用模型</label>
+                        <label class="input-label" style="margin-top: 16px;">可用模型 (点击选择)</label>
                         <div class="model-list" id="modelList"></div>
                     </div>
 
                     <div class="input-group" style="margin-top: 16px;">
                         <label class="input-label">当前模型</label>
-                        <input type="text" class="input-field" id="modelName" placeholder="模型名称">
+                        <input type="text" class="input-field" id="modelName" placeholder="选择或手动输入模型名称">
                     </div>
 
                     <div class="btn-stack" style="margin-top: 16px;">
-                        <button class="btn btn-secondary" onclick="testConnection()" id="testConnectionBtn">🔗 测试连接</button>
-                        <button class="btn btn-primary" onclick="saveApiSettings()">💾 保存设置</button>
+                        <button class="btn btn-secondary" onclick="testConnection()" id="testConnectionBtn">
+                            🔗 测试连接
+                        </button>
+                        <button class="btn btn-primary" onclick="saveApiSettings()">
+                            💾 保存设置
+                        </button>
                     </div>
 
                     <div class="divider"></div>
+
                     <label class="input-label">调试日志</label>
                     <div class="log-container" id="debugLog">
                         <div class="log-entry info">等待操作...</div>
@@ -1424,9 +1455,11 @@
                 <p class="settings-group-title">对话设置</p>
                 <div class="settings-group" style="padding: 16px;">
                     <div class="input-group">
-                        <label class="input-label">最大对话记忆条数</label>
-                        <input type="number" class="input-field" id="maxContextMessages" min="10" max="1000" value="200">
-                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">超过此数量的历史消息不会发送给AI</div>
+                        <label class="input-label">发送给AI的最大对话记忆条数</label>
+                        <input type="number" class="input-field" id="maxContextMessages" min="10" max="1000" value="200" placeholder="200">
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
+                            💡 超过此数量的历史消息不会发送给AI，但仍保留在聊天界面
+                        </div>
                     </div>
                 </div>
 
@@ -1439,6 +1472,7 @@
                         </div>
                         <input type="range" class="slider-input" id="temperature" min="0" max="2" step="0.1" value="0.7" oninput="updateSliderValue('temperature', 'tempValue')">
                     </div>
+
                     <div class="slider-container" style="padding: 0 16px 16px;">
                         <div class="slider-header">
                             <span class="slider-label">Max Tokens</span>
@@ -1446,12 +1480,29 @@
                         </div>
                         <input type="range" class="slider-input" id="maxTokens" min="256" max="8192" step="256" value="2048" oninput="updateSliderValue('maxTokens', 'maxTokensValue')">
                     </div>
+
                     <div class="slider-container" style="padding: 0 16px 16px;">
                         <div class="slider-header">
                             <span class="slider-label">Top P</span>
                             <span class="slider-value" id="topPValue">0.9</span>
                         </div>
                         <input type="range" class="slider-input" id="topP" min="0" max="1" step="0.05" value="0.9" oninput="updateSliderValue('topP', 'topPValue')">
+                    </div>
+
+                    <div class="slider-container" style="padding: 0 16px 16px;">
+                        <div class="slider-header">
+                            <span class="slider-label">Frequency Penalty</span>
+                            <span class="slider-value" id="freqPenValue">0.0</span>
+                        </div>
+                        <input type="range" class="slider-input" id="frequencyPenalty" min="0" max="2" step="0.1" value="0" oninput="updateSliderValue('frequencyPenalty', 'freqPenValue')">
+                    </div>
+
+                    <div class="slider-container" style="padding: 0 16px 16px;">
+                        <div class="slider-header">
+                            <span class="slider-label">Presence Penalty</span>
+                            <span class="slider-value" id="presPenValue">0.0</span>
+                        </div>
+                        <input type="range" class="slider-input" id="presencePenalty" min="0" max="2" step="0.1" value="0" oninput="updateSliderValue('presencePenalty', 'presPenValue')">
                     </div>
                 </div>
 
@@ -1460,24 +1511,32 @@
                     <div class="settings-item" onclick="exportAllData()">
                         <div class="settings-item-left">
                             <span class="settings-icon blue">📤</span>
-                            <span class="settings-item-label">导出数据</span>
+                            <span class="settings-item-label">导出所有数据</span>
                         </div>
-                        <div class="settings-item-value"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg></div>
+                        <div class="settings-item-value">
+                            <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
                     </div>
+
                     <div class="settings-item" onclick="importDataClick()">
                         <div class="settings-item-left">
                             <span class="settings-icon green">📥</span>
                             <span class="settings-item-label">导入数据</span>
                         </div>
-                        <div class="settings-item-value"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg></div>
+                        <div class="settings-item-value">
+                            <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
                     </div>
                     <input type="file" id="importFileInput" class="file-input-hidden" accept=".json" onchange="importData(event)">
+
                     <div class="settings-item" onclick="clearAllData()">
                         <div class="settings-item-left">
                             <span class="settings-icon red">🗑️</span>
-                            <span class="settings-item-label">清除数据</span>
+                            <span class="settings-item-label">清除所有数据</span>
                         </div>
-                        <div class="settings-item-value"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg></div>
+                        <div class="settings-item-value">
+                            <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
                     </div>
                 </div>
 
@@ -1491,11 +1550,12 @@
                         <div class="settings-item-value"><span>3.1.0</span></div>
                     </div>
                 </div>
+
                 <div style="height: 50px;"></div>
             </div>
         </div>
 
-        <!-- 短信列表页面 -->
+        <!-- ==================== 短信列表页面 ==================== -->
         <div class="page" id="messagesPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('messagesPage')">
@@ -1507,20 +1567,22 @@
                     <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 </button>
             </div>
+
             <div class="search-container">
                 <input type="text" class="search-field" id="contactSearch" placeholder="搜索角色..." oninput="filterContacts()">
             </div>
+
             <div class="page-content" id="contactListContainer">
                 <div class="empty-state" id="emptyContactState">
                     <div class="empty-state-icon">💬</div>
                     <div class="empty-state-title">暂无角色</div>
-                    <div class="empty-state-desc">点击右上角 + 创建角色</div>
+                    <div class="empty-state-desc">点击右上角 + 创建你的第一个AI角色</div>
                 </div>
                 <div class="contact-list" id="contactList" style="display: none;"></div>
             </div>
         </div>
 
-        <!-- 聊天页面 -->
+        <!-- ==================== 聊天页面 ==================== -->
         <div class="page" id="chatPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="openCharacterSettings()">
@@ -1533,7 +1595,7 @@
             </div>
 
             <div class="select-mode-bar" id="selectModeBar">
-                <span class="select-mode-info">已选择 <span id="selectedCount">0</span> 条</span>
+                <span class="select-mode-info">已选择 <span id="selectedCount">0</span> 条消息</span>
                 <div class="select-mode-btns">
                     <button class="select-mode-btn cancel" onclick="exitSelectMode()">取消</button>
                     <button class="select-mode-btn delete" onclick="deleteSelectedMessages()">删除</button>
@@ -1548,10 +1610,12 @@
                         <span class="extension-panel-title">操作</span>
                         <button class="extension-panel-close" onclick="toggleExtensionPanel()">×</button>
                     </div>
+
                     <button class="extension-btn" onclick="enterSelectMode()">
                         <div class="extension-btn-icon danger">🗑️</div>
                         <span>选择删除消息</span>
                     </button>
+
                     <button class="extension-btn" onclick="regenerateLastReply()">
                         <div class="extension-btn-icon purple">🔄</div>
                         <span>重新生成回复</span>
@@ -1559,15 +1623,15 @@
                 </div>
 
                 <div class="chat-input-area">
-                    <button class="chat-input-btn" onclick="toggleExtensionPanel()" title="扩展">⚡</button>
+                    <button class="chat-input-btn" onclick="toggleExtensionPanel()" title="扩展操作">⚡</button>
                     <textarea class="chat-input-field" id="chatInput" placeholder="输入消息..." rows="1" oninput="autoResizeTextarea(this)"></textarea>
-                    <button class="chat-input-btn ai-reply" onclick="triggerAIReply()" title="AI回复">🤖</button>
-                    <button class="chat-input-btn send" onclick="sendMessage()" title="发送">➤</button>
+                    <button class="chat-input-btn ai-reply" onclick="triggerAIReply()" title="请求AI回复">🤖</button>
+                    <button class="chat-input-btn send" onclick="sendMessage()" title="发送消息">➤</button>
                 </div>
             </div>
         </div>
 
-        <!-- 角色设置页面 -->
+        <!-- ==================== 角色设置页面 ==================== -->
         <div class="page slide-from-bottom" id="characterSettingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closeCharacterSettings()">
@@ -1577,25 +1641,26 @@
                 <span class="nav-title">角色设置</span>
                 <button class="nav-btn right" onclick="saveCharacterSettings()">保存</button>
             </div>
+
             <div class="page-content">
                 <p class="settings-group-title">基本信息</p>
                 <div class="settings-group" style="padding: 16px;">
                     <div class="input-group">
                         <label class="input-label">角色名称</label>
-                        <input type="text" class="input-field" id="charName" placeholder="名称">
+                        <input type="text" class="input-field" id="charName" placeholder="输入角色名称">
                     </div>
                     <div class="input-group">
                         <label class="input-label">头像表情</label>
-                        <input type="text" class="input-field" id="charAvatar" placeholder="如 😊">
+                        <input type="text" class="input-field" id="charAvatar" placeholder="输入emoji表情，如 😊">
                     </div>
                 </div>
 
-                <p class="settings-group-title">角色设定</p>
+                <p class="settings-group-title">角色设定 (无字数限制)</p>
                 <div class="settings-group" style="padding: 16px;">
-                    <textarea class="input-field" id="charDescription" rows="10" placeholder="描述角色性格、背景、说话方式..."></textarea>
+                    <textarea class="input-field" id="charDescription" rows="10" placeholder="详细描述角色的性格、背景、说话方式等..."></textarea>
                 </div>
 
-                <p class="settings-group-title">开场白 (最多300字)</p>
+                <p class="settings-group-title">开场白 (最多300字符)</p>
                 <div class="settings-group" style="padding: 16px;">
                     <textarea class="input-field" id="charGreeting" rows="4" maxlength="300" placeholder="角色的第一条消息..." oninput="updateCharCounter()"></textarea>
                     <div class="char-counter" id="greetingCharCounter">0 / 300</div>
@@ -1603,13 +1668,13 @@
 
                 <p class="settings-group-title">情景设定</p>
                 <div class="settings-group" style="padding: 16px;">
-                    <textarea class="input-field" id="charScenario" rows="5" placeholder="对话发生的场景..."></textarea>
+                    <textarea class="input-field" id="charScenario" rows="5" placeholder="描述对话发生的场景和背景情境..."></textarea>
                 </div>
 
                 <p class="settings-group-title">绑定世界书</p>
                 <div class="settings-group" style="padding: 16px;">
                     <select class="select-field" id="charWorldbook">
-                        <option value="">不绑定</option>
+                        <option value="">不绑定世界书</option>
                     </select>
                 </div>
 
@@ -1617,11 +1682,11 @@
                 <div class="settings-group" style="padding: 16px;">
                     <div class="input-group">
                         <label class="input-label">用户称呼</label>
-                        <input type="text" class="input-field" id="charUserNick" placeholder="如：亲爱的">
+                        <input type="text" class="input-field" id="charUserNick" placeholder="例如：亲爱的、主人...">
                     </div>
                     <div class="input-group">
-                        <label class="input-label">额外提示词</label>
-                        <textarea class="input-field" id="charSystemPrompt" rows="4" placeholder="仅对此角色生效..."></textarea>
+                        <label class="input-label">角色专属系统提示词</label>
+                        <textarea class="input-field" id="charSystemPrompt" rows="4" placeholder="仅对此角色生效的额外提示词..."></textarea>
                     </div>
                 </div>
 
@@ -1630,7 +1695,7 @@
             </div>
         </div>
 
-        <!-- 世界书页面 -->
+        <!-- ==================== 世界书页面 ==================== -->
         <div class="page" id="worldbookPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('worldbookPage')">
@@ -1642,21 +1707,23 @@
                     <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 </button>
             </div>
-            <div class="page-content">
+
+            <div class="page-content" id="worldbookListContainer">
                 <div class="action-hint">
                     <span class="action-hint-icon">📚</span>
-                    <span class="action-hint-text">世界书为角色提供背景知识</span>
+                    <span class="action-hint-text">世界书可以为角色提供额外的背景知识</span>
                 </div>
+
                 <div class="empty-state" id="emptyWorldbookState">
                     <div class="empty-state-icon">📚</div>
                     <div class="empty-state-title">暂无世界书</div>
-                    <div class="empty-state-desc">点击 + 创建</div>
+                    <div class="empty-state-desc">点击右上角 + 创建你的第一本世界书</div>
                 </div>
                 <div id="worldbookList" style="display: none;"></div>
             </div>
         </div>
 
-        <!-- 世界书编辑页面 -->
+        <!-- ==================== 世界书编辑页面 ==================== -->
         <div class="page slide-from-bottom" id="worldbookEditPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closeWorldbookEdit()">
@@ -1666,42 +1733,56 @@
                 <span class="nav-title">编辑世界书</span>
                 <button class="nav-btn right" onclick="saveWorldbook()">保存</button>
             </div>
+
             <div class="page-content">
                 <p class="settings-group-title">基本信息</p>
                 <div class="settings-group" style="padding: 16px;">
                     <div class="input-group">
-                        <label class="input-label">名称</label>
-                        <input type="text" class="input-field" id="worldbookName" placeholder="世界书名称">
+                        <label class="input-label">世界书名称</label>
+                        <input type="text" class="input-field" id="worldbookName" placeholder="输入世界书名称">
                     </div>
                     <div class="input-group">
                         <label class="input-label">简介</label>
                         <textarea class="input-field" id="worldbookSummary" rows="2" placeholder="简短描述..."></textarea>
                     </div>
                 </div>
-                <p class="settings-group-title">内容</p>
+
+                <p class="settings-group-title">世界书内容</p>
                 <div class="settings-group" style="padding: 16px;">
                     <div class="input-group">
                         <label class="input-label">触发关键词 (逗号分隔)</label>
-                        <input type="text" class="input-field" id="worldbookKeywords" placeholder="关键词1, 关键词2">
+                        <input type="text" class="input-field" id="worldbookKeywords" placeholder="关键词1, 关键词2...">
                     </div>
                     <div class="input-group">
                         <label class="input-label">内容</label>
-                        <textarea class="input-field" id="worldbookContent" rows="10" placeholder="当关键词被提及时注入..."></textarea>
+                        <textarea class="input-field" id="worldbookContent" rows="10" placeholder="当关键词被提及时注入的内容..."></textarea>
                     </div>
                 </div>
+
                 <p class="settings-group-title">高级设置</p>
                 <div class="settings-group">
                     <div class="settings-item">
-                        <div class="settings-item-left"><span class="settings-item-label">始终激活</span></div>
+                        <div class="settings-item-left">
+                            <span class="settings-item-label">始终激活</span>
+                        </div>
                         <div class="toggle-switch" id="worldbookAlwaysActive" onclick="toggleSwitch(this)"></div>
                     </div>
+
+                    <div class="slider-container" style="padding: 16px;">
+                        <div class="slider-header">
+                            <span class="slider-label">注入位置 (深度)</span>
+                            <span class="slider-value" id="worldbookDepthValue">0</span>
+                        </div>
+                        <input type="range" class="slider-input" id="worldbookDepth" min="0" max="10" step="1" value="0" oninput="updateSliderValue('worldbookDepth', 'worldbookDepthValue')">
+                    </div>
                 </div>
+
                 <div class="delete-zone" onclick="deleteCurrentWorldbook()">🗑️ 删除此世界书</div>
                 <div style="height: 50px;"></div>
             </div>
         </div>
 
-        <!-- 壁纸页面 -->
+        <!-- ==================== 壁纸设置页面 ==================== -->
         <div class="page" id="wallpaperPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('wallpaperPage')">
@@ -1711,10 +1792,11 @@
                 <span class="nav-title">壁纸</span>
                 <button class="nav-btn right" style="visibility: hidden;">占位</button>
             </div>
+
             <div class="page-content">
                 <p class="settings-group-title">预设壁纸</p>
                 <div class="settings-group" style="padding: 16px;">
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;" id="wallpaperGrid">
                         <div class="wallpaper-option" onclick="setWallpaper('gradient1')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient1"></div>
                         <div class="wallpaper-option" onclick="setWallpaper('gradient2')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient2"></div>
                         <div class="wallpaper-option" onclick="setWallpaper('gradient3')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient3"></div>
@@ -1723,13 +1805,14 @@
                         <div class="wallpaper-option" onclick="setWallpaper('gradient6')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient6"></div>
                     </div>
                 </div>
+
                 <p class="settings-group-title">自定义壁纸</p>
                 <div class="settings-group" style="padding: 16px;">
                     <div class="input-group">
-                        <label class="input-label">图片URL</label>
+                        <label class="input-label">壁纸图片URL</label>
                         <input type="text" class="input-field" id="customWallpaperUrl" placeholder="输入图片URL...">
                     </div>
-                    <button class="btn btn-primary" onclick="setCustomWallpaper()">🖼️ 应用</button>
+                    <button class="btn btn-primary" onclick="setCustomWallpaper()">🖼️ 应用自定义壁纸</button>
                     <div class="divider"></div>
                     <button class="btn btn-secondary" onclick="triggerWallpaperUpload()">📤 上传本地图片</button>
                     <input type="file" id="wallpaperUpload" class="file-input-hidden" accept="image/*" onchange="handleWallpaperUpload(event)">
@@ -1738,11 +1821,11 @@
         </div>
     </div>
 
-    <!-- 模态框 -->
+    <!-- ==================== 模态框 ==================== -->
     <div class="modal-overlay" id="createCharacterModal">
         <div class="modal">
-            <div class="modal-title">创建角色</div>
-            <input type="text" class="modal-input" id="newCharacterName" placeholder="角色名称...">
+            <div class="modal-title">创建新角色</div>
+            <input type="text" class="modal-input" id="newCharacterName" placeholder="输入角色名称...">
             <div class="modal-btns">
                 <button class="modal-btn cancel" onclick="hideCreateCharacterModal()">取消</button>
                 <button class="modal-btn confirm" onclick="createCharacter()">创建</button>
@@ -1752,8 +1835,8 @@
 
     <div class="modal-overlay" id="createWorldbookModal">
         <div class="modal">
-            <div class="modal-title">创建世界书</div>
-            <input type="text" class="modal-input" id="newWorldbookName" placeholder="世界书名称...">
+            <div class="modal-title">创建新世界书</div>
+            <input type="text" class="modal-input" id="newWorldbookName" placeholder="输入世界书名称...">
             <div class="modal-btns">
                 <button class="modal-btn cancel" onclick="hideCreateWorldbookModal()">取消</button>
                 <button class="modal-btn confirm" onclick="createWorldbook()">创建</button>
@@ -1785,7 +1868,7 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ==================== 全局状态 ====================
+        // ==================== 全局状态管理 ====================
         const AppState = {
             characters: [],
             worldbooks: [],
@@ -1799,7 +1882,12 @@
             selectedMessages: new Set(),
             editingAppIcon: null,
             lastAIReplyStartIndex: -1,
-            appIcons: { settings: '⚙️', messages: '💬', worldbook: '📚', photos: '🖼️' },
+            appIcons: {
+                settings: '⚙️',
+                messages: '💬',
+                worldbook: '📚',
+                photos: '🖼️'
+            },
             settings: {
                 apiBaseUrl: '',
                 apiKey: '',
@@ -1807,13 +1895,15 @@
                 temperature: 0.7,
                 maxTokens: 2048,
                 topP: 0.9,
+                frequencyPenalty: 0,
+                presencePenalty: 0,
                 maxContextMessages: 200,
                 wallpaper: 'gradient1'
             }
         };
 
-        // 分隔符
-        const MSG_SEP = '|||';
+        // 分隔符 - 用于拆分多条短信
+        const MESSAGE_SEPARATOR = '|||';
 
         // ==================== 初始化 ====================
         document.addEventListener('DOMContentLoaded', function() {
@@ -1828,67 +1918,122 @@
 
         function updateStatusBarTime() {
             const now = new Date();
-            document.getElementById('statusBarTime').textContent =
-                now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('statusBarTime').textContent = `${hours}:${minutes}`;
         }
 
-        // ==================== 日志 ====================
-        function addLog(msg, type = 'info') {
-            const log = document.getElementById('debugLog');
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${type}`;
-            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-            log.appendChild(entry);
-            log.scrollTop = log.scrollHeight;
-            while (log.children.length > 50) log.removeChild(log.firstChild);
-        }
+        // ==================== 调试日志 ====================
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
 
-        // ==================== API ====================
-        function normalizeBaseUrl(url) {
-            if (!url) return '';
-            return url.trim().replace(/\/+$/, '').replace(/\/v1$/, '');
-        }
-
-        function getModelsEndpoint(baseUrl) { return `${normalizeBaseUrl(baseUrl)}/v1/models`; }
-        function getChatEndpoint(baseUrl) { return `${normalizeBaseUrl(baseUrl)}/v1/chat/completions`; }
-
-        function updateConnectionStatusUI() {
-            const hint = document.getElementById('connectionStatusHint');
-            if (AppState.connectionStatus === 'connected') {
-                hint.className = 'action-hint success';
-                hint.innerHTML = `<span class="action-hint-icon">✅</span><span class="action-hint-text">已连接 - ${AppState.settings.modelName || '未选模型'}</span>`;
-            } else if (AppState.connectionStatus === 'pending') {
-                hint.className = 'action-hint warning';
-                hint.innerHTML = `<span class="action-hint-icon">⏳</span><span class="action-hint-text">连接中...</span>`;
-            } else {
-                hint.className = 'action-hint';
-                hint.innerHTML = `<span class="action-hint-icon">⚠️</span><span class="action-hint-text">尚未配置API</span>`;
+            while (logContainer.children.length > 50) {
+                logContainer.removeChild(logContainer.firstChild);
             }
         }
 
+        // ==================== API URL 处理 ====================
+        function normalizeBaseUrl(url) {
+            if (!url) return '';
+            url = url.trim().replace(/\/+$/, '');
+            url = url.replace(/\/v1$/, '');
+            return url;
+        }
+
+        function getModelsEndpoint(baseUrl) {
+            return `${normalizeBaseUrl(baseUrl)}/v1/models`;
+        }
+
+        function getChatEndpoint(baseUrl) {
+            return `${normalizeBaseUrl(baseUrl)}/v1/chat/completions`;
+        }
+
+        // ==================== 更新连接状态UI ====================
+        function updateConnectionStatusUI() {
+            const hint = document.getElementById('connectionStatusHint');
+
+            if (AppState.connectionStatus === 'connected') {
+                hint.className = 'action-hint success';
+                hint.innerHTML = `
+                    <span class="action-hint-icon">✅</span>
+                    <span class="action-hint-text">API已连接 - ${AppState.settings.modelName || '未选择模型'}</span>
+                `;
+            } else if (AppState.connectionStatus === 'pending') {
+                hint.className = 'action-hint warning';
+                hint.innerHTML = `
+                    <span class="action-hint-icon">⏳</span>
+                    <span class="action-hint-text">正在连接...</span>
+                `;
+            } else {
+                hint.className = 'action-hint';
+                hint.innerHTML = `
+                    <span class="action-hint-icon">⚠️</span>
+                    <span class="action-hint-text">尚未配置或连接API</span>
+                `;
+            }
+        }
+
+        // ==================== 拉取模型列表 ====================
         async function fetchModels() {
             const baseUrl = document.getElementById('apiBaseUrl').value.trim();
             const apiKey = document.getElementById('apiKey').value.trim();
-            if (!baseUrl || !apiKey) { showToast('请填写API配置', 'error'); return; }
+
+            if (!baseUrl) {
+                showToast('请输入API基础地址', 'error');
+                return;
+            }
+
+            if (!apiKey) {
+                showToast('请输入API密钥', 'error');
+                return;
+            }
 
             const btn = document.getElementById('fetchModelsBtn');
             btn.disabled = true;
             btn.innerHTML = '<span class="loading-spinner"></span> 拉取中...';
 
+            addLog(`开始拉取模型列表...`);
+
+            const modelsEndpoint = getModelsEndpoint(baseUrl);
+            addLog(`端点: ${modelsEndpoint}`);
+
             try {
-                const resp = await fetch(getModelsEndpoint(baseUrl), {
-                    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' }
+                const response = await fetch(modelsEndpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    }
                 });
-                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-                const data = await resp.json();
-                const models = data.data || data.models || data || [];
+
+                addLog(`响应状态: ${response.status}`);
+
+                if (!response.ok) {
+                    let errorMsg = `HTTP ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMsg = errorData.error?.message || errorMsg;
+                    } catch (e) {}
+                    throw new Error(errorMsg);
+                }
+
+                const data = await response.json();
+                let models = data.data || data.models || data || [];
+
                 addLog(`找到 ${models.length} 个模型`, 'success');
                 AppState.availableModels = models;
                 renderModelList(models);
-                showToast(`获取 ${models.length} 个模型`, 'success');
-            } catch (e) {
-                addLog(`拉取失败: ${e.message}`, 'error');
-                showToast(`拉取失败: ${e.message}`, 'error');
+                showToast(`成功获取 ${models.length} 个模型`, 'success');
+
+            } catch (error) {
+                addLog(`拉取失败: ${error.message}`, 'error');
+                showToast(`拉取模型失败: ${error.message}`, 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '📋 拉取模型列表';
@@ -1898,52 +2043,87 @@
         function renderModelList(models) {
             const container = document.getElementById('modelListContainer');
             const list = document.getElementById('modelList');
-            if (!models.length) { container.style.display = 'none'; return; }
+
+            if (!models || models.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
             container.style.display = 'block';
-            list.innerHTML = models.map(m => {
-                const id = m.id || m.name || m;
-                return `<div class="model-item ${id === AppState.settings.modelName ? 'selected' : ''}" onclick="selectModel('${id}')"><span class="model-item-name">${id}</span></div>`;
+            list.innerHTML = models.map(model => {
+                const modelId = model.id || model.name || model;
+                const isSelected = modelId === AppState.settings.modelName;
+                return `
+                    <div class="model-item ${isSelected ? 'selected' : ''}" onclick="selectModel('${modelId}')">
+                        <span class="model-item-name">${modelId}</span>
+                        ${model.owned_by ? `<span class="model-item-badge">${model.owned_by}</span>` : ''}
+                    </div>
+                `;
             }).join('');
         }
 
-        function selectModel(id) {
-            AppState.settings.modelName = id;
-            document.getElementById('modelName').value = id;
-            document.querySelectorAll('.model-item').forEach(el => {
-                el.classList.toggle('selected', el.querySelector('.model-item-name').textContent === id);
+        function selectModel(modelId) {
+            AppState.settings.modelName = modelId;
+            document.getElementById('modelName').value = modelId;
+
+            document.querySelectorAll('.model-item').forEach(item => {
+                item.classList.remove('selected');
+                if (item.querySelector('.model-item-name').textContent === modelId) {
+                    item.classList.add('selected');
+                }
             });
-            showToast(`已选择: ${id}`, 'success');
+
+            addLog(`已选择模型: ${modelId}`, 'success');
+            showToast(`已选择: ${modelId}`, 'success');
         }
 
+        // ==================== 测试连接 ====================
         async function testConnection() {
             const baseUrl = document.getElementById('apiBaseUrl').value.trim();
             const apiKey = document.getElementById('apiKey').value.trim();
-            const model = document.getElementById('modelName').value.trim();
-            if (!baseUrl || !apiKey || !model) { showToast('请填写完整配置', 'error'); return; }
+            const modelName = document.getElementById('modelName').value.trim();
+
+            if (!baseUrl || !apiKey || !modelName) {
+                showToast('请先填写完整的API配置', 'error');
+                return;
+            }
 
             const btn = document.getElementById('testConnectionBtn');
             btn.disabled = true;
             btn.innerHTML = '<span class="loading-spinner"></span> 测试中...';
+
             AppState.connectionStatus = 'pending';
             updateConnectionStatusUI();
 
             try {
-                const resp = await fetch(getChatEndpoint(baseUrl), {
+                const response = await fetch(getChatEndpoint(baseUrl), {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ model, messages: [{ role: 'user', content: 'Hi' }], max_tokens: 5 })
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: modelName,
+                        messages: [{ role: 'user', content: 'Hi' }],
+                        max_tokens: 5
+                    })
                 });
-                if (resp.ok) {
+
+                if (response.ok) {
                     AppState.connectionStatus = 'connected';
                     AppState.settings.apiBaseUrl = baseUrl;
                     AppState.settings.apiKey = apiKey;
-                    AppState.settings.modelName = model;
+                    AppState.settings.modelName = modelName;
                     saveAllData();
-                    showToast('连接成功！', 'success');
-                } else throw new Error(`HTTP ${resp.status}`);
-            } catch (e) {
+                    showToast('🎉 连接成功！', 'success');
+                    addLog('连接成功', 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
                 AppState.connectionStatus = 'disconnected';
-                showToast(`连接失败: ${e.message}`, 'error');
+                showToast(`连接失败: ${error.message}`, 'error');
+                addLog(`连接失败: ${error.message}`, 'error');
             } finally {
                 updateConnectionStatusUI();
                 btn.disabled = false;
@@ -1958,24 +2138,31 @@
                 localStorage.setItem('aiSMS_worldbooks', JSON.stringify(AppState.worldbooks));
                 localStorage.setItem('aiSMS_settings', JSON.stringify(AppState.settings));
                 localStorage.setItem('aiSMS_appIcons', JSON.stringify(AppState.appIcons));
-            } catch (e) { console.error('保存失败:', e); }
+            } catch (e) {
+                console.error('保存数据失败:', e);
+            }
         }
 
         function loadAllData() {
             try {
-                const c = localStorage.getItem('aiSMS_characters');
-                const w = localStorage.getItem('aiSMS_worldbooks');
-                const s = localStorage.getItem('aiSMS_settings');
-                const i = localStorage.getItem('aiSMS_appIcons');
-                if (c) AppState.characters = JSON.parse(c);
-                if (w) AppState.worldbooks = JSON.parse(w);
-                if (s) AppState.settings = { ...AppState.settings, ...JSON.parse(s) };
-                if (i) AppState.appIcons = { ...AppState.appIcons, ...JSON.parse(i) };
+                const characters = localStorage.getItem('aiSMS_characters');
+                const worldbooks = localStorage.getItem('aiSMS_worldbooks');
+                const settings = localStorage.getItem('aiSMS_settings');
+                const appIcons = localStorage.getItem('aiSMS_appIcons');
+
+                if (characters) AppState.characters = JSON.parse(characters);
+                if (worldbooks) AppState.worldbooks = JSON.parse(worldbooks);
+                if (settings) AppState.settings = { ...AppState.settings, ...JSON.parse(settings) };
+                if (appIcons) AppState.appIcons = { ...AppState.appIcons, ...JSON.parse(appIcons) };
+
                 loadSettingsToUI();
+
                 if (AppState.settings.apiBaseUrl && AppState.settings.apiKey && AppState.settings.modelName) {
                     AppState.connectionStatus = 'connected';
                 }
-            } catch (e) { console.error('加载失败:', e); }
+            } catch (e) {
+                console.error('加载数据失败:', e);
+            }
         }
 
         function loadSettingsToUI() {
@@ -1983,37 +2170,54 @@
             document.getElementById('apiKey').value = AppState.settings.apiKey || '';
             document.getElementById('modelName').value = AppState.settings.modelName || '';
             document.getElementById('maxContextMessages').value = AppState.settings.maxContextMessages || 200;
+
             document.getElementById('temperature').value = AppState.settings.temperature;
             document.getElementById('tempValue').textContent = AppState.settings.temperature;
+
             document.getElementById('maxTokens').value = AppState.settings.maxTokens;
             document.getElementById('maxTokensValue').textContent = AppState.settings.maxTokens;
+
             document.getElementById('topP').value = AppState.settings.topP;
             document.getElementById('topPValue').textContent = AppState.settings.topP;
+
+            document.getElementById('frequencyPenalty').value = AppState.settings.frequencyPenalty;
+            document.getElementById('freqPenValue').textContent = AppState.settings.frequencyPenalty;
+
+            document.getElementById('presencePenalty').value = AppState.settings.presencePenalty;
+            document.getElementById('presPenValue').textContent = AppState.settings.presencePenalty;
         }
 
         // ==================== 页面导航 ====================
         function openPage(pageId) {
-            document.getElementById(pageId)?.classList.add('active');
-            if (pageId === 'messagesPage') renderContactList();
-            else if (pageId === 'worldbookPage') renderWorldbookList();
+            const page = document.getElementById(pageId);
+            if (page) {
+                page.classList.add('active');
+                if (pageId === 'messagesPage') renderContactList();
+                else if (pageId === 'worldbookPage') renderWorldbookList();
+            }
         }
 
-        function closePage(pageId) { document.getElementById(pageId)?.classList.remove('active'); }
+        function closePage(pageId) {
+            const page = document.getElementById(pageId);
+            if (page) page.classList.remove('active');
+        }
 
-        // ==================== Toast ====================
-        function showToast(msg, type = 'info') {
+        // ==================== Toast 通知 ====================
+        function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             const icons = { success: '✓', error: '✕', warning: '⚠', info: 'ℹ' };
-            toast.innerHTML = `${icons[type] || 'ℹ'} ${msg}`;
+            toast.innerHTML = `${icons[type] || icons.info} ${message}`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // ==================== 设置 ====================
+        // ==================== 设置相关 ====================
         function updateSliderValue(sliderId, valueId) {
-            document.getElementById(valueId).textContent = document.getElementById(sliderId).value;
+            const slider = document.getElementById(sliderId);
+            const value = document.getElementById(valueId);
+            value.textContent = slider.value;
         }
 
         function saveApiSettings() {
@@ -2023,7 +2227,10 @@
             AppState.settings.temperature = parseFloat(document.getElementById('temperature').value);
             AppState.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
             AppState.settings.topP = parseFloat(document.getElementById('topP').value);
+            AppState.settings.frequencyPenalty = parseFloat(document.getElementById('frequencyPenalty').value);
+            AppState.settings.presencePenalty = parseFloat(document.getElementById('presencePenalty').value);
             AppState.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
+
             saveAllData();
             showToast('设置已保存', 'success');
         }
@@ -2031,21 +2238,23 @@
         // ==================== 图标编辑 ====================
         let isEditing = false;
 
-        function handleAppClick(e, pageId) {
-            e.preventDefault();
+        function handleAppClick(event, pageId) {
+            event.preventDefault();
             if (isEditing) {
-                showIconPicker(e.currentTarget.dataset.app);
+                const wrapper = event.currentTarget;
+                const appName = wrapper.dataset.app;
+                showIconPicker(appName);
             } else {
                 openPage(pageId);
             }
         }
 
-        function handleAppLongPress(e, app) {
-            e.preventDefault();
+        function handleAppLongPress(event, appName) {
+            event.preventDefault();
             if (!isEditing) {
                 isEditing = true;
                 document.querySelectorAll('.app-icon-wrapper').forEach(w => w.classList.add('editing'));
-                showToast('点击图标更换', 'info');
+                showToast('点击图标更换，点击空白处退出', 'info');
             }
         }
 
@@ -2058,9 +2267,12 @@
 
         const iconEmojis = ['⚙️', '💬', '📚', '🖼️', '💕', '🌸', '✨', '🎀', '🐱', '🐰', '🦊', '🐻', '🌙', '⭐', '🔮', '💎', '🎵', '🎮', '📱', '💻', '🏠', '🌈', '🍀', '🌺', '🦋', '🐾', '👻', '🤖', '💫', '🎭'];
 
-        function showIconPicker(app) {
-            AppState.editingAppIcon = app;
-            document.getElementById('emojiPicker').innerHTML = iconEmojis.map(e => `<div class="emoji-item" onclick="selectAppIcon('${e}')">${e}</div>`).join('');
+        function showIconPicker(appName) {
+            AppState.editingAppIcon = appName;
+            const picker = document.getElementById('emojiPicker');
+            picker.innerHTML = iconEmojis.map(emoji =>
+                `<div class="emoji-item" onclick="selectAppIcon('${emoji}')">${emoji}</div>`
+            ).join('');
             document.getElementById('iconPickerModal').classList.add('active');
         }
 
@@ -2081,8 +2293,10 @@
 
         function applyAppIcons() {
             Object.keys(AppState.appIcons).forEach(app => {
-                const el = document.getElementById(`app-icon-${app}`);
-                if (el) el.textContent = AppState.appIcons[app];
+                const iconEl = document.getElementById(`app-icon-${app}`);
+                if (iconEl) {
+                    iconEl.textContent = AppState.appIcons[app];
+                }
             });
         }
 
@@ -2093,78 +2307,105 @@
             document.getElementById('newCharacterName').focus();
         }
 
-        function hideCreateCharacterModal() { document.getElementById('createCharacterModal').classList.remove('active'); }
+        function hideCreateCharacterModal() {
+            document.getElementById('createCharacterModal').classList.remove('active');
+        }
 
         function createCharacter() {
             const name = document.getElementById('newCharacterName').value.trim();
-            if (!name) { showToast('请输入名称', 'error'); return; }
+            if (!name) {
+                showToast('请输入角色名称', 'error');
+                return;
+            }
 
-            const emojis = ['😊', '😎', '🥰', '😏', '🤔', '😈', '🦊', '🐱', '🐰', '🌸', '⭐', '🔥', '💎', '🎭', '👻', '🤖'];
-            const char = {
+            const character = {
                 id: Date.now().toString(),
-                name,
-                avatar: emojis[Math.floor(Math.random() * emojis.length)],
-                description: '', greeting: '', scenario: '', worldbookId: '', userNick: '', systemPrompt: '',
+                name: name,
+                avatar: getRandomEmoji(),
+                description: '',
+                greeting: '',
+                scenario: '',
+                worldbookId: '',
+                userNick: '',
+                systemPrompt: '',
                 messages: [],
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
             };
 
-            AppState.characters.push(char);
+            AppState.characters.push(character);
             saveAllData();
             hideCreateCharacterModal();
             renderContactList();
-            showToast(`"${name}" 创建成功`, 'success');
+            showToast(`角色 "${name}" 创建成功`, 'success');
+        }
+
+        function getRandomEmoji() {
+            const emojis = ['😊', '😎', '🥰', '😏', '🤔', '😈', '🦊', '🐱', '🐰', '🌸', '⭐', '🔥', '💎', '🎭', '👻', '🤖'];
+            return emojis[Math.floor(Math.random() * emojis.length)];
         }
 
         function renderContactList() {
             const container = document.getElementById('contactList');
-            const empty = document.getElementById('emptyContactState');
+            const emptyState = document.getElementById('emptyContactState');
 
-            if (!AppState.characters.length) {
+            if (AppState.characters.length === 0) {
                 container.style.display = 'none';
-                empty.style.display = 'flex';
+                emptyState.style.display = 'flex';
                 return;
             }
 
             container.style.display = 'flex';
-            empty.style.display = 'none';
+            emptyState.style.display = 'none';
 
-            container.innerHTML = AppState.characters.map(c => {
-                const last = c.messages.length ? c.messages[c.messages.length - 1].content.substring(0, 30) + '...' : '点击开始对话';
-                const time = c.messages.length ? formatTime(c.messages[c.messages.length - 1].timestamp) : '';
-                return `<div class="contact-item" onclick="openChat('${c.id}')">
-                    <div class="contact-avatar">${c.avatar || c.name[0]}</div>
-                    <div class="contact-info"><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-preview">${escapeHtml(last)}</div></div>
-                    <div class="contact-time">${time}</div>
-                </div>`;
+            container.innerHTML = AppState.characters.map(char => {
+                const lastMessage = char.messages.length > 0
+                    ? char.messages[char.messages.length - 1].content.substring(0, 30) + '...'
+                    : '点击开始对话';
+                const lastTime = char.messages.length > 0
+                    ? formatTime(char.messages[char.messages.length - 1].timestamp)
+                    : '';
+
+                return `
+                    <div class="contact-item" onclick="openChat('${char.id}')">
+                        <div class="contact-avatar">${char.avatar || char.name[0]}</div>
+                        <div class="contact-info">
+                            <div class="contact-name">${escapeHtml(char.name)}</div>
+                            <div class="contact-preview">${escapeHtml(lastMessage)}</div>
+                        </div>
+                        <div class="contact-time">${lastTime}</div>
+                    </div>
+                `;
             }).join('');
         }
 
         function filterContacts() {
-            const q = document.getElementById('contactSearch').value.toLowerCase();
-            document.querySelectorAll('.contact-item').forEach(el => {
-                el.style.display = el.querySelector('.contact-name').textContent.toLowerCase().includes(q) ? 'flex' : 'none';
+            const query = document.getElementById('contactSearch').value.toLowerCase();
+            const items = document.querySelectorAll('.contact-item');
+            items.forEach(item => {
+                const name = item.querySelector('.contact-name').textContent.toLowerCase();
+                item.style.display = name.includes(query) ? 'flex' : 'none';
             });
         }
 
-        function openChat(id) {
-            const char = AppState.characters.find(c => c.id === id);
-            if (!char) return;
+        function openChat(characterId) {
+            const character = AppState.characters.find(c => c.id === characterId);
+            if (!character) return;
 
-            AppState.currentCharacterId = id;
+            AppState.currentCharacterId = characterId;
             AppState.isSelectMode = false;
             AppState.selectedMessages.clear();
             AppState.lastAIReplyStartIndex = -1;
 
-            document.getElementById('chatTitle').textContent = char.name;
+            document.getElementById('chatTitle').textContent = character.name;
             document.getElementById('selectModeBar').classList.remove('active');
             document.getElementById('chatMessages').classList.remove('select-mode');
 
             renderMessages();
             openPage('chatPage');
 
-            if (!char.messages.length && char.greeting) {
-                addMessage(char.greeting, 'received');
+            if (character.messages.length === 0 && character.greeting) {
+                addMessage(character.greeting, 'received');
             }
         }
 
@@ -2176,90 +2417,121 @@
         }
 
         function openCharacterSettings() {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
-            if (!char) return;
+            const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            if (!character) return;
 
-            document.getElementById('charName').value = char.name;
-            document.getElementById('charAvatar').value = char.avatar || '';
-            document.getElementById('charDescription').value = char.description || '';
-            document.getElementById('charGreeting').value = char.greeting || '';
-            document.getElementById('charScenario').value = char.scenario || '';
-            document.getElementById('charUserNick').value = char.userNick || '';
-            document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
+            document.getElementById('charName').value = character.name;
+            document.getElementById('charAvatar').value = character.avatar || '';
+            document.getElementById('charDescription').value = character.description || '';
+            document.getElementById('charGreeting').value = character.greeting || '';
+            document.getElementById('charScenario').value = character.scenario || '';
+            document.getElementById('charUserNick').value = character.userNick || '';
+            document.getElementById('charSystemPrompt').value = character.systemPrompt || '';
 
             updateWorldbookSelect();
-            document.getElementById('charWorldbook').value = char.worldbookId || '';
+            document.getElementById('charWorldbook').value = character.worldbookId || '';
+
             updateCharCounter();
             openPage('characterSettingsPage');
         }
 
-        function closeCharacterSettings() { closePage('characterSettingsPage'); }
+        function closeCharacterSettings() {
+            closePage('characterSettingsPage');
+        }
 
         function saveCharacterSettings() {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
-            if (!char) return;
+            const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            if (!character) return;
 
             const greeting = document.getElementById('charGreeting').value;
-            if (greeting.length > 300) { showToast('开场白过长', 'error'); return; }
+            if (greeting.length > 300) {
+                showToast('开场白不能超过300字符', 'error');
+                return;
+            }
 
-            char.name = document.getElementById('charName').value.trim() || char.name;
-            char.avatar = document.getElementById('charAvatar').value.trim() || char.avatar;
-            char.description = document.getElementById('charDescription').value;
-            char.greeting = greeting;
-            char.scenario = document.getElementById('charScenario').value;
-            char.worldbookId = document.getElementById('charWorldbook').value;
-            char.userNick = document.getElementById('charUserNick').value.trim();
-            char.systemPrompt = document.getElementById('charSystemPrompt').value;
+            character.name = document.getElementById('charName').value.trim() || character.name;
+            character.avatar = document.getElementById('charAvatar').value.trim() || character.avatar;
+            character.description = document.getElementById('charDescription').value;
+            character.greeting = greeting;
+            character.scenario = document.getElementById('charScenario').value;
+            character.worldbookId = document.getElementById('charWorldbook').value;
+            character.userNick = document.getElementById('charUserNick').value.trim();
+            character.systemPrompt = document.getElementById('charSystemPrompt').value;
+            character.updatedAt = new Date().toISOString();
 
-            document.getElementById('chatTitle').textContent = char.name;
+            document.getElementById('chatTitle').textContent = character.name;
+
             saveAllData();
             closeCharacterSettings();
-            showToast('已保存', 'success');
+            showToast('角色设置已保存', 'success');
         }
 
         function updateCharCounter() {
-            const ta = document.getElementById('charGreeting');
+            const textarea = document.getElementById('charGreeting');
             const counter = document.getElementById('greetingCharCounter');
-            counter.textContent = `${ta.value.length} / 300`;
-            counter.className = 'char-counter' + (ta.value.length >= 280 ? ' warning' : '') + (ta.value.length >= 300 ? ' error' : '');
+            const length = textarea.value.length;
+
+            counter.textContent = `${length} / 300`;
+            counter.className = 'char-counter';
+            if (length >= 280) counter.classList.add('warning');
+            if (length >= 300) counter.classList.add('error');
         }
 
         function deleteCurrentCharacter() {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
-            if (!char) return;
+            const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            if (!character) return;
+
             AppState.pendingDeleteType = 'character';
-            AppState.pendingDeleteId = char.id;
-            document.getElementById('deleteModalTitle').textContent = `删除 "${char.name}"?`;
-            document.getElementById('deleteModalDesc').textContent = '所有聊天记录将被删除';
+            AppState.pendingDeleteId = character.id;
+
+            document.getElementById('deleteModalTitle').textContent = `删除 "${character.name}"?`;
+            document.getElementById('deleteModalDesc').textContent = '所有聊天记录将被永久删除';
             document.getElementById('confirmDeleteModal').classList.add('active');
         }
 
         // ==================== 消息处理 ====================
         function renderMessages() {
             const container = document.getElementById('chatMessages');
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
-            if (!char) return;
+            const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
 
-            if (!char.messages.length) {
-                container.innerHTML = `<div class="date-separator"><span class="date-separator-text">今天</span></div>`;
+            if (!character) return;
+
+            if (character.messages.length === 0) {
+                container.innerHTML = `
+                    <div class="date-separator">
+                        <span class="date-separator-text">今天</span>
+                    </div>
+                `;
                 return;
             }
 
             let html = '';
             let lastDate = null;
 
-            char.messages.forEach(msg => {
-                const date = new Date(msg.timestamp).toLocaleDateString();
-                if (date !== lastDate) {
-                    html += `<div class="date-separator"><span class="date-separator-text">${formatDate(msg.timestamp)}</span></div>`;
-                    lastDate = date;
+            character.messages.forEach((msg, index) => {
+                const msgDate = new Date(msg.timestamp).toLocaleDateString();
+
+                if (msgDate !== lastDate) {
+                    html += `
+                        <div class="date-separator">
+                            <span class="date-separator-text">${formatDate(msg.timestamp)}</span>
+                        </div>
+                    `;
+                    lastDate = msgDate;
                 }
-                const type = msg.role === 'user' ? 'sent' : 'received';
-                const checked = AppState.selectedMessages.has(msg.id);
-                html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}">
-                    <div class="message-checkbox ${checked ? 'checked' : ''}" onclick="toggleMessageSelect('${msg.id}')"></div>
-                    <div class="message ${type}">${escapeHtml(msg.content)}<div class="message-time">${formatTime(msg.timestamp)}</div></div>
-                </div>`;
+
+                const msgType = msg.role === 'user' ? 'sent' : 'received';
+                const isChecked = AppState.selectedMessages.has(msg.id);
+
+                html += `
+                    <div class="message-wrapper ${msgType}" data-msg-id="${msg.id}">
+                        <div class="message-checkbox ${isChecked ? 'checked' : ''}" onclick="toggleMessageSelect('${msg.id}')"></div>
+                        <div class="message ${msgType}">
+                            ${escapeHtml(msg.content)}
+                            <div class="message-time">${formatTime(msg.timestamp)}</div>
+                        </div>
+                    </div>
+                `;
             });
 
             container.innerHTML = html;
@@ -2267,117 +2539,107 @@
         }
 
         function addMessage(content, type) {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
-            if (!char) return;
+            const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            if (!character) return;
 
-            const msg = {
+            const message = {
                 id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
                 role: type === 'sent' ? 'user' : 'assistant',
-                content,
+                content: content,
                 timestamp: new Date().toISOString()
             };
 
-            char.messages.push(msg);
+            character.messages.push(message);
+            character.updatedAt = new Date().toISOString();
             saveAllData();
 
             const container = document.getElementById('chatMessages');
-            container.insertAdjacentHTML('beforeend', `<div class="message-wrapper ${type}" data-msg-id="${msg.id}">
-                <div class="message-checkbox" onclick="toggleMessageSelect('${msg.id}')"></div>
-                <div class="message ${type}">${escapeHtml(content)}<div class="message-time">${formatTime(msg.timestamp)}</div></div>
-            </div>`);
+            const msgType = type;
+            const msgHtml = `
+                <div class="message-wrapper ${msgType}" data-msg-id="${message.id}">
+                    <div class="message-checkbox" onclick="toggleMessageSelect('${message.id}')"></div>
+                    <div class="message ${msgType}">
+                        ${escapeHtml(content)}
+                        <div class="message-time">${formatTime(message.timestamp)}</div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', msgHtml);
             scrollToBottom();
         }
 
         function sendMessage() {
             const input = document.getElementById('chatInput');
             const content = input.value.trim();
+
             if (!content) return;
+
             addMessage(content, 'sent');
             input.value = '';
             autoResizeTextarea(input);
         }
 
-        // ==================== AI回复（核心修复） ====================
-        function buildSystemPrompt(char) {
-            // 简洁直接的提示词，不让AI输出任何格式标记
-            let prompt = `你是"${char.name}"，正在通过短信与用户聊天。
+        // ==================== 清理AI回复中的格式标记 ====================
+        function cleanAIResponse(text, characterName) {
+            if (!text) return '';
 
-【回复规则】
-- 直接用|||分隔多条短信，不要加任何前缀或标记
-- 正确示例: 在呢|||怎么了|||想我了吗😊
-- 错误示例: [${char.name}]: 在呢（不要这样写！）
-- 保持简短自然，像真人发短信`;
-
-            if (char.description) prompt += `\n\n【你的人设】\n${char.description}`;
-            if (char.scenario) prompt += `\n\n【当前场景】\n${char.scenario}`;
-            if (char.userNick) prompt += `\n\n【称呼用户为】${char.userNick}`;
-            if (char.systemPrompt) prompt += `\n\n【额外要求】\n${char.systemPrompt}`;
-
-            // 世界书
-            const wb = AppState.worldbooks.find(w => w.id === char.worldbookId);
-            if (wb && wb.content) {
-                const shouldInject = wb.alwaysActive || (wb.keywords && char.messages.some(m =>
-                    wb.keywords.split(',').some(kw => m.content.toLowerCase().includes(kw.trim().toLowerCase()))
-                ));
-                if (shouldInject) prompt += `\n\n【背景知识】\n${wb.content}`;
-            }
-
-            return prompt;
-        }
-
-        function buildMessagesForAPI(char) {
-            const messages = [{ role: 'system', content: buildSystemPrompt(char) }];
-
-            const maxContext = AppState.settings.maxContextMessages || 200;
-            const history = char.messages.slice(-maxContext);
-
-            // 简化：直接发送每条消息，不做复杂合并
-            history.forEach(msg => {
-                messages.push({ role: msg.role, content: msg.content });
-            });
-
-            return messages;
-        }
-
-        // 清理AI回复中的格式标记
-        function cleanAIResponse(text, charName) {
             let cleaned = text;
 
             // 移除各种可能的前缀格式
+            // [角色名]:
+            // [角色名]：
+            // 角色名:
+            // 角色名：
             const prefixPatterns = [
-                new RegExp(`^\\[${charName}\\]\\s*[:：]\\s*`, 'gi'),
-                new RegExp(`^${charName}\\s*[:：]\\s*`, 'gi'),
-                new RegExp(`^\\[.*?\\]\\s*[:：]\\s*`, 'g'),
-                /^\[角色\]\s*[:：]\s*/g,
-                /^\[AI\]\s*[:：]\s*/g,
+                new RegExp(`^\\s*\\[${escapeRegExp(characterName)}\\]\\s*[:：]\\s*`, 'gi'),
+                new RegExp(`^\\s*【${escapeRegExp(characterName)}】\\s*[:：]?\\s*`, 'gi'),
+                new RegExp(`^\\s*${escapeRegExp(characterName)}\\s*[:：]\\s*`, 'gi'),
+                /^\s*\[[^\]]+\]\s*[:：]\s*/gi,
+                /^\s*【[^】]+】\s*[:：]?\s*/gi,
             ];
 
-            prefixPatterns.forEach(pattern => {
+            for (const pattern of prefixPatterns) {
                 cleaned = cleaned.replace(pattern, '');
-            });
+            }
+
+            // 移除开头的引号
+            cleaned = cleaned.replace(/^["「『"]+/, '');
+            cleaned = cleaned.replace(/["」』"]+$/, '');
 
             return cleaned.trim();
         }
 
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // ==================== AI回复相关 ====================
         async function triggerAIReply() {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
-            if (!char) return;
+            const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            if (!character) return;
 
             if (!AppState.settings.apiBaseUrl || !AppState.settings.apiKey || !AppState.settings.modelName) {
-                showToast('请先配置API', 'error');
+                showToast('请先在设置中配置API', 'error');
                 return;
             }
 
-            AppState.lastAIReplyStartIndex = char.messages.length;
+            AppState.lastAIReplyStartIndex = character.messages.length;
 
             const container = document.getElementById('chatMessages');
-            container.insertAdjacentHTML('beforeend', `<div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>`);
+            const typingHtml = `
+                <div class="typing-indicator" id="typingIndicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', typingHtml);
             scrollToBottom();
 
             try {
-                const messages = buildMessagesForAPI(char);
+                const messages = buildMessagesForAPI(character);
 
-                const resp = await fetch(getChatEndpoint(AppState.settings.apiBaseUrl), {
+                const response = await fetch(getChatEndpoint(AppState.settings.apiBaseUrl), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2385,88 +2647,193 @@
                     },
                     body: JSON.stringify({
                         model: AppState.settings.modelName,
-                        messages,
+                        messages: messages,
                         temperature: AppState.settings.temperature,
                         max_tokens: AppState.settings.maxTokens,
-                        top_p: AppState.settings.topP
+                        top_p: AppState.settings.topP,
+                        frequency_penalty: AppState.settings.frequencyPenalty,
+                        presence_penalty: AppState.settings.presencePenalty
                     })
                 });
 
                 document.getElementById('typingIndicator')?.remove();
 
-                if (!resp.ok) {
-                    const err = await resp.json();
-                    throw new Error(err.error?.message || `HTTP ${resp.status}`);
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error?.message || `HTTP ${response.status}`);
                 }
 
-                const data = await resp.json();
+                const data = await response.json();
                 let aiReply = data.choices[0].message.content;
 
                 // 清理AI回复
-                aiReply = cleanAIResponse(aiReply, char.name);
+                aiReply = cleanAIResponse(aiReply, character.name);
 
-                // 用|||分隔
-                const parts = aiReply.split(MSG_SEP).map(s => s.trim()).filter(s => s);
+                // 使用 ||| 分隔多条消息
+                const messageParts = aiReply.split(MESSAGE_SEPARATOR)
+                    .map(s => cleanAIResponse(s.trim(), character.name))
+                    .filter(s => s.length > 0);
 
-                // 如果没有分隔符，尝试用 | 分隔（兼容旧格式）
-                let finalParts = parts;
-                if (parts.length === 1 && aiReply.includes(' | ')) {
-                    finalParts = aiReply.split(' | ').map(s => s.trim()).filter(s => s);
-                }
+                if (messageParts.length === 0) {
+                    // 如果分隔后没有内容，尝试用 | 分隔
+                    const altParts = aiReply.split(/\s*\|\s*/)
+                        .map(s => cleanAIResponse(s.trim(), character.name))
+                        .filter(s => s.length > 0);
 
-                // 再次清理每条消息
-                for (let i = 0; i < finalParts.length; i++) {
-                    let msg = cleanAIResponse(finalParts[i], char.name);
-                    if (!msg) continue;
-
-                    if (i > 0) await new Promise(r => setTimeout(r, 300 + Math.random() * 300));
-                    addMessage(msg, 'received');
+                    if (altParts.length > 0) {
+                        for (let i = 0; i < altParts.length; i++) {
+                            if (i > 0) {
+                                await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 300));
+                            }
+                            addMessage(altParts[i], 'received');
+                        }
+                    } else {
+                        // 如果还是没有，就把整个回复作为一条消息
+                        addMessage(aiReply || '...', 'received');
+                    }
+                } else {
+                    for (let i = 0; i < messageParts.length; i++) {
+                        if (i > 0) {
+                            await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 300));
+                        }
+                        addMessage(messageParts[i], 'received');
+                    }
                 }
 
             } catch (e) {
                 document.getElementById('typingIndicator')?.remove();
                 AppState.lastAIReplyStartIndex = -1;
-                showToast(`回复失败: ${e.message}`, 'error');
+                showToast(`AI回复失败: ${e.message}`, 'error');
             }
         }
 
+        // ==================== 构建发送给AI的消息（优化版） ====================
+        function buildMessagesForAPI(character) {
+            const messages = [];
+
+            // 构建系统提示词 - 简洁明了
+            let systemPrompt = `你是"${character.name}"，正在通过手机短信和用户聊天。
+
+【重要规则】
+1. 直接用短信内容回复，不要加任何前缀标记
+2. 如果要发多条短信，用 ||| 分隔
+3. 像真人发短信一样简短自然
+
+【示例】
+正确: 在呢|||怎么了|||想我了？😊
+错误: [${character.name}]: 在呢
+
+【你的设定】
+${character.description || '一个友善的聊天对象'}`;
+
+            if (character.scenario) {
+                systemPrompt += `\n\n【当前情景】\n${character.scenario}`;
+            }
+
+            if (character.userNick) {
+                systemPrompt += `\n\n【用户称呼】称呼用户为"${character.userNick}"`;
+            }
+
+            if (character.systemPrompt) {
+                systemPrompt += `\n\n【额外设定】\n${character.systemPrompt}`;
+            }
+
+            // 世界书
+            const worldbook = AppState.worldbooks.find(w => w.id === character.worldbookId);
+            if (worldbook && worldbook.content) {
+                const shouldInject = worldbook.alwaysActive ||
+                    (worldbook.keywords && character.messages.some(m =>
+                        worldbook.keywords.split(',').some(kw =>
+                            m.content.toLowerCase().includes(kw.trim().toLowerCase())
+                        )
+                    ));
+
+                if (shouldInject) {
+                    systemPrompt += `\n\n【世界设定】\n${worldbook.content}`;
+                }
+            }
+
+            messages.push({ role: 'system', content: systemPrompt });
+
+            // 限制历史消息数量
+            const maxContext = AppState.settings.maxContextMessages || 200;
+            const historyMessages = character.messages.slice(-maxContext);
+
+            // 简单地逐条添加消息
+            historyMessages.forEach(msg => {
+                messages.push({
+                    role: msg.role === 'user' ? 'user' : 'assistant',
+                    content: msg.content
+                });
+            });
+
+            return messages;
+        }
+
+        // ==================== 重新生成回复 ====================
         async function regenerateLastReply() {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
-            if (!char) return;
+            const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            if (!character) return;
 
             toggleExtensionPanel();
 
-            if (!char.messages.length) {
-                showToast('没有聊天记录', 'warning');
+            if (character.messages.length === 0) {
+                showToast('当前没有任何聊天记录', 'warning');
                 return;
             }
 
-            // 检查最后一条是否是AI的
-            if (char.messages[char.messages.length - 1].role !== 'assistant') {
-                showToast('最后一条不是AI回复', 'warning');
+            // 方案1：使用记录的索引
+            if (AppState.lastAIReplyStartIndex >= 0 && AppState.lastAIReplyStartIndex < character.messages.length) {
+                let allAssistant = true;
+                for (let i = AppState.lastAIReplyStartIndex; i < character.messages.length; i++) {
+                    if (character.messages[i].role !== 'assistant') {
+                        allAssistant = false;
+                        break;
+                    }
+                }
+
+                if (allAssistant && AppState.lastAIReplyStartIndex < character.messages.length) {
+                    const deleteCount = character.messages.length - AppState.lastAIReplyStartIndex;
+                    character.messages.splice(AppState.lastAIReplyStartIndex, deleteCount);
+                    saveAllData();
+                    renderMessages();
+                    showToast(`已删除 ${deleteCount} 条AI回复，正在重新生成...`, 'info');
+                    AppState.lastAIReplyStartIndex = -1;
+                    await triggerAIReply();
+                    return;
+                }
+            }
+
+            // 方案2：从末尾往前找连续的AI回复
+            if (character.messages[character.messages.length - 1].role !== 'assistant') {
+                showToast('最后一条消息不是AI回复', 'warning');
                 return;
             }
 
-            // 从后往前找这一轮AI回复的范围
-            let firstIdx = char.messages.length - 1;
-            for (let i = char.messages.length - 1; i >= 0; i--) {
-                if (char.messages[i].role === 'assistant') {
-                    firstIdx = i;
+            let firstAIIndex = -1;
+            for (let i = character.messages.length - 1; i >= 0; i--) {
+                if (character.messages[i].role === 'assistant') {
+                    firstAIIndex = i;
                 } else {
                     break;
                 }
             }
 
-            const count = char.messages.length - firstIdx;
-            char.messages.splice(firstIdx, count);
+            if (firstAIIndex === -1) {
+                showToast('没有找到AI回复消息', 'warning');
+                return;
+            }
+
+            const deleteCount = character.messages.length - firstAIIndex;
+            character.messages.splice(firstAIIndex, deleteCount);
             saveAllData();
             renderMessages();
-            showToast(`已删除${count}条，正在重新生成...`, 'info');
 
+            showToast(`已删除 ${deleteCount} 条AI回复，正在重新生成...`, 'info');
             await triggerAIReply();
         }
 
-        // ==================== 选择删除 ====================
+        // ==================== 选择删除模式 ====================
         function enterSelectMode() {
             toggleExtensionPanel();
             AppState.isSelectMode = true;
@@ -2481,17 +2848,26 @@
             AppState.selectedMessages.clear();
             document.getElementById('chatMessages').classList.remove('select-mode');
             document.getElementById('selectModeBar').classList.remove('active');
-            document.querySelectorAll('.message-checkbox').forEach(cb => cb.classList.remove('checked'));
+
+            document.querySelectorAll('.message-checkbox').forEach(cb => {
+                cb.classList.remove('checked');
+            });
         }
 
-        function toggleMessageSelect(id) {
+        function toggleMessageSelect(msgId) {
             if (!AppState.isSelectMode) return;
-            if (AppState.selectedMessages.has(id)) {
-                AppState.selectedMessages.delete(id);
+
+            if (AppState.selectedMessages.has(msgId)) {
+                AppState.selectedMessages.delete(msgId);
             } else {
-                AppState.selectedMessages.add(id);
+                AppState.selectedMessages.add(msgId);
             }
-            document.querySelector(`[data-msg-id="${id}"] .message-checkbox`)?.classList.toggle('checked', AppState.selectedMessages.has(id));
+
+            const checkbox = document.querySelector(`[data-msg-id="${msgId}"] .message-checkbox`);
+            if (checkbox) {
+                checkbox.classList.toggle('checked', AppState.selectedMessages.has(msgId));
+            }
+
             updateSelectedCount();
         }
 
@@ -2500,74 +2876,90 @@
         }
 
         function deleteSelectedMessages() {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
-            if (!char || !AppState.selectedMessages.size) {
-                showToast('请先选择消息', 'warning');
+            const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            if (!character) return;
+
+            if (AppState.selectedMessages.size === 0) {
+                showToast('请先选择要删除的消息', 'warning');
                 return;
             }
-            const count = AppState.selectedMessages.size;
-            char.messages = char.messages.filter(m => !AppState.selectedMessages.has(m.id));
+
+            const deleteCount = AppState.selectedMessages.size;
+            character.messages = character.messages.filter(m => !AppState.selectedMessages.has(m.id));
             saveAllData();
+
             exitSelectMode();
             renderMessages();
-            showToast(`已删除${count}条`, 'success');
+            showToast(`已删除 ${deleteCount} 条消息`, 'success');
             AppState.lastAIReplyStartIndex = -1;
         }
 
         // ==================== 扩展面板 ====================
         function toggleExtensionPanel() {
-            document.getElementById('extensionPanel').classList.toggle('active');
+            const panel = document.getElementById('extensionPanel');
+            panel.classList.toggle('active');
         }
 
-        function autoResizeTextarea(ta) {
-            ta.style.height = 'auto';
-            ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
         }
 
         function scrollToBottom() {
-            const c = document.getElementById('chatMessages');
-            c.scrollTop = c.scrollHeight;
+            const container = document.getElementById('chatMessages');
+            container.scrollTop = container.scrollHeight;
         }
 
-        // ==================== 世界书 ====================
+        // ==================== 世界书管理 ====================
         function showCreateWorldbookModal() {
             document.getElementById('createWorldbookModal').classList.add('active');
             document.getElementById('newWorldbookName').value = '';
             document.getElementById('newWorldbookName').focus();
         }
 
-        function hideCreateWorldbookModal() { document.getElementById('createWorldbookModal').classList.remove('active'); }
+        function hideCreateWorldbookModal() {
+            document.getElementById('createWorldbookModal').classList.remove('active');
+        }
 
         function createWorldbook() {
             const name = document.getElementById('newWorldbookName').value.trim();
-            if (!name) { showToast('请输入名称', 'error'); return; }
+            if (!name) {
+                showToast('请输入世界书名称', 'error');
+                return;
+            }
 
-            const wb = {
+            const worldbook = {
                 id: Date.now().toString(),
-                name, summary: '', keywords: '', content: '', alwaysActive: false,
-                createdAt: new Date().toISOString()
+                name: name,
+                summary: '',
+                keywords: '',
+                content: '',
+                alwaysActive: false,
+                depth: 0,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
             };
 
-            AppState.worldbooks.push(wb);
+            AppState.worldbooks.push(worldbook);
             saveAllData();
             hideCreateWorldbookModal();
             renderWorldbookList();
-            showToast(`"${name}" 创建成功`, 'success');
-            openWorldbookEdit(wb.id);
+            showToast(`世界书 "${name}" 创建成功`, 'success');
+            openWorldbookEdit(worldbook.id);
         }
 
         function renderWorldbookList() {
             const container = document.getElementById('worldbookList');
-            const empty = document.getElementById('emptyWorldbookState');
+            const emptyState = document.getElementById('emptyWorldbookState');
 
-            if (!AppState.worldbooks.length) {
+            if (AppState.worldbooks.length === 0) {
                 container.style.display = 'none';
-                empty.style.display = 'flex';
+                emptyState.style.display = 'flex';
                 return;
             }
 
             container.style.display = 'block';
-            empty.style.display = 'none';
+            emptyState.style.display = 'none';
 
             container.innerHTML = AppState.worldbooks.map(wb => `
                 <div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')">
@@ -2580,50 +2972,67 @@
             `).join('');
         }
 
-        function openWorldbookEdit(id) {
-            const wb = AppState.worldbooks.find(w => w.id === id);
-            if (!wb) return;
+        function openWorldbookEdit(worldbookId) {
+            const worldbook = AppState.worldbooks.find(w => w.id === worldbookId);
+            if (!worldbook) return;
 
-            AppState.currentWorldbookId = id;
-            document.getElementById('worldbookName').value = wb.name;
-            document.getElementById('worldbookSummary').value = wb.summary || '';
-            document.getElementById('worldbookKeywords').value = wb.keywords || '';
-            document.getElementById('worldbookContent').value = wb.content || '';
-            document.getElementById('worldbookAlwaysActive').classList.toggle('active', wb.alwaysActive);
+            AppState.currentWorldbookId = worldbookId;
+
+            document.getElementById('worldbookName').value = worldbook.name;
+            document.getElementById('worldbookSummary').value = worldbook.summary || '';
+            document.getElementById('worldbookKeywords').value = worldbook.keywords || '';
+            document.getElementById('worldbookContent').value = worldbook.content || '';
+
+            const alwaysActiveToggle = document.getElementById('worldbookAlwaysActive');
+            alwaysActiveToggle.classList.toggle('active', worldbook.alwaysActive);
+
+            document.getElementById('worldbookDepth').value = worldbook.depth || 0;
+            document.getElementById('worldbookDepthValue').textContent = worldbook.depth || 0;
+
             openPage('worldbookEditPage');
         }
 
-        function closeWorldbookEdit() { closePage('worldbookEditPage'); AppState.currentWorldbookId = null; }
+        function closeWorldbookEdit() {
+            closePage('worldbookEditPage');
+            AppState.currentWorldbookId = null;
+        }
 
         function saveWorldbook() {
-            const wb = AppState.worldbooks.find(w => w.id === AppState.currentWorldbookId);
-            if (!wb) return;
+            const worldbook = AppState.worldbooks.find(w => w.id === AppState.currentWorldbookId);
+            if (!worldbook) return;
 
-            wb.name = document.getElementById('worldbookName').value.trim() || wb.name;
-            wb.summary = document.getElementById('worldbookSummary').value;
-            wb.keywords = document.getElementById('worldbookKeywords').value;
-            wb.content = document.getElementById('worldbookContent').value;
-            wb.alwaysActive = document.getElementById('worldbookAlwaysActive').classList.contains('active');
+            worldbook.name = document.getElementById('worldbookName').value.trim() || worldbook.name;
+            worldbook.summary = document.getElementById('worldbookSummary').value;
+            worldbook.keywords = document.getElementById('worldbookKeywords').value;
+            worldbook.content = document.getElementById('worldbookContent').value;
+            worldbook.alwaysActive = document.getElementById('worldbookAlwaysActive').classList.contains('active');
+            worldbook.depth = parseInt(document.getElementById('worldbookDepth').value) || 0;
+            worldbook.updatedAt = new Date().toISOString();
 
             saveAllData();
             closeWorldbookEdit();
             renderWorldbookList();
-            showToast('已保存', 'success');
+            showToast('世界书已保存', 'success');
         }
 
         function deleteCurrentWorldbook() {
-            const wb = AppState.worldbooks.find(w => w.id === AppState.currentWorldbookId);
-            if (!wb) return;
+            const worldbook = AppState.worldbooks.find(w => w.id === AppState.currentWorldbookId);
+            if (!worldbook) return;
+
             AppState.pendingDeleteType = 'worldbook';
-            AppState.pendingDeleteId = wb.id;
-            document.getElementById('deleteModalTitle').textContent = `删除 "${wb.name}"?`;
+            AppState.pendingDeleteId = worldbook.id;
+
+            document.getElementById('deleteModalTitle').textContent = `删除 "${worldbook.name}"?`;
             document.getElementById('deleteModalDesc').textContent = '此操作无法撤销';
             document.getElementById('confirmDeleteModal').classList.add('active');
         }
 
         function updateWorldbookSelect() {
-            document.getElementById('charWorldbook').innerHTML = '<option value="">不绑定</option>' +
-                AppState.worldbooks.map(wb => `<option value="${wb.id}">${escapeHtml(wb.name)}</option>`).join('');
+            const select = document.getElementById('charWorldbook');
+            select.innerHTML = '<option value="">不绑定世界书</option>' +
+                AppState.worldbooks.map(wb =>
+                    `<option value="${wb.id}">${escapeHtml(wb.name)}</option>`
+                ).join('');
         }
 
         // ==================== 删除确认 ====================
@@ -2641,19 +3050,23 @@
                 closeCharacterSettings();
                 closeChatPage();
                 renderContactList();
-                showToast('已删除', 'success');
+                showToast('角色已删除', 'success');
             } else if (AppState.pendingDeleteType === 'worldbook') {
-                AppState.characters.forEach(c => { if (c.worldbookId === AppState.pendingDeleteId) c.worldbookId = ''; });
+                AppState.characters.forEach(char => {
+                    if (char.worldbookId === AppState.pendingDeleteId) {
+                        char.worldbookId = '';
+                    }
+                });
                 AppState.worldbooks = AppState.worldbooks.filter(w => w.id !== AppState.pendingDeleteId);
                 saveAllData();
                 hideConfirmDeleteModal();
                 closeWorldbookEdit();
                 renderWorldbookList();
-                showToast('已删除', 'success');
+                showToast('世界书已删除', 'success');
             }
         }
 
-        // ==================== 壁纸 ====================
+        // ==================== 壁纸设置 ====================
         const wallpaperStyles = {
             gradient1: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
             gradient2: 'linear-gradient(135deg, #2d1b69 0%, #11998e 100%)',
@@ -2673,55 +3086,74 @@
 
         function setCustomWallpaper() {
             const url = document.getElementById('customWallpaperUrl').value.trim();
-            if (!url) { showToast('请输入URL', 'error'); return; }
+            if (!url) {
+                showToast('请输入图片URL', 'error');
+                return;
+            }
+
             AppState.settings.wallpaper = `custom:${url}`;
             applyWallpaper();
             saveAllData();
             highlightCurrentWallpaper();
-            showToast('已应用', 'success');
+            showToast('自定义壁纸已应用', 'success');
         }
 
-        function triggerWallpaperUpload() { document.getElementById('wallpaperUpload').click(); }
+        function triggerWallpaperUpload() {
+            document.getElementById('wallpaperUpload').click();
+        }
 
-        function handleWallpaperUpload(e) {
-            const file = e.target.files[0];
+        function handleWallpaperUpload(event) {
+            const file = event.target.files[0];
             if (!file) return;
-            if (file.size > 5 * 1024 * 1024) { showToast('图片不能超过5MB', 'error'); return; }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('图片大小不能超过5MB', 'error');
+                return;
+            }
 
             const reader = new FileReader();
-            reader.onload = function(ev) {
-                AppState.settings.wallpaper = `data:${ev.target.result}`;
+            reader.onload = function(e) {
+                AppState.settings.wallpaper = `data:${e.target.result}`;
                 applyWallpaper();
                 saveAllData();
                 highlightCurrentWallpaper();
-                showToast('已上传', 'success');
+                showToast('壁纸已上传并应用', 'success');
             };
             reader.readAsDataURL(file);
         }
 
         function applyWallpaper() {
-            const el = document.getElementById('wallpaper');
-            const wp = AppState.settings.wallpaper || 'gradient1';
+            const wallpaperEl = document.getElementById('wallpaper');
+            const wallpaper = AppState.settings.wallpaper || 'gradient1';
 
-            if (wallpaperStyles[wp]) {
-                el.style.background = wallpaperStyles[wp];
-            } else if (wp.startsWith('custom:')) {
-                el.style.background = `url(${wp.substring(7)})`;
-            } else if (wp.startsWith('data:')) {
-                el.style.background = `url(${wp.substring(5)})`;
+            if (wallpaperStyles[wallpaper]) {
+                wallpaperEl.style.background = wallpaperStyles[wallpaper];
+                wallpaperEl.style.backgroundSize = 'cover';
+                wallpaperEl.style.backgroundPosition = 'center';
+            } else if (wallpaper.startsWith('custom:')) {
+                const url = wallpaper.substring(7);
+                wallpaperEl.style.background = `url(${url})`;
+                wallpaperEl.style.backgroundSize = 'cover';
+                wallpaperEl.style.backgroundPosition = 'center';
+            } else if (wallpaper.startsWith('data:')) {
+                const dataUrl = wallpaper.substring(5);
+                wallpaperEl.style.background = `url(${dataUrl})`;
+                wallpaperEl.style.backgroundSize = 'cover';
+                wallpaperEl.style.backgroundPosition = 'center';
             }
-            el.style.backgroundSize = 'cover';
-            el.style.backgroundPosition = 'center';
         }
 
         function highlightCurrentWallpaper() {
             document.querySelectorAll('.wallpaper-option').forEach(el => {
-                el.style.borderColor = el.dataset.wallpaper === AppState.settings.wallpaper ? 'var(--accent-color)' : 'transparent';
+                const isSelected = el.dataset.wallpaper === AppState.settings.wallpaper;
+                el.style.borderColor = isSelected ? 'var(--accent-color)' : 'transparent';
             });
         }
 
-        // ==================== 开关 ====================
-        function toggleSwitch(el) { el.classList.toggle('active'); }
+        // ==================== 开关切换 ====================
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+        }
 
         // ==================== 数据导入导出 ====================
         function exportAllData() {
@@ -2735,62 +3167,84 @@
             };
 
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
+            a.href = url;
             a.download = `ai-sms-backup-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
-            showToast('已导出', 'success');
+            URL.revokeObjectURL(url);
+            showToast('数据已导出', 'success');
         }
 
-        function importDataClick() { document.getElementById('importFileInput').click(); }
+        function importDataClick() {
+            document.getElementById('importFileInput').click();
+        }
 
-        function importData(e) {
-            const file = e.target.files[0];
+        function importData(event) {
+            const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = function(ev) {
+            reader.onload = function(e) {
                 try {
-                    const data = JSON.parse(ev.target.result);
+                    const data = JSON.parse(e.target.result);
+
                     if (data.characters) AppState.characters = data.characters;
                     if (data.worldbooks) AppState.worldbooks = data.worldbooks;
                     if (data.settings) AppState.settings = { ...AppState.settings, ...data.settings };
                     if (data.appIcons) AppState.appIcons = { ...AppState.appIcons, ...data.appIcons };
+
                     saveAllData();
                     loadSettingsToUI();
                     applyWallpaper();
                     applyAppIcons();
                     highlightCurrentWallpaper();
-                    showToast('导入成功', 'success');
-                } catch (err) { showToast('导入失败', 'error'); }
+                    showToast('数据导入成功', 'success');
+                } catch (err) {
+                    showToast('导入失败: 文件格式错误', 'error');
+                }
             };
             reader.readAsText(file);
-            e.target.value = '';
+            event.target.value = '';
         }
 
         function clearAllData() {
-            if (!confirm('确定清除所有数据？')) return;
-            localStorage.removeItem('aiSMS_characters');
-            localStorage.removeItem('aiSMS_worldbooks');
-            localStorage.removeItem('aiSMS_settings');
-            localStorage.removeItem('aiSMS_appIcons');
+            if (confirm('确定要清除所有数据吗？此操作无法撤销！')) {
+                localStorage.removeItem('aiSMS_characters');
+                localStorage.removeItem('aiSMS_worldbooks');
+                localStorage.removeItem('aiSMS_settings');
+                localStorage.removeItem('aiSMS_appIcons');
 
-            AppState.characters = [];
-            AppState.worldbooks = [];
-            AppState.settings = {
-                apiBaseUrl: '', apiKey: '', modelName: '',
-                temperature: 0.7, maxTokens: 2048, topP: 0.9,
-                maxContextMessages: 200, wallpaper: 'gradient1'
-            };
-            AppState.appIcons = { settings: '⚙️', messages: '💬', worldbook: '📚', photos: '🖼️' };
-            AppState.connectionStatus = 'disconnected';
+                AppState.characters = [];
+                AppState.worldbooks = [];
+                AppState.settings = {
+                    apiBaseUrl: '',
+                    apiKey: '',
+                    modelName: '',
+                    temperature: 0.7,
+                    maxTokens: 2048,
+                    topP: 0.9,
+                    frequencyPenalty: 0,
+                    presencePenalty: 0,
+                    maxContextMessages: 200,
+                    wallpaper: 'gradient1'
+                };
+                AppState.appIcons = {
+                    settings: '⚙️',
+                    messages: '💬',
+                    worldbook: '📚',
+                    photos: '🖼️'
+                };
 
-            loadSettingsToUI();
-            applyWallpaper();
-            applyAppIcons();
-            updateConnectionStatusUI();
-            highlightCurrentWallpaper();
-            showToast('已清除', 'success');
+                AppState.connectionStatus = 'disconnected';
+                AppState.lastAIReplyStartIndex = -1;
+                loadSettingsToUI();
+                applyWallpaper();
+                applyAppIcons();
+                updateConnectionStatusUI();
+                highlightCurrentWallpaper();
+                showToast('所有数据已清除', 'success');
+            }
         }
 
         // ==================== 工具函数 ====================
@@ -2800,30 +3254,32 @@
             return div.innerHTML;
         }
 
-        function formatTime(ts) {
-            const d = new Date(ts);
-            return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
         }
 
-        function formatDate(ts) {
-            const d = new Date(ts);
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
             const today = new Date();
             const yesterday = new Date(today);
             yesterday.setDate(yesterday.getDate() - 1);
-            if (d.toDateString() === today.toDateString()) return '今天';
-            if (d.toDateString() === yesterday.toDateString()) return '昨天';
-            return d.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' });
+
+            if (date.toDateString() === today.toDateString()) return '今天';
+            else if (date.toDateString() === yesterday.toDateString()) return '昨天';
+            else return date.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' });
         }
 
         // ==================== 键盘事件 ====================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
-                const input = document.getElementById('chatInput');
-                if (document.activeElement === input && document.getElementById('chatPage').classList.contains('active')) {
+                const chatInput = document.getElementById('chatInput');
+                if (document.activeElement === chatInput && document.getElementById('chatPage').classList.contains('active')) {
                     e.preventDefault();
                     sendMessage();
                 }
             }
+
             if (e.key === 'Escape') {
                 hideCreateCharacterModal();
                 hideCreateWorldbookModal();
@@ -2835,7 +3291,9 @@
 
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', function(e) {
-                if (e.target === overlay) overlay.classList.remove('active');
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
             });
         });
     </script>
