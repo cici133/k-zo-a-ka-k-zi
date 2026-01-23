@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI短信模拟器 v2</title>
+    <title>AI短信模拟器 v2.1</title>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.15);
@@ -30,6 +30,7 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         html, body {
@@ -61,6 +62,7 @@
             height: 100%;
             background: radial-gradient(ellipse at top, rgba(102, 126, 234, 0.15) 0%, transparent 60%),
                         radial-gradient(ellipse at bottom, rgba(118, 75, 162, 0.1) 0%, transparent 60%);
+            pointer-events: none;
         }
 
         .phone-container {
@@ -142,10 +144,20 @@
             gap: 8px;
             cursor: pointer;
             transition: var(--transition-smooth);
+            position: relative;
         }
 
         .app-icon-wrapper:active {
             transform: scale(0.9);
+        }
+
+        .app-icon-wrapper.editing {
+            animation: iconWiggle 0.3s ease-in-out infinite;
+        }
+
+        @keyframes iconWiggle {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
         }
 
         .app-icon {
@@ -160,6 +172,8 @@
             transition: var(--transition-smooth);
             position: relative;
             overflow: hidden;
+            background-size: cover;
+            background-position: center;
         }
 
         .app-icon::before {
@@ -171,6 +185,7 @@
             height: 50%;
             background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);
             border-radius: 18px 18px 0 0;
+            pointer-events: none;
         }
 
         .app-icon.settings { background: linear-gradient(135deg, #8E8E93 0%, #636366 100%); }
@@ -187,6 +202,26 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+
+        .icon-edit-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 24px;
+            height: 24px;
+            background: var(--danger-color);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .app-icon-wrapper.editing .icon-edit-badge {
+            display: flex;
         }
 
         .home-indicator {
@@ -261,6 +296,7 @@
         .nav-btn:active { background: rgba(255, 255, 255, 0.2); transform: scale(0.95); }
         .nav-btn svg { width: 20px; height: 20px; fill: currentColor; }
         .nav-btn.right { justify-content: flex-end; }
+        .nav-btn.danger { color: var(--danger-color); }
 
         .nav-title {
             font-size: 17px;
@@ -532,6 +568,7 @@
             line-height: 1.4;
             word-wrap: break-word;
             animation: messageSlide 0.3s ease-out;
+            position: relative;
         }
 
         @keyframes messageSlide {
@@ -563,6 +600,49 @@
         }
 
         .message.received .message-time { text-align: left; }
+
+        .message-checkbox {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            background: transparent;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .message.sent .message-checkbox {
+            left: -36px;
+        }
+
+        .message.received .message-checkbox {
+            right: -36px;
+        }
+
+        .message-checkbox.checked {
+            background: var(--accent-color);
+        }
+
+        .message-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .chat-messages.select-mode .message-checkbox {
+            display: flex;
+        }
+
+        .chat-messages.select-mode .message {
+            max-width: 65%;
+        }
 
         .typing-indicator {
             display: flex;
@@ -892,27 +972,6 @@
 
         .file-input-hidden { display: none; }
 
-        .tag-selector {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .tag-item {
-            padding: 8px 14px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            font-size: 14px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: var(--transition-smooth);
-        }
-
-        .tag-item:hover { background: rgba(255, 255, 255, 0.2); }
-        .tag-item.selected { background: var(--accent-color); border-color: var(--accent-color); color: white; }
-
         .extension-panel {
             position: absolute;
             bottom: 100%;
@@ -929,8 +988,6 @@
             visibility: hidden;
             transition: var(--transition-smooth);
             z-index: 50;
-            max-height: 50vh;
-            overflow-y: auto;
         }
 
         .extension-panel.active { transform: translateY(0); opacity: 1; visibility: visible; }
@@ -956,6 +1013,52 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .extension-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            width: 100%;
+        }
+
+        .extension-btn:hover { background: rgba(255, 255, 255, 0.2); }
+        .extension-btn:active { transform: scale(0.98); }
+
+        .extension-btn-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .extension-btn-icon.delete { background: var(--danger-color); }
+        .extension-btn-icon.regenerate { background: linear-gradient(135deg, #AF52DE, #FF2D55); }
+
+        .extension-btn-text {
+            flex: 1;
+        }
+
+        .extension-btn-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .extension-btn-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
         }
 
         .char-counter {
@@ -1048,6 +1151,7 @@
             margin-top: 20px;
             opacity: 0.7;
             transition: var(--transition-smooth);
+            cursor: pointer;
         }
 
         .delete-zone:hover { opacity: 1; background: rgba(255, 59, 48, 0.1); }
@@ -1146,6 +1250,105 @@
             color: var(--text-secondary);
         }
 
+        .delete-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255, 59, 48, 0.15);
+            border-bottom: 1px solid rgba(255, 59, 48, 0.3);
+        }
+
+        .delete-bar.active {
+            display: flex;
+        }
+
+        .delete-bar-info {
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+
+        .delete-bar-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .delete-bar-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .delete-bar-btn.cancel {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+        }
+
+        .delete-bar-btn.confirm {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .delete-bar-btn:active {
+            transform: scale(0.95);
+        }
+
+        .number-input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .number-input {
+            width: 100px;
+            padding: 10px 14px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+        }
+
+        .number-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .icon-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .icon-picker-item {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--glass-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            border: 2px solid transparent;
+        }
+
+        .icon-picker-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .icon-picker-item.selected {
+            border-color: var(--accent-color);
+            background: rgba(0, 122, 255, 0.2);
+        }
+
         @media (max-width: 430px) {
             .app-grid { gap: 20px; }
             .app-icon { width: 64px; height: 64px; border-radius: 16px; }
@@ -1171,21 +1374,25 @@
 
         <div class="home-screen" id="homeScreen">
             <div class="app-grid">
-                <div class="app-icon-wrapper" onclick="openPage('settingsPage')">
-                    <div class="app-icon settings">⚙️</div>
+                <div class="app-icon-wrapper" id="settingsApp" data-app="settings">
+                    <div class="app-icon settings" id="settingsIcon">⚙️</div>
                     <span class="app-icon-label">设置</span>
+                    <div class="icon-edit-badge">✏️</div>
                 </div>
-                <div class="app-icon-wrapper" onclick="openPage('messagesPage')">
-                    <div class="app-icon messages">💬</div>
+                <div class="app-icon-wrapper" id="messagesApp" data-app="messages">
+                    <div class="app-icon messages" id="messagesIcon">💬</div>
                     <span class="app-icon-label">短信</span>
+                    <div class="icon-edit-badge">✏️</div>
                 </div>
-                <div class="app-icon-wrapper" onclick="openPage('worldbookPage')">
-                    <div class="app-icon worldbook">📚</div>
+                <div class="app-icon-wrapper" id="worldbookApp" data-app="worldbook">
+                    <div class="app-icon worldbook" id="worldbookIcon">📚</div>
                     <span class="app-icon-label">世界书</span>
+                    <div class="icon-edit-badge">✏️</div>
                 </div>
-                <div class="app-icon-wrapper" onclick="openPage('wallpaperPage')">
-                    <div class="app-icon photos">🖼️</div>
+                <div class="app-icon-wrapper" id="wallpaperApp" data-app="wallpaper">
+                    <div class="app-icon photos" id="wallpaperIcon">🖼️</div>
                     <span class="app-icon-label">壁纸</span>
+                    <div class="icon-edit-badge">✏️</div>
                 </div>
             </div>
         </div>
@@ -1215,7 +1422,7 @@
                         <label class="input-label">API 基础地址 (Base URL)</label>
                         <input type="text" class="input-field" id="apiBaseUrl" placeholder="https://api.example.com">
                         <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
-                            💡 只需输入基础地址，不需要加 /v1 或其他路径
+                            💡 只需输入基础地址，系统会自动处理路径
                         </div>
                     </div>
 
@@ -1254,6 +1461,20 @@
                     <label class="input-label">调试日志</label>
                     <div class="log-container" id="debugLog">
                         <div class="log-entry info">等待操作...</div>
+                    </div>
+                </div>
+
+                <p class="settings-group-title">对话设置</p>
+                <div class="settings-group" style="padding: 16px;">
+                    <div class="input-group">
+                        <label class="input-label">保存对话条数上限</label>
+                        <div class="number-input-group">
+                            <input type="number" class="number-input" id="maxMessageHistory" min="10" max="1000" value="200">
+                            <span style="color: var(--text-secondary); font-size: 14px;">条消息</span>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
+                            超过此数量时，旧消息将被自动清理
+                        </div>
                     </div>
                 </div>
 
@@ -1308,21 +1529,6 @@
                     </div>
                 </div>
 
-                <p class="settings-group-title">回复格式设置</p>
-                <div class="settings-group" style="padding: 16px;">
-                    <div class="input-group">
-                        <label class="input-label">消息分隔符</label>
-                        <input type="text" class="input-field" id="messageSeparator" value=" | " placeholder="用于分隔多条消息的符号">
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">回复格式提示词</label>
-                        <textarea class="input-field" id="replyFormatPrompt" rows="4" placeholder="指导AI如何格式化回复...">请用短信聊天的风格回复。如果想发送多条消息，请用 " | " 分隔。例如: 是吗 | 那挺好啊 | 哈哈哈
-
-注意：每个 | 分隔的部分会显示为一条独立的消息。保持回复简短自然，像真人发短信一样。</textarea>
-                    </div>
-                </div>
-
                 <p class="settings-group-title">数据管理</p>
                 <div class="settings-group">
                     <div class="settings-item" onclick="exportAllData()">
@@ -1364,7 +1570,7 @@
                             <span class="settings-icon purple">📱</span>
                             <span class="settings-item-label">版本</span>
                         </div>
-                        <div class="settings-item-value"><span>2.0.0</span></div>
+                        <div class="settings-item-value"><span>2.1.0</span></div>
                     </div>
                 </div>
 
@@ -1411,39 +1617,42 @@
                 </button>
             </div>
 
+            <div class="delete-bar" id="deleteBar">
+                <span class="delete-bar-info" id="deleteBarInfo">已选择 0 条消息</span>
+                <div class="delete-bar-actions">
+                    <button class="delete-bar-btn cancel" onclick="exitSelectMode()">取消</button>
+                    <button class="delete-bar-btn confirm" onclick="deleteSelectedMessages()">删除</button>
+                </div>
+            </div>
+
             <div class="chat-container">
                 <div class="chat-messages" id="chatMessages"></div>
 
                 <div class="extension-panel" id="extensionPanel">
                     <div class="extension-panel-header">
-                        <span class="extension-panel-title">快捷扩展</span>
+                        <span class="extension-panel-title">扩展功能</span>
                         <button class="extension-panel-close" onclick="toggleExtensionPanel()">×</button>
                     </div>
 
-                    <div class="input-group">
-                        <label class="input-label">临时情景注入</label>
-                        <textarea class="input-field" id="tempScenarioInput" rows="3" placeholder="输入临时情景，将在下次AI回复时使用..."></textarea>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">快捷提示词</label>
-                        <div class="tag-selector" id="quickPromptTags">
-                            <span class="tag-item" onclick="insertQuickPrompt('更浪漫一点')">💕 浪漫</span>
-                            <span class="tag-item" onclick="insertQuickPrompt('更幽默一点')">😄 幽默</span>
-                            <span class="tag-item" onclick="insertQuickPrompt('更认真一点')">🤔 认真</span>
-                            <span class="tag-item" onclick="insertQuickPrompt('更激动一点')">😤 激动</span>
-                            <span class="tag-item" onclick="insertQuickPrompt('更温柔一点')">🥰 温柔</span>
-                            <span class="tag-item" onclick="insertQuickPrompt('更高冷一点')">😎 高冷</span>
+                    <div class="extension-btn" onclick="enterSelectMode()">
+                        <div class="extension-btn-icon delete">🗑️</div>
+                        <div class="extension-btn-text">
+                            <div class="extension-btn-title">删除聊天记录</div>
+                            <div class="extension-btn-desc">选择并删除指定的消息</div>
                         </div>
                     </div>
 
-                    <button class="btn btn-primary" onclick="saveExtensionSettings()" style="margin-top: 16px;">
-                        💾 保存扩展设置
-                    </button>
+                    <div class="extension-btn" onclick="regenerateReply()">
+                        <div class="extension-btn-icon regenerate">🔄</div>
+                        <div class="extension-btn-text">
+                            <div class="extension-btn-title">重新回复</div>
+                            <div class="extension-btn-desc">删除AI最后的回复，让AI重新生成</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="chat-input-area">
-                    <button class="chat-input-btn" onclick="toggleExtensionPanel()" title="扩展设置">⚡</button>
+                    <button class="chat-input-btn" onclick="toggleExtensionPanel()" title="扩展功能">⚡</button>
                     <textarea class="chat-input-field" id="chatInput" placeholder="输入消息..." rows="1" oninput="autoResizeTextarea(this)"></textarea>
                     <button class="chat-input-btn ai-reply" onclick="triggerAIReply()" title="请求AI回复">🤖</button>
                     <button class="chat-input-btn send" onclick="sendMessage()" title="发送消息">➤</button>
@@ -1616,7 +1825,7 @@
             <div class="page-content">
                 <p class="settings-group-title">预设壁纸</p>
                 <div class="settings-group" style="padding: 16px;">
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;" id="wallpaperGrid">
                         <div class="wallpaper-option" onclick="setWallpaper('gradient1')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); cursor: pointer; border: 2px solid transparent;" data-wallpaper="gradient1"></div>
                         <div class="wallpaper-option" onclick="setWallpaper('gradient2')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%); cursor: pointer; border: 2px solid transparent;" data-wallpaper="gradient2"></div>
                         <div class="wallpaper-option" onclick="setWallpaper('gradient3')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); cursor: pointer; border: 2px solid transparent;" data-wallpaper="gradient3"></div>
@@ -1675,6 +1884,17 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="iconPickerModal">
+        <div class="modal">
+            <div class="modal-title">选择图标</div>
+            <div class="icon-picker-grid" id="iconPickerGrid"></div>
+            <div class="modal-btns" style="margin-top: 20px;">
+                <button class="modal-btn cancel" onclick="hideIconPickerModal()">取消</button>
+                <button class="modal-btn confirm" onclick="confirmIconChange()">确定</button>
+            </div>
+        </div>
+    </div>
+
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
@@ -1687,7 +1907,12 @@
             pendingDeleteType: null,
             pendingDeleteId: null,
             availableModels: [],
-            connectionStatus: 'disconnected', // connected, disconnected, pending
+            connectionStatus: 'disconnected',
+            selectMode: false,
+            selectedMessages: new Set(),
+            editingIconApp: null,
+            selectedIcon: null,
+            longPressTimer: null,
             settings: {
                 apiBaseUrl: '',
                 apiKey: '',
@@ -1698,13 +1923,32 @@
                 frequencyPenalty: 0,
                 presencePenalty: 0,
                 globalSystemPrompt: '',
-                messageSeparator: ' | ',
-                replyFormatPrompt: `请用短信聊天的风格回复。如果想发送多条消息，请用 " | " 分隔。例如: 是吗 | 那挺好啊 | 哈哈哈
-
-注意：每个 | 分隔的部分会显示为一条独立的消息。保持回复简短自然，像真人发短信一样。`,
-                wallpaper: 'gradient1'
+                maxMessageHistory: 200,
+                wallpaper: 'gradient1',
+                appIcons: {
+                    settings: '⚙️',
+                    messages: '💬',
+                    worldbook: '📚',
+                    wallpaper: '🖼️'
+                }
             }
         };
+
+        const ICON_OPTIONS = [
+            '⚙️', '🔧', '🛠️', '⚡', '🎛️', '🔩',
+            '💬', '💭', '🗨️', '💌', '📱', '☎️',
+            '📚', '📖', '📕', '📗', '📘', '📙',
+            '🖼️', '🎨', '🌅', '🌄', '🏞️', '🌠',
+            '❤️', '💕', '💖', '💗', '💝', '💘',
+            '⭐', '🌟', '✨', '💫', '🔥', '💎',
+            '🎭', '🎪', '🎢', '🎡', '🎠', '🎬',
+            '🦊', '🐱', '🐰', '🐻', '🐼', '🐨',
+            '🌸', '🌺', '🌹', '🌷', '🌻', '🌼',
+            '🍎', '🍊', '🍋', '🍇', '🍓', '🍒'
+        ];
+
+        // ==================== 消息分隔符 ====================
+        const MESSAGE_SEPARATOR = ' | ';
 
         // ==================== 初始化 ====================
         document.addEventListener('DOMContentLoaded', function() {
@@ -1712,7 +1956,10 @@
             updateStatusBarTime();
             setInterval(updateStatusBarTime, 60000);
             applyWallpaper();
+            applyAppIcons();
             updateConnectionStatusUI();
+            setupAppIconEvents();
+            highlightSelectedWallpaper();
         });
 
         function updateStatusBarTime() {
@@ -1720,6 +1967,144 @@
             const hours = now.getHours().toString().padStart(2, '0');
             const minutes = now.getMinutes().toString().padStart(2, '0');
             document.getElementById('statusBarTime').textContent = `${hours}:${minutes}`;
+        }
+
+        // ==================== 图标长按事件 ====================
+        function setupAppIconEvents() {
+            const appWrappers = document.querySelectorAll('.app-icon-wrapper');
+
+            appWrappers.forEach(wrapper => {
+                const appName = wrapper.dataset.app;
+
+                // 触摸开始
+                wrapper.addEventListener('touchstart', (e) => {
+                    AppState.longPressTimer = setTimeout(() => {
+                        enterIconEditMode(appName);
+                    }, 500);
+                });
+
+                // 触摸结束
+                wrapper.addEventListener('touchend', () => {
+                    if (AppState.longPressTimer) {
+                        clearTimeout(AppState.longPressTimer);
+                        AppState.longPressTimer = null;
+                    }
+                });
+
+                // 触摸取消
+                wrapper.addEventListener('touchcancel', () => {
+                    if (AppState.longPressTimer) {
+                        clearTimeout(AppState.longPressTimer);
+                        AppState.longPressTimer = null;
+                    }
+                });
+
+                // 鼠标长按支持
+                wrapper.addEventListener('mousedown', (e) => {
+                    AppState.longPressTimer = setTimeout(() => {
+                        enterIconEditMode(appName);
+                    }, 500);
+                });
+
+                wrapper.addEventListener('mouseup', () => {
+                    if (AppState.longPressTimer) {
+                        clearTimeout(AppState.longPressTimer);
+                        AppState.longPressTimer = null;
+                    }
+                });
+
+                wrapper.addEventListener('mouseleave', () => {
+                    if (AppState.longPressTimer) {
+                        clearTimeout(AppState.longPressTimer);
+                        AppState.longPressTimer = null;
+                    }
+                });
+
+                // 点击事件
+                wrapper.addEventListener('click', (e) => {
+                    if (wrapper.classList.contains('editing')) {
+                        showIconPicker(appName);
+                    } else {
+                        openAppPage(appName);
+                    }
+                });
+            });
+
+            // 点击空白处退出编辑模式
+            document.getElementById('homeScreen').addEventListener('click', (e) => {
+                if (e.target.id === 'homeScreen' || e.target.classList.contains('app-grid')) {
+                    exitIconEditMode();
+                }
+            });
+        }
+
+        function openAppPage(appName) {
+            const pageMap = {
+                settings: 'settingsPage',
+                messages: 'messagesPage',
+                worldbook: 'worldbookPage',
+                wallpaper: 'wallpaperPage'
+            };
+            const pageId = pageMap[appName];
+            if (pageId) {
+                openPage(pageId);
+            }
+        }
+
+        function enterIconEditMode(appName) {
+            const wrapper = document.getElementById(appName + 'App');
+            wrapper.classList.add('editing');
+            showToast('点击图标可更换', 'info');
+        }
+
+        function exitIconEditMode() {
+            document.querySelectorAll('.app-icon-wrapper.editing').forEach(w => {
+                w.classList.remove('editing');
+            });
+        }
+
+        function showIconPicker(appName) {
+            AppState.editingIconApp = appName;
+            AppState.selectedIcon = AppState.settings.appIcons[appName];
+
+            const grid = document.getElementById('iconPickerGrid');
+            grid.innerHTML = ICON_OPTIONS.map(icon => `
+                <div class="icon-picker-item ${icon === AppState.selectedIcon ? 'selected' : ''}" onclick="selectIcon('${icon}')">${icon}</div>
+            `).join('');
+
+            document.getElementById('iconPickerModal').classList.add('active');
+        }
+
+        function selectIcon(icon) {
+            AppState.selectedIcon = icon;
+            document.querySelectorAll('.icon-picker-item').forEach(item => {
+                item.classList.toggle('selected', item.textContent === icon);
+            });
+        }
+
+        function confirmIconChange() {
+            if (AppState.editingIconApp && AppState.selectedIcon) {
+                AppState.settings.appIcons[AppState.editingIconApp] = AppState.selectedIcon;
+                applyAppIcons();
+                saveAllData();
+                showToast('图标已更换', 'success');
+            }
+            hideIconPickerModal();
+            exitIconEditMode();
+        }
+
+        function hideIconPickerModal() {
+            document.getElementById('iconPickerModal').classList.remove('active');
+            AppState.editingIconApp = null;
+            AppState.selectedIcon = null;
+        }
+
+        function applyAppIcons() {
+            const icons = AppState.settings.appIcons;
+            document.getElementById('settingsIcon').textContent = icons.settings || '⚙️';
+            document.getElementById('messagesIcon').textContent = icons.messages || '💬';
+            document.getElementById('worldbookIcon').textContent = icons.worldbook || '📚';
+            document.getElementById('wallpaperIcon').textContent = icons.wallpaper || '🖼️';
         }
 
         // ==================== 调试日志 ====================
@@ -1732,27 +2117,16 @@
             logContainer.appendChild(logEntry);
             logContainer.scrollTop = logContainer.scrollHeight;
 
-            // 保留最后50条日志
             while (logContainer.children.length > 50) {
                 logContainer.removeChild(logContainer.firstChild);
             }
         }
 
-        function clearLog() {
-            const logContainer = document.getElementById('debugLog');
-            logContainer.innerHTML = '<div class="log-entry info">日志已清空</div>';
-        }
-
         // ==================== API URL 处理 ====================
         function normalizeBaseUrl(url) {
             if (!url) return '';
-
-            // 移除尾部斜杠
             url = url.trim().replace(/\/+$/, '');
-
-            // 如果URL以 /v1 结尾，移除它（我们会在需要时添加）
             url = url.replace(/\/v1$/, '');
-
             return url;
         }
 
@@ -1861,9 +2235,6 @@
             } catch (error) {
                 addLog(`拉取失败: ${error.message}`, 'error');
                 showToast(`拉取模型失败: ${error.message}`, 'error');
-
-                // 尝试备用格式
-                addLog('尝试备用端点格式...', 'warning');
                 await tryAlternativeEndpoints(baseUrl, apiKey);
             } finally {
                 btn.disabled = false;
@@ -1875,12 +2246,11 @@
             const alternatives = [
                 `${normalizeBaseUrl(baseUrl)}/models`,
                 `${normalizeBaseUrl(baseUrl)}/v1/models`,
-                `${baseUrl}/models`,
-                `${baseUrl}`
+                `${baseUrl}/models`
             ];
 
             for (const endpoint of alternatives) {
-                addLog(`尝试: ${endpoint}`, 'info');
+                addLog(`尝试备用端点: ${endpoint}`, 'info');
                 try {
                     const response = await fetch(endpoint, {
                         method: 'GET',
@@ -1936,7 +2306,6 @@
             AppState.settings.modelName = modelId;
             document.getElementById('modelName').value = modelId;
 
-            // 更新选中状态
             document.querySelectorAll('.model-item').forEach(item => {
                 item.classList.remove('selected');
                 if (item.querySelector('.model-item-name').textContent === modelId) {
@@ -2001,7 +2370,6 @@
                     updateConnectionStatusUI();
                     showToast('🎉 连接成功！', 'success');
 
-                    // 保存成功的配置
                     AppState.settings.apiBaseUrl = baseUrl;
                     AppState.settings.apiKey = apiKey;
                     AppState.settings.modelName = modelName;
@@ -2024,12 +2392,10 @@
                 updateConnectionStatusUI();
                 showToast(`连接失败: ${error.message}`, 'error');
 
-                // 提供更多调试信息
                 if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
                     addLog('⚠️ 这可能是CORS问题或网络问题', 'warning');
                     addLog('建议: 1. 检查API地址是否正确', 'info');
                     addLog('建议: 2. 确认反代服务器允许CORS', 'info');
-                    addLog('建议: 3. 尝试在反代服务器添加CORS头', 'info');
                 }
             } finally {
                 btn.disabled = false;
@@ -2043,6 +2409,7 @@
                 localStorage.setItem('aiMessenger_characters', JSON.stringify(AppState.characters));
                 localStorage.setItem('aiMessenger_worldbooks', JSON.stringify(AppState.worldbooks));
                 localStorage.setItem('aiMessenger_settings', JSON.stringify(AppState.settings));
+                console.log('Data saved successfully');
             } catch (e) {
                 console.error('保存数据失败:', e);
                 showToast('保存数据失败', 'error');
@@ -2057,14 +2424,27 @@
 
                 if (characters) AppState.characters = JSON.parse(characters);
                 if (worldbooks) AppState.worldbooks = JSON.parse(worldbooks);
-                if (settings) AppState.settings = { ...AppState.settings, ...JSON.parse(settings) };
+                if (settings) {
+                    const loadedSettings = JSON.parse(settings);
+                    AppState.settings = { ...AppState.settings, ...loadedSettings };
+                    // 确保appIcons存在
+                    if (!AppState.settings.appIcons) {
+                        AppState.settings.appIcons = {
+                            settings: '⚙️',
+                            messages: '💬',
+                            worldbook: '📚',
+                            wallpaper: '🖼️'
+                        };
+                    }
+                }
 
                 loadSettingsToUI();
 
-                // 如果有保存的API配置，标记为可能已连接
                 if (AppState.settings.apiBaseUrl && AppState.settings.apiKey && AppState.settings.modelName) {
                     AppState.connectionStatus = 'connected';
                 }
+
+                console.log('Data loaded successfully, wallpaper:', AppState.settings.wallpaper);
             } catch (e) {
                 console.error('加载数据失败:', e);
             }
@@ -2091,8 +2471,7 @@
             document.getElementById('presPenValue').textContent = AppState.settings.presencePenalty;
 
             document.getElementById('globalSystemPrompt').value = AppState.settings.globalSystemPrompt || '';
-            document.getElementById('messageSeparator').value = AppState.settings.messageSeparator || ' | ';
-            document.getElementById('replyFormatPrompt').value = AppState.settings.replyFormatPrompt || '';
+            document.getElementById('maxMessageHistory').value = AppState.settings.maxMessageHistory || 200;
         }
 
         // ==================== 页面导航 ====================
@@ -2102,6 +2481,7 @@
                 page.classList.add('active');
                 if (pageId === 'messagesPage') renderContactList();
                 else if (pageId === 'worldbookPage') renderWorldbookList();
+                else if (pageId === 'wallpaperPage') highlightSelectedWallpaper();
             }
         }
 
@@ -2137,8 +2517,7 @@
             AppState.settings.frequencyPenalty = parseFloat(document.getElementById('frequencyPenalty').value);
             AppState.settings.presencePenalty = parseFloat(document.getElementById('presencePenalty').value);
             AppState.settings.globalSystemPrompt = document.getElementById('globalSystemPrompt').value;
-            AppState.settings.messageSeparator = document.getElementById('messageSeparator').value;
-            AppState.settings.replyFormatPrompt = document.getElementById('replyFormatPrompt').value;
+            AppState.settings.maxMessageHistory = parseInt(document.getElementById('maxMessageHistory').value) || 200;
 
             saveAllData();
             showToast('设置已保存', 'success');
@@ -2249,6 +2628,7 @@
         }
 
         function closeChatPage() {
+            exitSelectMode();
             closePage('chatPage');
             AppState.currentCharacterId = null;
         }
@@ -2333,6 +2713,9 @@
 
             if (!character) return;
 
+            // 清理超出上限的消息
+            trimMessageHistory(character);
+
             if (character.messages.length === 0) {
                 container.innerHTML = `
                     <div class="date-separator">
@@ -2345,7 +2728,7 @@
             let html = '';
             let lastDate = null;
 
-            character.messages.forEach(msg => {
+            character.messages.forEach((msg, index) => {
                 const msgDate = new Date(msg.timestamp).toLocaleDateString();
 
                 if (msgDate !== lastDate) {
@@ -2358,7 +2741,8 @@
                 }
 
                 html += `
-                    <div class="message ${msg.role === 'user' ? 'sent' : 'received'}">
+                    <div class="message ${msg.role === 'user' ? 'sent' : 'received'}" data-msg-id="${msg.id}">
+                        <div class="message-checkbox" onclick="toggleMessageSelect('${msg.id}')"></div>
                         ${escapeHtml(msg.content)}
                         <div class="message-time">${formatTime(msg.timestamp)}</div>
                     </div>
@@ -2369,12 +2753,21 @@
             scrollToBottom();
         }
 
+        function trimMessageHistory(character) {
+            const maxHistory = AppState.settings.maxMessageHistory || 200;
+            if (character.messages.length > maxHistory) {
+                const removeCount = character.messages.length - maxHistory;
+                character.messages.splice(0, removeCount);
+                saveAllData();
+            }
+        }
+
         function addMessage(content, type) {
             const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
             if (!character) return;
 
             const message = {
-                id: Date.now().toString(),
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
                 role: type === 'sent' ? 'user' : 'assistant',
                 content: content,
                 timestamp: new Date().toISOString()
@@ -2382,11 +2775,16 @@
 
             character.messages.push(message);
             character.updatedAt = new Date().toISOString();
+
+            // 检查是否需要清理旧消息
+            trimMessageHistory(character);
+
             saveAllData();
 
             const container = document.getElementById('chatMessages');
             const msgHtml = `
-                <div class="message ${type}">
+                <div class="message ${type}" data-msg-id="${message.id}">
+                    <div class="message-checkbox" onclick="toggleMessageSelect('${message.id}')"></div>
                     ${escapeHtml(content)}
                     <div class="message-time">${formatTime(message.timestamp)}</div>
                 </div>
@@ -2406,6 +2804,7 @@
             autoResizeTextarea(input);
         }
 
+        // ==================== AI 回复逻辑 ====================
         async function triggerAIReply() {
             const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
             if (!character) return;
@@ -2457,12 +2856,14 @@
                 const data = await response.json();
                 const aiReply = data.choices[0].message.content;
 
-                const separator = AppState.settings.messageSeparator || ' | ';
-                const messageParts = aiReply.split(separator).map(s => s.trim()).filter(s => s);
+                // 解析分隔符分开的多条消息
+                const messageParts = aiReply.split(MESSAGE_SEPARATOR).map(s => s.trim()).filter(s => s);
 
+                // 逐条添加消息，模拟真人发送
                 for (let i = 0; i < messageParts.length; i++) {
                     if (i > 0) {
-                        await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 500));
+                        // 随机延迟，模拟打字速度
+                        await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 700));
                     }
                     addMessage(messageParts[i], 'received');
                 }
@@ -2475,28 +2876,55 @@
 
         function buildMessagesForAPI(character) {
             const messages = [];
+
+            // 构建系统提示词
             let systemPrompt = '';
 
+            // 全局系统提示词
             if (AppState.settings.globalSystemPrompt) {
                 systemPrompt += AppState.settings.globalSystemPrompt + '\n\n';
             }
 
+            // 短信格式说明 - 这是关键
+            systemPrompt += `【重要：短信对话格式规则】
+你正在通过短信与用户聊天。请遵循以下规则：
+
+1. 消息格式：如果你想发送多条消息，请用 " | " (空格+竖线+空格) 分隔。
+   示例：你好 | 在干嘛呢 | 想你了
+   这会显示为3条独立的短信。
+
+2. 用户消息格式：用户发送的多条短信也会用 " | " 分隔。
+   例如用户发送 "嗨 | 你在吗 | 快回我" 表示用户发了3条短信。
+
+3. 回复风格：
+   - 像真人发短信一样自然、口语化
+   - 可以发1条消息，也可以分成多条发送
+   - 不要太正式，要有聊天的感觉
+   - 可以用表情符号，但不要过度
+
+`;
+
+            // 角色设定
             if (character.description) {
                 systemPrompt += `【角色设定】\n${character.description}\n\n`;
             }
 
+            // 情景设定
             if (character.scenario) {
                 systemPrompt += `【情景设定】\n${character.scenario}\n\n`;
             }
 
+            // 用户称呼
             if (character.userNick) {
                 systemPrompt += `【用户称呼】请称呼用户为: ${character.userNick}\n\n`;
             }
 
+            // 角色专属提示词
             if (character.systemPrompt) {
                 systemPrompt += `【额外指令】\n${character.systemPrompt}\n\n`;
             }
 
+            // 世界书注入
             const worldbook = AppState.worldbooks.find(w => w.id === character.worldbookId);
             if (worldbook) {
                 const shouldInject = worldbook.alwaysActive ||
@@ -2511,26 +2939,145 @@
                 }
             }
 
-            if (AppState.settings.replyFormatPrompt) {
-                systemPrompt += `【回复格式】\n${AppState.settings.replyFormatPrompt}\n\n`;
-            }
-
-            const tempScenario = document.getElementById('tempScenarioInput').value.trim();
-            if (tempScenario) {
-                systemPrompt += `【临时情景】\n${tempScenario}\n\n`;
-                document.getElementById('tempScenarioInput').value = '';
-            }
-
             if (systemPrompt) {
                 messages.push({ role: 'system', content: systemPrompt.trim() });
             }
 
-            const historyMessages = character.messages.slice(-20);
-            historyMessages.forEach(msg => {
-                messages.push({ role: msg.role, content: msg.content });
+            // 构建对话历史 - 合并连续的同类型消息
+            const historyMessages = character.messages.slice(-(AppState.settings.maxMessageHistory || 200));
+
+            let currentRole = null;
+            let currentContent = [];
+
+            historyMessages.forEach((msg, index) => {
+                if (msg.role !== currentRole) {
+                    // 如果角色变了，保存之前的内容
+                    if (currentRole !== null && currentContent.length > 0) {
+                        messages.push({
+                            role: currentRole,
+                            content: currentContent.join(MESSAGE_SEPARATOR)
+                        });
+                    }
+                    currentRole = msg.role;
+                    currentContent = [msg.content];
+                } else {
+                    // 同一角色的连续消息，合并
+                    currentContent.push(msg.content);
+                }
             });
 
+            // 添加最后一组消息
+            if (currentRole !== null && currentContent.length > 0) {
+                messages.push({
+                    role: currentRole,
+                    content: currentContent.join(MESSAGE_SEPARATOR)
+                });
+            }
+
             return messages;
+        }
+
+        // ==================== 重新生成回复 ====================
+        function regenerateReply() {
+            const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            if (!character || character.messages.length === 0) {
+                showToast('没有可重新生成的消息', 'warning');
+                return;
+            }
+
+            // 找到最后一组AI回复的消息
+            let removeCount = 0;
+            for (let i = character.messages.length - 1; i >= 0; i--) {
+                if (character.messages[i].role === 'assistant') {
+                    removeCount++;
+                } else {
+                    break;
+                }
+            }
+
+            if (removeCount === 0) {
+                showToast('没有AI回复可以重新生成', 'warning');
+                return;
+            }
+
+            // 删除最后一组AI消息
+            character.messages.splice(-removeCount, removeCount);
+            saveAllData();
+            renderMessages();
+            toggleExtensionPanel();
+
+            // 自动触发AI重新回复
+            triggerAIReply();
+        }
+
+        // ==================== 选择删除模式 ====================
+        function enterSelectMode() {
+            AppState.selectMode = true;
+            AppState.selectedMessages.clear();
+
+            const container = document.getElementById('chatMessages');
+            container.classList.add('select-mode');
+
+            document.getElementById('deleteBar').classList.add('active');
+            updateDeleteBarInfo();
+
+            toggleExtensionPanel();
+        }
+
+        function exitSelectMode() {
+            AppState.selectMode = false;
+            AppState.selectedMessages.clear();
+
+            const container = document.getElementById('chatMessages');
+            container.classList.remove('select-mode');
+
+            document.getElementById('deleteBar').classList.remove('active');
+
+            // 重置所有选择框
+            document.querySelectorAll('.message-checkbox').forEach(cb => {
+                cb.classList.remove('checked');
+            });
+        }
+
+        function toggleMessageSelect(msgId) {
+            if (!AppState.selectMode) return;
+
+            if (AppState.selectedMessages.has(msgId)) {
+                AppState.selectedMessages.delete(msgId);
+            } else {
+                AppState.selectedMessages.add(msgId);
+            }
+
+            // 更新UI
+            const checkbox = document.querySelector(`[data-msg-id="${msgId}"] .message-checkbox`);
+            if (checkbox) {
+                checkbox.classList.toggle('checked', AppState.selectedMessages.has(msgId));
+            }
+
+            updateDeleteBarInfo();
+        }
+
+        function updateDeleteBarInfo() {
+            const count = AppState.selectedMessages.size;
+            document.getElementById('deleteBarInfo').textContent = `已选择 ${count} 条消息`;
+        }
+
+        function deleteSelectedMessages() {
+            if (AppState.selectedMessages.size === 0) {
+                showToast('请先选择要删除的消息', 'warning');
+                return;
+            }
+
+            const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            if (!character) return;
+
+            // 删除选中的消息
+            character.messages = character.messages.filter(m => !AppState.selectedMessages.has(m.id));
+            saveAllData();
+
+            showToast(`已删除 ${AppState.selectedMessages.size} 条消息`, 'success');
+            exitSelectMode();
+            renderMessages();
         }
 
         function autoResizeTextarea(textarea) {
@@ -2547,16 +3094,6 @@
         function toggleExtensionPanel() {
             const panel = document.getElementById('extensionPanel');
             panel.classList.toggle('active');
-        }
-
-        function insertQuickPrompt(prompt) {
-            const input = document.getElementById('tempScenarioInput');
-            input.value = (input.value ? input.value + '\n' : '') + prompt;
-        }
-
-        function saveExtensionSettings() {
-            toggleExtensionPanel();
-            showToast('扩展设置已保存', 'success');
         }
 
         // ==================== 世界书管理 ====================
@@ -2730,14 +3267,11 @@
         };
 
         function setWallpaper(style) {
+            console.log('Setting wallpaper to:', style);
             AppState.settings.wallpaper = style;
             applyWallpaper();
             saveAllData();
-
-            document.querySelectorAll('.wallpaper-option').forEach(el => {
-                el.style.borderColor = el.dataset.wallpaper === style ? 'var(--accent-color)' : 'transparent';
-            });
-
+            highlightSelectedWallpaper();
             showToast('壁纸已更换', 'success');
         }
 
@@ -2748,7 +3282,7 @@
                 return;
             }
 
-            AppState.settings.wallpaper = `url(${url})`;
+            AppState.settings.wallpaper = `custom:${url}`;
             applyWallpaper();
             saveAllData();
             showToast('自定义壁纸已应用', 'success');
@@ -2762,12 +3296,21 @@
             const file = event.target.files[0];
             if (!file) return;
 
+            // 限制文件大小为5MB
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('图片太大，请选择小于5MB的图片', 'error');
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = function(e) {
-                AppState.settings.wallpaper = `url(${e.target.result})`;
+                AppState.settings.wallpaper = `data:${e.target.result}`;
                 applyWallpaper();
                 saveAllData();
                 showToast('壁纸已上传并应用', 'success');
+            };
+            reader.onerror = function() {
+                showToast('读取图片失败', 'error');
             };
             reader.readAsDataURL(file);
         }
@@ -2776,14 +3319,39 @@
             const wallpaperEl = document.getElementById('wallpaper');
             const wallpaper = AppState.settings.wallpaper || 'gradient1';
 
+            console.log('Applying wallpaper:', wallpaper);
+
             if (wallpaperStyles[wallpaper]) {
+                // 预设渐变
                 wallpaperEl.style.background = wallpaperStyles[wallpaper];
-                wallpaperEl.style.backgroundSize = 'cover';
-            } else if (wallpaper.startsWith('url(')) {
-                wallpaperEl.style.background = wallpaper;
+                wallpaperEl.style.backgroundSize = '400% 400%';
+                wallpaperEl.style.backgroundPosition = 'center';
+            } else if (wallpaper.startsWith('custom:')) {
+                // 自定义URL
+                const url = wallpaper.replace('custom:', '');
+                wallpaperEl.style.background = `url(${url})`;
                 wallpaperEl.style.backgroundSize = 'cover';
                 wallpaperEl.style.backgroundPosition = 'center';
+            } else if (wallpaper.startsWith('data:')) {
+                // Base64图片
+                const dataUrl = wallpaper.replace('data:', '');
+                wallpaperEl.style.background = `url(${dataUrl})`;
+                wallpaperEl.style.backgroundSize = 'cover';
+                wallpaperEl.style.backgroundPosition = 'center';
+            } else {
+                // 默认
+                wallpaperEl.style.background = wallpaperStyles.gradient1;
             }
+        }
+
+        function highlightSelectedWallpaper() {
+            const currentWallpaper = AppState.settings.wallpaper || 'gradient1';
+
+            document.querySelectorAll('.wallpaper-option').forEach(el => {
+                const isSelected = el.dataset.wallpaper === currentWallpaper;
+                el.style.borderColor = isSelected ? 'var(--accent-color)' : 'transparent';
+                el.style.boxShadow = isSelected ? '0 0 0 3px rgba(0, 122, 255, 0.3)' : 'none';
+            });
         }
 
         // ==================== 开关切换 ====================
@@ -2798,7 +3366,7 @@
                 worldbooks: AppState.worldbooks,
                 settings: AppState.settings,
                 exportedAt: new Date().toISOString(),
-                version: '2.0.0'
+                version: '2.1.0'
             };
 
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -2831,6 +3399,7 @@
                     saveAllData();
                     loadSettingsToUI();
                     applyWallpaper();
+                    applyAppIcons();
                     showToast('数据导入成功', 'success');
                 } catch (err) {
                     showToast('导入失败: 文件格式错误', 'error');
@@ -2858,14 +3427,20 @@
                     frequencyPenalty: 0,
                     presencePenalty: 0,
                     globalSystemPrompt: '',
-                    messageSeparator: ' | ',
-                    replyFormatPrompt: '',
-                    wallpaper: 'gradient1'
+                    maxMessageHistory: 200,
+                    wallpaper: 'gradient1',
+                    appIcons: {
+                        settings: '⚙️',
+                        messages: '💬',
+                        worldbook: '📚',
+                        wallpaper: '🖼️'
+                    }
                 };
 
                 AppState.connectionStatus = 'disconnected';
                 loadSettingsToUI();
                 applyWallpaper();
+                applyAppIcons();
                 updateConnectionStatusUI();
                 showToast('所有数据已清除', 'success');
             }
@@ -2908,6 +3483,8 @@
                 hideCreateCharacterModal();
                 hideCreateWorldbookModal();
                 hideConfirmDeleteModal();
+                hideIconPickerModal();
+                exitSelectMode();
             }
         });
 
