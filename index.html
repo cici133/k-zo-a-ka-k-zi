@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI短信模拟器 v4.2</title>
+    <title>AI短信模拟器 v4.3</title>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.12);
@@ -182,17 +182,9 @@
             overflow: hidden;
         }
 
-        .page.active {
-            transform: translateX(0);
-        }
-
-        .page.slide-from-bottom {
-            transform: translateY(100%);
-        }
-
-        .page.slide-from-bottom.active {
-            transform: translateY(0);
-        }
+        .page.active { transform: translateX(0); }
+        .page.slide-from-bottom { transform: translateY(100%); }
+        .page.slide-from-bottom.active { transform: translateY(0); }
 
         .nav-bar {
             display: flex;
@@ -286,8 +278,10 @@
         .settings-icon.red { background: var(--danger-color); }
         .settings-icon.orange { background: #FF9500; }
         .settings-icon.purple { background: #AF52DE; }
+        .settings-icon.cyan { background: #5AC8FA; }
 
         .settings-item-label { color: var(--text-primary); font-size: 15px; }
+        .settings-item-desc { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
 
         .input-group { margin-bottom: 16px; }
 
@@ -310,10 +304,7 @@
             outline: none;
         }
 
-        .input-field:focus {
-            border-color: var(--accent-color);
-        }
-
+        .input-field:focus { border-color: var(--accent-color); }
         .input-field::placeholder { color: rgba(255, 255, 255, 0.3); }
 
         textarea.input-field {
@@ -376,11 +367,7 @@
             overflow: hidden;
         }
 
-        .contact-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .contact-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
         .contact-info { flex: 1; min-width: 0; }
 
@@ -464,11 +451,7 @@
         .message-avatar.rounded-square { border-radius: 8px; }
         .message-avatar.hidden { display: none; }
 
-        .message-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .message-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
         .message {
             max-width: 72%;
@@ -587,19 +570,9 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        .chat-btn.send {
-            background: var(--accent-color);
-        }
-
-        .chat-btn.ai {
-            background: linear-gradient(135deg, #a855f7, #ec4899);
-        }
-
-        .chat-btn svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-        }
+        .chat-btn.send { background: var(--accent-color); }
+        .chat-btn.ai { background: linear-gradient(135deg, #a855f7, #ec4899); }
+        .chat-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
         .chat-input-field {
             flex: 1;
@@ -985,7 +958,6 @@
         .select-mode-bar.active { display: flex; }
 
         .select-mode-info { font-size: 14px; color: var(--text-primary); }
-
         .select-mode-btns { display: flex; gap: 10px; }
 
         .select-mode-btn {
@@ -1019,12 +991,7 @@
 
         .avatar-upload-area:hover { border-color: var(--accent-color); }
         .avatar-upload-area.has-image { border-style: solid; border-color: var(--accent-color); }
-
-        .avatar-upload-area img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .avatar-upload-area img { width: 100%; height: 100%; object-fit: cover; }
 
         .color-picker-row {
             display: flex;
@@ -1033,11 +1000,7 @@
             margin-bottom: 10px;
         }
 
-        .color-picker-label {
-            font-size: 13px;
-            color: var(--text-primary);
-            flex: 1;
-        }
+        .color-picker-label { font-size: 13px; color: var(--text-primary); flex: 1; }
 
         .color-picker-input {
             width: 44px;
@@ -1151,38 +1114,51 @@
 
         .icon-customize-preview:hover { border-color: var(--accent-color); }
         .icon-customize-preview.has-image { border-style: solid; }
+        .icon-customize-preview img { width: 100%; height: 100%; object-fit: cover; }
 
-        .icon-customize-preview img {
-            width: 100%;
+        .icon-customize-label { font-size: 11px; color: var(--text-secondary); }
+
+        .storage-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 20px;
+        }
+
+        .storage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .storage-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+        .storage-size { font-size: 13px; color: var(--accent-color); }
+
+        .storage-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .storage-bar-fill {
             height: 100%;
-            object-fit: cover;
+            background: var(--accent-color);
+            border-radius: 4px;
+            transition: width 0.3s ease;
         }
 
-        .icon-customize-label {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
+        .storage-bar-fill.warning { background: var(--warning-color); }
+        .storage-bar-fill.danger { background: var(--danger-color); }
 
-        .storage-status {
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 14px;
+        .storage-details {
+            display: flex;
+            justify-content: space-between;
             font-size: 12px;
-        }
-
-        .storage-status.ok {
-            background: rgba(52, 199, 89, 0.15);
-            color: var(--success-color);
-        }
-
-        .storage-status.warning {
-            background: rgba(255, 149, 0, 0.15);
-            color: var(--warning-color);
-        }
-
-        .storage-status.error {
-            background: rgba(255, 59, 48, 0.15);
-            color: var(--danger-color);
+            color: var(--text-secondary);
         }
 
         ::-webkit-scrollbar { width: 5px; }
@@ -1236,7 +1212,20 @@
                 <div class="nav-btn right" style="visibility:hidden">占</div>
             </div>
             <div class="page-content">
-                <div class="storage-status" id="storageStatus">检查存储...</div>
+                <!-- 存储状态卡片 -->
+                <div class="storage-card">
+                    <div class="storage-header">
+                        <span class="storage-title">💾 存储空间</span>
+                        <span class="storage-size" id="storageSize">计算中...</span>
+                    </div>
+                    <div class="storage-bar">
+                        <div class="storage-bar-fill" id="storageBarFill" style="width: 0%"></div>
+                    </div>
+                    <div class="storage-details">
+                        <span id="storageUsed">已用: 0 MB</span>
+                        <span id="storageTotal">可用: 无限制</span>
+                    </div>
+                </div>
 
                 <p class="settings-group-title">API配置</p>
                 <div class="settings-group" style="padding:14px">
@@ -1296,6 +1285,37 @@
                     </div>
                 </div>
 
+                <p class="settings-group-title">缓存与存储</p>
+                <div class="settings-group">
+                    <div class="settings-item" onclick="clearImageCache()">
+                        <div class="settings-item-left">
+                            <span class="settings-icon cyan">🧹</span>
+                            <div>
+                                <span class="settings-item-label">清除图片缓存</span>
+                                <div class="settings-item-desc">清除头像、壁纸等图片缓存</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-item" onclick="clearMessageCache()">
+                        <div class="settings-item-left">
+                            <span class="settings-icon orange">💬</span>
+                            <div>
+                                <span class="settings-item-label">清除消息缓存</span>
+                                <div class="settings-item-desc">仅清除临时消息，保留角色设定</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-item" onclick="compactDatabase()">
+                        <div class="settings-item-left">
+                            <span class="settings-icon purple">⚡</span>
+                            <div>
+                                <span class="settings-item-label">优化存储空间</span>
+                                <div class="settings-item-desc">压缩图片、整理数据</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <p class="settings-group-title">数据管理</p>
                 <div class="settings-group">
                     <div class="settings-item" onclick="forceSaveAll()">
@@ -1309,7 +1329,7 @@
                     </div>
                     <input type="file" id="importFileInput" class="file-input-hidden" accept=".json" onchange="importData(event)">
                     <div class="settings-item" onclick="clearAllData()">
-                        <div class="settings-item-left"><span class="settings-icon red">🗑️</span><span class="settings-item-label">清除数据</span></div>
+                        <div class="settings-item-left"><span class="settings-icon red">🗑️</span><span class="settings-item-label">清除所有数据</span></div>
                     </div>
                 </div>
                 <div style="height:40px"></div>
@@ -1670,14 +1690,124 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ==================== 存储键名常量 ====================
-        const STORAGE_KEYS = {
-            CHARACTERS: 'sms_app_characters_v2',
-            WORLDBOOKS: 'sms_app_worldbooks_v2',
-            SETTINGS: 'sms_app_settings_v2',
-            ICONS: 'sms_app_icons_v2',
-            INITIALIZED: 'sms_app_initialized_v2'
-        };
+        // ==================== IndexedDB 存储系统 ====================
+        const DB_NAME = 'SMSAppDB';
+        const DB_VERSION = 1;
+        let db = null;
+
+        // 打开/创建数据库
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onerror = () => {
+                    console.error('IndexedDB打开失败');
+                    reject(request.error);
+                };
+
+                request.onsuccess = () => {
+                    db = request.result;
+                    console.log('✅ IndexedDB打开成功');
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+
+                    // 创建存储表
+                    if (!database.objectStoreNames.contains('appData')) {
+                        database.createObjectStore('appData', { keyPath: 'key' });
+                    }
+                    if (!database.objectStoreNames.contains('images')) {
+                        database.createObjectStore('images', { keyPath: 'id' });
+                    }
+
+                    console.log('✅ IndexedDB表创建成功');
+                };
+            });
+        }
+
+        // 保存数据到IndexedDB
+        function saveToIDB(storeName, key, value) {
+            return new Promise((resolve, reject) => {
+                if (!db) { reject('数据库未打开'); return; }
+
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+
+                const data = storeName === 'appData' ? { key, value } : { id: key, data: value };
+                const request = store.put(data);
+
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // 从IndexedDB读取数据
+        function loadFromIDB(storeName, key) {
+            return new Promise((resolve, reject) => {
+                if (!db) { reject('数据库未打开'); return; }
+
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.get(key);
+
+                request.onsuccess = () => {
+                    const result = request.result;
+                    if (result) {
+                        resolve(storeName === 'appData' ? result.value : result.data);
+                    } else {
+                        resolve(null);
+                    }
+                };
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // 删除IndexedDB中的数据
+        function deleteFromIDB(storeName, key) {
+            return new Promise((resolve, reject) => {
+                if (!db) { reject('数据库未打开'); return; }
+
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.delete(key);
+
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // 清空某个存储表
+        function clearIDBStore(storeName) {
+            return new Promise((resolve, reject) => {
+                if (!db) { reject('数据库未打开'); return; }
+
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.clear();
+
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // 获取存储使用情况
+        async function getStorageUsage() {
+            try {
+                if (navigator.storage && navigator.storage.estimate) {
+                    const estimate = await navigator.storage.estimate();
+                    return {
+                        used: estimate.usage || 0,
+                        quota: estimate.quota || 0,
+                        percent: estimate.quota ? (estimate.usage / estimate.quota * 100) : 0
+                    };
+                }
+            } catch (e) {
+                console.error('获取存储信息失败:', e);
+            }
+            return { used: 0, quota: 0, percent: 0 };
+        }
 
         // ==================== 全局状态 ====================
         const App = {
@@ -1718,7 +1848,176 @@
             gradient6: 'linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)'
         };
 
-        // ==================== 图片压缩函数 ====================
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 App初始化...');
+
+            try {
+                await openDB();
+                await loadData();
+                updateTime();
+                setInterval(updateTime, 60000);
+                applyWallpaper();
+                applyAppIcons();
+                updateConnectionUI();
+                highlightWallpaper();
+                updateWallpaperPreview();
+                updateIconPreviews();
+                updateStorageDisplay();
+
+                console.log('✅ App初始化完成');
+            } catch (e) {
+                console.error('初始化失败:', e);
+                showToast('初始化失败，请刷新页面', 'error');
+            }
+        });
+
+        // 更新存储显示
+        async function updateStorageDisplay() {
+            const usage = await getStorageUsage();
+            const usedMB = (usage.used / (1024 * 1024)).toFixed(2);
+            const quotaMB = (usage.quota / (1024 * 1024)).toFixed(0);
+
+            document.getElementById('storageSize').textContent = `${usedMB} MB`;
+            document.getElementById('storageUsed').textContent = `已用: ${usedMB} MB`;
+            document.getElementById('storageTotal').textContent = usage.quota > 0 ? `配额: ${quotaMB} MB` : '无限制';
+
+            const barFill = document.getElementById('storageBarFill');
+            barFill.style.width = `${Math.min(usage.percent, 100)}%`;
+            barFill.className = 'storage-bar-fill';
+            if (usage.percent > 80) barFill.classList.add('danger');
+            else if (usage.percent > 60) barFill.classList.add('warning');
+        }
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('statusBarTime').textContent =
+                now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+        }
+
+        // ==================== 数据持久化 ====================
+        async function saveData() {
+            try {
+                await saveToIDB('appData', 'characters', App.characters);
+                await saveToIDB('appData', 'worldbooks', App.worldbooks);
+                await saveToIDB('appData', 'settings', App.settings);
+                await saveToIDB('appData', 'appIcons', App.appIcons);
+
+                console.log('✅ 数据保存成功');
+                return true;
+            } catch (e) {
+                console.error('保存失败:', e);
+                showToast('保存失败: ' + e.message, 'error');
+                return false;
+            }
+        }
+
+        async function loadData() {
+            try {
+                const [characters, worldbooks, settings, icons] = await Promise.all([
+                    loadFromIDB('appData', 'characters'),
+                    loadFromIDB('appData', 'worldbooks'),
+                    loadFromIDB('appData', 'settings'),
+                    loadFromIDB('appData', 'appIcons')
+                ]);
+
+                if (characters) App.characters = characters;
+                if (worldbooks) App.worldbooks = worldbooks;
+                if (settings) App.settings = { ...App.settings, ...settings };
+                if (icons) App.appIcons = { ...App.appIcons, ...icons };
+
+                loadSettingsUI();
+
+                if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) {
+                    App.connectionStatus = 'connected';
+                }
+
+                App.dataLoaded = true;
+                console.log('✅ 数据加载成功:', {
+                    characters: App.characters.length,
+                    worldbooks: App.worldbooks.length
+                });
+
+                return true;
+            } catch (e) {
+                console.error('加载失败:', e);
+                return false;
+            }
+        }
+
+        async function forceSaveAll() {
+            if (await saveData()) {
+                await updateStorageDisplay();
+                showToast('所有数据已保存', 'success');
+            }
+        }
+
+        // 缓存清理函数
+        async function clearImageCache() {
+            if (!confirm('确定清除所有图片缓存？（头像、壁纸、图标将被清除）')) return;
+
+            // 清除壁纸
+            App.settings.wallpaperData = null;
+            App.settings.wallpaper = 'gradient1';
+
+            // 清除图标
+            App.appIcons = { settings: null, messages: null, worldbook: null, photos: null };
+
+            // 清除角色头像
+            App.characters.forEach(char => {
+                char.avatarImage = null;
+                char.userAvatar = null;
+            });
+
+            await saveData();
+            applyWallpaper();
+            applyAppIcons();
+            updateIconPreviews();
+            await updateStorageDisplay();
+            showToast('图片缓存已清除', 'success');
+        }
+
+        async function clearMessageCache() {
+            if (!confirm('确定清除所有消息？（保留角色设定）')) return;
+
+            App.characters.forEach(char => {
+                char.messages = [];
+            });
+
+            await saveData();
+            await updateStorageDisplay();
+            showToast('消息缓存已清除', 'success');
+        }
+
+        async function compactDatabase() {
+            showToast('正在优化存储...', 'info');
+
+            // 压缩所有图片
+            for (let char of App.characters) {
+                if (char.avatarImage && char.avatarImage.length > 50000) {
+                    char.avatarImage = await compressImage(char.avatarImage, 150, 0.7);
+                }
+                if (char.userAvatar && char.userAvatar.length > 50000) {
+                    char.userAvatar = await compressImage(char.userAvatar, 150, 0.7);
+                }
+            }
+
+            if (App.settings.wallpaperData && App.settings.wallpaperData.length > 500000) {
+                App.settings.wallpaperData = await compressImage(App.settings.wallpaperData, 600, 0.7);
+            }
+
+            for (let key of Object.keys(App.appIcons)) {
+                if (App.appIcons[key] && App.appIcons[key].length > 30000) {
+                    App.appIcons[key] = await compressImage(App.appIcons[key], 100, 0.7);
+                }
+            }
+
+            await saveData();
+            await updateStorageDisplay();
+            showToast('存储优化完成', 'success');
+        }
+
+        // 图片压缩
         function compressImage(dataUrl, maxWidth = 400, quality = 0.7) {
             return new Promise((resolve) => {
                 if (!dataUrl || !dataUrl.startsWith('data:image')) {
@@ -1739,214 +2038,23 @@
 
                     canvas.width = width;
                     canvas.height = height;
-
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    const compressed = canvas.toDataURL('image/jpeg', quality);
-                    console.log(`Image compressed: ${Math.round(dataUrl.length/1024)}KB -> ${Math.round(compressed.length/1024)}KB`);
-                    resolve(compressed);
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
                 };
                 img.onerror = () => resolve(dataUrl);
                 img.src = dataUrl;
             });
         }
 
-        // ==================== 存储检查 ====================
-        function checkStorage() {
-            const statusEl = document.getElementById('storageStatus');
-            try {
-                // 测试localStorage可用性
-                const testKey = '__storage_test__';
-                localStorage.setItem(testKey, 'test');
-                localStorage.removeItem(testKey);
-
-                // 检查已用空间
-                let total = 0;
-                for (let key in localStorage) {
-                    if (localStorage.hasOwnProperty(key)) {
-                        total += localStorage[key].length * 2; // UTF-16
-                    }
-                }
-                const usedKB = Math.round(total / 1024);
-                const usedMB = (total / (1024 * 1024)).toFixed(2);
-
-                if (usedKB < 4000) {
-                    statusEl.className = 'storage-status ok';
-                    statusEl.textContent = `✅ 存储正常 | 已用: ${usedMB}MB`;
-                } else {
-                    statusEl.className = 'storage-status warning';
-                    statusEl.textContent = `⚠️ 存储接近上限 | 已用: ${usedMB}MB`;
-                }
-
-                return true;
-            } catch (e) {
-                statusEl.className = 'storage-status error';
-                statusEl.textContent = `❌ 存储不可用: ${e.message}`;
-                console.error('Storage check failed:', e);
-                return false;
-            }
-        }
-
-        // ==================== 数据持久化 - 核心修复 ====================
-        function saveData() {
-            try {
-                // 保存前验证数据完整性
-                const dataToSave = {
-                    characters: JSON.stringify(App.characters),
-                    worldbooks: JSON.stringify(App.worldbooks),
-                    settings: JSON.stringify(App.settings),
-                    icons: JSON.stringify(App.appIcons)
-                };
-
-                // 逐个保存，确保每个都成功
-                localStorage.setItem(STORAGE_KEYS.CHARACTERS, dataToSave.characters);
-                localStorage.setItem(STORAGE_KEYS.WORLDBOOKS, dataToSave.worldbooks);
-                localStorage.setItem(STORAGE_KEYS.SETTINGS, dataToSave.settings);
-                localStorage.setItem(STORAGE_KEYS.ICONS, dataToSave.icons);
-                localStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
-
-                console.log('✅ Data saved successfully:', {
-                    characters: App.characters.length,
-                    worldbooks: App.worldbooks.length,
-                    hasWallpaper: !!App.settings.wallpaperData,
-                    hasIcons: Object.values(App.appIcons).some(v => v)
-                });
-
-                return true;
-            } catch (e) {
-                console.error('❌ Save error:', e);
-
-                // 如果是配额错误，尝试压缩数据
-                if (e.name === 'QuotaExceededError') {
-                    showToast('存储空间不足，请导出数据后清理', 'error');
-                } else {
-                    showToast('保存失败: ' + e.message, 'error');
-                }
-                return false;
-            }
-        }
-
-        function loadData() {
-            console.log('🔄 Loading data...');
-
-            try {
-                // 检查是否已初始化
-                const initialized = localStorage.getItem(STORAGE_KEYS.INITIALIZED);
-                console.log('Initialized flag:', initialized);
-
-                // 加载角色
-                const charsStr = localStorage.getItem(STORAGE_KEYS.CHARACTERS);
-                if (charsStr) {
-                    const parsed = JSON.parse(charsStr);
-                    if (Array.isArray(parsed)) {
-                        App.characters = parsed;
-                        console.log(`✅ Loaded ${App.characters.length} characters`);
-                    }
-                }
-
-                // 加载世界书
-                const wbsStr = localStorage.getItem(STORAGE_KEYS.WORLDBOOKS);
-                if (wbsStr) {
-                    const parsed = JSON.parse(wbsStr);
-                    if (Array.isArray(parsed)) {
-                        App.worldbooks = parsed;
-                        console.log(`✅ Loaded ${App.worldbooks.length} worldbooks`);
-                    }
-                }
-
-                // 加载设置
-                const settingsStr = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-                if (settingsStr) {
-                    const parsed = JSON.parse(settingsStr);
-                    if (parsed && typeof parsed === 'object') {
-                        App.settings = { ...App.settings, ...parsed };
-                        console.log('✅ Loaded settings:', {
-                            wallpaper: App.settings.wallpaper,
-                            hasWallpaperData: !!App.settings.wallpaperData
-                        });
-                    }
-                }
-
-                // 加载图标
-                const iconsStr = localStorage.getItem(STORAGE_KEYS.ICONS);
-                if (iconsStr) {
-                    const parsed = JSON.parse(iconsStr);
-                    if (parsed && typeof parsed === 'object') {
-                        App.appIcons = { ...App.appIcons, ...parsed };
-                        console.log('✅ Loaded icons:', Object.keys(App.appIcons).filter(k => App.appIcons[k]));
-                    }
-                }
-
-                App.dataLoaded = true;
-
-                // 更新连接状态
-                if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) {
-                    App.connectionStatus = 'connected';
-                }
-
-                loadSettingsUI();
-                console.log('✅ All data loaded successfully');
-                return true;
-
-            } catch (e) {
-                console.error('❌ Load error:', e);
-                showToast('加载数据失败: ' + e.message, 'error');
-                return false;
-            }
-        }
-
-        function forceSaveAll() {
-            console.log('🔄 Force saving all data...');
-            if (saveData()) {
-                checkStorage();
-                showToast('所有数据已强制保存', 'success');
-            }
-        }
-
-        // ==================== 页面卸载前保存 ====================
+        // 页面卸载前保存
         window.addEventListener('beforeunload', () => {
-            console.log('🔄 Page unloading, saving data...');
             saveData();
         });
 
-        // 定期自动保存
+        // 定期保存
         setInterval(() => {
-            if (App.dataLoaded) {
-                saveData();
-            }
-        }, 30000); // 每30秒保存一次
-
-        // ==================== 初始化 ====================
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 App initializing...');
-
-            // 先检查存储
-            checkStorage();
-
-            // 加载数据
-            loadData();
-
-            // 更新时间
-            updateTime();
-            setInterval(updateTime, 60000);
-
-            // 应用壁纸和图标
-            applyWallpaper();
-            applyAppIcons();
-            updateConnectionUI();
-            highlightWallpaper();
-            updateWallpaperPreview();
-            updateIconPreviews();
-
-            console.log('✅ App initialized');
-        });
-
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('statusBarTime').textContent =
-                now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-        }
+            if (App.dataLoaded) saveData();
+        }, 30000);
 
         function loadSettingsUI() {
             document.getElementById('apiBaseUrl').value = App.settings.apiBaseUrl || '';
@@ -1965,53 +2073,41 @@
             const wp = App.settings.wallpaper;
             const wpData = App.settings.wallpaperData;
 
-            console.log('Applying wallpaper:', wp, 'hasData:', !!wpData);
-
             el.style.cssText = '';
 
             if (wpData) {
                 el.style.cssText = `
                     position: fixed !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                    width: 100% !important;
-                    height: 100% !important;
+                    top: 0 !important; left: 0 !important;
+                    width: 100% !important; height: 100% !important;
                     z-index: 0 !important;
                     background-image: url(${wpData}) !important;
                     background-size: cover !important;
                     background-position: center !important;
-                    background-repeat: no-repeat !important;
                 `;
             } else if (wp && wp.startsWith('http')) {
                 el.style.cssText = `
                     position: fixed !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                    width: 100% !important;
-                    height: 100% !important;
+                    top: 0 !important; left: 0 !important;
+                    width: 100% !important; height: 100% !important;
                     z-index: 0 !important;
                     background-image: url(${wp}) !important;
                     background-size: cover !important;
                     background-position: center !important;
-                    background-repeat: no-repeat !important;
                 `;
             } else if (GRADIENTS[wp]) {
                 el.style.cssText = `
                     position: fixed !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                    width: 100% !important;
-                    height: 100% !important;
+                    top: 0 !important; left: 0 !important;
+                    width: 100% !important; height: 100% !important;
                     z-index: 0 !important;
                     background: ${GRADIENTS[wp]} !important;
                 `;
             } else {
                 el.style.cssText = `
                     position: fixed !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                    width: 100% !important;
-                    height: 100% !important;
+                    top: 0 !important; left: 0 !important;
+                    width: 100% !important; height: 100% !important;
                     z-index: 0 !important;
                     background: ${GRADIENTS.gradient1} !important;
                 `;
@@ -2021,13 +2117,12 @@
         function updateWallpaperPreview() {
             const preview = document.getElementById('wallpaperPreview');
             const wp = App.tempWallpaper || App.settings.wallpaper;
-            const wpData = (App.tempWallpaper && App.tempWallpaper.startsWith('data:')) ? App.tempWallpaper : App.settings.wallpaperData;
 
-            if (App.tempWallpaper && App.tempWallpaper.startsWith('data:')) {
+            if (App.tempWallpaper?.startsWith('data:')) {
                 preview.style.cssText = `background-image: url(${App.tempWallpaper}) !important; background-size: cover !important; background-position: center !important;`;
-            } else if (wpData && !App.tempWallpaper) {
-                preview.style.cssText = `background-image: url(${wpData}) !important; background-size: cover !important; background-position: center !important;`;
-            } else if (App.tempWallpaper && App.tempWallpaper.startsWith('http')) {
+            } else if (!App.tempWallpaper && App.settings.wallpaperData) {
+                preview.style.cssText = `background-image: url(${App.settings.wallpaperData}) !important; background-size: cover !important; background-position: center !important;`;
+            } else if (App.tempWallpaper?.startsWith('http')) {
                 preview.style.cssText = `background-image: url(${App.tempWallpaper}) !important; background-size: cover !important; background-position: center !important;`;
             } else if (GRADIENTS[wp]) {
                 preview.style.cssText = `background: ${GRADIENTS[wp]} !important;`;
@@ -2054,13 +2149,10 @@
         async function handleWallpaperUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
-            if (file.size > 10*1024*1024) { showToast('图片不超过10MB', 'error'); return; }
 
             const reader = new FileReader();
             reader.onload = async (ev) => {
-                // 压缩壁纸图片
-                const compressed = await compressImage(ev.target.result, 800, 0.8);
-                App.tempWallpaper = compressed;
+                App.tempWallpaper = await compressImage(ev.target.result, 800, 0.8);
                 updateWallpaperPreview();
                 showToast('已上传，点击保存应用', 'success');
             };
@@ -2068,7 +2160,7 @@
             e.target.value = '';
         }
 
-        function saveWallpaper() {
+        async function saveWallpaper() {
             if (!App.tempWallpaper) {
                 showToast('请先选择壁纸', 'warning');
                 return;
@@ -2087,11 +2179,11 @@
 
             App.tempWallpaper = null;
 
-            if (saveData()) {
+            if (await saveData()) {
                 applyWallpaper();
                 highlightWallpaper();
                 updateWallpaperPreview();
-                checkStorage();
+                await updateStorageDisplay();
                 showToast('壁纸已保存', 'success');
             }
         }
@@ -2110,7 +2202,7 @@
                 const iconData = App.tempIcons[app] || App.appIcons[app];
 
                 if (iconData) {
-                    preview.innerHTML = `<img src="${iconData}" alt="${app}">`;
+                    preview.innerHTML = `<img src="${iconData}" alt="">`;
                     preview.classList.add('has-image');
                 } else {
                     preview.innerHTML = App.defaultEmojis[app];
@@ -2125,7 +2217,7 @@
                 const iconData = App.appIcons[app];
 
                 if (iconData) {
-                    el.innerHTML = `<img src="${iconData}" alt="${app}" style="width:100%;height:100%;object-fit:cover;">`;
+                    el.innerHTML = `<img src="${iconData}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
                 } else {
                     el.innerHTML = App.defaultEmojis[app];
                 }
@@ -2138,9 +2230,7 @@
 
             const reader = new FileReader();
             reader.onload = async (ev) => {
-                // 压缩图标
-                const compressed = await compressImage(ev.target.result, 120, 0.8);
-                App.tempIcons[appName] = compressed;
+                App.tempIcons[appName] = await compressImage(ev.target.result, 120, 0.8);
                 updateIconPreviews();
                 showToast('已选择，点击保存应用', 'info');
             };
@@ -2148,7 +2238,7 @@
             e.target.value = '';
         }
 
-        function saveIcons() {
+        async function saveIcons() {
             let changed = false;
             ['settings', 'messages', 'worldbook', 'photos'].forEach(app => {
                 if (App.tempIcons[app]) {
@@ -2158,21 +2248,19 @@
             });
             App.tempIcons = {};
 
-            if (changed) {
-                if (saveData()) {
-                    applyAppIcons();
-                    checkStorage();
-                    showToast('图标已保存', 'success');
-                }
-            } else {
+            if (changed && await saveData()) {
+                applyAppIcons();
+                await updateStorageDisplay();
+                showToast('图标已保存', 'success');
+            } else if (!changed) {
                 showToast('没有更改', 'info');
             }
         }
 
-        function resetIcons() {
+        async function resetIcons() {
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null };
             App.tempIcons = {};
-            saveData();
+            await saveData();
             applyAppIcons();
             updateIconPreviews();
             showToast('已重置为默认', 'success');
@@ -2190,9 +2278,7 @@
                     updateIconPreviews();
                     highlightWallpaper();
                 }
-                if (id === 'settingsPage') {
-                    checkStorage();
-                }
+                if (id === 'settingsPage') updateStorageDisplay();
             }
         }
 
@@ -2288,7 +2374,7 @@
                     App.settings.apiBaseUrl = url;
                     App.settings.apiKey = key;
                     App.settings.modelName = model;
-                    saveData();
+                    await saveData();
                     showToast('连接成功！', 'success');
                     addLog('连接成功', 'success');
                 } else throw new Error(`HTTP ${r.status}`);
@@ -2302,19 +2388,19 @@
             }
         }
 
-        function saveApiSettings() {
+        async function saveApiSettings() {
             App.settings.apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
             App.settings.apiKey = document.getElementById('apiKey').value.trim();
             App.settings.modelName = document.getElementById('modelName').value.trim();
             App.settings.temperature = parseFloat(document.getElementById('temperature').value);
             App.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
             App.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
-            saveData();
+            await saveData();
             showToast('设置已保存', 'success');
         }
 
         // ==================== 角色管理 ====================
-        function createCharacter() {
+        async function createCharacter() {
             const name = document.getElementById('newCharacterName').value.trim();
             if (!name) { showToast('请输入名称', 'error'); return; }
             const char = {
@@ -2337,7 +2423,7 @@
                 messages: []
             };
             App.characters.push(char);
-            saveData();
+            await saveData();
             hideModal('createCharacterModal');
             renderContacts();
             showToast(`"${name}"创建成功`, 'success');
@@ -2356,9 +2442,7 @@
             list.innerHTML = App.characters.map(c => {
                 const lastMsg = c.messages.length > 0 ? c.messages[c.messages.length-1].content.substring(0,30)+'...' : '点击开始对话';
                 const lastTime = c.messages.length > 0 ? formatTime(c.messages[c.messages.length-1].timestamp) : '';
-                const avatarHtml = c.avatarImage
-                    ? `<img src="${c.avatarImage}" alt="">`
-                    : (c.avatar || c.name[0]);
+                const avatarHtml = c.avatarImage ? `<img src="${c.avatarImage}" alt="">` : (c.avatar || c.name[0]);
                 return `<div class="contact-item" onclick="openChat('${c.id}')">
                     <div class="contact-avatar">${avatarHtml}</div>
                     <div class="contact-info">
@@ -2484,7 +2568,7 @@
             el.classList.add('selected');
         }
 
-        function saveCharacterSettings() {
+        async function saveCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
@@ -2514,7 +2598,7 @@
 
             document.getElementById('chatTitle').textContent = char.name;
 
-            saveData();
+            await saveData();
             renderMessages();
             closeCharacterSettings();
             showToast('设置已保存', 'success');
@@ -2553,10 +2637,7 @@
             const borderColor = char.borderColor || '#007AFF';
             const borderWidth = char.borderWidth || 2;
 
-            let shapeClass = '';
-            if (avatarShape === 'square') shapeClass = 'square';
-            else if (avatarShape === 'rounded-square') shapeClass = 'rounded-square';
-
+            let shapeClass = avatarShape === 'square' ? 'square' : avatarShape === 'rounded-square' ? 'rounded-square' : '';
             const borderStyle = showBorder ? `border:${borderWidth}px solid ${borderColor};` : '';
 
             let html = '';
@@ -2574,17 +2655,10 @@
 
                 let avatarHtml = '';
                 if (showAvatar) {
-                    if (type === 'received') {
-                        const avatarContent = char.avatarImage
-                            ? `<img src="${char.avatarImage}">`
-                            : (char.avatar || char.name[0]);
-                        avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`;
-                    } else {
-                        const avatarContent = char.userAvatar
-                            ? `<img src="${char.userAvatar}">`
-                            : '👤';
-                        avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`;
-                    }
+                    const avatarContent = type === 'received'
+                        ? (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0]))
+                        : (char.userAvatar ? `<img src="${char.userAvatar}">` : '👤');
+                    avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`;
                 }
 
                 html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}">
@@ -2599,7 +2673,7 @@
             scrollToBottom();
         }
 
-        function addMessage(content, type) {
+        async function addMessage(content, type) {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
@@ -2611,7 +2685,7 @@
             };
 
             char.messages.push(msg);
-            saveData();
+            await saveData();
             renderMessages();
         }
 
@@ -2679,7 +2753,7 @@
 
                 for (let i = 0; i < parts.length; i++) {
                     if (i > 0) await new Promise(r => setTimeout(r, 300 + Math.random()*400));
-                    addMessage(parts[i], 'received');
+                    await addMessage(parts[i], 'received');
                 }
             } catch(e) {
                 document.getElementById('typingIndicator')?.remove();
@@ -2734,7 +2808,7 @@
                 if (allAI) {
                     const count = char.messages.length - App.lastAIStart;
                     char.messages.splice(App.lastAIStart, count);
-                    saveData();
+                    await saveData();
                     renderMessages();
                     showToast(`已删除${count}条，重新生成...`, 'info');
                     App.lastAIStart = -1;
@@ -2756,7 +2830,7 @@
 
             const count = char.messages.length - first;
             char.messages.splice(first, count);
-            saveData();
+            await saveData();
             renderMessages();
             showToast(`已删除${count}条，重新生成...`, 'info');
             await triggerAIReply();
@@ -2791,13 +2865,13 @@
             document.getElementById('selectedCount').textContent = App.selectedMsgs.size;
         }
 
-        function deleteSelectedMessages() {
+        async function deleteSelectedMessages() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
             if (App.selectedMsgs.size === 0) { showToast('请先选择', 'warning'); return; }
             const count = App.selectedMsgs.size;
             char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id));
-            saveData();
+            await saveData();
             exitSelectMode();
             renderMessages();
             showToast(`已删除${count}条`, 'success');
@@ -2819,7 +2893,7 @@
         }
 
         // ==================== 世界书 ====================
-        function createWorldbook() {
+        async function createWorldbook() {
             const name = document.getElementById('newWorldbookName').value.trim();
             if (!name) { showToast('请输入名称', 'error'); return; }
             const wb = {
@@ -2831,7 +2905,7 @@
                 alwaysActive: false
             };
             App.worldbooks.push(wb);
-            saveData();
+            await saveData();
             hideModal('createWorldbookModal');
             renderWorldbooks();
             showToast(`"${name}"创建成功`, 'success');
@@ -2876,7 +2950,7 @@
             App.currentWbId = null;
         }
 
-        function saveWorldbook() {
+        async function saveWorldbook() {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId);
             if (!wb) return;
             wb.name = document.getElementById('worldbookName').value.trim() || wb.name;
@@ -2884,7 +2958,7 @@
             wb.keywords = document.getElementById('worldbookKeywords').value;
             wb.content = document.getElementById('worldbookContent').value;
             wb.alwaysActive = document.getElementById('worldbookAlwaysActive').classList.contains('active');
-            saveData();
+            await saveData();
             closeWorldbookEdit();
             renderWorldbooks();
             showToast('已保存', 'success');
@@ -2905,10 +2979,10 @@
                 App.worldbooks.map(wb => `<option value="${wb.id}">${escapeHtml(wb.name)}</option>`).join('');
         }
 
-        function confirmDelete() {
+        async function confirmDelete() {
             if (App.pendingDeleteType === 'character') {
                 App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
-                saveData();
+                await saveData();
                 hideModal('confirmDeleteModal');
                 closeCharacterSettings();
                 closeChatPage();
@@ -2917,7 +2991,7 @@
             } else if (App.pendingDeleteType === 'worldbook') {
                 App.characters.forEach(c => { if (c.worldbookId === App.pendingDeleteId) c.worldbookId = ''; });
                 App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
-                saveData();
+                await saveData();
                 hideModal('confirmDeleteModal');
                 closeWorldbookEdit();
                 renderWorldbooks();
@@ -2932,7 +3006,7 @@
                 worldbooks: App.worldbooks,
                 settings: App.settings,
                 appIcons: App.appIcons,
-                version: '4.2.0',
+                version: '4.3.0',
                 exportedAt: new Date().toISOString()
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -2943,11 +3017,11 @@
             showToast('已导出', 'success');
         }
 
-        function importData(e) {
+        async function importData(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = ev => {
+            reader.onload = async ev => {
                 try {
                     const data = JSON.parse(ev.target.result);
                     if (data.characters) App.characters = data.characters;
@@ -2955,11 +3029,11 @@
                     if (data.settings) App.settings = {...App.settings, ...data.settings};
                     if (data.appIcons) App.appIcons = {...App.appIcons, ...data.appIcons};
 
-                    if (saveData()) {
+                    if (await saveData()) {
                         loadSettingsUI();
                         applyWallpaper();
                         applyAppIcons();
-                        checkStorage();
+                        await updateStorageDisplay();
                         showToast('导入成功', 'success');
                     }
                 } catch(err) {
@@ -2970,13 +3044,17 @@
             e.target.value = '';
         }
 
-        function clearAllData() {
+        async function clearAllData() {
             if (confirm('确定清除所有数据？此操作不可恢复！')) {
-                // 清除所有相关键
-                Object.values(STORAGE_KEYS).forEach(key => {
-                    localStorage.removeItem(key);
-                });
-                location.reload();
+                try {
+                    await clearIDBStore('appData');
+                    await clearIDBStore('images');
+                    location.reload();
+                } catch (e) {
+                    // 备用方案：删除数据库
+                    indexedDB.deleteDatabase(DB_NAME);
+                    location.reload();
+                }
             }
         }
 
