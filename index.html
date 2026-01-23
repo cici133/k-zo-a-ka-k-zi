@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI短信模拟器 v4.3</title>
+    <title>AI短信模拟器 v4.4</title>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.12);
@@ -1695,117 +1695,67 @@
         const DB_VERSION = 1;
         let db = null;
 
-        // 打开/创建数据库
         function openDB() {
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-                request.onerror = () => {
-                    console.error('IndexedDB打开失败');
-                    reject(request.error);
-                };
-
-                request.onsuccess = () => {
-                    db = request.result;
-                    console.log('✅ IndexedDB打开成功');
-                    resolve(db);
-                };
-
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => { db = request.result; resolve(db); };
                 request.onupgradeneeded = (event) => {
                     const database = event.target.result;
-
-                    // 创建存储表
                     if (!database.objectStoreNames.contains('appData')) {
                         database.createObjectStore('appData', { keyPath: 'key' });
                     }
                     if (!database.objectStoreNames.contains('images')) {
                         database.createObjectStore('images', { keyPath: 'id' });
                     }
-
-                    console.log('✅ IndexedDB表创建成功');
                 };
             });
         }
 
-        // 保存数据到IndexedDB
         function saveToIDB(storeName, key, value) {
             return new Promise((resolve, reject) => {
                 if (!db) { reject('数据库未打开'); return; }
-
                 const transaction = db.transaction([storeName], 'readwrite');
                 const store = transaction.objectStore(storeName);
-
                 const data = storeName === 'appData' ? { key, value } : { id: key, data: value };
                 const request = store.put(data);
-
                 request.onsuccess = () => resolve();
                 request.onerror = () => reject(request.error);
             });
         }
 
-        // 从IndexedDB读取数据
         function loadFromIDB(storeName, key) {
             return new Promise((resolve, reject) => {
                 if (!db) { reject('数据库未打开'); return; }
-
                 const transaction = db.transaction([storeName], 'readonly');
                 const store = transaction.objectStore(storeName);
                 const request = store.get(key);
-
                 request.onsuccess = () => {
                     const result = request.result;
-                    if (result) {
-                        resolve(storeName === 'appData' ? result.value : result.data);
-                    } else {
-                        resolve(null);
-                    }
+                    resolve(result ? (storeName === 'appData' ? result.value : result.data) : null);
                 };
                 request.onerror = () => reject(request.error);
             });
         }
 
-        // 删除IndexedDB中的数据
-        function deleteFromIDB(storeName, key) {
-            return new Promise((resolve, reject) => {
-                if (!db) { reject('数据库未打开'); return; }
-
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                const request = store.delete(key);
-
-                request.onsuccess = () => resolve();
-                request.onerror = () => reject(request.error);
-            });
-        }
-
-        // 清空某个存储表
         function clearIDBStore(storeName) {
             return new Promise((resolve, reject) => {
                 if (!db) { reject('数据库未打开'); return; }
-
                 const transaction = db.transaction([storeName], 'readwrite');
                 const store = transaction.objectStore(storeName);
                 const request = store.clear();
-
                 request.onsuccess = () => resolve();
                 request.onerror = () => reject(request.error);
             });
         }
 
-        // 获取存储使用情况
         async function getStorageUsage() {
             try {
                 if (navigator.storage && navigator.storage.estimate) {
                     const estimate = await navigator.storage.estimate();
-                    return {
-                        used: estimate.usage || 0,
-                        quota: estimate.quota || 0,
-                        percent: estimate.quota ? (estimate.usage / estimate.quota * 100) : 0
-                    };
+                    return { used: estimate.usage || 0, quota: estimate.quota || 0, percent: estimate.quota ? (estimate.usage / estimate.quota * 100) : 0 };
                 }
-            } catch (e) {
-                console.error('获取存储信息失败:', e);
-            }
+            } catch (e) {}
             return { used: 0, quota: 0, percent: 0 };
         }
 
@@ -1850,8 +1800,6 @@
 
         // ==================== 初始化 ====================
         document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 App初始化...');
-
             try {
                 await openDB();
                 await loadData();
@@ -1864,24 +1812,18 @@
                 updateWallpaperPreview();
                 updateIconPreviews();
                 updateStorageDisplay();
-
-                console.log('✅ App初始化完成');
             } catch (e) {
-                console.error('初始化失败:', e);
-                showToast('初始化失败，请刷新页面', 'error');
+                showToast('初始化失败', 'error');
             }
         });
 
-        // 更新存储显示
         async function updateStorageDisplay() {
             const usage = await getStorageUsage();
             const usedMB = (usage.used / (1024 * 1024)).toFixed(2);
             const quotaMB = (usage.quota / (1024 * 1024)).toFixed(0);
-
             document.getElementById('storageSize').textContent = `${usedMB} MB`;
             document.getElementById('storageUsed').textContent = `已用: ${usedMB} MB`;
             document.getElementById('storageTotal').textContent = usage.quota > 0 ? `配额: ${quotaMB} MB` : '无限制';
-
             const barFill = document.getElementById('storageBarFill');
             barFill.style.width = `${Math.min(usage.percent, 100)}%`;
             barFill.className = 'storage-bar-fill';
@@ -1891,8 +1833,7 @@
 
         function updateTime() {
             const now = new Date();
-            document.getElementById('statusBarTime').textContent =
-                now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+            document.getElementById('statusBarTime').textContent = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
         }
 
         // ==================== 数据持久化 ====================
@@ -1902,12 +1843,9 @@
                 await saveToIDB('appData', 'worldbooks', App.worldbooks);
                 await saveToIDB('appData', 'settings', App.settings);
                 await saveToIDB('appData', 'appIcons', App.appIcons);
-
-                console.log('✅ 数据保存成功');
                 return true;
             } catch (e) {
-                console.error('保存失败:', e);
-                showToast('保存失败: ' + e.message, 'error');
+                showToast('保存失败', 'error');
                 return false;
             }
         }
@@ -1920,29 +1858,17 @@
                     loadFromIDB('appData', 'settings'),
                     loadFromIDB('appData', 'appIcons')
                 ]);
-
                 if (characters) App.characters = characters;
                 if (worldbooks) App.worldbooks = worldbooks;
                 if (settings) App.settings = { ...App.settings, ...settings };
                 if (icons) App.appIcons = { ...App.appIcons, ...icons };
-
                 loadSettingsUI();
-
                 if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) {
                     App.connectionStatus = 'connected';
                 }
-
                 App.dataLoaded = true;
-                console.log('✅ 数据加载成功:', {
-                    characters: App.characters.length,
-                    worldbooks: App.worldbooks.length
-                });
-
                 return true;
-            } catch (e) {
-                console.error('加载失败:', e);
-                return false;
-            }
+            } catch (e) { return false; }
         }
 
         async function forceSaveAll() {
@@ -1952,23 +1878,12 @@
             }
         }
 
-        // 缓存清理函数
         async function clearImageCache() {
-            if (!confirm('确定清除所有图片缓存？（头像、壁纸、图标将被清除）')) return;
-
-            // 清除壁纸
+            if (!confirm('确定清除所有图片缓存？')) return;
             App.settings.wallpaperData = null;
             App.settings.wallpaper = 'gradient1';
-
-            // 清除图标
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null };
-
-            // 清除角色头像
-            App.characters.forEach(char => {
-                char.avatarImage = null;
-                char.userAvatar = null;
-            });
-
+            App.characters.forEach(char => { char.avatarImage = null; char.userAvatar = null; });
             await saveData();
             applyWallpaper();
             applyAppIcons();
@@ -1978,66 +1893,39 @@
         }
 
         async function clearMessageCache() {
-            if (!confirm('确定清除所有消息？（保留角色设定）')) return;
-
-            App.characters.forEach(char => {
-                char.messages = [];
-            });
-
+            if (!confirm('确定清除所有消息？')) return;
+            App.characters.forEach(char => { char.messages = []; });
             await saveData();
             await updateStorageDisplay();
             showToast('消息缓存已清除', 'success');
         }
 
         async function compactDatabase() {
-            showToast('正在优化存储...', 'info');
-
-            // 压缩所有图片
+            showToast('正在优化...', 'info');
             for (let char of App.characters) {
-                if (char.avatarImage && char.avatarImage.length > 50000) {
-                    char.avatarImage = await compressImage(char.avatarImage, 150, 0.7);
-                }
-                if (char.userAvatar && char.userAvatar.length > 50000) {
-                    char.userAvatar = await compressImage(char.userAvatar, 150, 0.7);
-                }
+                if (char.avatarImage && char.avatarImage.length > 50000) char.avatarImage = await compressImage(char.avatarImage, 150, 0.7);
+                if (char.userAvatar && char.userAvatar.length > 50000) char.userAvatar = await compressImage(char.userAvatar, 150, 0.7);
             }
-
             if (App.settings.wallpaperData && App.settings.wallpaperData.length > 500000) {
                 App.settings.wallpaperData = await compressImage(App.settings.wallpaperData, 600, 0.7);
             }
-
             for (let key of Object.keys(App.appIcons)) {
-                if (App.appIcons[key] && App.appIcons[key].length > 30000) {
-                    App.appIcons[key] = await compressImage(App.appIcons[key], 100, 0.7);
-                }
+                if (App.appIcons[key] && App.appIcons[key].length > 30000) App.appIcons[key] = await compressImage(App.appIcons[key], 100, 0.7);
             }
-
             await saveData();
             await updateStorageDisplay();
-            showToast('存储优化完成', 'success');
+            showToast('优化完成', 'success');
         }
 
-        // 图片压缩
         function compressImage(dataUrl, maxWidth = 400, quality = 0.7) {
             return new Promise((resolve) => {
-                if (!dataUrl || !dataUrl.startsWith('data:image')) {
-                    resolve(dataUrl);
-                    return;
-                }
-
+                if (!dataUrl || !dataUrl.startsWith('data:image')) { resolve(dataUrl); return; }
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > maxWidth) {
-                        height = (height * maxWidth) / width;
-                        width = maxWidth;
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
+                    let width = img.width, height = img.height;
+                    if (width > maxWidth) { height = (height * maxWidth) / width; width = maxWidth; }
+                    canvas.width = width; canvas.height = height;
                     canvas.getContext('2d').drawImage(img, 0, 0, width, height);
                     resolve(canvas.toDataURL('image/jpeg', quality));
                 };
@@ -2046,15 +1934,8 @@
             });
         }
 
-        // 页面卸载前保存
-        window.addEventListener('beforeunload', () => {
-            saveData();
-        });
-
-        // 定期保存
-        setInterval(() => {
-            if (App.dataLoaded) saveData();
-        }, 30000);
+        window.addEventListener('beforeunload', () => { saveData(); });
+        setInterval(() => { if (App.dataLoaded) saveData(); }, 30000);
 
         function loadSettingsUI() {
             document.getElementById('apiBaseUrl').value = App.settings.apiBaseUrl || '';
@@ -2072,62 +1953,31 @@
             const el = document.getElementById('wallpaperLayer');
             const wp = App.settings.wallpaper;
             const wpData = App.settings.wallpaperData;
-
             el.style.cssText = '';
-
             if (wpData) {
-                el.style.cssText = `
-                    position: fixed !important;
-                    top: 0 !important; left: 0 !important;
-                    width: 100% !important; height: 100% !important;
-                    z-index: 0 !important;
-                    background-image: url(${wpData}) !important;
-                    background-size: cover !important;
-                    background-position: center !important;
-                `;
+                el.style.cssText = `position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:0!important;background-image:url(${wpData})!important;background-size:cover!important;background-position:center!important;`;
             } else if (wp && wp.startsWith('http')) {
-                el.style.cssText = `
-                    position: fixed !important;
-                    top: 0 !important; left: 0 !important;
-                    width: 100% !important; height: 100% !important;
-                    z-index: 0 !important;
-                    background-image: url(${wp}) !important;
-                    background-size: cover !important;
-                    background-position: center !important;
-                `;
+                el.style.cssText = `position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:0!important;background-image:url(${wp})!important;background-size:cover!important;background-position:center!important;`;
             } else if (GRADIENTS[wp]) {
-                el.style.cssText = `
-                    position: fixed !important;
-                    top: 0 !important; left: 0 !important;
-                    width: 100% !important; height: 100% !important;
-                    z-index: 0 !important;
-                    background: ${GRADIENTS[wp]} !important;
-                `;
+                el.style.cssText = `position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:0!important;background:${GRADIENTS[wp]}!important;`;
             } else {
-                el.style.cssText = `
-                    position: fixed !important;
-                    top: 0 !important; left: 0 !important;
-                    width: 100% !important; height: 100% !important;
-                    z-index: 0 !important;
-                    background: ${GRADIENTS.gradient1} !important;
-                `;
+                el.style.cssText = `position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:0!important;background:${GRADIENTS.gradient1}!important;`;
             }
         }
 
         function updateWallpaperPreview() {
             const preview = document.getElementById('wallpaperPreview');
             const wp = App.tempWallpaper || App.settings.wallpaper;
-
             if (App.tempWallpaper?.startsWith('data:')) {
-                preview.style.cssText = `background-image: url(${App.tempWallpaper}) !important; background-size: cover !important; background-position: center !important;`;
+                preview.style.cssText = `background-image:url(${App.tempWallpaper})!important;background-size:cover!important;background-position:center!important;`;
             } else if (!App.tempWallpaper && App.settings.wallpaperData) {
-                preview.style.cssText = `background-image: url(${App.settings.wallpaperData}) !important; background-size: cover !important; background-position: center !important;`;
+                preview.style.cssText = `background-image:url(${App.settings.wallpaperData})!important;background-size:cover!important;background-position:center!important;`;
             } else if (App.tempWallpaper?.startsWith('http')) {
-                preview.style.cssText = `background-image: url(${App.tempWallpaper}) !important; background-size: cover !important; background-position: center !important;`;
+                preview.style.cssText = `background-image:url(${App.tempWallpaper})!important;background-size:cover!important;background-position:center!important;`;
             } else if (GRADIENTS[wp]) {
-                preview.style.cssText = `background: ${GRADIENTS[wp]} !important;`;
+                preview.style.cssText = `background:${GRADIENTS[wp]}!important;`;
             } else {
-                preview.style.cssText = `background: ${GRADIENTS.gradient1} !important;`;
+                preview.style.cssText = `background:${GRADIENTS.gradient1}!important;`;
             }
         }
 
@@ -2149,7 +1999,6 @@
         async function handleWallpaperUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = async (ev) => {
                 App.tempWallpaper = await compressImage(ev.target.result, 800, 0.8);
@@ -2161,11 +2010,7 @@
         }
 
         async function saveWallpaper() {
-            if (!App.tempWallpaper) {
-                showToast('请先选择壁纸', 'warning');
-                return;
-            }
-
+            if (!App.tempWallpaper) { showToast('请先选择壁纸', 'warning'); return; }
             if (App.tempWallpaper.startsWith('data:')) {
                 App.settings.wallpaperData = App.tempWallpaper;
                 App.settings.wallpaper = 'custom';
@@ -2176,9 +2021,7 @@
                 App.settings.wallpaper = App.tempWallpaper;
                 App.settings.wallpaperData = null;
             }
-
             App.tempWallpaper = null;
-
             if (await saveData()) {
                 applyWallpaper();
                 highlightWallpaper();
@@ -2200,7 +2043,6 @@
             ['settings', 'messages', 'worldbook', 'photos'].forEach(app => {
                 const preview = document.getElementById('iconPreview' + app.charAt(0).toUpperCase() + app.slice(1));
                 const iconData = App.tempIcons[app] || App.appIcons[app];
-
                 if (iconData) {
                     preview.innerHTML = `<img src="${iconData}" alt="">`;
                     preview.classList.add('has-image');
@@ -2215,19 +2057,14 @@
             ['settings', 'messages', 'worldbook', 'photos'].forEach(app => {
                 const el = document.getElementById('appIcon' + app.charAt(0).toUpperCase() + app.slice(1));
                 const iconData = App.appIcons[app];
-
-                if (iconData) {
-                    el.innerHTML = `<img src="${iconData}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
-                } else {
-                    el.innerHTML = App.defaultEmojis[app];
-                }
+                if (iconData) el.innerHTML = `<img src="${iconData}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+                else el.innerHTML = App.defaultEmojis[app];
             });
         }
 
         async function handleIconUpload(e, appName) {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = async (ev) => {
                 App.tempIcons[appName] = await compressImage(ev.target.result, 120, 0.8);
@@ -2241,20 +2078,14 @@
         async function saveIcons() {
             let changed = false;
             ['settings', 'messages', 'worldbook', 'photos'].forEach(app => {
-                if (App.tempIcons[app]) {
-                    App.appIcons[app] = App.tempIcons[app];
-                    changed = true;
-                }
+                if (App.tempIcons[app]) { App.appIcons[app] = App.tempIcons[app]; changed = true; }
             });
             App.tempIcons = {};
-
             if (changed && await saveData()) {
                 applyAppIcons();
                 await updateStorageDisplay();
                 showToast('图标已保存', 'success');
-            } else if (!changed) {
-                showToast('没有更改', 'info');
-            }
+            } else if (!changed) { showToast('没有更改', 'info'); }
         }
 
         async function resetIcons() {
@@ -2273,11 +2104,7 @@
                 page.classList.add('active');
                 if (id === 'messagesPage') renderContacts();
                 if (id === 'worldbookPage') renderWorldbooks();
-                if (id === 'wallpaperPage') {
-                    updateWallpaperPreview();
-                    updateIconPreviews();
-                    highlightWallpaper();
-                }
+                if (id === 'wallpaperPage') { updateWallpaperPreview(); updateIconPreviews(); highlightWallpaper(); }
                 if (id === 'settingsPage') updateStorageDisplay();
             }
         }
@@ -2324,9 +2151,7 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="loading-spinner"></span>';
             try {
-                const r = await fetch(`${url.replace(/\/+$/,'').replace(/\/v1$/,'')}/v1/models`, {
-                    headers: { 'Authorization': `Bearer ${key}` }
-                });
+                const r = await fetch(`${url.replace(/\/+$/,'').replace(/\/v1$/,'')}/v1/models`, { headers: { 'Authorization': `Bearer ${key}` } });
                 if (!r.ok) throw new Error(`HTTP ${r.status}`);
                 const d = await r.json();
                 const models = d.data || d.models || d || [];
@@ -2404,23 +2229,11 @@
             const name = document.getElementById('newCharacterName').value.trim();
             if (!name) { showToast('请输入名称', 'error'); return; }
             const char = {
-                id: Date.now().toString(),
-                name,
+                id: Date.now().toString(), name,
                 avatar: ['😊','😎','🥰','🦊','🐱','🐰'][Math.floor(Math.random()*6)],
-                avatarImage: null,
-                userAvatar: null,
-                showAvatar: true,
-                avatarShape: 'circle',
-                showBorder: false,
-                borderColor: '#007AFF',
-                borderWidth: 2,
-                description: '',
-                greeting: '',
-                scenario: '',
-                worldbookId: '',
-                userNick: '',
-                systemPrompt: '',
-                messages: []
+                avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle',
+                showBorder: false, borderColor: '#007AFF', borderWidth: 2,
+                description: '', greeting: '', scenario: '', worldbookId: '', userNick: '', systemPrompt: '', messages: []
             };
             App.characters.push(char);
             await saveData();
@@ -2432,25 +2245,13 @@
         function renderContacts() {
             const list = document.getElementById('contactList');
             const empty = document.getElementById('emptyContactState');
-            if (App.characters.length === 0) {
-                list.style.display = 'none';
-                empty.style.display = 'flex';
-                return;
-            }
-            list.style.display = 'flex';
-            empty.style.display = 'none';
+            if (App.characters.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
+            list.style.display = 'flex'; empty.style.display = 'none';
             list.innerHTML = App.characters.map(c => {
                 const lastMsg = c.messages.length > 0 ? c.messages[c.messages.length-1].content.substring(0,30)+'...' : '点击开始对话';
                 const lastTime = c.messages.length > 0 ? formatTime(c.messages[c.messages.length-1].timestamp) : '';
                 const avatarHtml = c.avatarImage ? `<img src="${c.avatarImage}" alt="">` : (c.avatar || c.name[0]);
-                return `<div class="contact-item" onclick="openChat('${c.id}')">
-                    <div class="contact-avatar">${avatarHtml}</div>
-                    <div class="contact-info">
-                        <div class="contact-name">${escapeHtml(c.name)}</div>
-                        <div class="contact-preview">${escapeHtml(lastMsg)}</div>
-                    </div>
-                    <div class="contact-time">${lastTime}</div>
-                </div>`;
+                return `<div class="contact-item" onclick="openChat('${c.id}')"><div class="contact-avatar">${avatarHtml}</div><div class="contact-info"><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-preview">${escapeHtml(lastMsg)}</div></div><div class="contact-time">${lastTime}</div></div>`;
             }).join('');
         }
 
@@ -2477,46 +2278,25 @@
             if (char.messages.length === 0 && char.greeting) addMessage(char.greeting, 'received');
         }
 
-        function closeChatPage() {
-            exitSelectMode();
-            closePage('chatPage');
-            App.currentCharId = null;
-        }
+        function closeChatPage() { exitSelectMode(); closePage('chatPage'); App.currentCharId = null; }
 
         function openCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
-
             const charAvUpload = document.getElementById('charAvatarUpload');
             const userAvUpload = document.getElementById('userAvatarUpload');
-
-            if (char.avatarImage) {
-                charAvUpload.innerHTML = `<img src="${char.avatarImage}">`;
-                charAvUpload.classList.add('has-image');
-            } else {
-                charAvUpload.innerHTML = '📷';
-                charAvUpload.classList.remove('has-image');
-            }
+            if (char.avatarImage) { charAvUpload.innerHTML = `<img src="${char.avatarImage}">`; charAvUpload.classList.add('has-image'); }
+            else { charAvUpload.innerHTML = '📷'; charAvUpload.classList.remove('has-image'); }
             charAvUpload.dataset.image = char.avatarImage || '';
-
-            if (char.userAvatar) {
-                userAvUpload.innerHTML = `<img src="${char.userAvatar}">`;
-                userAvUpload.classList.add('has-image');
-            } else {
-                userAvUpload.innerHTML = '👤';
-                userAvUpload.classList.remove('has-image');
-            }
+            if (char.userAvatar) { userAvUpload.innerHTML = `<img src="${char.userAvatar}">`; userAvUpload.classList.add('has-image'); }
+            else { userAvUpload.innerHTML = '👤'; userAvUpload.classList.remove('has-image'); }
             userAvUpload.dataset.image = char.userAvatar || '';
-
             document.getElementById('showAvatarToggle').classList.toggle('active', char.showAvatar !== false);
-            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => {
-                el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle'));
-            });
+            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => { el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle')); });
             document.getElementById('showBorderToggle').classList.toggle('active', char.showBorder === true);
             document.getElementById('borderColorPicker').value = char.borderColor || '#007AFF';
             document.getElementById('borderWidthSlider').value = char.borderWidth || 2;
             document.getElementById('borderWidthValue').textContent = char.borderWidth || 2;
-
             document.getElementById('charName').value = char.name;
             document.getElementById('charAvatar').value = char.avatar || '';
             document.getElementById('charDescription').value = char.description || '';
@@ -2524,7 +2304,6 @@
             document.getElementById('charScenario').value = char.scenario || '';
             document.getElementById('charUserNick').value = char.userNick || '';
             document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
-
             updateWorldbookSelect();
             document.getElementById('charWorldbook').value = char.worldbookId || '';
             updateCharCounter();
@@ -2571,22 +2350,18 @@
         async function saveCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
-
             const greeting = document.getElementById('charGreeting').value;
             if (greeting.length > 300) { showToast('开场白不超过300字', 'error'); return; }
-
             const charUpload = document.getElementById('charAvatarUpload');
             const userUpload = document.getElementById('userAvatarUpload');
             char.avatarImage = charUpload.dataset.image || null;
             char.userAvatar = userUpload.dataset.image || null;
-
             char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
             const shapeEl = document.querySelector('#avatarShapeOptions .shape-option.selected');
             char.avatarShape = shapeEl ? shapeEl.dataset.shape : 'circle';
             char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
             char.borderColor = document.getElementById('borderColorPicker').value;
             char.borderWidth = parseInt(document.getElementById('borderWidthSlider').value);
-
             char.name = document.getElementById('charName').value.trim() || char.name;
             char.avatar = document.getElementById('charAvatar').value.trim() || char.avatar;
             char.description = document.getElementById('charDescription').value;
@@ -2595,9 +2370,7 @@
             char.worldbookId = document.getElementById('charWorldbook').value;
             char.userNick = document.getElementById('charUserNick').value.trim();
             char.systemPrompt = document.getElementById('charSystemPrompt').value;
-
             document.getElementById('chatTitle').textContent = char.name;
-
             await saveData();
             renderMessages();
             closeCharacterSettings();
@@ -2625,50 +2398,28 @@
             const container = document.getElementById('chatMessages');
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
-
-            if (char.messages.length === 0) {
-                container.innerHTML = '<div class="date-separator"><span class="date-separator-text">今天</span></div>';
-                return;
-            }
-
+            if (char.messages.length === 0) { container.innerHTML = '<div class="date-separator"><span class="date-separator-text">今天</span></div>'; return; }
             const showAvatar = char.showAvatar !== false;
             const avatarShape = char.avatarShape || 'circle';
             const showBorder = char.showBorder === true;
             const borderColor = char.borderColor || '#007AFF';
             const borderWidth = char.borderWidth || 2;
-
             let shapeClass = avatarShape === 'square' ? 'square' : avatarShape === 'rounded-square' ? 'rounded-square' : '';
             const borderStyle = showBorder ? `border:${borderWidth}px solid ${borderColor};` : '';
-
             let html = '';
             let lastDate = null;
-
             char.messages.forEach(msg => {
                 const msgDate = new Date(msg.timestamp).toLocaleDateString();
-                if (msgDate !== lastDate) {
-                    html += `<div class="date-separator"><span class="date-separator-text">${formatDate(msg.timestamp)}</span></div>`;
-                    lastDate = msgDate;
-                }
-
+                if (msgDate !== lastDate) { html += `<div class="date-separator"><span class="date-separator-text">${formatDate(msg.timestamp)}</span></div>`; lastDate = msgDate; }
                 const type = msg.role === 'user' ? 'sent' : 'received';
                 const checked = App.selectedMsgs.has(msg.id) ? 'checked' : '';
-
                 let avatarHtml = '';
                 if (showAvatar) {
-                    const avatarContent = type === 'received'
-                        ? (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0]))
-                        : (char.userAvatar ? `<img src="${char.userAvatar}">` : '👤');
+                    const avatarContent = type === 'received' ? (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0])) : (char.userAvatar ? `<img src="${char.userAvatar}">` : '👤');
                     avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`;
                 }
-
-                html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}">
-                    <div class="message-checkbox ${checked}" onclick="toggleMsgSelect('${msg.id}')"></div>
-                    ${type === 'received' ? avatarHtml : ''}
-                    <div class="message ${type}">${escapeHtml(msg.content)}<div class="message-time">${formatTime(msg.timestamp)}</div></div>
-                    ${type === 'sent' ? avatarHtml : ''}
-                </div>`;
+                html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}"><div class="message-checkbox ${checked}" onclick="toggleMsgSelect('${msg.id}')"></div>${type === 'received' ? avatarHtml : ''}<div class="message ${type}">${escapeHtml(msg.content)}<div class="message-time">${formatTime(msg.timestamp)}</div></div>${type === 'sent' ? avatarHtml : ''}</div>`;
             });
-
             container.innerHTML = html;
             scrollToBottom();
         }
@@ -2676,14 +2427,7 @@
         async function addMessage(content, type) {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
-
-            const msg = {
-                id: Date.now().toString() + Math.random().toString(36).substr(2,9),
-                role: type === 'sent' ? 'user' : 'assistant',
-                content,
-                timestamp: new Date().toISOString()
-            };
-
+            const msg = { id: Date.now().toString() + Math.random().toString(36).substr(2,9), role: type === 'sent' ? 'user' : 'assistant', content, timestamp: new Date().toISOString() };
             char.messages.push(msg);
             await saveData();
             renderMessages();
@@ -2700,57 +2444,37 @@
 
         function parseAIResponse(text) {
             if (!text) return ['...'];
-            let cleaned = text.trim()
-                .replace(/^\s*\[[^\]]*\]\s*[:：]\s*/g, '')
-                .replace(/^\s*【[^】]*】\s*[:：]?\s*/g, '')
-                .replace(/^[^:：\n]{1,20}[:：]\s*/g, '');
-
+            let cleaned = text.trim().replace(/^\s*\[[^\]]*\]\s*[:：]\s*/g, '').replace(/^\s*【[^】]*】\s*[:：]?\s*/g, '').replace(/^[^:：\n]{1,20}[:：]\s*/g, '');
             const separators = [/\s*\|\|\|\s*/g, /\s*\|\|\s*/g, /\s*\|\s*/g, /\n\n+/g, /\n/g];
             let parts = [cleaned];
-
             for (const sep of separators) {
                 const test = cleaned.split(sep).map(s => s.trim()).filter(s => s);
                 if (test.length > 1) { parts = test; break; }
             }
-
             return parts.map(p => p.replace(/^["「『"]+/, '').replace(/["」』"]+$/, '').trim()).filter(p => p);
         }
 
         async function triggerAIReply() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
-            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
-                showToast('请先配置API', 'error');
-                return;
-            }
-
+            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) { showToast('请先配置API', 'error'); return; }
             App.lastAIStart = char.messages.length;
-
             const container = document.getElementById('chatMessages');
             container.insertAdjacentHTML('beforeend', '<div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>');
             scrollToBottom();
-
             try {
                 const messages = buildAPIMessages(char);
                 const url = App.settings.apiBaseUrl.replace(/\/+$/,'').replace(/\/v1$/,'');
                 const r = await fetch(`${url}/v1/chat/completions`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${App.settings.apiKey}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        model: App.settings.modelName,
-                        messages,
-                        temperature: App.settings.temperature,
-                        max_tokens: App.settings.maxTokens
-                    })
+                    body: JSON.stringify({ model: App.settings.modelName, messages, temperature: App.settings.temperature, max_tokens: App.settings.maxTokens })
                 });
-
                 document.getElementById('typingIndicator')?.remove();
-
                 if (!r.ok) throw new Error(`HTTP ${r.status}`);
                 const data = await r.json();
                 const reply = data.choices[0].message.content;
                 const parts = parseAIResponse(reply);
-
                 for (let i = 0; i < parts.length; i++) {
                     if (i > 0) await new Promise(r => setTimeout(r, 300 + Math.random()*400));
                     await addMessage(parts[i], 'received');
@@ -2762,33 +2486,66 @@
             }
         }
 
+        // ==================== 核心修改：buildAPIMessages ====================
         function buildAPIMessages(char) {
             const msgs = [];
-            let sys = `你是"${char.name}"，通过手机短信聊天。
 
-【格式】用|||分隔多条短信。直接输出内容，不要前缀。
-例：在呢|||怎么了?|||想我啦?😊
+            // 开头的系统提示词
+            let sysPrompt = `你是"${char.name}"，正在通过手机短信与用户聊天。
 
-【角色】${char.description || '友善有趣的朋友'}`;
+## 角色设定
+${char.description || '一个有趣的朋友'}
 
-            if (char.scenario) sys += `\n\n【情景】${char.scenario}`;
-            if (char.userNick) sys += `\n\n【称呼】${char.userNick}`;
-            if (char.systemPrompt) sys += `\n\n${char.systemPrompt}`;
+${char.scenario ? `## 当前情景\n${char.scenario}\n` : ''}
+${char.userNick ? `## 称呼用户为\n${char.userNick}\n` : ''}
+${char.systemPrompt ? `## 额外指令\n${char.systemPrompt}\n` : ''}`;
 
+            // 世界书注入
             const wb = App.worldbooks.find(w => w.id === char.worldbookId);
             if (wb?.content) {
-                const inject = wb.alwaysActive || (wb.keywords && char.messages.some(m =>
-                    wb.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))
-                ));
-                if (inject) sys += `\n\n【设定】${wb.content}`;
+                const inject = wb.alwaysActive || (wb.keywords && char.messages.some(m => wb.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))));
+                if (inject) sysPrompt += `\n## 世界设定\n${wb.content}\n`;
             }
 
-            msgs.push({ role: 'system', content: sys });
+            msgs.push({ role: 'system', content: sysPrompt });
 
+            // 历史消息
             const max = App.settings.maxContextMessages || 200;
-            char.messages.slice(-max).forEach(m => {
+            const historyMessages = char.messages.slice(-max);
+
+            historyMessages.forEach(m => {
                 msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content });
             });
+
+            // ★★★ 关键修改：在消息列表末尾添加格式强制指令 ★★★
+            // 这条消息放在最后，最接近AI输出位置，权重最高
+            const formatReminder = `[系统指令 - 输出格式强制要求]
+
+你现在要发送短信回复。请严格遵守以下格式规则：
+
+1. 用 ||| 分隔每条独立的短信
+2. 每条短信要简短自然，像真人发短信一样
+3. 绝对不要把多句话挤在一条里
+4. 不要加任何前缀、角色名、括号
+
+✅ 正确格式示例：
+在呢|||怎么了?|||想我了?😊
+
+❌ 错误格式（绝对不要这样）：
+什么女士你16岁也好意思叫自己女士吗而且我们本来就是同班同学算是认识的吧非要特意说交朋友干嘛很奇怪
+
+❌ 错误格式（绝对不要这样）：
+不过也行吧反正多个朋友没什么坏处但你别再叫我兔子宝宝什么的了还有别老是在班上盯着我看怪怪的
+
+记住：
+- 短信要分开发，不要挤成一坨
+- 每条短信之间用 ||| 分隔
+- 说话要有标点符号
+- 像正常人发短信那样自然
+
+现在请回复：`;
+
+            msgs.push({ role: 'system', content: formatReminder });
 
             return msgs;
         }
@@ -2797,14 +2554,10 @@
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
             toggleExtensionPanel();
-
             if (char.messages.length === 0) { showToast('无消息', 'warning'); return; }
-
             if (App.lastAIStart >= 0 && App.lastAIStart < char.messages.length) {
                 let allAI = true;
-                for (let i = App.lastAIStart; i < char.messages.length; i++) {
-                    if (char.messages[i].role !== 'assistant') { allAI = false; break; }
-                }
+                for (let i = App.lastAIStart; i < char.messages.length; i++) { if (char.messages[i].role !== 'assistant') { allAI = false; break; } }
                 if (allAI) {
                     const count = char.messages.length - App.lastAIStart;
                     char.messages.splice(App.lastAIStart, count);
@@ -2816,18 +2569,9 @@
                     return;
                 }
             }
-
-            if (char.messages[char.messages.length-1].role !== 'assistant') {
-                showToast('最后不是AI回复', 'warning');
-                return;
-            }
-
+            if (char.messages[char.messages.length-1].role !== 'assistant') { showToast('最后不是AI回复', 'warning'); return; }
             let first = char.messages.length - 1;
-            for (let i = char.messages.length - 1; i >= 0; i--) {
-                if (char.messages[i].role === 'assistant') first = i;
-                else break;
-            }
-
+            for (let i = char.messages.length - 1; i >= 0; i--) { if (char.messages[i].role === 'assistant') first = i; else break; }
             const count = char.messages.length - first;
             char.messages.splice(first, count);
             await saveData();
@@ -2861,9 +2605,7 @@
             updateSelectedCount();
         }
 
-        function updateSelectedCount() {
-            document.getElementById('selectedCount').textContent = App.selectedMsgs.size;
-        }
+        function updateSelectedCount() { document.getElementById('selectedCount').textContent = App.selectedMsgs.size; }
 
         async function deleteSelectedMessages() {
             const char = App.characters.find(c => c.id === App.currentCharId);
@@ -2878,32 +2620,17 @@
             App.lastAIStart = -1;
         }
 
-        function toggleExtensionPanel() {
-            document.getElementById('extensionPanel').classList.toggle('active');
-        }
+        function toggleExtensionPanel() { document.getElementById('extensionPanel').classList.toggle('active'); }
 
-        function autoResizeTextarea(el) {
-            el.style.height = 'auto';
-            el.style.height = Math.min(el.scrollHeight, 100) + 'px';
-        }
+        function autoResizeTextarea(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
 
-        function scrollToBottom() {
-            const c = document.getElementById('chatMessages');
-            c.scrollTop = c.scrollHeight;
-        }
+        function scrollToBottom() { const c = document.getElementById('chatMessages'); c.scrollTop = c.scrollHeight; }
 
         // ==================== 世界书 ====================
         async function createWorldbook() {
             const name = document.getElementById('newWorldbookName').value.trim();
             if (!name) { showToast('请输入名称', 'error'); return; }
-            const wb = {
-                id: Date.now().toString(),
-                name,
-                summary: '',
-                keywords: '',
-                content: '',
-                alwaysActive: false
-            };
+            const wb = { id: Date.now().toString(), name, summary: '', keywords: '', content: '', alwaysActive: false };
             App.worldbooks.push(wb);
             await saveData();
             hideModal('createWorldbookModal');
@@ -2915,22 +2642,9 @@
         function renderWorldbooks() {
             const list = document.getElementById('worldbookList');
             const empty = document.getElementById('emptyWorldbookState');
-            if (App.worldbooks.length === 0) {
-                list.style.display = 'none';
-                empty.style.display = 'flex';
-                return;
-            }
-            list.style.display = 'block';
-            empty.style.display = 'none';
-            list.innerHTML = App.worldbooks.map(wb =>
-                `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')">
-                    <div class="worldbook-item-header">
-                        <span class="worldbook-item-title">${escapeHtml(wb.name)}</span>
-                        ${wb.alwaysActive ? '<span class="worldbook-item-badge">始终</span>' : ''}
-                    </div>
-                    <div class="worldbook-item-preview">${escapeHtml(wb.summary || wb.content?.substring(0,80) || '无内容')}</div>
-                </div>`
-            ).join('');
+            if (App.worldbooks.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
+            list.style.display = 'block'; empty.style.display = 'none';
+            list.innerHTML = App.worldbooks.map(wb => `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span>${wb.alwaysActive ? '<span class="worldbook-item-badge">始终</span>' : ''}</div><div class="worldbook-item-preview">${escapeHtml(wb.summary || wb.content?.substring(0,80) || '无内容')}</div></div>`).join('');
         }
 
         function openWorldbookEdit(id) {
@@ -2945,10 +2659,7 @@
             openPage('worldbookEditPage');
         }
 
-        function closeWorldbookEdit() {
-            closePage('worldbookEditPage');
-            App.currentWbId = null;
-        }
+        function closeWorldbookEdit() { closePage('worldbookEditPage'); App.currentWbId = null; }
 
         async function saveWorldbook() {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId);
@@ -2975,8 +2686,7 @@
 
         function updateWorldbookSelect() {
             const sel = document.getElementById('charWorldbook');
-            sel.innerHTML = '<option value="">不绑定</option>' +
-                App.worldbooks.map(wb => `<option value="${wb.id}">${escapeHtml(wb.name)}</option>`).join('');
+            sel.innerHTML = '<option value="">不绑定</option>' + App.worldbooks.map(wb => `<option value="${wb.id}">${escapeHtml(wb.name)}</option>`).join('');
         }
 
         async function confirmDelete() {
@@ -3001,14 +2711,7 @@
 
         // ==================== 导入导出 ====================
         function exportAllData() {
-            const data = {
-                characters: App.characters,
-                worldbooks: App.worldbooks,
-                settings: App.settings,
-                appIcons: App.appIcons,
-                version: '4.3.0',
-                exportedAt: new Date().toISOString()
-            };
+            const data = { characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, version: '4.4.0', exportedAt: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -3028,50 +2731,24 @@
                     if (data.worldbooks) App.worldbooks = data.worldbooks;
                     if (data.settings) App.settings = {...App.settings, ...data.settings};
                     if (data.appIcons) App.appIcons = {...App.appIcons, ...data.appIcons};
-
-                    if (await saveData()) {
-                        loadSettingsUI();
-                        applyWallpaper();
-                        applyAppIcons();
-                        await updateStorageDisplay();
-                        showToast('导入成功', 'success');
-                    }
-                } catch(err) {
-                    showToast('导入失败: ' + err.message, 'error');
-                }
+                    if (await saveData()) { loadSettingsUI(); applyWallpaper(); applyAppIcons(); await updateStorageDisplay(); showToast('导入成功', 'success'); }
+                } catch(err) { showToast('导入失败', 'error'); }
             };
             reader.readAsText(file);
             e.target.value = '';
         }
 
         async function clearAllData() {
-            if (confirm('确定清除所有数据？此操作不可恢复！')) {
-                try {
-                    await clearIDBStore('appData');
-                    await clearIDBStore('images');
-                    location.reload();
-                } catch (e) {
-                    // 备用方案：删除数据库
-                    indexedDB.deleteDatabase(DB_NAME);
-                    location.reload();
-                }
+            if (confirm('确定清除所有数据？')) {
+                try { await clearIDBStore('appData'); await clearIDBStore('images'); location.reload(); }
+                catch (e) { indexedDB.deleteDatabase(DB_NAME); location.reload(); }
             }
         }
 
         // ==================== 工具函数 ====================
         function toggleSwitch(el) { el.classList.toggle('active'); }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function formatTime(ts) {
-            const d = new Date(ts);
-            return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-        }
-
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function formatTime(ts) { const d = new Date(ts); return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); }
         function formatDate(ts) {
             const d = new Date(ts);
             const today = new Date();
@@ -3082,24 +2759,15 @@
             return d.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' });
         }
 
-        // ==================== 键盘事件 ====================
         document.addEventListener('keydown', e => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 const input = document.getElementById('chatInput');
-                if (document.activeElement === input && document.getElementById('chatPage').classList.contains('active')) {
-                    e.preventDefault();
-                    sendMessage();
-                }
+                if (document.activeElement === input && document.getElementById('chatPage').classList.contains('active')) { e.preventDefault(); sendMessage(); }
             }
-            if (e.key === 'Escape') {
-                ['createCharacterModal','createWorldbookModal','confirmDeleteModal'].forEach(hideModal);
-                if (App.isSelectMode) exitSelectMode();
-            }
+            if (e.key === 'Escape') { ['createCharacterModal','createWorldbookModal','confirmDeleteModal'].forEach(hideModal); if (App.isSelectMode) exitSelectMode(); }
         });
 
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); });
-        });
+        document.querySelectorAll('.modal-overlay').forEach(overlay => { overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); }); });
     </script>
 </body>
 </html>
