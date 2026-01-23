@@ -5,11 +5,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI短信模拟器 v4.1</title>
+    <title>AI短信模拟器 v4.2</title>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.12);
-            --glass-bg-dark: rgba(0, 0, 0, 0.4);
+            --glass-bg-dark: rgba(0, 0, 0, 0.85);
             --glass-border: rgba(255, 255, 255, 0.18);
             --blur-amount: 20px;
             --text-primary: #ffffff;
@@ -166,7 +166,7 @@
             z-index: 1001;
         }
 
-        /* 页面样式 */
+        /* 页面样式 - 修复顶部露出问题 */
         .page {
             position: absolute;
             top: 0;
@@ -196,16 +196,31 @@
             transform: translateY(0);
         }
 
-        /* 导航栏 - 更紧凑 */
+        /* 导航栏 - 修复顶部问题，从顶部开始 */
         .nav-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 50px 12px 10px;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(20px);
+            background: rgba(20, 20, 25, 0.98);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             flex-shrink: 0;
+            /* 确保导航栏覆盖整个顶部区域 */
+            margin: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 为了确保没有间隙，添加一个顶部填充层 */
+        .page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: rgba(20, 20, 25, 0.98);
+            z-index: 5;
         }
 
         .nav-btn {
@@ -220,6 +235,8 @@
             padding: 6px;
             border-radius: 6px;
             min-width: 60px;
+            position: relative;
+            z-index: 15;
         }
 
         .nav-btn svg { width: 18px; height: 18px; fill: currentColor; }
@@ -231,6 +248,8 @@
             color: var(--text-primary);
             text-align: center;
             flex: 1;
+            position: relative;
+            z-index: 15;
         }
 
         .page-content {
@@ -238,6 +257,7 @@
             overflow-y: auto;
             padding: 14px;
             -webkit-overflow-scrolling: touch;
+            background: rgba(20, 20, 25, 0.95);
         }
 
         /* 设置组 */
@@ -423,13 +443,14 @@
         .empty-state-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
         .empty-state-desc { font-size: 14px; color: var(--text-secondary); }
 
-        /* 聊天容器 - 全屏优化 */
+        /* 聊天容器 */
         .chat-container {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
+            background: rgba(20, 20, 25, 0.95);
         }
 
         .chat-messages {
@@ -561,18 +582,17 @@
             30% { transform: translateY(-5px); }
         }
 
-        /* 输入区域 - 更紧凑美观 */
+        /* 输入区域 */
         .chat-input-area {
             display: flex;
             align-items: flex-end;
             gap: 6px;
             padding: 8px 12px 28px;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(20px);
+            background: rgba(30, 30, 35, 0.98);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* 美化的按钮 - 毛玻璃风格 */
+        /* 美化的按钮 */
         .chat-btn {
             width: 36px;
             height: 36px;
@@ -633,7 +653,7 @@
             bottom: 80px;
             left: 12px;
             right: 12px;
-            background: rgba(30, 30, 35, 0.95);
+            background: rgba(30, 30, 35, 0.98);
             backdrop-filter: blur(30px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
@@ -730,7 +750,7 @@
             max-width: 320px;
             max-height: 80vh;
             overflow-y: auto;
-            background: rgba(30, 30, 35, 0.95);
+            background: rgba(30, 30, 35, 0.98);
             backdrop-filter: blur(40px);
             border-radius: 18px;
             padding: 20px;
@@ -791,7 +811,7 @@
 
         .toast {
             padding: 12px 20px;
-            background: rgba(30, 30, 35, 0.95);
+            background: rgba(30, 30, 35, 0.98);
             backdrop-filter: blur(20px);
             border-radius: 12px;
             color: var(--text-primary);
@@ -1316,10 +1336,10 @@
                     <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 </button>
             </div>
-            <div style="padding:0 14px 14px">
-                <input type="text" class="search-field" id="contactSearch" placeholder="搜索角色..." oninput="filterContacts()">
-            </div>
-            <div class="page-content" id="contactListContainer">
+            <div class="page-content">
+                <div style="margin-bottom:14px">
+                    <input type="text" class="search-field" id="contactSearch" placeholder="搜索角色..." oninput="filterContacts()">
+                </div>
                 <div class="empty-state" id="emptyContactState">
                     <div class="empty-state-icon">💬</div>
                     <div class="empty-state-title">暂无角色</div>
@@ -1658,6 +1678,14 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
+        // ==================== 数据存储Key ====================
+        const STORAGE_KEYS = {
+            chars: 'sms_app_characters_v2',
+            wbs: 'sms_app_worldbooks_v2',
+            settings: 'sms_app_settings_v2',
+            icons: 'sms_app_icons_v2'
+        };
+
         // 全局状态
         const App = {
             characters: [],
@@ -1696,8 +1724,9 @@
             gradient6: 'linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)'
         };
 
-        // 初始化
+        // ==================== 初始化 ====================
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('=== 应用启动 ===');
             loadData();
             updateTime();
             setInterval(updateTime, 60000);
@@ -1707,7 +1736,7 @@
             highlightWallpaper();
             updateWallpaperPreview();
             updateIconPreviews();
-            console.log('App initialized, wallpaper:', App.settings.wallpaper);
+            console.log('=== 初始化完成 ===');
         });
 
         function updateTime() {
@@ -1716,33 +1745,76 @@
                 now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
         }
 
-        // 数据持久化
+        // ==================== 数据持久化 - 加强版 ====================
         function saveData() {
             try {
-                localStorage.setItem('sms_chars', JSON.stringify(App.characters));
-                localStorage.setItem('sms_wbs', JSON.stringify(App.worldbooks));
-                localStorage.setItem('sms_settings', JSON.stringify(App.settings));
-                localStorage.setItem('sms_icons', JSON.stringify(App.appIcons));
-                console.log('Data saved');
-            } catch(e) { console.error('Save error:', e); }
+                const charsJson = JSON.stringify(App.characters);
+                const wbsJson = JSON.stringify(App.worldbooks);
+                const settingsJson = JSON.stringify(App.settings);
+                const iconsJson = JSON.stringify(App.appIcons);
+
+                localStorage.setItem(STORAGE_KEYS.chars, charsJson);
+                localStorage.setItem(STORAGE_KEYS.wbs, wbsJson);
+                localStorage.setItem(STORAGE_KEYS.settings, settingsJson);
+                localStorage.setItem(STORAGE_KEYS.icons, iconsJson);
+
+                console.log('数据已保存:', {
+                    chars: App.characters.length,
+                    wbs: App.worldbooks.length,
+                    wallpaper: App.settings.wallpaper,
+                    hasWallpaperData: !!App.settings.wallpaperData
+                });
+            } catch(e) {
+                console.error('保存数据失败:', e);
+                showToast('保存失败: ' + e.message, 'error');
+            }
         }
 
         function loadData() {
             try {
-                const chars = localStorage.getItem('sms_chars');
-                const wbs = localStorage.getItem('sms_wbs');
-                const settings = localStorage.getItem('sms_settings');
-                const icons = localStorage.getItem('sms_icons');
-                if (chars) App.characters = JSON.parse(chars);
-                if (wbs) App.worldbooks = JSON.parse(wbs);
-                if (settings) App.settings = {...App.settings, ...JSON.parse(settings)};
-                if (icons) App.appIcons = {...App.appIcons, ...JSON.parse(icons)};
+                console.log('开始加载数据...');
+
+                // 读取角色
+                const charsStr = localStorage.getItem(STORAGE_KEYS.chars);
+                if (charsStr) {
+                    App.characters = JSON.parse(charsStr);
+                    console.log('角色加载成功:', App.characters.length);
+                }
+
+                // 读取世界书
+                const wbsStr = localStorage.getItem(STORAGE_KEYS.wbs);
+                if (wbsStr) {
+                    App.worldbooks = JSON.parse(wbsStr);
+                    console.log('世界书加载成功:', App.worldbooks.length);
+                }
+
+                // 读取设置
+                const settingsStr = localStorage.getItem(STORAGE_KEYS.settings);
+                if (settingsStr) {
+                    const loaded = JSON.parse(settingsStr);
+                    App.settings = {...App.settings, ...loaded};
+                    console.log('设置加载成功, 壁纸:', App.settings.wallpaper, '有图片数据:', !!App.settings.wallpaperData);
+                }
+
+                // 读取图标
+                const iconsStr = localStorage.getItem(STORAGE_KEYS.icons);
+                if (iconsStr) {
+                    const loaded = JSON.parse(iconsStr);
+                    App.appIcons = {...App.appIcons, ...loaded};
+                    console.log('图标加载成功');
+                }
+
+                // 更新UI
                 loadSettingsUI();
+
                 if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) {
                     App.connectionStatus = 'connected';
                 }
-                console.log('Data loaded, wallpaper setting:', App.settings.wallpaper);
-            } catch(e) { console.error('Load error:', e); }
+
+                console.log('数据加载完成');
+            } catch(e) {
+                console.error('加载数据失败:', e);
+            }
         }
 
         function loadSettingsUI() {
@@ -1756,90 +1828,68 @@
             document.getElementById('maxTokensValue').textContent = App.settings.maxTokens;
         }
 
-        // ==================== 壁纸功能 - 完全重写 ====================
+        // ==================== 壁纸功能 ====================
         function applyWallpaper() {
             const el = document.getElementById('wallpaperLayer');
             const wp = App.settings.wallpaper;
             const wpData = App.settings.wallpaperData;
 
-            console.log('Applying wallpaper:', wp, 'has data:', !!wpData);
+            console.log('应用壁纸:', wp, '有数据:', !!wpData);
 
-            // 强制清除之前的样式
-            el.style.cssText = '';
+            // 清除之前的样式
+            el.removeAttribute('style');
+
+            let css = `
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                z-index: 0 !important;
+            `;
 
             if (wpData) {
-                // 有自定义图片数据(base64)
-                el.style.cssText = `
-                    position: fixed !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                    width: 100% !important;
-                    height: 100% !important;
-                    z-index: 0 !important;
-                    background-image: url(${wpData}) !important;
-                    background-size: cover !important;
-                    background-position: center !important;
-                    background-repeat: no-repeat !important;
-                `;
-                console.log('Applied custom image wallpaper');
+                css += `background-image: url(${wpData}) !important;
+                        background-size: cover !important;
+                        background-position: center !important;
+                        background-repeat: no-repeat !important;`;
+                console.log('应用自定义图片壁纸');
             } else if (wp && wp.startsWith('http')) {
-                // URL壁纸
-                el.style.cssText = `
-                    position: fixed !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                    width: 100% !important;
-                    height: 100% !important;
-                    z-index: 0 !important;
-                    background-image: url(${wp}) !important;
-                    background-size: cover !important;
-                    background-position: center !important;
-                    background-repeat: no-repeat !important;
-                `;
-                console.log('Applied URL wallpaper');
+                css += `background-image: url(${wp}) !important;
+                        background-size: cover !important;
+                        background-position: center !important;
+                        background-repeat: no-repeat !important;`;
+                console.log('应用URL壁纸');
             } else if (GRADIENTS[wp]) {
-                // 预设渐变
-                el.style.cssText = `
-                    position: fixed !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                    width: 100% !important;
-                    height: 100% !important;
-                    z-index: 0 !important;
-                    background: ${GRADIENTS[wp]} !important;
-                `;
-                console.log('Applied gradient wallpaper:', wp);
+                css += `background: ${GRADIENTS[wp]} !important;`;
+                console.log('应用渐变壁纸:', wp);
             } else {
-                // 默认
-                el.style.cssText = `
-                    position: fixed !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                    width: 100% !important;
-                    height: 100% !important;
-                    z-index: 0 !important;
-                    background: ${GRADIENTS.gradient1} !important;
-                `;
-                console.log('Applied default wallpaper');
+                css += `background: ${GRADIENTS.gradient1} !important;`;
+                console.log('应用默认壁纸');
             }
+
+            el.style.cssText = css;
         }
 
         function updateWallpaperPreview() {
             const preview = document.getElementById('wallpaperPreview');
             const wp = App.tempWallpaper || App.settings.wallpaper;
-            const wpData = (App.tempWallpaper && App.tempWallpaper.startsWith('data:')) ? App.tempWallpaper : App.settings.wallpaperData;
+
+            let css = '';
 
             if (App.tempWallpaper && App.tempWallpaper.startsWith('data:')) {
-                preview.style.cssText = `background-image: url(${App.tempWallpaper}) !important; background-size: cover !important; background-position: center !important;`;
-            } else if (wpData && !App.tempWallpaper) {
-                preview.style.cssText = `background-image: url(${wpData}) !important; background-size: cover !important; background-position: center !important;`;
+                css = `background-image: url(${App.tempWallpaper}) !important; background-size: cover !important; background-position: center !important;`;
+            } else if (!App.tempWallpaper && App.settings.wallpaperData) {
+                css = `background-image: url(${App.settings.wallpaperData}) !important; background-size: cover !important; background-position: center !important;`;
             } else if (App.tempWallpaper && App.tempWallpaper.startsWith('http')) {
-                preview.style.cssText = `background-image: url(${App.tempWallpaper}) !important; background-size: cover !important; background-position: center !important;`;
+                css = `background-image: url(${App.tempWallpaper}) !important; background-size: cover !important; background-position: center !important;`;
             } else if (GRADIENTS[wp]) {
-                preview.style.cssText = `background: ${GRADIENTS[wp]} !important;`;
+                css = `background: ${GRADIENTS[wp]} !important;`;
             } else {
-                preview.style.cssText = `background: ${GRADIENTS.gradient1} !important;`;
+                css = `background: ${GRADIENTS.gradient1} !important;`;
             }
+
+            preview.style.cssText = css;
         }
 
         function selectPresetWallpaper(name) {
@@ -1866,7 +1916,7 @@
                 App.tempWallpaper = ev.target.result;
                 updateWallpaperPreview();
                 showToast('已上传，点击保存应用', 'success');
-                console.log('Wallpaper uploaded, size:', ev.target.result.length);
+                console.log('壁纸上传成功, 大小:', ev.target.result.length);
             };
             reader.readAsDataURL(file);
             e.target.value = '';
@@ -1878,18 +1928,15 @@
                 return;
             }
 
-            console.log('Saving wallpaper:', App.tempWallpaper.substring(0, 50) + '...');
+            console.log('保存壁纸:', App.tempWallpaper.substring(0, 50) + '...');
 
             if (App.tempWallpaper.startsWith('data:')) {
-                // base64图片
                 App.settings.wallpaperData = App.tempWallpaper;
                 App.settings.wallpaper = 'custom';
             } else if (App.tempWallpaper.startsWith('http')) {
-                // URL
                 App.settings.wallpaper = App.tempWallpaper;
                 App.settings.wallpaperData = null;
             } else {
-                // 预设名称
                 App.settings.wallpaper = App.tempWallpaper;
                 App.settings.wallpaperData = null;
             }
@@ -1909,10 +1956,11 @@
             });
         }
 
-        // ==================== 应用图标自定义 ====================
+        // ==================== 应用图标 ====================
         function updateIconPreviews() {
             ['settings', 'messages', 'worldbook', 'photos'].forEach(app => {
                 const preview = document.getElementById('iconPreview' + app.charAt(0).toUpperCase() + app.slice(1));
+                if (!preview) return;
                 const iconData = App.tempIcons[app] || App.appIcons[app];
 
                 if (iconData) {
@@ -1928,6 +1976,7 @@
         function applyAppIcons() {
             ['settings', 'messages', 'worldbook', 'photos'].forEach(app => {
                 const el = document.getElementById('appIcon' + app.charAt(0).toUpperCase() + app.slice(1));
+                if (!el) return;
                 const iconData = App.appIcons[app];
 
                 if (iconData) {
@@ -1936,7 +1985,7 @@
                     el.innerHTML = App.defaultEmojis[app];
                 }
             });
-            console.log('App icons applied');
+            console.log('应用图标已更新');
         }
 
         function handleIconUpload(e, appName) {
@@ -2738,7 +2787,7 @@
                 worldbooks: App.worldbooks,
                 settings: App.settings,
                 appIcons: App.appIcons,
-                version: '4.1.0'
+                version: '4.2.0'
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
@@ -2772,7 +2821,10 @@
 
         function clearAllData() {
             if (confirm('确定清除所有数据？')) {
-                localStorage.clear();
+                localStorage.removeItem(STORAGE_KEYS.chars);
+                localStorage.removeItem(STORAGE_KEYS.wbs);
+                localStorage.removeItem(STORAGE_KEYS.settings);
+                localStorage.removeItem(STORAGE_KEYS.icons);
                 location.reload();
             }
         }
