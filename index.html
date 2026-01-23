@@ -1,4 +1,7 @@
 
+
+
+
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -2491,12 +2494,12 @@
             }
         }
 
-        // ==================== 核心修复：改进的API消息构建 ====================
-        function buildAPIMessages(char) {
-            const msgs = [];
+// ==================== 核心修复：改进的API消息构建 ====================
+function buildAPIMessages(char) {
+    const msgs = [];
 
-            // 【核心系统提示词 - 双重强调格式】
-            let systemPrompt = `# 短信模拟规则
+    // 【核心系统提示词】
+    let systemPrompt = `# 短信模拟规则
 
 你正在扮演"${char.name}"，通过手机短信与对方聊天。
 
@@ -2520,40 +2523,61 @@
 ## 角色设定
 ${char.description || '一个普通朋友'}`;
 
-            if (char.scenario) systemPrompt += `\n\n## 当前情景\n${char.scenario}`;
-            if (char.userNick) systemPrompt += `\n\n## 对用户的称呼\n${char.userNick}`;
-            if (char.systemPrompt) systemPrompt += `\n\n## 额外设定\n${char.systemPrompt}`;
+    if (char.scenario) systemPrompt += `\n\n## 当前情景\n${char.scenario}`;
+    if (char.userNick) systemPrompt += `\n\n## 对用户的称呼\n${char.userNick}`;
+    if (char.systemPrompt) systemPrompt += `\n\n## 额外设定\n${char.systemPrompt}`;
 
-            // 世界书注入
-            const wb = App.worldbooks.find(w => w.id === char.worldbookId);
-            if (wb?.content) {
-                const inject = wb.alwaysActive || (wb.keywords && char.messages.some(m =>
-                    wb.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))
-                ));
-                if (inject) systemPrompt += `\n\n## 背景知识\n${wb.content}`;
-            }
+    // 世界书注入
+    const wb = App.worldbooks.find(w => w.id === char.worldbookId);
+    if (wb?.content) {
+        const inject = wb.alwaysActive || (wb.keywords && char.messages.some(m =>
+            wb.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))
+        ));
+        if (inject) systemPrompt += `\n\n## 背景知识\n${wb.content}`;
+    }
 
-            msgs.push({ role: 'system', content: systemPrompt });
+    msgs.push({ role: 'system', content: systemPrompt });
 
-            // 历史消息
-            const max = App.settings.maxContextMessages || 200;
-            const history = char.messages.slice(-max);
+    // 【核心修复】合并连续同角色消息，用|||分隔
+    const max = App.settings.maxContextMessages || 200;
+    const history = char.messages.slice(-max);
 
-            history.forEach(m => {
-                msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content });
+    // 合并连续消息
+    const mergedHistory = [];
+    for (let i = 0; i < history.length; i++) {
+        const current = history[i];
+        const last = mergedHistory[mergedHistory.length - 1];
+
+        if (last && last.role === current.role) {
+            // 同角色连续消息，用|||合并
+            last.content += '|||' + current.content;
+        } else {
+            // 不同角色，新建条目
+            mergedHistory.push({
+                role: current.role,
+                content: current.content
             });
-
-            // 【关键修复】在历史消息后添加格式提醒（作为最后一条system消息注入）
-            // 这会在发送前强调格式要求，防止AI"忘记"
-            if (history.length > 10) {
-                msgs.push({
-                    role: 'system',
-                    content: `【格式提醒】请用 ||| 分隔多条短信。每条短信简短自然（5-30字）。不要把所有话挤在一条里。示例：嗯|||怎么了|||有事？`
-                });
-            }
-
-            return msgs;
         }
+    }
+
+    // 添加到消息列表
+    mergedHistory.forEach(m => {
+        msgs.push({
+            role: m.role === 'user' ? 'user' : 'assistant',
+            content: m.content
+        });
+    });
+
+    // 格式提醒（当历史较长时）
+    if (history.length > 10) {
+        msgs.push({
+            role: 'system',
+            content: `【格式提醒】请用 ||| 分隔多条短信。每条短信简短自然（5-30字）。模仿用户的发消息风格。`
+        });
+    }
+
+    return msgs;
+}
 
         async function regenerateLastReply() {
             const char = App.characters.find(c => c.id === App.currentCharId);
