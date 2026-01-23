@@ -1,12 +1,10 @@
+
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="https://iili.io/fUTLJTP.jpg">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>AI短信模拟器 v4.0</title>
     <style>
         :root {
@@ -26,10 +24,6 @@
             --transition-smooth: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
             --shadow-glow: 0 0 40px rgba(102, 126, 234, 0.3);
-            --avatar-size: 36px;
-            --avatar-border-width: 2px;
-            --avatar-border-color: rgba(255,255,255,0.3);
-            --avatar-border-radius: 50%;
         }
 
         * {
@@ -46,29 +40,27 @@
             background: #000;
         }
 
-        .wallpaper {
+        #wallpaper {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
             z-index: -2;
-            transition: var(--transition-smooth);
+            background-color: #1a1a2e;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
         }
 
-        .wallpaper::after {
+        #wallpaper::after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(ellipse at top, rgba(102, 126, 234, 0.15) 0%, transparent 60%),
-                        radial-gradient(ellipse at bottom, rgba(118, 75, 162, 0.1) 0%, transparent 60%);
+            background: radial-gradient(ellipse at top, rgba(102, 126, 234, 0.1) 0%, transparent 50%);
             pointer-events: none;
         }
 
@@ -181,8 +173,8 @@
             overflow: hidden;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            background-size: cover;
-            background-position: center;
+            background-size: cover !important;
+            background-position: center !important;
         }
 
         .app-icon::before {
@@ -212,11 +204,6 @@
         .app-icon.photos {
             background: linear-gradient(135deg, rgba(255, 45, 85, 0.8) 0%, rgba(255, 55, 95, 0.8) 100%);
             border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .app-icon.has-custom-image {
-            background: none !important;
-            border: none !important;
         }
 
         .app-icon-edit-badge {
@@ -401,8 +388,6 @@
             gap: 8px;
         }
 
-        .settings-item-value svg { width: 14px; height: 14px; fill: var(--text-secondary); }
-
         .input-group { margin-bottom: 20px; }
 
         .input-label {
@@ -482,6 +467,7 @@
             gap: 14px;
             padding: 14px 16px;
             background: var(--glass-bg);
+            backdrop-filter: blur(10px);
             border-radius: 16px;
             margin-bottom: 10px;
             cursor: pointer;
@@ -491,6 +477,7 @@
 
         .contact-item:hover {
             background: rgba(255, 255, 255, 0.2);
+            transform: translateX(4px);
         }
 
         .contact-avatar {
@@ -502,17 +489,13 @@
             align-items: center;
             justify-content: center;
             font-size: 24px;
+            font-weight: 600;
             color: white;
             flex-shrink: 0;
-            background-size: cover;
-            background-position: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            background-size: cover !important;
+            background-position: center !important;
             overflow: hidden;
-        }
-
-        .contact-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
 
         .contact-info { flex: 1; min-width: 0; }
@@ -577,34 +560,39 @@
         }
 
         .message-wrapper.sent {
-            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+        .message-wrapper.received {
+            justify-content: flex-start;
         }
 
         .message-avatar {
-            width: var(--avatar-size);
-            height: var(--avatar-size);
-            border-radius: var(--avatar-border-radius);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             background: var(--accent-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 14px;
             color: white;
             flex-shrink: 0;
-            background-size: cover;
-            background-position: center;
-            border: var(--avatar-border-width) solid var(--avatar-border-color);
+            background-size: cover !important;
+            background-position: center !important;
             overflow: hidden;
+        }
+
+        .message-avatar.square {
+            border-radius: 6px;
+        }
+
+        .message-avatar.rounded-square {
+            border-radius: 10px;
         }
 
         .message-avatar.hidden {
             display: none;
-        }
-
-        .message-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
 
         .message {
@@ -639,9 +627,6 @@
             color: rgba(255, 255, 255, 0.5);
             margin-top: 3px;
         }
-
-        .message.sent .message-time { text-align: right; }
-        .message.received .message-time { text-align: left; }
 
         .message-checkbox {
             width: 22px;
@@ -703,6 +688,7 @@
             gap: 8px;
             padding: 12px 16px 34px;
             background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+            backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -767,6 +753,8 @@
         .modal {
             width: 100%;
             max-width: 340px;
+            max-height: 80vh;
+            overflow-y: auto;
             background: var(--glass-bg-dark);
             backdrop-filter: blur(40px);
             border-radius: 20px;
@@ -812,7 +800,6 @@
             cursor: pointer;
         }
 
-        .modal-btn:active { transform: scale(0.95); }
         .modal-btn.cancel { background: rgba(255, 255, 255, 0.15); color: var(--text-primary); }
         .modal-btn.confirm { background: var(--accent-color); color: white; }
 
@@ -836,8 +823,9 @@
             color: var(--text-primary);
             font-size: 15px;
             font-weight: 500;
-            animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.7s forwards;
+            box-shadow: var(--shadow-soft);
             border: 1px solid var(--glass-border);
+            animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.7s forwards;
         }
 
         .toast.success { border-left: 4px solid var(--success-color); }
@@ -868,8 +856,6 @@
             background-repeat: no-repeat;
             background-position: 14px center;
         }
-
-        .search-field::placeholder { color: rgba(255, 255, 255, 0.4); }
 
         .toggle-switch {
             position: relative;
@@ -904,11 +890,8 @@
             border-radius: 12px;
             color: var(--text-primary);
             font-size: 16px;
+            cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: calc(100% - 14px) center;
-            padding-right: 44px;
         }
 
         .select-field option { background: #1a1a2e; }
@@ -929,7 +912,7 @@
             opacity: 0;
             visibility: hidden;
             transform: translateY(20px);
-            transition: all 0.3s ease;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
         }
 
         .extension-panel.active {
@@ -1070,20 +1053,12 @@
             font-size: 12px;
         }
 
-        .log-entry {
-            padding: 4px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
+        .log-entry { padding: 4px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         .log-entry.success { color: var(--success-color); }
         .log-entry.error { color: var(--danger-color); }
         .log-entry.info { color: var(--accent-color); }
 
-        .model-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 12px;
-        }
+        .model-list { max-height: 200px; overflow-y: auto; margin-top: 12px; }
 
         .model-item {
             padding: 12px 16px;
@@ -1091,10 +1066,12 @@
             border-radius: 10px;
             margin-bottom: 8px;
             cursor: pointer;
+            display: flex;
+            justify-content: space-between;
         }
 
+        .model-item:hover { background: rgba(255, 255, 255, 0.1); }
         .model-item.selected { background: var(--accent-color); }
-
         .model-item-name { font-size: 14px; color: var(--text-primary); }
 
         .date-separator {
@@ -1137,54 +1114,55 @@
         .select-mode-btn.cancel { background: rgba(255, 255, 255, 0.2); color: var(--text-primary); }
         .select-mode-btn.delete { background: var(--danger-color); color: white; }
 
-        .avatar-upload-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
+        .emoji-picker {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
-        .avatar-preview {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: var(--accent-gradient);
+        .emoji-item {
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
-            color: white;
-            background-size: cover;
-            background-position: center;
-            overflow: hidden;
-            border: 3px solid var(--glass-border);
-        }
-
-        .avatar-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .avatar-upload-btn {
-            padding: 10px 20px;
-            background: var(--accent-color);
-            border: none;
+            font-size: 28px;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            color: white;
-            font-size: 14px;
             cursor: pointer;
         }
 
-        .wallpaper-preview {
-            width: 100%;
-            height: 150px;
-            border-radius: 12px;
-            background-size: cover;
-            background-position: center;
-            margin-bottom: 16px;
-            border: 2px solid var(--glass-border);
+        .emoji-item:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .avatar-upload-area {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 2px dashed var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 0 auto 16px;
+            font-size: 32px;
+            color: var(--text-secondary);
+            background-size: cover !important;
+            background-position: center !important;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+        }
+
+        .avatar-upload-area:hover {
+            border-color: var(--accent-color);
+            background-color: rgba(0, 122, 255, 0.1);
+        }
+
+        .avatar-upload-area.has-image {
+            border-style: solid;
+            border-color: var(--accent-color);
         }
 
         .color-picker-row {
@@ -1230,13 +1208,6 @@
             border-color: var(--accent-color);
         }
 
-        .char-counter {
-            font-size: 12px;
-            color: var(--text-secondary);
-            text-align: right;
-            margin-top: 4px;
-        }
-
         .worldbook-item {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -1245,6 +1216,8 @@
             margin-bottom: 12px;
             cursor: pointer;
         }
+
+        .worldbook-item:hover { background: rgba(255, 255, 255, 0.2); }
 
         .worldbook-item-header {
             display: flex;
@@ -1265,11 +1238,30 @@
         .worldbook-item-preview {
             font-size: 14px;
             color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        @media (max-width: 430px) {
-            .app-grid { gap: 20px; }
-            .app-icon { width: 64px; height: 64px; border-radius: 16px; }
+        .char-counter {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .char-counter.warning { color: #FF9500; }
+        .char-counter.error { color: var(--danger-color); }
+
+        .wallpaper-preview {
+            width: 100%;
+            height: 150px;
+            border-radius: 12px;
+            background-size: cover !important;
+            background-position: center !important;
+            margin-bottom: 16px;
+            border: 2px solid var(--glass-border);
         }
 
         ::-webkit-scrollbar { width: 6px; }
@@ -1278,7 +1270,7 @@
     </style>
 </head>
 <body>
-    <div class="wallpaper" id="wallpaper"></div>
+    <div id="wallpaper"></div>
 
     <div class="phone-container">
         <div class="status-bar">
@@ -1324,176 +1316,85 @@
                     返回
                 </button>
                 <span class="nav-title">设置</span>
-                <button class="nav-btn right" style="visibility: hidden;">占位</button>
+                <div class="nav-btn right" style="visibility:hidden">占</div>
             </div>
-
             <div class="page-content">
-                <p class="settings-group-title">用户资料</p>
-                <div class="settings-group" style="padding: 16px;">
-                    <div class="avatar-upload-container">
-                        <div class="avatar-preview" id="userAvatarPreview">👤</div>
-                        <button class="avatar-upload-btn" onclick="triggerUserAvatarUpload()">上传头像</button>
-                        <input type="file" id="userAvatarInput" class="file-input-hidden" accept="image/*" onchange="handleUserAvatarUpload(event)">
-                    </div>
-                </div>
-
-                <p class="settings-group-title">聊天显示设置</p>
-                <div class="settings-group">
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <span class="settings-item-label">显示头像</span>
-                        </div>
-                        <div class="toggle-switch active" id="showAvatarsToggle" onclick="toggleShowAvatars(this)"></div>
-                    </div>
-
-                    <div class="settings-item" id="avatarShapeRow">
-                        <div class="settings-item-left">
-                            <span class="settings-item-label">头像形状</span>
-                        </div>
-                        <select class="select-field" id="avatarShapeSelect" onchange="updateAvatarShape()" style="width: auto; padding: 8px 30px 8px 12px;">
-                            <option value="circle">圆形</option>
-                            <option value="rounded">圆角方形</option>
-                            <option value="square">正方形</option>
-                        </select>
-                    </div>
-
-                    <div class="settings-item" id="avatarBorderRow">
-                        <div class="settings-item-left">
-                            <span class="settings-item-label">显示边框</span>
-                        </div>
-                        <div class="toggle-switch" id="showAvatarBorderToggle" onclick="toggleAvatarBorder(this)"></div>
-                    </div>
-
-                    <div id="borderOptionsContainer" style="padding: 16px; display: none;">
-                        <div class="color-picker-row">
-                            <span class="color-picker-label">边框颜色</span>
-                            <input type="color" class="color-picker-input" id="avatarBorderColor" value="#ffffff" onchange="updateBorderColor()">
-                        </div>
-                        <div class="slider-container">
-                            <div class="slider-header">
-                                <span class="slider-label">边框透明度</span>
-                                <span class="slider-value" id="borderOpacityValue">30%</span>
-                            </div>
-                            <input type="range" class="slider-input" id="borderOpacity" min="0" max="100" value="30" oninput="updateBorderOpacity()">
-                        </div>
-                        <div class="slider-container">
-                            <div class="slider-header">
-                                <span class="slider-label">边框粗细</span>
-                                <span class="slider-value" id="borderWidthValue">2px</span>
-                            </div>
-                            <input type="range" class="slider-input" id="borderWidth" min="1" max="5" value="2" oninput="updateBorderWidth()">
-                        </div>
-                    </div>
-                </div>
-
                 <p class="settings-group-title">API 配置</p>
-                <div class="settings-group" style="padding: 16px;">
+                <div class="settings-group" style="padding:16px">
                     <div class="action-hint" id="connectionStatusHint">
                         <span class="action-hint-icon">⚠️</span>
                         <span class="action-hint-text">尚未配置API连接</span>
                     </div>
-
                     <div class="input-group">
-                        <label class="input-label">API 基础地址</label>
+                        <label class="input-label">API基础地址</label>
                         <input type="text" class="input-field" id="apiBaseUrl" placeholder="https://api.example.com">
                     </div>
-
                     <div class="input-group">
-                        <label class="input-label">API 密钥</label>
-                        <input type="password" class="input-field" id="apiKey" placeholder="sk-xxxxxxxx">
+                        <label class="input-label">API密钥</label>
+                        <input type="password" class="input-field" id="apiKey" placeholder="sk-xxx">
                     </div>
-
-                    <div class="btn-stack">
-                        <button class="btn btn-warning" onclick="fetchModels()" id="fetchModelsBtn">📋 拉取模型列表</button>
-                    </div>
-
-                    <div id="modelListContainer" style="display: none;">
-                        <label class="input-label" style="margin-top: 16px;">可用模型</label>
+                    <button class="btn btn-warning" onclick="fetchModels()" id="fetchModelsBtn">📋 拉取模型</button>
+                    <div id="modelListContainer" style="display:none">
+                        <label class="input-label" style="margin-top:16px">可用模型</label>
                         <div class="model-list" id="modelList"></div>
                     </div>
-
-                    <div class="input-group" style="margin-top: 16px;">
+                    <div class="input-group" style="margin-top:16px">
                         <label class="input-label">当前模型</label>
                         <input type="text" class="input-field" id="modelName" placeholder="模型名称">
                     </div>
-
-                    <div class="btn-stack" style="margin-top: 16px;">
+                    <div class="btn-stack" style="margin-top:16px">
                         <button class="btn btn-secondary" onclick="testConnection()" id="testConnectionBtn">🔗 测试连接</button>
                         <button class="btn btn-primary" onclick="saveApiSettings()">💾 保存设置</button>
                     </div>
-
                     <div class="divider"></div>
                     <label class="input-label">调试日志</label>
-                    <div class="log-container" id="debugLog">
-                        <div class="log-entry info">等待操作...</div>
-                    </div>
+                    <div class="log-container" id="debugLog"><div class="log-entry info">等待操作...</div></div>
                 </div>
 
                 <p class="settings-group-title">对话设置</p>
-                <div class="settings-group" style="padding: 16px;">
+                <div class="settings-group" style="padding:16px">
                     <div class="input-group">
-                        <label class="input-label">最大对话记忆条数</label>
-                        <input type="number" class="input-field" id="maxContextMessages" min="10" max="1000" value="200">
+                        <label class="input-label">最大记忆条数</label>
+                        <input type="number" class="input-field" id="maxContextMessages" value="200" placeholder="200">
                     </div>
                 </div>
 
                 <p class="settings-group-title">模型参数</p>
                 <div class="settings-group">
-                    <div class="slider-container" style="padding: 16px;">
+                    <div class="slider-container" style="padding:16px">
                         <div class="slider-header">
                             <span class="slider-label">Temperature</span>
                             <span class="slider-value" id="tempValue">0.7</span>
                         </div>
-                        <input type="range" class="slider-input" id="temperature" min="0" max="2" step="0.1" value="0.7" oninput="updateSliderValue('temperature', 'tempValue')">
+                        <input type="range" class="slider-input" id="temperature" min="0" max="2" step="0.1" value="0.7" oninput="document.getElementById('tempValue').textContent=this.value">
                     </div>
-                    <div class="slider-container" style="padding: 0 16px 16px;">
+                    <div class="slider-container" style="padding:0 16px 16px">
                         <div class="slider-header">
                             <span class="slider-label">Max Tokens</span>
                             <span class="slider-value" id="maxTokensValue">2048</span>
                         </div>
-                        <input type="range" class="slider-input" id="maxTokens" min="256" max="8192" step="256" value="2048" oninput="updateSliderValue('maxTokens', 'maxTokensValue')">
+                        <input type="range" class="slider-input" id="maxTokens" min="256" max="8192" step="256" value="2048" oninput="document.getElementById('maxTokensValue').textContent=this.value">
                     </div>
                 </div>
 
                 <p class="settings-group-title">数据管理</p>
                 <div class="settings-group">
                     <div class="settings-item" onclick="exportAllData()">
-                        <div class="settings-item-left">
-                            <span class="settings-icon blue">📤</span>
-                            <span class="settings-item-label">导出所有数据</span>
-                        </div>
+                        <div class="settings-item-left"><span class="settings-icon blue">📤</span><span class="settings-item-label">导出数据</span></div>
                     </div>
-                    <div class="settings-item" onclick="importDataClick()">
-                        <div class="settings-item-left">
-                            <span class="settings-icon green">📥</span>
-                            <span class="settings-item-label">导入数据</span>
-                        </div>
+                    <div class="settings-item" onclick="document.getElementById('importFileInput').click()">
+                        <div class="settings-item-left"><span class="settings-icon green">📥</span><span class="settings-item-label">导入数据</span></div>
                     </div>
                     <input type="file" id="importFileInput" class="file-input-hidden" accept=".json" onchange="importData(event)">
                     <div class="settings-item" onclick="clearAllData()">
-                        <div class="settings-item-left">
-                            <span class="settings-icon red">🗑️</span>
-                            <span class="settings-item-label">清除所有数据</span>
-                        </div>
+                        <div class="settings-item-left"><span class="settings-icon red">🗑️</span><span class="settings-item-label">清除数据</span></div>
                     </div>
                 </div>
-
-                <p class="settings-group-title">关于</p>
-                <div class="settings-group">
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <span class="settings-icon purple">📱</span>
-                            <span class="settings-item-label">版本</span>
-                        </div>
-                        <div class="settings-item-value">4.0.0</div>
-                    </div>
-                </div>
-
-                <div style="height: 50px;"></div>
+                <div style="height:50px"></div>
             </div>
         </div>
 
-        <!-- 短信列表页面 -->
+        <!-- 短信列表 -->
         <div class="page" id="messagesPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('messagesPage')">
@@ -1505,18 +1406,16 @@
                     <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 </button>
             </div>
-
-            <div style="padding: 0 16px 16px;">
+            <div style="padding:0 16px 16px">
                 <input type="text" class="search-field" id="contactSearch" placeholder="搜索角色..." oninput="filterContacts()">
             </div>
-
             <div class="page-content" id="contactListContainer">
                 <div class="empty-state" id="emptyContactState">
                     <div class="empty-state-icon">💬</div>
                     <div class="empty-state-title">暂无角色</div>
-                    <div class="empty-state-desc">点击右上角 + 创建角色</div>
+                    <div class="empty-state-desc">点击右上角+创建角色</div>
                 </div>
-                <div class="contact-list" id="contactList" style="display: none;"></div>
+                <div class="contact-list" id="contactList" style="display:none"></div>
             </div>
         </div>
 
@@ -1531,7 +1430,6 @@
                     <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
-
             <div class="select-mode-bar" id="selectModeBar">
                 <span class="select-mode-info">已选择 <span id="selectedCount">0</span> 条</span>
                 <div class="select-mode-btns">
@@ -1539,10 +1437,8 @@
                     <button class="select-mode-btn delete" onclick="deleteSelectedMessages()">删除</button>
                 </div>
             </div>
-
             <div class="chat-container">
                 <div class="chat-messages" id="chatMessages"></div>
-
                 <div class="extension-panel" id="extensionPanel">
                     <div class="extension-panel-header">
                         <span class="extension-panel-title">操作</span>
@@ -1557,7 +1453,6 @@
                         <span>重新生成回复</span>
                     </button>
                 </div>
-
                 <div class="chat-input-area">
                     <button class="chat-input-btn" onclick="toggleExtensionPanel()">⚡</button>
                     <textarea class="chat-input-field" id="chatInput" placeholder="输入消息..." rows="1" oninput="autoResizeTextarea(this)"></textarea>
@@ -1577,54 +1472,98 @@
                 <span class="nav-title">角色设置</span>
                 <button class="nav-btn right" onclick="saveCharacterSettings()">保存</button>
             </div>
-
             <div class="page-content">
-                <p class="settings-group-title">角色头像</p>
-                <div class="settings-group" style="padding: 16px;">
-                    <div class="avatar-upload-container">
-                        <div class="avatar-preview" id="charAvatarPreview">😊</div>
-                        <button class="avatar-upload-btn" onclick="triggerCharAvatarUpload()">上传头像图片</button>
-                        <input type="file" id="charAvatarInput" class="file-input-hidden" accept="image/*" onchange="handleCharAvatarUpload(event)">
+                <p class="settings-group-title">头像设置</p>
+                <div class="settings-group" style="padding:16px">
+                    <label class="input-label">角色头像</label>
+                    <div class="avatar-upload-area" id="charAvatarUpload" onclick="document.getElementById('charAvatarInput').click()">📷</div>
+                    <input type="file" id="charAvatarInput" class="file-input-hidden" accept="image/*" onchange="handleCharAvatarUpload(event)">
+
+                    <label class="input-label" style="margin-top:16px">用户头像(你的头像)</label>
+                    <div class="avatar-upload-area" id="userAvatarUpload" onclick="document.getElementById('userAvatarInput').click()">👤</div>
+                    <input type="file" id="userAvatarInput" class="file-input-hidden" accept="image/*" onchange="handleUserAvatarUpload(event)">
+                </div>
+
+                <p class="settings-group-title">头像显示设置</p>
+                <div class="settings-group" style="padding:16px">
+                    <div class="settings-item" style="padding:0 0 14px 0">
+                        <span class="settings-item-label">显示头像</span>
+                        <div class="toggle-switch" id="showAvatarToggle" onclick="toggleSwitch(this)"></div>
                     </div>
-                    <div class="input-group" style="margin-top: 16px;">
-                        <label class="input-label">或使用Emoji</label>
-                        <input type="text" class="input-field" id="charAvatarEmoji" placeholder="输入emoji，如 😊">
+                    <div class="input-group">
+                        <label class="input-label">头像形状</label>
+                        <div class="shape-options" id="avatarShapeOptions">
+                            <div class="shape-option selected" data-shape="circle" onclick="selectShape(this)">圆形</div>
+                            <div class="shape-option" data-shape="square" onclick="selectShape(this)">正方形</div>
+                            <div class="shape-option" data-shape="rounded-square" onclick="selectShape(this)">圆角方形</div>
+                        </div>
+                    </div>
+                    <div class="settings-item" style="padding:14px 0">
+                        <span class="settings-item-label">显示边框</span>
+                        <div class="toggle-switch" id="showBorderToggle" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <div class="color-picker-row">
+                        <span class="color-picker-label">边框颜色</span>
+                        <input type="color" class="color-picker-input" id="borderColorPicker" value="#007AFF">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">边框宽度</span>
+                            <span class="slider-value" id="borderWidthValue">2</span>
+                        </div>
+                        <input type="range" class="slider-input" id="borderWidthSlider" min="0" max="5" step="1" value="2" oninput="document.getElementById('borderWidthValue').textContent=this.value">
                     </div>
                 </div>
 
                 <p class="settings-group-title">基本信息</p>
-                <div class="settings-group" style="padding: 16px;">
+                <div class="settings-group" style="padding:16px">
                     <div class="input-group">
                         <label class="input-label">角色名称</label>
-                        <input type="text" class="input-field" id="charName" placeholder="输入角色名称">
+                        <input type="text" class="input-field" id="charName" placeholder="名称">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">头像表情(无图片时显示)</label>
+                        <input type="text" class="input-field" id="charAvatar" placeholder="😊">
                     </div>
                 </div>
 
                 <p class="settings-group-title">角色设定</p>
-                <div class="settings-group" style="padding: 16px;">
-                    <textarea class="input-field" id="charDescription" rows="8" placeholder="详细描述角色的性格、背景等..."></textarea>
+                <div class="settings-group" style="padding:16px">
+                    <textarea class="input-field" id="charDescription" rows="8" placeholder="角色性格、背景等..."></textarea>
                 </div>
 
-                <p class="settings-group-title">开场白 (最多300字符)</p>
-                <div class="settings-group" style="padding: 16px;">
-                    <textarea class="input-field" id="charGreeting" rows="3" maxlength="300" placeholder="角色的第一条消息..." oninput="updateCharCounter()"></textarea>
-                    <div class="char-counter" id="greetingCharCounter">0 / 300</div>
+                <p class="settings-group-title">开场白(最多300字)</p>
+                <div class="settings-group" style="padding:16px">
+                    <textarea class="input-field" id="charGreeting" rows="3" maxlength="300" placeholder="第一条消息..." oninput="updateCharCounter()"></textarea>
+                    <div class="char-counter" id="greetingCharCounter">0/300</div>
                 </div>
 
                 <p class="settings-group-title">情景设定</p>
-                <div class="settings-group" style="padding: 16px;">
-                    <textarea class="input-field" id="charScenario" rows="4" placeholder="对话发生的场景..."></textarea>
+                <div class="settings-group" style="padding:16px">
+                    <textarea class="input-field" id="charScenario" rows="4" placeholder="对话场景..."></textarea>
                 </div>
 
                 <p class="settings-group-title">绑定世界书</p>
-                <div class="settings-group" style="padding: 16px;">
+                <div class="settings-group" style="padding:16px">
                     <select class="select-field" id="charWorldbook">
                         <option value="">不绑定</option>
                     </select>
                 </div>
 
+                <p class="settings-group-title">高级设置</p>
+                <div class="settings-group" style="padding:16px">
+                    <div class="input-group">
+                        <label class="input-label">用户称呼</label>
+                        <input type="text" class="input-field" id="charUserNick" placeholder="亲爱的、主人...">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">专属提示词</label>
+                        <textarea class="input-field" id="charSystemPrompt" rows="3" placeholder="额外指令..."></textarea>
+                    </div>
+                </div>
+
                 <div class="delete-zone" onclick="deleteCurrentCharacter()">🗑️ 删除此角色</div>
-                <div style="height: 50px;"></div>
+                <div style="height:50px"></div>
             </div>
         </div>
 
@@ -1640,18 +1579,21 @@
                     <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 </button>
             </div>
-
             <div class="page-content">
+                <div class="action-hint">
+                    <span class="action-hint-icon">📚</span>
+                    <span class="action-hint-text">为角色提供额外知识</span>
+                </div>
                 <div class="empty-state" id="emptyWorldbookState">
                     <div class="empty-state-icon">📚</div>
                     <div class="empty-state-title">暂无世界书</div>
-                    <div class="empty-state-desc">点击右上角 + 创建</div>
+                    <div class="empty-state-desc">点击右上角+创建</div>
                 </div>
-                <div id="worldbookList" style="display: none;"></div>
+                <div id="worldbookList" style="display:none"></div>
             </div>
         </div>
 
-        <!-- 世界书编辑页面 -->
+        <!-- 世界书编辑 -->
         <div class="page slide-from-bottom" id="worldbookEditPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closeWorldbookEdit()">
@@ -1661,37 +1603,31 @@
                 <span class="nav-title">编辑世界书</span>
                 <button class="nav-btn right" onclick="saveWorldbook()">保存</button>
             </div>
-
             <div class="page-content">
-                <p class="settings-group-title">基本信息</p>
-                <div class="settings-group" style="padding: 16px;">
+                <div class="settings-group" style="padding:16px">
                     <div class="input-group">
                         <label class="input-label">名称</label>
-                        <input type="text" class="input-field" id="worldbookName" placeholder="世界书名称">
+                        <input type="text" class="input-field" id="worldbookName" placeholder="名称">
                     </div>
                     <div class="input-group">
-                        <label class="input-label">触发关键词</label>
-                        <input type="text" class="input-field" id="worldbookKeywords" placeholder="关键词1, 关键词2...">
+                        <label class="input-label">简介</label>
+                        <textarea class="input-field" id="worldbookSummary" rows="2" placeholder="简介..."></textarea>
                     </div>
-                </div>
-
-                <p class="settings-group-title">内容</p>
-                <div class="settings-group" style="padding: 16px;">
-                    <textarea class="input-field" id="worldbookContent" rows="10" placeholder="世界书内容..."></textarea>
-                </div>
-
-                <p class="settings-group-title">设置</p>
-                <div class="settings-group">
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <span class="settings-item-label">始终激活</span>
-                        </div>
+                    <div class="input-group">
+                        <label class="input-label">触发关键词(逗号分隔)</label>
+                        <input type="text" class="input-field" id="worldbookKeywords" placeholder="关键词1,关键词2...">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">内容</label>
+                        <textarea class="input-field" id="worldbookContent" rows="8" placeholder="内容..."></textarea>
+                    </div>
+                    <div class="settings-item" style="padding:14px 0">
+                        <span class="settings-item-label">始终激活</span>
                         <div class="toggle-switch" id="worldbookAlwaysActive" onclick="toggleSwitch(this)"></div>
                     </div>
                 </div>
-
-                <div class="delete-zone" onclick="deleteCurrentWorldbook()">🗑️ 删除此世界书</div>
-                <div style="height: 50px;"></div>
+                <div class="delete-zone" onclick="deleteCurrentWorldbook()">🗑️ 删除</div>
+                <div style="height:50px"></div>
             </div>
         </div>
 
@@ -1703,42 +1639,38 @@
                     返回
                 </button>
                 <span class="nav-title">壁纸</span>
-                <button class="nav-btn right" style="visibility: hidden;">占位</button>
+                <div class="nav-btn right" style="visibility:hidden">占</div>
             </div>
-
             <div class="page-content">
                 <p class="settings-group-title">当前壁纸预览</p>
-                <div class="settings-group" style="padding: 16px;">
-                    <div class="wallpaper-preview" id="wallpaperPreview"></div>
-                </div>
+                <div class="wallpaper-preview" id="wallpaperPreview"></div>
 
                 <p class="settings-group-title">预设壁纸</p>
-                <div class="settings-group" style="padding: 16px;">
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                        <div class="wallpaper-option" onclick="selectPresetWallpaper('gradient1')" style="height: 80px; border-radius: 12px; background: linear-gradient(135deg, #1a1a2e, #0f3460); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient1"></div>
-                        <div class="wallpaper-option" onclick="selectPresetWallpaper('gradient2')" style="height: 80px; border-radius: 12px; background: linear-gradient(135deg, #2d1b69, #11998e); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient2"></div>
-                        <div class="wallpaper-option" onclick="selectPresetWallpaper('gradient3')" style="height: 80px; border-radius: 12px; background: linear-gradient(135deg, #0f0c29, #24243e); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient3"></div>
-                        <div class="wallpaper-option" onclick="selectPresetWallpaper('gradient4')" style="height: 80px; border-radius: 12px; background: linear-gradient(135deg, #141e30, #243b55); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient4"></div>
-                        <div class="wallpaper-option" onclick="selectPresetWallpaper('gradient5')" style="height: 80px; border-radius: 12px; background: linear-gradient(135deg, #232526, #414345); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient5"></div>
-                        <div class="wallpaper-option" onclick="selectPresetWallpaper('gradient6')" style="height: 80px; border-radius: 12px; background: linear-gradient(135deg, #1f1c2c, #928dab); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient6"></div>
+                <div class="settings-group" style="padding:16px">
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" id="wallpaperGrid">
+                        <div class="wallpaper-option" onclick="selectPresetWallpaper('gradient1')" style="height:80px;border-radius:12px;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);cursor:pointer;border:3px solid transparent" data-wp="gradient1"></div>
+                        <div class="wallpaper-option" onclick="selectPresetWallpaper('gradient2')" style="height:80px;border-radius:12px;background:linear-gradient(135deg,#2d1b69,#11998e);cursor:pointer;border:3px solid transparent" data-wp="gradient2"></div>
+                        <div class="wallpaper-option" onclick="selectPresetWallpaper('gradient3')" style="height:80px;border-radius:12px;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);cursor:pointer;border:3px solid transparent" data-wp="gradient3"></div>
+                        <div class="wallpaper-option" onclick="selectPresetWallpaper('gradient4')" style="height:80px;border-radius:12px;background:linear-gradient(135deg,#141e30,#243b55);cursor:pointer;border:3px solid transparent" data-wp="gradient4"></div>
+                        <div class="wallpaper-option" onclick="selectPresetWallpaper('gradient5')" style="height:80px;border-radius:12px;background:linear-gradient(135deg,#232526,#414345);cursor:pointer;border:3px solid transparent" data-wp="gradient5"></div>
+                        <div class="wallpaper-option" onclick="selectPresetWallpaper('gradient6')" style="height:80px;border-radius:12px;background:linear-gradient(135deg,#1f1c2c,#928dab);cursor:pointer;border:3px solid transparent" data-wp="gradient6"></div>
                     </div>
                 </div>
 
                 <p class="settings-group-title">自定义壁纸</p>
-                <div class="settings-group" style="padding: 16px;">
-                    <div class="btn-stack">
-                        <button class="btn btn-secondary" onclick="triggerWallpaperUpload()">📤 上传图片</button>
-                        <input type="file" id="wallpaperUpload" class="file-input-hidden" accept="image/*" onchange="handleWallpaperUpload(event)">
-                    </div>
-                    <div class="input-group" style="margin-top: 16px;">
-                        <label class="input-label">或输入图片URL</label>
+                <div class="settings-group" style="padding:16px">
+                    <div class="input-group">
+                        <label class="input-label">图片URL</label>
                         <input type="text" class="input-field" id="customWallpaperUrl" placeholder="https://...">
                     </div>
-                    <button class="btn btn-secondary" onclick="applyUrlWallpaper()" style="margin-top: 10px;">应用URL壁纸</button>
+                    <button class="btn btn-secondary" onclick="previewUrlWallpaper()">预览URL壁纸</button>
+                    <div class="divider"></div>
+                    <button class="btn btn-secondary" onclick="document.getElementById('wallpaperUpload').click()">📤 上传本地图片</button>
+                    <input type="file" id="wallpaperUpload" class="file-input-hidden" accept="image/*" onchange="handleWallpaperUpload(event)">
                 </div>
 
-                <div class="btn-stack" style="margin-top: 20px;">
-                    <button class="btn btn-success" onclick="saveWallpaper()">💾 保存壁纸设置</button>
+                <div class="btn-stack" style="margin-top:20px">
+                    <button class="btn btn-success" onclick="saveWallpaper()">💾 保存壁纸</button>
                 </div>
             </div>
         </div>
@@ -1747,10 +1679,10 @@
     <!-- 模态框 -->
     <div class="modal-overlay" id="createCharacterModal">
         <div class="modal">
-            <div class="modal-title">创建新角色</div>
+            <div class="modal-title">创建角色</div>
             <input type="text" class="modal-input" id="newCharacterName" placeholder="角色名称...">
             <div class="modal-btns">
-                <button class="modal-btn cancel" onclick="hideCreateCharacterModal()">取消</button>
+                <button class="modal-btn cancel" onclick="hideModal('createCharacterModal')">取消</button>
                 <button class="modal-btn confirm" onclick="createCharacter()">创建</button>
             </div>
         </div>
@@ -1758,10 +1690,10 @@
 
     <div class="modal-overlay" id="createWorldbookModal">
         <div class="modal">
-            <div class="modal-title">创建新世界书</div>
-            <input type="text" class="modal-input" id="newWorldbookName" placeholder="世界书名称...">
+            <div class="modal-title">创建世界书</div>
+            <input type="text" class="modal-input" id="newWorldbookName" placeholder="名称...">
             <div class="modal-btns">
-                <button class="modal-btn cancel" onclick="hideCreateWorldbookModal()">取消</button>
+                <button class="modal-btn cancel" onclick="hideModal('createWorldbookModal')">取消</button>
                 <button class="modal-btn confirm" onclick="createWorldbook()">创建</button>
             </div>
         </div>
@@ -1770,10 +1702,10 @@
     <div class="modal-overlay" id="confirmDeleteModal">
         <div class="modal">
             <div class="modal-title" id="deleteModalTitle">确认删除？</div>
-            <p style="color: var(--text-secondary); text-align: center; margin-bottom: 20px;" id="deleteModalDesc">此操作无法撤销</p>
+            <p style="color:var(--text-secondary);text-align:center;margin-bottom:20px" id="deleteModalDesc">无法撤销</p>
             <div class="modal-btns">
-                <button class="modal-btn cancel" onclick="hideConfirmDeleteModal()">取消</button>
-                <button class="modal-btn confirm" style="background: var(--danger-color);" onclick="confirmDelete()">删除</button>
+                <button class="modal-btn cancel" onclick="hideModal('confirmDeleteModal')">取消</button>
+                <button class="modal-btn confirm" style="background:var(--danger-color)" onclick="confirmDelete()">删除</button>
             </div>
         </div>
     </div>
@@ -1781,13 +1713,13 @@
     <div class="modal-overlay" id="iconPickerModal">
         <div class="modal">
             <div class="modal-title">选择图标</div>
-            <div style="margin-bottom: 16px;">
-                <button class="btn btn-secondary" onclick="triggerAppIconUpload()" style="margin-bottom: 10px;">📤 上传自定义图片</button>
-                <input type="file" id="appIconUpload" class="file-input-hidden" accept="image/*" onchange="handleAppIconUpload(event)">
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; max-height: 200px; overflow-y: auto;" id="emojiPicker"></div>
-            <div class="modal-btns" style="margin-top: 16px;">
-                <button class="modal-btn cancel" onclick="hideIconPickerModal()">取消</button>
+            <div class="emoji-picker" id="emojiPicker"></div>
+            <div class="divider"></div>
+            <button class="btn btn-secondary" onclick="document.getElementById('appIconUpload').click()">📤 上传图片</button>
+            <input type="file" id="appIconUpload" class="file-input-hidden" accept="image/*" onchange="handleAppIconUpload(event)">
+            <div style="height:10px"></div>
+            <div class="modal-btns">
+                <button class="modal-btn cancel" onclick="hideModal('iconPickerModal')">取消</button>
             </div>
         </div>
     </div>
@@ -1795,51 +1727,35 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ==================== 全局状态 ====================
-        const AppState = {
+        // 全局状态
+        const App = {
             characters: [],
             worldbooks: [],
-            currentCharacterId: null,
-            currentWorldbookId: null,
+            currentCharId: null,
+            currentWbId: null,
             pendingDeleteType: null,
             pendingDeleteId: null,
-            availableModels: [],
+            models: [],
             connectionStatus: 'disconnected',
             isSelectMode: false,
-            selectedMessages: new Set(),
-            editingAppIcon: null,
-            lastAIReplyStartIndex: -1,
-            tempCharAvatar: null,
+            selectedMsgs: new Set(),
+            editingApp: null,
+            lastAIStart: -1,
             tempWallpaper: null,
-            appIcons: {
-                settings: { type: 'emoji', value: '⚙️' },
-                messages: { type: 'emoji', value: '💬' },
-                worldbook: { type: 'emoji', value: '📚' },
-                photos: { type: 'emoji', value: '🖼️' }
-            },
+            appIcons: { settings: '⚙️', messages: '💬', worldbook: '📚', photos: '🖼️' },
             settings: {
                 apiBaseUrl: '',
                 apiKey: '',
                 modelName: '',
                 temperature: 0.7,
                 maxTokens: 2048,
-                topP: 0.9,
-                frequencyPenalty: 0,
-                presencePenalty: 0,
                 maxContextMessages: 200,
                 wallpaper: 'gradient1',
-                wallpaperData: null,
-                userAvatar: null,
-                showAvatars: true,
-                avatarShape: 'circle',
-                showAvatarBorder: false,
-                avatarBorderColor: '#ffffff',
-                avatarBorderOpacity: 30,
-                avatarBorderWidth: 2
+                wallpaperData: null
             }
         };
 
-        const wallpaperStyles = {
+        const GRADIENTS = {
             gradient1: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
             gradient2: 'linear-gradient(135deg, #2d1b69 0%, #11998e 100%)',
             gradient3: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
@@ -1848,331 +1764,189 @@
             gradient6: 'linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)'
         };
 
-        // ==================== 初始化 ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            loadAllData();
-            updateStatusBarTime();
-            setInterval(updateStatusBarTime, 60000);
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            updateTime();
+            setInterval(updateTime, 60000);
             applyWallpaper();
             applyAppIcons();
-            updateConnectionStatusUI();
-            updateAvatarSettings();
-            updateUserAvatarPreview();
-            initIconPicker();
+            updateConnectionUI();
+            highlightWallpaper();
+            updateWallpaperPreview();
         });
 
-        function updateStatusBarTime() {
+        function updateTime() {
             const now = new Date();
             document.getElementById('statusBarTime').textContent =
-                now.getHours().toString().padStart(2, '0') + ':' +
-                now.getMinutes().toString().padStart(2, '0');
+                now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
         }
 
-        function initIconPicker() {
-            const emojis = ['⚙️', '💬', '📚', '🖼️', '💕', '🌸', '✨', '🎀', '🐱', '🐰', '🦊', '🐻', '🌙', '⭐', '🔮', '💎', '🎵', '🎮', '📱', '💻', '🏠', '🌈', '🍀', '🌺', '🦋', '🐾', '👻', '🤖', '💫', '🎭'];
-            const picker = document.getElementById('emojiPicker');
-            picker.innerHTML = emojis.map(e =>
-                `<div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(255,255,255,0.1);border-radius:8px;cursor:pointer;" onclick="selectAppIconEmoji('${e}')">${e}</div>`
-            ).join('');
-        }
-
-        // ==================== 数据持久化 ====================
-        function saveAllData() {
+        // 数据持久化
+        function saveData() {
             try {
-                localStorage.setItem('aiSMS_v4_characters', JSON.stringify(AppState.characters));
-                localStorage.setItem('aiSMS_v4_worldbooks', JSON.stringify(AppState.worldbooks));
-                localStorage.setItem('aiSMS_v4_settings', JSON.stringify(AppState.settings));
-                localStorage.setItem('aiSMS_v4_appIcons', JSON.stringify(AppState.appIcons));
-            } catch (e) {
-                console.error('保存失败:', e);
-                showToast('保存数据失败，可能存储空间不足', 'error');
-            }
+                localStorage.setItem('sms_chars', JSON.stringify(App.characters));
+                localStorage.setItem('sms_wbs', JSON.stringify(App.worldbooks));
+                localStorage.setItem('sms_settings', JSON.stringify(App.settings));
+                localStorage.setItem('sms_icons', JSON.stringify(App.appIcons));
+            } catch(e) { console.error(e); }
         }
 
-        function loadAllData() {
+        function loadData() {
             try {
-                const chars = localStorage.getItem('aiSMS_v4_characters');
-                const wbs = localStorage.getItem('aiSMS_v4_worldbooks');
-                const settings = localStorage.getItem('aiSMS_v4_settings');
-                const icons = localStorage.getItem('aiSMS_v4_appIcons');
-
-                if (chars) AppState.characters = JSON.parse(chars);
-                if (wbs) AppState.worldbooks = JSON.parse(wbs);
-                if (settings) AppState.settings = { ...AppState.settings, ...JSON.parse(settings) };
-                if (icons) AppState.appIcons = { ...AppState.appIcons, ...JSON.parse(icons) };
-
-                loadSettingsToUI();
-                if (AppState.settings.apiBaseUrl && AppState.settings.apiKey && AppState.settings.modelName) {
-                    AppState.connectionStatus = 'connected';
+                const chars = localStorage.getItem('sms_chars');
+                const wbs = localStorage.getItem('sms_wbs');
+                const settings = localStorage.getItem('sms_settings');
+                const icons = localStorage.getItem('sms_icons');
+                if (chars) App.characters = JSON.parse(chars);
+                if (wbs) App.worldbooks = JSON.parse(wbs);
+                if (settings) App.settings = {...App.settings, ...JSON.parse(settings)};
+                if (icons) App.appIcons = {...App.appIcons, ...JSON.parse(icons)};
+                loadSettingsUI();
+                if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) {
+                    App.connectionStatus = 'connected';
                 }
-            } catch (e) {
-                console.error('加载失败:', e);
-            }
+            } catch(e) { console.error(e); }
         }
 
-        function loadSettingsToUI() {
-            document.getElementById('apiBaseUrl').value = AppState.settings.apiBaseUrl || '';
-            document.getElementById('apiKey').value = AppState.settings.apiKey || '';
-            document.getElementById('modelName').value = AppState.settings.modelName || '';
-            document.getElementById('maxContextMessages').value = AppState.settings.maxContextMessages || 200;
-            document.getElementById('temperature').value = AppState.settings.temperature;
-            document.getElementById('tempValue').textContent = AppState.settings.temperature;
-            document.getElementById('maxTokens').value = AppState.settings.maxTokens;
-            document.getElementById('maxTokensValue').textContent = AppState.settings.maxTokens;
-
-            // 头像设置
-            const showToggle = document.getElementById('showAvatarsToggle');
-            showToggle.classList.toggle('active', AppState.settings.showAvatars);
-            document.getElementById('avatarShapeSelect').value = AppState.settings.avatarShape || 'circle';
-            const borderToggle = document.getElementById('showAvatarBorderToggle');
-            borderToggle.classList.toggle('active', AppState.settings.showAvatarBorder);
-            document.getElementById('avatarBorderColor').value = AppState.settings.avatarBorderColor || '#ffffff';
-            document.getElementById('borderOpacity').value = AppState.settings.avatarBorderOpacity || 30;
-            document.getElementById('borderOpacityValue').textContent = (AppState.settings.avatarBorderOpacity || 30) + '%';
-            document.getElementById('borderWidth').value = AppState.settings.avatarBorderWidth || 2;
-            document.getElementById('borderWidthValue').textContent = (AppState.settings.avatarBorderWidth || 2) + 'px';
-
-            updateBorderOptionsVisibility();
+        function loadSettingsUI() {
+            document.getElementById('apiBaseUrl').value = App.settings.apiBaseUrl || '';
+            document.getElementById('apiKey').value = App.settings.apiKey || '';
+            document.getElementById('modelName').value = App.settings.modelName || '';
+            document.getElementById('maxContextMessages').value = App.settings.maxContextMessages || 200;
+            document.getElementById('temperature').value = App.settings.temperature;
+            document.getElementById('tempValue').textContent = App.settings.temperature;
+            document.getElementById('maxTokens').value = App.settings.maxTokens;
+            document.getElementById('maxTokensValue').textContent = App.settings.maxTokens;
         }
 
-        // ==================== 壁纸功能（完全重写修复） ====================
+        // 壁纸功能 - 完全重写
         function applyWallpaper() {
             const el = document.getElementById('wallpaper');
-            const preview = document.getElementById('wallpaperPreview');
+            const wp = App.settings.wallpaper;
+            const wpData = App.settings.wallpaperData;
 
-            let bgStyle = '';
-
-            // 优先使用自定义壁纸数据
-            if (AppState.settings.wallpaperData) {
-                bgStyle = `url("${AppState.settings.wallpaperData}")`;
-            } else if (wallpaperStyles[AppState.settings.wallpaper]) {
-                bgStyle = wallpaperStyles[AppState.settings.wallpaper];
+            if (wpData) {
+                // 有自定义图片数据
+                el.style.background = `url(${wpData}) center/cover no-repeat`;
+            } else if (GRADIENTS[wp]) {
+                // 预设渐变
+                el.style.background = GRADIENTS[wp];
+            } else if (wp && wp.startsWith('http')) {
+                // URL壁纸
+                el.style.background = `url(${wp}) center/cover no-repeat`;
             } else {
-                bgStyle = wallpaperStyles.gradient1;
+                // 默认
+                el.style.background = GRADIENTS.gradient1;
             }
-
-            el.style.background = bgStyle;
-            el.style.backgroundSize = 'cover';
-            el.style.backgroundPosition = 'center';
-            el.style.backgroundRepeat = 'no-repeat';
-
-            if (preview) {
-                preview.style.background = bgStyle;
-                preview.style.backgroundSize = 'cover';
-                preview.style.backgroundPosition = 'center';
-            }
-
-            highlightCurrentWallpaper();
         }
 
-        function selectPresetWallpaper(style) {
-            AppState.tempWallpaper = { type: 'preset', value: style };
-
+        function updateWallpaperPreview() {
             const preview = document.getElementById('wallpaperPreview');
-            preview.style.background = wallpaperStyles[style];
-            preview.style.backgroundSize = 'cover';
+            const wp = App.tempWallpaper || App.settings.wallpaper;
+            const wpData = App.tempWallpaper ? null : App.settings.wallpaperData;
 
-            document.querySelectorAll('.wallpaper-option').forEach(el => {
-                el.style.borderColor = el.dataset.wallpaper === style ? 'var(--accent-color)' : 'transparent';
-            });
-
-            showToast('已选择预设壁纸，点击保存生效', 'info');
-        }
-
-        function triggerWallpaperUpload() {
-            document.getElementById('wallpaperUpload').click();
-        }
-
-        function handleWallpaperUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('图片不能超过5MB', 'error');
-                return;
+            if (App.tempWallpaper && App.tempWallpaper.startsWith('data:')) {
+                preview.style.background = `url(${App.tempWallpaper}) center/cover no-repeat`;
+            } else if (wpData) {
+                preview.style.background = `url(${wpData}) center/cover no-repeat`;
+            } else if (GRADIENTS[wp]) {
+                preview.style.background = GRADIENTS[wp];
+            } else if (wp && wp.startsWith('http')) {
+                preview.style.background = `url(${wp}) center/cover no-repeat`;
+            } else {
+                preview.style.background = GRADIENTS.gradient1;
             }
+        }
 
+        function selectPresetWallpaper(name) {
+            App.tempWallpaper = name;
+            highlightWallpaper();
+            updateWallpaperPreview();
+            showToast('已选择，点击保存应用', 'info');
+        }
+
+        function previewUrlWallpaper() {
+            const url = document.getElementById('customWallpaperUrl').value.trim();
+            if (!url) { showToast('请输入URL', 'error'); return; }
+            App.tempWallpaper = url;
+            updateWallpaperPreview();
+            showToast('已预览，点击保存应用', 'info');
+        }
+
+        function handleWallpaperUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 10*1024*1024) { showToast('图片不能超过10MB', 'error'); return; }
             const reader = new FileReader();
-            reader.onload = function(e) {
-                const dataUrl = e.target.result;
-                AppState.tempWallpaper = { type: 'custom', value: dataUrl };
-
-                const preview = document.getElementById('wallpaperPreview');
-                preview.style.background = `url("${dataUrl}")`;
-                preview.style.backgroundSize = 'cover';
-                preview.style.backgroundPosition = 'center';
-
-                document.querySelectorAll('.wallpaper-option').forEach(el => {
-                    el.style.borderColor = 'transparent';
-                });
-
-                showToast('已上传壁纸，点击保存生效', 'success');
+            reader.onload = (ev) => {
+                App.tempWallpaper = ev.target.result;
+                updateWallpaperPreview();
+                showToast('已上传，点击保存应用', 'success');
             };
             reader.readAsDataURL(file);
-            event.target.value = '';
-        }
-
-        function applyUrlWallpaper() {
-            const url = document.getElementById('customWallpaperUrl').value.trim();
-            if (!url) {
-                showToast('请输入图片URL', 'error');
-                return;
-            }
-
-            AppState.tempWallpaper = { type: 'url', value: url };
-
-            const preview = document.getElementById('wallpaperPreview');
-            preview.style.background = `url("${url}")`;
-            preview.style.backgroundSize = 'cover';
-            preview.style.backgroundPosition = 'center';
-
-            document.querySelectorAll('.wallpaper-option').forEach(el => {
-                el.style.borderColor = 'transparent';
-            });
-
-            showToast('已应用URL壁纸，点击保存生效', 'info');
+            e.target.value = '';
         }
 
         function saveWallpaper() {
-            if (AppState.tempWallpaper) {
-                if (AppState.tempWallpaper.type === 'preset') {
-                    AppState.settings.wallpaper = AppState.tempWallpaper.value;
-                    AppState.settings.wallpaperData = null;
-                } else {
-                    AppState.settings.wallpaper = 'custom';
-                    AppState.settings.wallpaperData = AppState.tempWallpaper.value;
-                }
-                AppState.tempWallpaper = null;
+            if (!App.tempWallpaper) {
+                showToast('请先选择壁纸', 'warning');
+                return;
             }
-
-            saveAllData();
+            if (App.tempWallpaper.startsWith('data:')) {
+                App.settings.wallpaperData = App.tempWallpaper;
+                App.settings.wallpaper = 'custom';
+            } else if (App.tempWallpaper.startsWith('http')) {
+                App.settings.wallpaper = App.tempWallpaper;
+                App.settings.wallpaperData = null;
+            } else {
+                App.settings.wallpaper = App.tempWallpaper;
+                App.settings.wallpaperData = null;
+            }
+            App.tempWallpaper = null;
+            saveData();
             applyWallpaper();
-            showToast('壁纸已保存！', 'success');
+            highlightWallpaper();
+            showToast('壁纸已保存', 'success');
         }
 
-        function highlightCurrentWallpaper() {
+        function highlightWallpaper() {
+            const current = App.tempWallpaper || App.settings.wallpaper;
             document.querySelectorAll('.wallpaper-option').forEach(el => {
-                const isSelected = !AppState.settings.wallpaperData && el.dataset.wallpaper === AppState.settings.wallpaper;
-                el.style.borderColor = isSelected ? 'var(--accent-color)' : 'transparent';
+                el.style.borderColor = el.dataset.wp === current ? 'var(--accent-color)' : 'transparent';
             });
         }
 
-        // ==================== 用户头像 ====================
-        function triggerUserAvatarUpload() {
-            document.getElementById('userAvatarInput').click();
+        // 应用图标
+        function applyAppIcons() {
+            ['settings', 'messages', 'worldbook', 'photos'].forEach(app => {
+                const el = document.getElementById(`app-icon-${app}`);
+                if (!el) return;
+                const icon = App.appIcons[app];
+                if (icon && icon.startsWith('data:')) {
+                    el.textContent = '';
+                    el.style.background = `url(${icon}) center/cover no-repeat`;
+                } else {
+                    el.textContent = icon || '📱';
+                    el.style.backgroundImage = '';
+                }
+            });
         }
 
-        function handleUserAvatarUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                AppState.settings.userAvatar = e.target.result;
-                updateUserAvatarPreview();
-                saveAllData();
-                showToast('头像已更新', 'success');
-            };
-            reader.readAsDataURL(file);
-            event.target.value = '';
-        }
-
-        function updateUserAvatarPreview() {
-            const preview = document.getElementById('userAvatarPreview');
-            if (AppState.settings.userAvatar) {
-                preview.innerHTML = `<img src="${AppState.settings.userAvatar}" alt="avatar">`;
-            } else {
-                preview.innerHTML = '👤';
-            }
-        }
-
-        // ==================== 头像显示设置 ====================
-        function toggleShowAvatars(el) {
-            el.classList.toggle('active');
-            AppState.settings.showAvatars = el.classList.contains('active');
-            updateAvatarSettings();
-            saveAllData();
-        }
-
-        function updateAvatarShape() {
-            AppState.settings.avatarShape = document.getElementById('avatarShapeSelect').value;
-            updateAvatarSettings();
-            saveAllData();
-        }
-
-        function toggleAvatarBorder(el) {
-            el.classList.toggle('active');
-            AppState.settings.showAvatarBorder = el.classList.contains('active');
-            updateBorderOptionsVisibility();
-            updateAvatarSettings();
-            saveAllData();
-        }
-
-        function updateBorderOptionsVisibility() {
-            const container = document.getElementById('borderOptionsContainer');
-            container.style.display = AppState.settings.showAvatarBorder ? 'block' : 'none';
-        }
-
-        function updateBorderColor() {
-            AppState.settings.avatarBorderColor = document.getElementById('avatarBorderColor').value;
-            updateAvatarSettings();
-            saveAllData();
-        }
-
-        function updateBorderOpacity() {
-            const val = document.getElementById('borderOpacity').value;
-            document.getElementById('borderOpacityValue').textContent = val + '%';
-            AppState.settings.avatarBorderOpacity = parseInt(val);
-            updateAvatarSettings();
-            saveAllData();
-        }
-
-        function updateBorderWidth() {
-            const val = document.getElementById('borderWidth').value;
-            document.getElementById('borderWidthValue').textContent = val + 'px';
-            AppState.settings.avatarBorderWidth = parseInt(val);
-            updateAvatarSettings();
-            saveAllData();
-        }
-
-        function updateAvatarSettings() {
-            const root = document.documentElement;
-
-            // 形状
-            let borderRadius = '50%';
-            if (AppState.settings.avatarShape === 'rounded') borderRadius = '12px';
-            else if (AppState.settings.avatarShape === 'square') borderRadius = '4px';
-            root.style.setProperty('--avatar-border-radius', borderRadius);
-
-            // 边框
-            if (AppState.settings.showAvatarBorder) {
-                const hex = AppState.settings.avatarBorderColor;
-                const r = parseInt(hex.slice(1,3), 16);
-                const g = parseInt(hex.slice(3,5), 16);
-                const b = parseInt(hex.slice(5,7), 16);
-                const a = AppState.settings.avatarBorderOpacity / 100;
-                root.style.setProperty('--avatar-border-color', `rgba(${r},${g},${b},${a})`);
-                root.style.setProperty('--avatar-border-width', AppState.settings.avatarBorderWidth + 'px');
-            } else {
-                root.style.setProperty('--avatar-border-width', '0px');
-            }
-        }
-
-        // ==================== 应用图标 ====================
         let isEditing = false;
 
-        function handleAppClick(event, pageId) {
-            event.preventDefault();
+        function handleAppClick(e, page) {
+            e.preventDefault();
             if (isEditing) {
-                AppState.editingAppIcon = event.currentTarget.dataset.app;
-                document.getElementById('iconPickerModal').classList.add('active');
+                App.editingApp = e.currentTarget.dataset.app;
+                showIconPicker();
             } else {
-                openPage(pageId);
+                openPage(page);
             }
         }
 
-        function handleAppLongPress(event, appName) {
-            event.preventDefault();
+        function handleAppLongPress(e, app) {
+            e.preventDefault();
             if (!isEditing) {
                 isEditing = true;
                 document.querySelectorAll('.app-icon-wrapper').forEach(w => w.classList.add('editing'));
@@ -2180,234 +1954,319 @@
             }
         }
 
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', e => {
             if (isEditing && !e.target.closest('.app-icon-wrapper') && !e.target.closest('.modal-overlay')) {
                 isEditing = false;
                 document.querySelectorAll('.app-icon-wrapper').forEach(w => w.classList.remove('editing'));
             }
         });
 
-        function triggerAppIconUpload() {
-            document.getElementById('appIconUpload').click();
+        const EMOJIS = ['⚙️','💬','📚','🖼️','💕','🌸','✨','🎀','🐱','🐰','🦊','🐻','🌙','⭐','🔮','💎','🎵','🎮','📱','💻','🏠','🌈','🍀','🌺','🦋','🐾','👻','🤖','💫','🎭'];
+
+        function showIconPicker() {
+            document.getElementById('emojiPicker').innerHTML = EMOJIS.map(e =>
+                `<div class="emoji-item" onclick="selectAppIcon('${e}')">${e}</div>`
+            ).join('');
+            showModal('iconPickerModal');
         }
 
-        function handleAppIconUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                if (AppState.editingAppIcon) {
-                    AppState.appIcons[AppState.editingAppIcon] = { type: 'image', value: e.target.result };
-                    applyAppIcons();
-                    saveAllData();
-                    hideIconPickerModal();
-                    showToast('图标已更换', 'success');
-                }
-            };
-            reader.readAsDataURL(file);
-            event.target.value = '';
-        }
-
-        function selectAppIconEmoji(emoji) {
-            if (AppState.editingAppIcon) {
-                AppState.appIcons[AppState.editingAppIcon] = { type: 'emoji', value: emoji };
+        function selectAppIcon(emoji) {
+            if (App.editingApp) {
+                App.appIcons[App.editingApp] = emoji;
                 applyAppIcons();
-                saveAllData();
-                hideIconPickerModal();
+                saveData();
+                hideModal('iconPickerModal');
                 showToast('图标已更换', 'success');
             }
         }
 
-        function hideIconPickerModal() {
-            document.getElementById('iconPickerModal').classList.remove('active');
-            AppState.editingAppIcon = null;
-        }
-
-        function applyAppIcons() {
-            Object.keys(AppState.appIcons).forEach(app => {
-                const iconEl = document.getElementById(`app-icon-${app}`);
-                if (!iconEl) return;
-
-                const icon = AppState.appIcons[app];
-                if (icon.type === 'image') {
-                    iconEl.innerHTML = '';
-                    iconEl.style.backgroundImage = `url("${icon.value}")`;
-                    iconEl.classList.add('has-custom-image');
-                } else {
-                    iconEl.textContent = icon.value;
-                    iconEl.style.backgroundImage = '';
-                    iconEl.classList.remove('has-custom-image');
+        function handleAppIconUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                if (App.editingApp) {
+                    App.appIcons[App.editingApp] = ev.target.result;
+                    applyAppIcons();
+                    saveData();
+                    hideModal('iconPickerModal');
+                    showToast('图标已更换', 'success');
                 }
-            });
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
         }
 
-        // ==================== 页面导航 ====================
-        function openPage(pageId) {
-            const page = document.getElementById(pageId);
+        // 页面导航
+        function openPage(id) {
+            const page = document.getElementById(id);
             if (page) {
                 page.classList.add('active');
-                if (pageId === 'messagesPage') renderContactList();
-                else if (pageId === 'worldbookPage') renderWorldbookList();
-                else if (pageId === 'wallpaperPage') {
-                    AppState.tempWallpaper = null;
-                    applyWallpaper();
-                }
+                if (id === 'messagesPage') renderContacts();
+                if (id === 'worldbookPage') renderWorldbooks();
             }
         }
 
-        function closePage(pageId) {
-            document.getElementById(pageId)?.classList.remove('active');
+        function closePage(id) {
+            document.getElementById(id)?.classList.remove('active');
         }
 
-        // ==================== Toast ====================
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        function showModal(id) { document.getElementById(id)?.classList.add('active'); }
+        function hideModal(id) { document.getElementById(id)?.classList.remove('active'); }
+
+        // Toast
+        function showToast(msg, type='info') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.textContent = msg;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
         }
 
-        // ==================== 角色管理 ====================
+        // API
+        function addLog(msg, type='info') {
+            const c = document.getElementById('debugLog');
+            const e = document.createElement('div');
+            e.className = `log-entry ${type}`;
+            e.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            c.appendChild(e);
+            c.scrollTop = c.scrollHeight;
+            while (c.children.length > 50) c.removeChild(c.firstChild);
+        }
+
+        function updateConnectionUI() {
+            const h = document.getElementById('connectionStatusHint');
+            if (App.connectionStatus === 'connected') {
+                h.className = 'action-hint success';
+                h.innerHTML = `<span class="action-hint-icon">✅</span><span class="action-hint-text">已连接 - ${App.settings.modelName}</span>`;
+            } else {
+                h.className = 'action-hint';
+                h.innerHTML = `<span class="action-hint-icon">⚠️</span><span class="action-hint-text">未连接</span>`;
+            }
+        }
+
+        async function fetchModels() {
+            const url = document.getElementById('apiBaseUrl').value.trim();
+            const key = document.getElementById('apiKey').value.trim();
+            if (!url || !key) { showToast('请填写地址和密钥', 'error'); return; }
+            const btn = document.getElementById('fetchModelsBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span>';
+            try {
+                const r = await fetch(`${url.replace(/\/+$/,'').replace(/\/v1$/,'')}/v1/models`, {
+                    headers: { 'Authorization': `Bearer ${key}` }
+                });
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                const d = await r.json();
+                const models = d.data || d.models || d || [];
+                App.models = models;
+                document.getElementById('modelListContainer').style.display = 'block';
+                document.getElementById('modelList').innerHTML = models.map(m => {
+                    const id = m.id || m.name || m;
+                    return `<div class="model-item" onclick="selectModel('${id}')"><span class="model-item-name">${id}</span></div>`;
+                }).join('');
+                addLog(`找到${models.length}个模型`, 'success');
+                showToast(`获取${models.length}个模型`, 'success');
+            } catch(e) {
+                addLog(`失败: ${e.message}`, 'error');
+                showToast(`失败: ${e.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '📋 拉取模型';
+            }
+        }
+
+        function selectModel(id) {
+            App.settings.modelName = id;
+            document.getElementById('modelName').value = id;
+            document.querySelectorAll('.model-item').forEach(el => {
+                el.classList.toggle('selected', el.querySelector('.model-item-name').textContent === id);
+            });
+            showToast(`已选择: ${id}`, 'success');
+        }
+
+        async function testConnection() {
+            const url = document.getElementById('apiBaseUrl').value.trim();
+            const key = document.getElementById('apiKey').value.trim();
+            const model = document.getElementById('modelName').value.trim();
+            if (!url || !key || !model) { showToast('请填写完整', 'error'); return; }
+            const btn = document.getElementById('testConnectionBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span>';
+            try {
+                const r = await fetch(`${url.replace(/\/+$/,'').replace(/\/v1$/,'')}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model, messages: [{ role: 'user', content: 'Hi' }], max_tokens: 5 })
+                });
+                if (r.ok) {
+                    App.connectionStatus = 'connected';
+                    App.settings.apiBaseUrl = url;
+                    App.settings.apiKey = key;
+                    App.settings.modelName = model;
+                    saveData();
+                    showToast('连接成功！', 'success');
+                    addLog('连接成功', 'success');
+                } else throw new Error(`HTTP ${r.status}`);
+            } catch(e) {
+                App.connectionStatus = 'disconnected';
+                showToast(`失败: ${e.message}`, 'error');
+                addLog(`失败: ${e.message}`, 'error');
+            } finally {
+                updateConnectionUI();
+                btn.disabled = false;
+                btn.innerHTML = '🔗 测试连接';
+            }
+        }
+
+        function saveApiSettings() {
+            App.settings.apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
+            App.settings.apiKey = document.getElementById('apiKey').value.trim();
+            App.settings.modelName = document.getElementById('modelName').value.trim();
+            App.settings.temperature = parseFloat(document.getElementById('temperature').value);
+            App.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
+            App.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
+            saveData();
+            showToast('设置已保存', 'success');
+        }
+
+        // 角色管理
         function showCreateCharacterModal() {
-            document.getElementById('createCharacterModal').classList.add('active');
             document.getElementById('newCharacterName').value = '';
-        }
-
-        function hideCreateCharacterModal() {
-            document.getElementById('createCharacterModal').classList.remove('active');
+            showModal('createCharacterModal');
         }
 
         function createCharacter() {
             const name = document.getElementById('newCharacterName').value.trim();
             if (!name) { showToast('请输入名称', 'error'); return; }
-
-            const emojis = ['😊', '😎', '🥰', '😏', '🦊', '🐱', '🐰', '🌸', '⭐', '💎'];
-            const character = {
+            const char = {
                 id: Date.now().toString(),
                 name,
-                avatar: null,
-                avatarEmoji: emojis[Math.floor(Math.random() * emojis.length)],
+                avatar: ['😊','😎','🥰','🦊','🐱','🐰'][Math.floor(Math.random()*6)],
+                avatarImage: null,
+                userAvatar: null,
+                showAvatar: true,
+                avatarShape: 'circle',
+                showBorder: false,
+                borderColor: '#007AFF',
+                borderWidth: 2,
                 description: '',
                 greeting: '',
                 scenario: '',
                 worldbookId: '',
+                userNick: '',
+                systemPrompt: '',
                 messages: [],
                 createdAt: new Date().toISOString()
             };
-
-            AppState.characters.push(character);
-            saveAllData();
-            hideCreateCharacterModal();
-            renderContactList();
-            showToast(`角色 "${name}" 创建成功`, 'success');
+            App.characters.push(char);
+            saveData();
+            hideModal('createCharacterModal');
+            renderContacts();
+            showToast(`"${name}"创建成功`, 'success');
         }
 
-        function renderContactList() {
-            const container = document.getElementById('contactList');
+        function renderContacts() {
+            const list = document.getElementById('contactList');
             const empty = document.getElementById('emptyContactState');
-
-            if (AppState.characters.length === 0) {
-                container.style.display = 'none';
+            if (App.characters.length === 0) {
+                list.style.display = 'none';
                 empty.style.display = 'flex';
                 return;
             }
-
-            container.style.display = 'flex';
+            list.style.display = 'flex';
             empty.style.display = 'none';
-
-            container.innerHTML = AppState.characters.map(char => {
-                const lastMsg = char.messages.length > 0 ? char.messages[char.messages.length - 1].content.substring(0, 30) : '点击开始对话';
-                const avatarContent = char.avatar
-                    ? `<img src="${char.avatar}" alt="">`
-                    : (char.avatarEmoji || char.name[0]);
-
-                return `
-                    <div class="contact-item" onclick="openChat('${char.id}')">
-                        <div class="contact-avatar">${avatarContent}</div>
-                        <div class="contact-info">
-                            <div class="contact-name">${escapeHtml(char.name)}</div>
-                            <div class="contact-preview">${escapeHtml(lastMsg)}</div>
-                        </div>
+            list.innerHTML = App.characters.map(c => {
+                const lastMsg = c.messages.length > 0 ? c.messages[c.messages.length-1].content.substring(0,30)+'...' : '点击开始对话';
+                const lastTime = c.messages.length > 0 ? formatTime(c.messages[c.messages.length-1].timestamp) : '';
+                const avatarStyle = c.avatarImage ? `background:url(${c.avatarImage}) center/cover` : '';
+                const avatarContent = c.avatarImage ? '' : (c.avatar || c.name[0]);
+                return `<div class="contact-item" onclick="openChat('${c.id}')">
+                    <div class="contact-avatar" style="${avatarStyle}">${avatarContent}</div>
+                    <div class="contact-info">
+                        <div class="contact-name">${escapeHtml(c.name)}</div>
+                        <div class="contact-preview">${escapeHtml(lastMsg)}</div>
                     </div>
-                `;
+                    <div class="contact-time">${lastTime}</div>
+                </div>`;
             }).join('');
         }
 
         function filterContacts() {
-            const query = document.getElementById('contactSearch').value.toLowerCase();
-            document.querySelectorAll('.contact-item').forEach(item => {
-                const name = item.querySelector('.contact-name').textContent.toLowerCase();
-                item.style.display = name.includes(query) ? 'flex' : 'none';
+            const q = document.getElementById('contactSearch').value.toLowerCase();
+            document.querySelectorAll('.contact-item').forEach(el => {
+                const name = el.querySelector('.contact-name').textContent.toLowerCase();
+                el.style.display = name.includes(q) ? 'flex' : 'none';
             });
         }
 
         function openChat(id) {
-            const char = AppState.characters.find(c => c.id === id);
+            const char = App.characters.find(c => c.id === id);
             if (!char) return;
-
-            AppState.currentCharacterId = id;
-            AppState.isSelectMode = false;
-            AppState.selectedMessages.clear();
-            AppState.lastAIReplyStartIndex = -1;
-
+            App.currentCharId = id;
+            App.isSelectMode = false;
+            App.selectedMsgs.clear();
+            App.lastAIStart = -1;
             document.getElementById('chatTitle').textContent = char.name;
             document.getElementById('selectModeBar').classList.remove('active');
             document.getElementById('chatMessages').classList.remove('select-mode');
-
             renderMessages();
             openPage('chatPage');
-
-            if (char.messages.length === 0 && char.greeting) {
-                addMessage(char.greeting, 'received');
-            }
+            if (char.messages.length === 0 && char.greeting) addMessage(char.greeting, 'received');
         }
 
         function closeChatPage() {
             exitSelectMode();
             closePage('chatPage');
-            AppState.currentCharacterId = null;
+            App.currentCharId = null;
         }
 
-        // ==================== 角色头像上传 ====================
-        function triggerCharAvatarUpload() {
-            document.getElementById('charAvatarInput').click();
-        }
-
-        function handleCharAvatarUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                AppState.tempCharAvatar = e.target.result;
-                document.getElementById('charAvatarPreview').innerHTML = `<img src="${e.target.result}" alt="">`;
-                showToast('头像已选择，保存后生效', 'info');
-            };
-            reader.readAsDataURL(file);
-            event.target.value = '';
-        }
-
+        // 角色设置
         function openCharacterSettings() {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
-            AppState.tempCharAvatar = null;
+            // 头像
+            const charAvUpload = document.getElementById('charAvatarUpload');
+            const userAvUpload = document.getElementById('userAvatarUpload');
+            if (char.avatarImage) {
+                charAvUpload.style.background = `url(${char.avatarImage}) center/cover`;
+                charAvUpload.textContent = '';
+                charAvUpload.classList.add('has-image');
+            } else {
+                charAvUpload.style.background = '';
+                charAvUpload.textContent = '📷';
+                charAvUpload.classList.remove('has-image');
+            }
+            if (char.userAvatar) {
+                userAvUpload.style.background = `url(${char.userAvatar}) center/cover`;
+                userAvUpload.textContent = '';
+                userAvUpload.classList.add('has-image');
+            } else {
+                userAvUpload.style.background = '';
+                userAvUpload.textContent = '👤';
+                userAvUpload.classList.remove('has-image');
+            }
 
+            // 头像设置
+            document.getElementById('showAvatarToggle').classList.toggle('active', char.showAvatar !== false);
+            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle'));
+            });
+            document.getElementById('showBorderToggle').classList.toggle('active', char.showBorder === true);
+            document.getElementById('borderColorPicker').value = char.borderColor || '#007AFF';
+            document.getElementById('borderWidthSlider').value = char.borderWidth || 2;
+            document.getElementById('borderWidthValue').textContent = char.borderWidth || 2;
+
+            // 基本信息
             document.getElementById('charName').value = char.name;
+            document.getElementById('charAvatar').value = char.avatar || '';
             document.getElementById('charDescription').value = char.description || '';
             document.getElementById('charGreeting').value = char.greeting || '';
             document.getElementById('charScenario').value = char.scenario || '';
-            document.getElementById('charAvatarEmoji').value = char.avatarEmoji || '';
-
-            const preview = document.getElementById('charAvatarPreview');
-            if (char.avatar) {
-                preview.innerHTML = `<img src="${char.avatar}" alt="">`;
-            } else {
-                preview.innerHTML = char.avatarEmoji || char.name[0];
-            }
+            document.getElementById('charUserNick').value = char.userNick || '';
+            document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
 
             updateWorldbookSelect();
             document.getElementById('charWorldbook').value = char.worldbookId || '';
@@ -2415,58 +2274,124 @@
             openPage('characterSettingsPage');
         }
 
-        function closeCharacterSettings() {
-            closePage('characterSettingsPage');
+        function closeCharacterSettings() { closePage('characterSettingsPage'); }
+
+        function handleCharAvatarUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const upload = document.getElementById('charAvatarUpload');
+                upload.style.background = `url(${ev.target.result}) center/cover`;
+                upload.textContent = '';
+                upload.classList.add('has-image');
+                upload.dataset.image = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+
+        function handleUserAvatarUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const upload = document.getElementById('userAvatarUpload');
+                upload.style.background = `url(${ev.target.result}) center/cover`;
+                upload.textContent = '';
+                upload.classList.add('has-image');
+                upload.dataset.image = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+
+        function selectShape(el) {
+            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
         }
 
         function saveCharacterSettings() {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
+            const greeting = document.getElementById('charGreeting').value;
+            if (greeting.length > 300) { showToast('开场白不超过300字', 'error'); return; }
+
+            // 头像
+            const charUpload = document.getElementById('charAvatarUpload');
+            const userUpload = document.getElementById('userAvatarUpload');
+            if (charUpload.dataset.image) char.avatarImage = charUpload.dataset.image;
+            if (userUpload.dataset.image) char.userAvatar = userUpload.dataset.image;
+
+            // 头像设置
+            char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
+            const shapeEl = document.querySelector('#avatarShapeOptions .shape-option.selected');
+            char.avatarShape = shapeEl ? shapeEl.dataset.shape : 'circle';
+            char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
+            char.borderColor = document.getElementById('borderColorPicker').value;
+            char.borderWidth = parseInt(document.getElementById('borderWidthSlider').value);
+
+            // 基本信息
             char.name = document.getElementById('charName').value.trim() || char.name;
+            char.avatar = document.getElementById('charAvatar').value.trim() || char.avatar;
             char.description = document.getElementById('charDescription').value;
-            char.greeting = document.getElementById('charGreeting').value;
+            char.greeting = greeting;
             char.scenario = document.getElementById('charScenario').value;
             char.worldbookId = document.getElementById('charWorldbook').value;
-
-            const emoji = document.getElementById('charAvatarEmoji').value.trim();
-            if (emoji) char.avatarEmoji = emoji;
-
-            if (AppState.tempCharAvatar) {
-                char.avatar = AppState.tempCharAvatar;
-            }
+            char.userNick = document.getElementById('charUserNick').value.trim();
+            char.systemPrompt = document.getElementById('charSystemPrompt').value;
 
             document.getElementById('chatTitle').textContent = char.name;
-            saveAllData();
+
+            // 清理临时数据
+            delete charUpload.dataset.image;
+            delete userUpload.dataset.image;
+
+            saveData();
+            renderMessages(); // 刷新头像显示
             closeCharacterSettings();
             showToast('设置已保存', 'success');
         }
 
         function updateCharCounter() {
-            const textarea = document.getElementById('charGreeting');
-            document.getElementById('greetingCharCounter').textContent = `${textarea.value.length} / 300`;
+            const ta = document.getElementById('charGreeting');
+            const counter = document.getElementById('greetingCharCounter');
+            counter.textContent = `${ta.value.length}/300`;
+            counter.className = 'char-counter' + (ta.value.length >= 280 ? ' warning' : '') + (ta.value.length >= 300 ? ' error' : '');
         }
 
         function deleteCurrentCharacter() {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
-
-            AppState.pendingDeleteType = 'character';
-            AppState.pendingDeleteId = char.id;
-            document.getElementById('deleteModalTitle').textContent = `删除 "${char.name}"?`;
-            document.getElementById('confirmDeleteModal').classList.add('active');
+            App.pendingDeleteType = 'character';
+            App.pendingDeleteId = char.id;
+            document.getElementById('deleteModalTitle').textContent = `删除"${char.name}"？`;
+            showModal('confirmDeleteModal');
         }
 
-        // ==================== 消息渲染 ====================
+        // 消息
         function renderMessages() {
             const container = document.getElementById('chatMessages');
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
             if (char.messages.length === 0) {
                 container.innerHTML = '<div class="date-separator"><span class="date-separator-text">今天</span></div>';
                 return;
             }
+
+            const showAvatar = char.showAvatar !== false;
+            const avatarShape = char.avatarShape || 'circle';
+            const showBorder = char.showBorder === true;
+            const borderColor = char.borderColor || '#007AFF';
+            const borderWidth = char.borderWidth || 2;
+
+            let shapeClass = '';
+            if (avatarShape === 'square') shapeClass = 'square';
+            else if (avatarShape === 'rounded-square') shapeClass = 'rounded-square';
+
+            const borderStyle = showBorder ? `border:${borderWidth}px solid ${borderColor}` : '';
 
             let html = '';
             let lastDate = null;
@@ -2478,33 +2403,28 @@
                     lastDate = msgDate;
                 }
 
-                const isUser = msg.role === 'user';
-                const msgType = isUser ? 'sent' : 'received';
-                const isChecked = AppState.selectedMessages.has(msg.id);
+                const type = msg.role === 'user' ? 'sent' : 'received';
+                const checked = App.selectedMsgs.has(msg.id) ? 'checked' : '';
 
                 let avatarHtml = '';
-                if (AppState.settings.showAvatars) {
-                    if (isUser) {
-                        avatarHtml = AppState.settings.userAvatar
-                            ? `<div class="message-avatar"><img src="${AppState.settings.userAvatar}"></div>`
-                            : '<div class="message-avatar">👤</div>';
+                if (showAvatar) {
+                    if (type === 'received') {
+                        const avatarBg = char.avatarImage ? `background:url(${char.avatarImage}) center/cover` : '';
+                        const avatarContent = char.avatarImage ? '' : (char.avatar || char.name[0]);
+                        avatarHtml = `<div class="message-avatar ${shapeClass}" style="${avatarBg};${borderStyle}">${avatarContent}</div>`;
                     } else {
-                        avatarHtml = char.avatar
-                            ? `<div class="message-avatar"><img src="${char.avatar}"></div>`
-                            : `<div class="message-avatar">${char.avatarEmoji || char.name[0]}</div>`;
+                        const avatarBg = char.userAvatar ? `background:url(${char.userAvatar}) center/cover` : '';
+                        const avatarContent = char.userAvatar ? '' : '👤';
+                        avatarHtml = `<div class="message-avatar ${shapeClass}" style="${avatarBg};${borderStyle}">${avatarContent}</div>`;
                     }
                 }
 
-                html += `
-                    <div class="message-wrapper ${msgType}" data-msg-id="${msg.id}">
-                        <div class="message-checkbox ${isChecked ? 'checked' : ''}" onclick="toggleMessageSelect('${msg.id}')"></div>
-                        ${avatarHtml}
-                        <div class="message ${msgType}">
-                            ${escapeHtml(msg.content)}
-                            <div class="message-time">${formatTime(msg.timestamp)}</div>
-                        </div>
-                    </div>
-                `;
+                html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}">
+                    <div class="message-checkbox ${checked}" onclick="toggleMsgSelect('${msg.id}')"></div>
+                    ${type === 'received' ? avatarHtml : ''}
+                    <div class="message ${type}">${escapeHtml(msg.content)}<div class="message-time">${formatTime(msg.timestamp)}</div></div>
+                    ${type === 'sent' ? avatarHtml : ''}
+                </div>`;
             });
 
             container.innerHTML = html;
@@ -2512,45 +2432,53 @@
         }
 
         function addMessage(content, type) {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
-            const message = {
-                id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+            const msg = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2,9),
                 role: type === 'sent' ? 'user' : 'assistant',
                 content,
                 timestamp: new Date().toISOString()
             };
 
-            char.messages.push(message);
-            saveAllData();
+            char.messages.push(msg);
+            saveData();
 
+            // 直接添加到DOM
             const container = document.getElementById('chatMessages');
-            const isUser = type === 'sent';
+            const showAvatar = char.showAvatar !== false;
+            const avatarShape = char.avatarShape || 'circle';
+            const showBorder = char.showBorder === true;
+            const borderColor = char.borderColor || '#007AFF';
+            const borderWidth = char.borderWidth || 2;
+
+            let shapeClass = '';
+            if (avatarShape === 'square') shapeClass = 'square';
+            else if (avatarShape === 'rounded-square') shapeClass = 'rounded-square';
+
+            const borderStyle = showBorder ? `border:${borderWidth}px solid ${borderColor}` : '';
 
             let avatarHtml = '';
-            if (AppState.settings.showAvatars) {
-                if (isUser) {
-                    avatarHtml = AppState.settings.userAvatar
-                        ? `<div class="message-avatar"><img src="${AppState.settings.userAvatar}"></div>`
-                        : '<div class="message-avatar">👤</div>';
+            if (showAvatar) {
+                if (type === 'received') {
+                    const avatarBg = char.avatarImage ? `background:url(${char.avatarImage}) center/cover` : '';
+                    const avatarContent = char.avatarImage ? '' : (char.avatar || char.name[0]);
+                    avatarHtml = `<div class="message-avatar ${shapeClass}" style="${avatarBg};${borderStyle}">${avatarContent}</div>`;
                 } else {
-                    avatarHtml = char.avatar
-                        ? `<div class="message-avatar"><img src="${char.avatar}"></div>`
-                        : `<div class="message-avatar">${char.avatarEmoji || char.name[0]}</div>`;
+                    const avatarBg = char.userAvatar ? `background:url(${char.userAvatar}) center/cover` : '';
+                    const avatarContent = char.userAvatar ? '' : '👤';
+                    avatarHtml = `<div class="message-avatar ${shapeClass}" style="${avatarBg};${borderStyle}">${avatarContent}</div>`;
                 }
             }
 
-            const html = `
-                <div class="message-wrapper ${type}" data-msg-id="${message.id}">
-                    <div class="message-checkbox" onclick="toggleMessageSelect('${message.id}')"></div>
-                    ${avatarHtml}
-                    <div class="message ${type}">
-                        ${escapeHtml(content)}
-                        <div class="message-time">${formatTime(message.timestamp)}</div>
-                    </div>
-                </div>
-            `;
+            const html = `<div class="message-wrapper ${type}" data-msg-id="${msg.id}">
+                <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
+                ${type === 'received' ? avatarHtml : ''}
+                <div class="message ${type}">${escapeHtml(content)}<div class="message-time">${formatTime(msg.timestamp)}</div></div>
+                ${type === 'sent' ? avatarHtml : ''}
+            </div>`;
+
             container.insertAdjacentHTML('beforeend', html);
             scrollToBottom();
         }
@@ -2564,18 +2492,17 @@
             autoResizeTextarea(input);
         }
 
-        // ==================== AI回复 ====================
-        function parseAIResponse(raw) {
-            if (!raw) return ['...'];
-            let cleaned = raw.trim()
+        function parseAIResponse(text) {
+            if (!text) return ['...'];
+            let cleaned = text.trim()
                 .replace(/^\s*\[[^\]]*\]\s*[:：]\s*/g, '')
                 .replace(/^\s*【[^】]*】\s*[:：]?\s*/g, '')
                 .replace(/^[^:：\n]{1,20}[:：]\s*/g, '');
 
-            const seps = [/\s*\|\|\|\s*/g, /\s*\|\|\s*/g, /\s*\|\s*/g, /\n\n+/g, /\n/g];
+            const separators = [/\s*\|\|\|\s*/g, /\s*\|\|\s*/g, /\s*\|\s*/g, /\n\n+/g, /\n/g];
             let parts = [cleaned];
 
-            for (const sep of seps) {
+            for (const sep of separators) {
                 const test = cleaned.split(sep).map(s => s.trim()).filter(s => s);
                 if (test.length > 1) { parts = test; break; }
             }
@@ -2584,15 +2511,14 @@
         }
 
         async function triggerAIReply() {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
-
-            if (!AppState.settings.apiBaseUrl || !AppState.settings.apiKey || !AppState.settings.modelName) {
+            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
                 showToast('请先配置API', 'error');
                 return;
             }
 
-            AppState.lastAIReplyStartIndex = char.messages.length;
+            App.lastAIStart = char.messages.length;
 
             const container = document.getElementById('chatMessages');
             container.insertAdjacentHTML('beforeend', '<div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>');
@@ -2600,518 +2526,156 @@
 
             try {
                 const messages = buildAPIMessages(char);
-                const endpoint = AppState.settings.apiBaseUrl.replace(/\/+$/, '').replace(/\/v1$/, '') + '/v1/chat/completions';
-
-                const response = await fetch(endpoint, {
+                const url = App.settings.apiBaseUrl.replace(/\/+$/,'').replace(/\/v1$/,'');
+                const r = await fetch(`${url}/v1/chat/completions`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${AppState.settings.apiKey}`
-                    },
+                    headers: { 'Authorization': `Bearer ${App.settings.apiKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: AppState.settings.modelName,
+                        model: App.settings.modelName,
                         messages,
-                        temperature: AppState.settings.temperature,
-                        max_tokens: AppState.settings.maxTokens
+                        temperature: App.settings.temperature,
+                        max_tokens: App.settings.maxTokens
                     })
                 });
 
                 document.getElementById('typingIndicator')?.remove();
 
-                if (!response.ok) {
-                    const err = await response.json();
-                    throw new Error(err.error?.message || `HTTP ${response.status}`);
-                }
-
-                const data = await response.json();
-                const parts = parseAIResponse(data.choices[0].message.content);
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                const data = await r.json();
+                const reply = data.choices[0].message.content;
+                const parts = parseAIResponse(reply);
 
                 for (let i = 0; i < parts.length; i++) {
-                    if (i > 0) await new Promise(r => setTimeout(r, 300 + Math.random() * 300));
+                    if (i > 0) await new Promise(r => setTimeout(r, 300 + Math.random()*400));
                     addMessage(parts[i], 'received');
                 }
-            } catch (e) {
+            } catch(e) {
                 document.getElementById('typingIndicator')?.remove();
-                AppState.lastAIReplyStartIndex = -1;
-                showToast(`AI回复失败: ${e.message}`, 'error');
+                App.lastAIStart = -1;
+                showToast(`失败: ${e.message}`, 'error');
             }
         }
 
         function buildAPIMessages(char) {
             const msgs = [];
+            let sys = `你是"${char.name}"，通过手机短信聊天。
 
-            let sys = `你是"${char.name}"，正在通过手机短信和用户聊天。
+【格式】用|||分隔多条短信。直接输出内容，不要前缀。
+例：在呢|||怎么了?|||想我啦?😊
 
-【输出格式】用 ||| 分隔多条短信。
-正确示例：在呢|||怎么了?|||想我啦?😊
-错误示例：[${char.name}]: 在呢
-
-【规则】
-1. 直接输出短信内容，不加任何前缀
-2. 像真人发短信一样简短自然
-3. 可发1-5条短信
-
-【角色设定】
-${char.description || '一个友善的朋友'}`;
+【角色】${char.description || '友善有趣的朋友'}`;
 
             if (char.scenario) sys += `\n\n【情景】${char.scenario}`;
+            if (char.userNick) sys += `\n\n【称呼】${char.userNick}`;
+            if (char.systemPrompt) sys += `\n\n${char.systemPrompt}`;
 
-            const wb = AppState.worldbooks.find(w => w.id === char.worldbookId);
-            if (wb?.content && (wb.alwaysActive || char.messages.some(m =>
-                wb.keywords?.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))
-            ))) {
-                sys += `\n\n【世界设定】${wb.content}`;
+            const wb = App.worldbooks.find(w => w.id === char.worldbookId);
+            if (wb?.content) {
+                const inject = wb.alwaysActive || (wb.keywords && char.messages.some(m =>
+                    wb.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))
+                ));
+                if (inject) sys += `\n\n【设定】${wb.content}`;
             }
 
             msgs.push({ role: 'system', content: sys });
 
-            const history = char.messages.slice(-(AppState.settings.maxContextMessages || 200));
-            history.forEach(m => msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content }));
+            const max = App.settings.maxContextMessages || 200;
+            char.messages.slice(-max).forEach(m => {
+                msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content });
+            });
 
             return msgs;
         }
 
         async function regenerateLastReply() {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
-
             toggleExtensionPanel();
 
-            if (char.messages.length === 0) {
-                showToast('没有聊天记录', 'warning');
-                return;
-            }
+            if (char.messages.length === 0) { showToast('无消息', 'warning'); return; }
 
-            // 找到最后一组连续的AI回复
-            let start = -1;
-            for (let i = char.messages.length - 1; i >= 0; i--) {
-                if (char.messages[i].role === 'assistant') {
-                    start = i;
-                } else {
-                    break;
+            // 找最后一轮AI回复
+            if (App.lastAIStart >= 0 && App.lastAIStart < char.messages.length) {
+                let allAI = true;
+                for (let i = App.lastAIStart; i < char.messages.length; i++) {
+                    if (char.messages[i].role !== 'assistant') { allAI = false; break; }
+                }
+                if (allAI) {
+                    const count = char.messages.length - App.lastAIStart;
+                    char.messages.splice(App.lastAIStart, count);
+                    saveData();
+                    renderMessages();
+                    showToast(`已删除${count}条，重新生成...`, 'info');
+                    App.lastAIStart = -1;
+                    await triggerAIReply();
+                    return;
                 }
             }
 
-            if (start === -1) {
+            if (char.messages[char.messages.length-1].role !== 'assistant') {
                 showToast('最后不是AI回复', 'warning');
                 return;
             }
 
-            const count = char.messages.length - start;
-            char.messages.splice(start, count);
-            saveAllData();
+            let first = char.messages.length - 1;
+            for (let i = char.messages.length - 1; i >= 0; i--) {
+                if (char.messages[i].role === 'assistant') first = i;
+                else break;
+            }
+
+            const count = char.messages.length - first;
+            char.messages.splice(first, count);
+            saveData();
             renderMessages();
             showToast(`已删除${count}条，重新生成...`, 'info');
-
             await triggerAIReply();
         }
 
-        // ==================== 选择模式 ====================
+        // 选择删除
         function enterSelectMode() {
             toggleExtensionPanel();
-            AppState.isSelectMode = true;
-            AppState.selectedMessages.clear();
+            App.isSelectMode = true;
+            App.selectedMsgs.clear();
             document.getElementById('chatMessages').classList.add('select-mode');
             document.getElementById('selectModeBar').classList.add('active');
             updateSelectedCount();
         }
 
         function exitSelectMode() {
-            AppState.isSelectMode = false;
-            AppState.selectedMessages.clear();
+            App.isSelectMode = false;
+            App.selectedMsgs.clear();
             document.getElementById('chatMessages').classList.remove('select-mode');
             document.getElementById('selectModeBar').classList.remove('active');
-            document.querySelectorAll('.message-checkbox').forEach(cb => cb.classList.remove('checked'));
+            document.querySelectorAll('.message-checkbox').forEach(el => el.classList.remove('checked'));
         }
 
-        function toggleMessageSelect(id) {
-            if (!AppState.isSelectMode) return;
-
-            if (AppState.selectedMessages.has(id)) {
-                AppState.selectedMessages.delete(id);
-            } else {
-                AppState.selectedMessages.add(id);
-            }
-
-            const cb = document.querySelector(`[data-msg-id="${id}"] .message-checkbox`);
-            cb?.classList.toggle('checked', AppState.selectedMessages.has(id));
+        function toggleMsgSelect(id) {
+            if (!App.isSelectMode) return;
+            if (App.selectedMsgs.has(id)) App.selectedMsgs.delete(id);
+            else App.selectedMsgs.add(id);
+            document.querySelector(`[data-msg-id="${id}"] .message-checkbox`)?.classList.toggle('checked', App.selectedMsgs.has(id));
             updateSelectedCount();
         }
 
         function updateSelectedCount() {
-            document.getElementById('selectedCount').textContent = AppState.selectedMessages.size;
+            document.getElementById('selectedCount').textContent = App.selectedMsgs.size;
         }
 
         function deleteSelectedMessages() {
-            const char = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
-
-            if (AppState.selectedMessages.size === 0) {
-                showToast('请先选择消息', 'warning');
-                return;
-            }
-
-            const count = AppState.selectedMessages.size;
-            char.messages = char.messages.filter(m => !AppState.selectedMessages.has(m.id));
-            saveAllData();
+            if (App.selectedMsgs.size === 0) { showToast('请先选择', 'warning'); return; }
+            const count = App.selectedMsgs.size;
+            char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id));
+            saveData();
             exitSelectMode();
             renderMessages();
             showToast(`已删除${count}条`, 'success');
+            App.lastAIStart = -1;
         }
 
         function toggleExtensionPanel() {
             document.getElementById('extensionPanel').classList.toggle('active');
-        }
-
-        // ==================== 世界书 ====================
-        function showCreateWorldbookModal() {
-            document.getElementById('createWorldbookModal').classList.add('active');
-            document.getElementById('newWorldbookName').value = '';
-        }
-
-        function hideCreateWorldbookModal() {
-            document.getElementById('createWorldbookModal').classList.remove('active');
-        }
-
-        function createWorldbook() {
-            const name = document.getElementById('newWorldbookName').value.trim();
-            if (!name) { showToast('请输入名称', 'error'); return; }
-
-            const wb = {
-                id: Date.now().toString(),
-                name,
-                keywords: '',
-                content: '',
-                alwaysActive: false
-            };
-
-            AppState.worldbooks.push(wb);
-            saveAllData();
-            hideCreateWorldbookModal();
-            renderWorldbookList();
-            openWorldbookEdit(wb.id);
-            showToast('创建成功', 'success');
-        }
-
-        function renderWorldbookList() {
-            const container = document.getElementById('worldbookList');
-            const empty = document.getElementById('emptyWorldbookState');
-
-            if (AppState.worldbooks.length === 0) {
-                container.style.display = 'none';
-                empty.style.display = 'flex';
-                return;
-            }
-
-            container.style.display = 'block';
-            empty.style.display = 'none';
-
-            container.innerHTML = AppState.worldbooks.map(wb => `
-                <div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')">
-                    <div class="worldbook-item-header">
-                        <span class="worldbook-item-title">${escapeHtml(wb.name)}</span>
-                        ${wb.alwaysActive ? '<span class="worldbook-item-badge">常驻</span>' : ''}
-                    </div>
-                    <div class="worldbook-item-preview">${escapeHtml(wb.content?.substring(0, 80) || '暂无内容')}</div>
-                </div>
-            `).join('');
-        }
-
-        function openWorldbookEdit(id) {
-            const wb = AppState.worldbooks.find(w => w.id === id);
-            if (!wb) return;
-
-            AppState.currentWorldbookId = id;
-            document.getElementById('worldbookName').value = wb.name;
-            document.getElementById('worldbookKeywords').value = wb.keywords || '';
-            document.getElementById('worldbookContent').value = wb.content || '';
-            document.getElementById('worldbookAlwaysActive').classList.toggle('active', wb.alwaysActive);
-
-            openPage('worldbookEditPage');
-        }
-
-        function closeWorldbookEdit() {
-            closePage('worldbookEditPage');
-            AppState.currentWorldbookId = null;
-        }
-
-        function saveWorldbook() {
-            const wb = AppState.worldbooks.find(w => w.id === AppState.currentWorldbookId);
-            if (!wb) return;
-
-            wb.name = document.getElementById('worldbookName').value.trim() || wb.name;
-            wb.keywords = document.getElementById('worldbookKeywords').value;
-            wb.content = document.getElementById('worldbookContent').value;
-            wb.alwaysActive = document.getElementById('worldbookAlwaysActive').classList.contains('active');
-
-            saveAllData();
-            closeWorldbookEdit();
-            renderWorldbookList();
-            showToast('保存成功', 'success');
-        }
-
-        function deleteCurrentWorldbook() {
-            const wb = AppState.worldbooks.find(w => w.id === AppState.currentWorldbookId);
-            if (!wb) return;
-
-            AppState.pendingDeleteType = 'worldbook';
-            AppState.pendingDeleteId = wb.id;
-            document.getElementById('deleteModalTitle').textContent = `删除 "${wb.name}"?`;
-            document.getElementById('confirmDeleteModal').classList.add('active');
-        }
-
-        function updateWorldbookSelect() {
-            const select = document.getElementById('charWorldbook');
-            select.innerHTML = '<option value="">不绑定</option>' +
-                AppState.worldbooks.map(wb => `<option value="${wb.id}">${escapeHtml(wb.name)}</option>`).join('');
-        }
-
-        // ==================== 删除确认 ====================
-        function hideConfirmDeleteModal() {
-            document.getElementById('confirmDeleteModal').classList.remove('active');
-        }
-
-        function confirmDelete() {
-            if (AppState.pendingDeleteType === 'character') {
-                AppState.characters = AppState.characters.filter(c => c.id !== AppState.pendingDeleteId);
-                saveAllData();
-                hideConfirmDeleteModal();
-                closeCharacterSettings();
-                closeChatPage();
-                renderContactList();
-                showToast('已删除', 'success');
-            } else if (AppState.pendingDeleteType === 'worldbook') {
-                AppState.characters.forEach(c => {
-                    if (c.worldbookId === AppState.pendingDeleteId) c.worldbookId = '';
-                });
-                AppState.worldbooks = AppState.worldbooks.filter(w => w.id !== AppState.pendingDeleteId);
-                saveAllData();
-                hideConfirmDeleteModal();
-                closeWorldbookEdit();
-                renderWorldbookList();
-                showToast('已删除', 'success');
-            }
-        }
-
-        // ==================== API设置 ====================
-        function addLog(msg, type = 'info') {
-            const log = document.getElementById('debugLog');
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${type}`;
-            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-            log.appendChild(entry);
-            log.scrollTop = log.scrollHeight;
-            while (log.children.length > 50) log.removeChild(log.firstChild);
-        }
-
-        function updateConnectionStatusUI() {
-            const hint = document.getElementById('connectionStatusHint');
-            if (AppState.connectionStatus === 'connected') {
-                hint.className = 'action-hint success';
-                hint.innerHTML = `<span class="action-hint-icon">✅</span><span class="action-hint-text">已连接 - ${AppState.settings.modelName}</span>`;
-            } else {
-                hint.className = 'action-hint';
-                hint.innerHTML = `<span class="action-hint-icon">⚠️</span><span class="action-hint-text">未配置</span>`;
-            }
-        }
-
-        async function fetchModels() {
-            const baseUrl = document.getElementById('apiBaseUrl').value.trim();
-            const apiKey = document.getElementById('apiKey').value.trim();
-            if (!baseUrl || !apiKey) { showToast('请先填写配置', 'error'); return; }
-
-            const btn = document.getElementById('fetchModelsBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading-spinner"></span> 拉取中...';
-
-            try {
-                const endpoint = baseUrl.replace(/\/+$/, '').replace(/\/v1$/, '') + '/v1/models';
-                addLog(`请求: ${endpoint}`);
-
-                const res = await fetch(endpoint, {
-                    headers: { 'Authorization': `Bearer ${apiKey}` }
-                });
-
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-                const data = await res.json();
-                const models = data.data || data.models || data || [];
-
-                AppState.availableModels = models;
-                addLog(`找到 ${models.length} 个模型`, 'success');
-
-                const container = document.getElementById('modelListContainer');
-                const list = document.getElementById('modelList');
-                container.style.display = 'block';
-                list.innerHTML = models.map(m => {
-                    const id = m.id || m.name || m;
-                    return `<div class="model-item" onclick="selectModel('${id}')"><span class="model-item-name">${id}</span></div>`;
-                }).join('');
-
-                showToast(`获取到 ${models.length} 个模型`, 'success');
-            } catch (e) {
-                addLog(`失败: ${e.message}`, 'error');
-                showToast('拉取失败', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '📋 拉取模型列表';
-            }
-        }
-
-        function selectModel(id) {
-            document.getElementById('modelName').value = id;
-            document.querySelectorAll('.model-item').forEach(el => {
-                el.classList.toggle('selected', el.querySelector('.model-item-name').textContent === id);
-            });
-            showToast(`已选择: ${id}`, 'success');
-        }
-
-        async function testConnection() {
-            const baseUrl = document.getElementById('apiBaseUrl').value.trim();
-            const apiKey = document.getElementById('apiKey').value.trim();
-            const modelName = document.getElementById('modelName').value.trim();
-
-            if (!baseUrl || !apiKey || !modelName) {
-                showToast('请填写完整配置', 'error');
-                return;
-            }
-
-            const btn = document.getElementById('testConnectionBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading-spinner"></span> 测试中...';
-
-            try {
-                const endpoint = baseUrl.replace(/\/+$/, '').replace(/\/v1$/, '') + '/v1/chat/completions';
-
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: modelName,
-                        messages: [{ role: 'user', content: 'Hi' }],
-                        max_tokens: 5
-                    })
-                });
-
-                if (res.ok) {
-                    AppState.connectionStatus = 'connected';
-                    AppState.settings.apiBaseUrl = baseUrl;
-                    AppState.settings.apiKey = apiKey;
-                    AppState.settings.modelName = modelName;
-                    saveAllData();
-                    updateConnectionStatusUI();
-                    showToast('连接成功！', 'success');
-                    addLog('连接成功', 'success');
-                } else {
-                    throw new Error(`HTTP ${res.status}`);
-                }
-            } catch (e) {
-                showToast(`失败: ${e.message}`, 'error');
-                addLog(`失败: ${e.message}`, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '🔗 测试连接';
-            }
-        }
-
-        function saveApiSettings() {
-            AppState.settings.apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
-            AppState.settings.apiKey = document.getElementById('apiKey').value.trim();
-            AppState.settings.modelName = document.getElementById('modelName').value.trim();
-            AppState.settings.temperature = parseFloat(document.getElementById('temperature').value);
-            AppState.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
-            AppState.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
-            saveAllData();
-            showToast('设置已保存', 'success');
-        }
-
-        function updateSliderValue(id, labelId) {
-            document.getElementById(labelId).textContent = document.getElementById(id).value;
-        }
-
-        // ==================== 数据导入导出 ====================
-        function exportAllData() {
-            const data = {
-                characters: AppState.characters,
-                worldbooks: AppState.worldbooks,
-                settings: AppState.settings,
-                appIcons: AppState.appIcons,
-                version: '4.0.0'
-            };
-
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `ai-sms-backup-${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            showToast('导出成功', 'success');
-        }
-
-        function importDataClick() {
-            document.getElementById('importFileInput').click();
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.characters) AppState.characters = data.characters;
-                    if (data.worldbooks) AppState.worldbooks = data.worldbooks;
-                    if (data.settings) AppState.settings = { ...AppState.settings, ...data.settings };
-                    if (data.appIcons) AppState.appIcons = { ...AppState.appIcons, ...data.appIcons };
-
-                    saveAllData();
-                    loadSettingsToUI();
-                    applyWallpaper();
-                    applyAppIcons();
-                    updateAvatarSettings();
-                    updateUserAvatarPreview();
-                    showToast('导入成功', 'success');
-                } catch (e) {
-                    showToast('导入失败', 'error');
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
-        }
-
-        function clearAllData() {
-            if (!confirm('确定清除所有数据？')) return;
-
-            localStorage.removeItem('aiSMS_v4_characters');
-            localStorage.removeItem('aiSMS_v4_worldbooks');
-            localStorage.removeItem('aiSMS_v4_settings');
-            localStorage.removeItem('aiSMS_v4_appIcons');
-
-            location.reload();
-        }
-
-        // ==================== 工具函数 ====================
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function formatTime(ts) {
-            return new Date(ts).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-        }
-
-        function formatDate(ts) {
-            const d = new Date(ts);
-            const today = new Date();
-            if (d.toDateString() === today.toDateString()) return '今天';
-            const yesterday = new Date(today);
-            yesterday.setDate(yesterday.getDate() - 1);
-            if (d.toDateString() === yesterday.toDateString()) return '昨天';
-            return d.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' });
         }
 
         function autoResizeTextarea(el) {
@@ -3120,16 +2684,195 @@ ${char.description || '一个友善的朋友'}`;
         }
 
         function scrollToBottom() {
-            const el = document.getElementById('chatMessages');
-            el.scrollTop = el.scrollHeight;
+            const c = document.getElementById('chatMessages');
+            c.scrollTop = c.scrollHeight;
         }
 
-        function toggleSwitch(el) {
-            el.classList.toggle('active');
+        // 世界书
+        function showCreateWorldbookModal() {
+            document.getElementById('newWorldbookName').value = '';
+            showModal('createWorldbookModal');
         }
 
-        // ==================== 键盘事件 ====================
-        document.addEventListener('keydown', function(e) {
+        function createWorldbook() {
+            const name = document.getElementById('newWorldbookName').value.trim();
+            if (!name) { showToast('请输入名称', 'error'); return; }
+            const wb = {
+                id: Date.now().toString(),
+                name,
+                summary: '',
+                keywords: '',
+                content: '',
+                alwaysActive: false
+            };
+            App.worldbooks.push(wb);
+            saveData();
+            hideModal('createWorldbookModal');
+            renderWorldbooks();
+            showToast(`"${name}"创建成功`, 'success');
+            openWorldbookEdit(wb.id);
+        }
+
+        function renderWorldbooks() {
+            const list = document.getElementById('worldbookList');
+            const empty = document.getElementById('emptyWorldbookState');
+            if (App.worldbooks.length === 0) {
+                list.style.display = 'none';
+                empty.style.display = 'flex';
+                return;
+            }
+            list.style.display = 'block';
+            empty.style.display = 'none';
+            list.innerHTML = App.worldbooks.map(wb =>
+                `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')">
+                    <div class="worldbook-item-header">
+                        <span class="worldbook-item-title">${escapeHtml(wb.name)}</span>
+                        ${wb.alwaysActive ? '<span class="worldbook-item-badge">始终</span>' : ''}
+                    </div>
+                    <div class="worldbook-item-preview">${escapeHtml(wb.summary || wb.content?.substring(0,100) || '无内容')}</div>
+                </div>`
+            ).join('');
+        }
+
+        function openWorldbookEdit(id) {
+            const wb = App.worldbooks.find(w => w.id === id);
+            if (!wb) return;
+            App.currentWbId = id;
+            document.getElementById('worldbookName').value = wb.name;
+            document.getElementById('worldbookSummary').value = wb.summary || '';
+            document.getElementById('worldbookKeywords').value = wb.keywords || '';
+            document.getElementById('worldbookContent').value = wb.content || '';
+            document.getElementById('worldbookAlwaysActive').classList.toggle('active', wb.alwaysActive);
+            openPage('worldbookEditPage');
+        }
+
+        function closeWorldbookEdit() {
+            closePage('worldbookEditPage');
+            App.currentWbId = null;
+        }
+
+        function saveWorldbook() {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb) return;
+            wb.name = document.getElementById('worldbookName').value.trim() || wb.name;
+            wb.summary = document.getElementById('worldbookSummary').value;
+            wb.keywords = document.getElementById('worldbookKeywords').value;
+            wb.content = document.getElementById('worldbookContent').value;
+            wb.alwaysActive = document.getElementById('worldbookAlwaysActive').classList.contains('active');
+            saveData();
+            closeWorldbookEdit();
+            renderWorldbooks();
+            showToast('已保存', 'success');
+        }
+
+        function deleteCurrentWorldbook() {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb) return;
+            App.pendingDeleteType = 'worldbook';
+            App.pendingDeleteId = wb.id;
+            document.getElementById('deleteModalTitle').textContent = `删除"${wb.name}"？`;
+            showModal('confirmDeleteModal');
+        }
+
+        function updateWorldbookSelect() {
+            const sel = document.getElementById('charWorldbook');
+            sel.innerHTML = '<option value="">不绑定</option>' +
+                App.worldbooks.map(wb => `<option value="${wb.id}">${escapeHtml(wb.name)}</option>`).join('');
+        }
+
+        // 删除确认
+        function confirmDelete() {
+            if (App.pendingDeleteType === 'character') {
+                App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
+                saveData();
+                hideModal('confirmDeleteModal');
+                closeCharacterSettings();
+                closeChatPage();
+                renderContacts();
+                showToast('已删除', 'success');
+            } else if (App.pendingDeleteType === 'worldbook') {
+                App.characters.forEach(c => { if (c.worldbookId === App.pendingDeleteId) c.worldbookId = ''; });
+                App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
+                saveData();
+                hideModal('confirmDeleteModal');
+                closeWorldbookEdit();
+                renderWorldbooks();
+                showToast('已删除', 'success');
+            }
+        }
+
+        // 导入导出
+        function exportAllData() {
+            const data = {
+                characters: App.characters,
+                worldbooks: App.worldbooks,
+                settings: App.settings,
+                appIcons: App.appIcons,
+                version: '4.0.0'
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `sms-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            showToast('已导出', 'success');
+        }
+
+        function importData(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (data.characters) App.characters = data.characters;
+                    if (data.worldbooks) App.worldbooks = data.worldbooks;
+                    if (data.settings) App.settings = {...App.settings, ...data.settings};
+                    if (data.appIcons) App.appIcons = {...App.appIcons, ...data.appIcons};
+                    saveData();
+                    loadSettingsUI();
+                    applyWallpaper();
+                    applyAppIcons();
+                    showToast('导入成功', 'success');
+                } catch(err) { showToast('导入失败', 'error'); }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+
+        function clearAllData() {
+            if (confirm('确定清除所有数据？')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // 工具函数
+        function toggleSwitch(el) { el.classList.toggle('active'); }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatTime(ts) {
+            const d = new Date(ts);
+            return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatDate(ts) {
+            const d = new Date(ts);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (d.toDateString() === today.toDateString()) return '今天';
+            if (d.toDateString() === yesterday.toDateString()) return '昨天';
+            return d.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' });
+        }
+
+        // 键盘事件
+        document.addEventListener('keydown', e => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 const input = document.getElementById('chatInput');
                 if (document.activeElement === input && document.getElementById('chatPage').classList.contains('active')) {
@@ -3138,15 +2881,13 @@ ${char.description || '一个友善的朋友'}`;
                 }
             }
             if (e.key === 'Escape') {
-                document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
-                if (AppState.isSelectMode) exitSelectMode();
+                ['createCharacterModal','createWorldbookModal','confirmDeleteModal','iconPickerModal'].forEach(hideModal);
+                if (App.isSelectMode) exitSelectMode();
             }
         });
 
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', function(e) {
-                if (e.target === overlay) overlay.classList.remove('active');
-            });
+            overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); });
         });
     </script>
 </body>
