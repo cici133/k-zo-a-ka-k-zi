@@ -1163,22 +1163,27 @@
             color: var(--text-secondary);
         }
 
-        .data-status {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 6px 12px;
-            background: rgba(52, 199, 89, 0.9);
-            border-radius: 20px;
-            font-size: 11px;
-            color: white;
-            z-index: 999;
-            opacity: 0;
-            transition: opacity 0.3s;
+        .storage-status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            font-size: 12px;
         }
 
-        .data-status.show { opacity: 1; }
-        .data-status.error { background: rgba(255, 59, 48, 0.9); }
+        .storage-status.ok {
+            background: rgba(52, 199, 89, 0.15);
+            color: var(--success-color);
+        }
+
+        .storage-status.warning {
+            background: rgba(255, 149, 0, 0.15);
+            color: var(--warning-color);
+        }
+
+        .storage-status.error {
+            background: rgba(255, 59, 48, 0.15);
+            color: var(--danger-color);
+        }
 
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -1187,7 +1192,6 @@
 </head>
 <body>
     <div id="wallpaperLayer"></div>
-    <div id="dataStatus" class="data-status">数据已保存</div>
 
     <div class="phone-container">
         <div class="status-bar">
@@ -1232,6 +1236,8 @@
                 <div class="nav-btn right" style="visibility:hidden">占</div>
             </div>
             <div class="page-content">
+                <div class="storage-status" id="storageStatus">检查存储...</div>
+
                 <p class="settings-group-title">API配置</p>
                 <div class="settings-group" style="padding:14px">
                     <div class="action-hint" id="connectionStatusHint">
@@ -1292,11 +1298,14 @@
 
                 <p class="settings-group-title">数据管理</p>
                 <div class="settings-group">
+                    <div class="settings-item" onclick="forceSaveAll()">
+                        <div class="settings-item-left"><span class="settings-icon green">💾</span><span class="settings-item-label">强制保存所有数据</span></div>
+                    </div>
                     <div class="settings-item" onclick="exportAllData()">
                         <div class="settings-item-left"><span class="settings-icon blue">📤</span><span class="settings-item-label">导出数据</span></div>
                     </div>
                     <div class="settings-item" onclick="document.getElementById('importFileInput').click()">
-                        <div class="settings-item-left"><span class="settings-icon green">📥</span><span class="settings-item-label">导入数据</span></div>
+                        <div class="settings-item-left"><span class="settings-icon orange">📥</span><span class="settings-item-label">导入数据</span></div>
                     </div>
                     <input type="file" id="importFileInput" class="file-input-hidden" accept=".json" onchange="importData(event)">
                     <div class="settings-item" onclick="clearAllData()">
@@ -1661,73 +1670,16 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ==================== 数据存储系统 - 完全重写以确保持久性 ====================
+        // ==================== 存储键名常量 ====================
         const STORAGE_KEYS = {
-            CHARACTERS: 'smsApp_characters_v2',
-            WORLDBOOKS: 'smsApp_worldbooks_v2',
-            SETTINGS: 'smsApp_settings_v2',
-            ICONS: 'smsApp_icons_v2',
-            BACKUP: 'smsApp_backup_v2'
+            CHARACTERS: 'sms_app_characters_v2',
+            WORLDBOOKS: 'sms_app_worldbooks_v2',
+            SETTINGS: 'sms_app_settings_v2',
+            ICONS: 'sms_app_icons_v2',
+            INITIALIZED: 'sms_app_initialized_v2'
         };
 
-        // 检查localStorage是否可用
-        function isStorageAvailable() {
-            try {
-                const test = '__storage_test__';
-                localStorage.setItem(test, test);
-                localStorage.removeItem(test);
-                return true;
-            } catch (e) {
-                console.error('localStorage不可用:', e);
-                return false;
-            }
-        }
-
-        // 安全的存储写入
-        function safeSetItem(key, value) {
-            try {
-                const jsonStr = JSON.stringify(value);
-                localStorage.setItem(key, jsonStr);
-                // 立即验证
-                const verify = localStorage.getItem(key);
-                if (verify !== jsonStr) {
-                    throw new Error('验证失败');
-                }
-                console.log(`✅ 保存成功: ${key}, 大小: ${jsonStr.length}`);
-                return true;
-            } catch (e) {
-                console.error(`❌ 保存失败 ${key}:`, e);
-                showDataStatus('保存失败', true);
-                return false;
-            }
-        }
-
-        // 安全的存储读取
-        function safeGetItem(key, defaultValue) {
-            try {
-                const data = localStorage.getItem(key);
-                if (data === null || data === undefined || data === 'undefined') {
-                    console.log(`ℹ️ ${key} 无数据，使用默认值`);
-                    return defaultValue;
-                }
-                const parsed = JSON.parse(data);
-                console.log(`✅ 读取成功: ${key}`);
-                return parsed;
-            } catch (e) {
-                console.error(`❌ 读取失败 ${key}:`, e);
-                return defaultValue;
-            }
-        }
-
-        // 显示数据状态
-        function showDataStatus(msg, isError = false) {
-            const el = document.getElementById('dataStatus');
-            el.textContent = msg;
-            el.className = 'data-status show' + (isError ? ' error' : '');
-            setTimeout(() => el.classList.remove('show'), 2000);
-        }
-
-        // 全局状态
+        // ==================== 全局状态 ====================
         const App = {
             characters: [],
             worldbooks: [],
@@ -1753,7 +1705,8 @@
                 maxContextMessages: 200,
                 wallpaper: 'gradient1',
                 wallpaperData: null
-            }
+            },
+            dataLoaded: false
         };
 
         const GRADIENTS = {
@@ -1765,121 +1718,220 @@
             gradient6: 'linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)'
         };
 
-        // ==================== 核心保存/加载函数 ====================
-        function saveAllData() {
-            if (!isStorageAvailable()) {
-                showToast('存储不可用！', 'error');
-                return false;
-            }
-
-            console.log('📦 开始保存所有数据...');
-
-            const success1 = safeSetItem(STORAGE_KEYS.CHARACTERS, App.characters);
-            const success2 = safeSetItem(STORAGE_KEYS.WORLDBOOKS, App.worldbooks);
-            const success3 = safeSetItem(STORAGE_KEYS.SETTINGS, App.settings);
-            const success4 = safeSetItem(STORAGE_KEYS.ICONS, App.appIcons);
-
-            // 创建备份
-            const backup = {
-                characters: App.characters,
-                worldbooks: App.worldbooks,
-                settings: App.settings,
-                icons: App.appIcons,
-                timestamp: Date.now()
-            };
-            safeSetItem(STORAGE_KEYS.BACKUP, backup);
-
-            if (success1 && success2 && success3 && success4) {
-                showDataStatus('数据已保存');
-                console.log('✅ 所有数据保存完成');
-                return true;
-            } else {
-                showDataStatus('部分数据保存失败', true);
-                return false;
-            }
-        }
-
-        function loadAllData() {
-            if (!isStorageAvailable()) {
-                console.error('❌ localStorage不可用');
-                showToast('存储不可用！', 'error');
-                return;
-            }
-
-            console.log('📂 开始加载数据...');
-
-            // 尝试加载主数据
-            let chars = safeGetItem(STORAGE_KEYS.CHARACTERS, null);
-            let wbs = safeGetItem(STORAGE_KEYS.WORLDBOOKS, null);
-            let settings = safeGetItem(STORAGE_KEYS.SETTINGS, null);
-            let icons = safeGetItem(STORAGE_KEYS.ICONS, null);
-
-            // 如果主数据为空，尝试从备份恢复
-            if (!chars && !wbs && !settings) {
-                console.log('⚠️ 主数据为空，尝试从备份恢复...');
-                const backup = safeGetItem(STORAGE_KEYS.BACKUP, null);
-                if (backup) {
-                    chars = backup.characters || [];
-                    wbs = backup.worldbooks || [];
-                    settings = backup.settings || {};
-                    icons = backup.icons || {};
-                    console.log('✅ 从备份恢复成功');
-                    showToast('数据已从备份恢复', 'warning');
+        // ==================== 图片压缩函数 ====================
+        function compressImage(dataUrl, maxWidth = 400, quality = 0.7) {
+            return new Promise((resolve) => {
+                if (!dataUrl || !dataUrl.startsWith('data:image')) {
+                    resolve(dataUrl);
+                    return;
                 }
-            }
 
-            // 应用数据
-            App.characters = Array.isArray(chars) ? chars : [];
-            App.worldbooks = Array.isArray(wbs) ? wbs : [];
-            if (settings && typeof settings === 'object') {
-                App.settings = { ...App.settings, ...settings };
-            }
-            if (icons && typeof icons === 'object') {
-                App.appIcons = { ...App.appIcons, ...icons };
-            }
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
 
-            console.log(`📊 加载完成: ${App.characters.length}个角色, ${App.worldbooks.length}个世界书`);
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    }
 
-            // 更新UI
-            loadSettingsUI();
+                    canvas.width = width;
+                    canvas.height = height;
 
-            // 检查API连接状态
-            if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) {
-                App.connectionStatus = 'connected';
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressed = canvas.toDataURL('image/jpeg', quality);
+                    console.log(`Image compressed: ${Math.round(dataUrl.length/1024)}KB -> ${Math.round(compressed.length/1024)}KB`);
+                    resolve(compressed);
+                };
+                img.onerror = () => resolve(dataUrl);
+                img.src = dataUrl;
+            });
+        }
+
+        // ==================== 存储检查 ====================
+        function checkStorage() {
+            const statusEl = document.getElementById('storageStatus');
+            try {
+                // 测试localStorage可用性
+                const testKey = '__storage_test__';
+                localStorage.setItem(testKey, 'test');
+                localStorage.removeItem(testKey);
+
+                // 检查已用空间
+                let total = 0;
+                for (let key in localStorage) {
+                    if (localStorage.hasOwnProperty(key)) {
+                        total += localStorage[key].length * 2; // UTF-16
+                    }
+                }
+                const usedKB = Math.round(total / 1024);
+                const usedMB = (total / (1024 * 1024)).toFixed(2);
+
+                if (usedKB < 4000) {
+                    statusEl.className = 'storage-status ok';
+                    statusEl.textContent = `✅ 存储正常 | 已用: ${usedMB}MB`;
+                } else {
+                    statusEl.className = 'storage-status warning';
+                    statusEl.textContent = `⚠️ 存储接近上限 | 已用: ${usedMB}MB`;
+                }
+
+                return true;
+            } catch (e) {
+                statusEl.className = 'storage-status error';
+                statusEl.textContent = `❌ 存储不可用: ${e.message}`;
+                console.error('Storage check failed:', e);
+                return false;
             }
         }
 
-        function loadSettingsUI() {
-            const fields = {
-                'apiBaseUrl': App.settings.apiBaseUrl || '',
-                'apiKey': App.settings.apiKey || '',
-                'modelName': App.settings.modelName || '',
-                'maxContextMessages': App.settings.maxContextMessages || 200,
-                'temperature': App.settings.temperature || 0.7,
-                'maxTokens': App.settings.maxTokens || 2048
-            };
+        // ==================== 数据持久化 - 核心修复 ====================
+        function saveData() {
+            try {
+                // 保存前验证数据完整性
+                const dataToSave = {
+                    characters: JSON.stringify(App.characters),
+                    worldbooks: JSON.stringify(App.worldbooks),
+                    settings: JSON.stringify(App.settings),
+                    icons: JSON.stringify(App.appIcons)
+                };
 
-            for (const [id, value] of Object.entries(fields)) {
-                const el = document.getElementById(id);
-                if (el) el.value = value;
+                // 逐个保存，确保每个都成功
+                localStorage.setItem(STORAGE_KEYS.CHARACTERS, dataToSave.characters);
+                localStorage.setItem(STORAGE_KEYS.WORLDBOOKS, dataToSave.worldbooks);
+                localStorage.setItem(STORAGE_KEYS.SETTINGS, dataToSave.settings);
+                localStorage.setItem(STORAGE_KEYS.ICONS, dataToSave.icons);
+                localStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
+
+                console.log('✅ Data saved successfully:', {
+                    characters: App.characters.length,
+                    worldbooks: App.worldbooks.length,
+                    hasWallpaper: !!App.settings.wallpaperData,
+                    hasIcons: Object.values(App.appIcons).some(v => v)
+                });
+
+                return true;
+            } catch (e) {
+                console.error('❌ Save error:', e);
+
+                // 如果是配额错误，尝试压缩数据
+                if (e.name === 'QuotaExceededError') {
+                    showToast('存储空间不足，请导出数据后清理', 'error');
+                } else {
+                    showToast('保存失败: ' + e.message, 'error');
+                }
+                return false;
             }
-
-            document.getElementById('tempValue').textContent = App.settings.temperature || 0.7;
-            document.getElementById('maxTokensValue').textContent = App.settings.maxTokens || 2048;
         }
+
+        function loadData() {
+            console.log('🔄 Loading data...');
+
+            try {
+                // 检查是否已初始化
+                const initialized = localStorage.getItem(STORAGE_KEYS.INITIALIZED);
+                console.log('Initialized flag:', initialized);
+
+                // 加载角色
+                const charsStr = localStorage.getItem(STORAGE_KEYS.CHARACTERS);
+                if (charsStr) {
+                    const parsed = JSON.parse(charsStr);
+                    if (Array.isArray(parsed)) {
+                        App.characters = parsed;
+                        console.log(`✅ Loaded ${App.characters.length} characters`);
+                    }
+                }
+
+                // 加载世界书
+                const wbsStr = localStorage.getItem(STORAGE_KEYS.WORLDBOOKS);
+                if (wbsStr) {
+                    const parsed = JSON.parse(wbsStr);
+                    if (Array.isArray(parsed)) {
+                        App.worldbooks = parsed;
+                        console.log(`✅ Loaded ${App.worldbooks.length} worldbooks`);
+                    }
+                }
+
+                // 加载设置
+                const settingsStr = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+                if (settingsStr) {
+                    const parsed = JSON.parse(settingsStr);
+                    if (parsed && typeof parsed === 'object') {
+                        App.settings = { ...App.settings, ...parsed };
+                        console.log('✅ Loaded settings:', {
+                            wallpaper: App.settings.wallpaper,
+                            hasWallpaperData: !!App.settings.wallpaperData
+                        });
+                    }
+                }
+
+                // 加载图标
+                const iconsStr = localStorage.getItem(STORAGE_KEYS.ICONS);
+                if (iconsStr) {
+                    const parsed = JSON.parse(iconsStr);
+                    if (parsed && typeof parsed === 'object') {
+                        App.appIcons = { ...App.appIcons, ...parsed };
+                        console.log('✅ Loaded icons:', Object.keys(App.appIcons).filter(k => App.appIcons[k]));
+                    }
+                }
+
+                App.dataLoaded = true;
+
+                // 更新连接状态
+                if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) {
+                    App.connectionStatus = 'connected';
+                }
+
+                loadSettingsUI();
+                console.log('✅ All data loaded successfully');
+                return true;
+
+            } catch (e) {
+                console.error('❌ Load error:', e);
+                showToast('加载数据失败: ' + e.message, 'error');
+                return false;
+            }
+        }
+
+        function forceSaveAll() {
+            console.log('🔄 Force saving all data...');
+            if (saveData()) {
+                checkStorage();
+                showToast('所有数据已强制保存', 'success');
+            }
+        }
+
+        // ==================== 页面卸载前保存 ====================
+        window.addEventListener('beforeunload', () => {
+            console.log('🔄 Page unloading, saving data...');
+            saveData();
+        });
+
+        // 定期自动保存
+        setInterval(() => {
+            if (App.dataLoaded) {
+                saveData();
+            }
+        }, 30000); // 每30秒保存一次
 
         // ==================== 初始化 ====================
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 应用启动...');
+            console.log('🚀 App initializing...');
 
-            // 先加载数据
-            loadAllData();
+            // 先检查存储
+            checkStorage();
+
+            // 加载数据
+            loadData();
 
             // 更新时间
             updateTime();
             setInterval(updateTime, 60000);
 
-            // 应用视觉设置
+            // 应用壁纸和图标
             applyWallpaper();
             applyAppIcons();
             updateConnectionUI();
@@ -1887,32 +1939,24 @@
             updateWallpaperPreview();
             updateIconPreviews();
 
-            console.log('✅ 应用初始化完成');
+            console.log('✅ App initialized');
         });
-
-        // 页面关闭前保存
-        window.addEventListener('beforeunload', (e) => {
-            console.log('💾 页面关闭前保存...');
-            saveAllData();
-        });
-
-        // 页面可见性变化时保存
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden') {
-                console.log('💾 页面隐藏，保存数据...');
-                saveAllData();
-            }
-        });
-
-        // 定期自动保存
-        setInterval(() => {
-            saveAllData();
-        }, 30000); // 每30秒自动保存
 
         function updateTime() {
             const now = new Date();
             document.getElementById('statusBarTime').textContent =
                 now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+        }
+
+        function loadSettingsUI() {
+            document.getElementById('apiBaseUrl').value = App.settings.apiBaseUrl || '';
+            document.getElementById('apiKey').value = App.settings.apiKey || '';
+            document.getElementById('modelName').value = App.settings.modelName || '';
+            document.getElementById('maxContextMessages').value = App.settings.maxContextMessages || 200;
+            document.getElementById('temperature').value = App.settings.temperature;
+            document.getElementById('tempValue').textContent = App.settings.temperature;
+            document.getElementById('maxTokens').value = App.settings.maxTokens;
+            document.getElementById('maxTokensValue').textContent = App.settings.maxTokens;
         }
 
         // ==================== 壁纸功能 ====================
@@ -1921,7 +1965,7 @@
             const wp = App.settings.wallpaper;
             const wpData = App.settings.wallpaperData;
 
-            console.log('🖼️ 应用壁纸:', wp ? wp.substring(0, 30) + '...' : 'none', '有图片数据:', !!wpData);
+            console.log('Applying wallpaper:', wp, 'hasData:', !!wpData);
 
             el.style.cssText = '';
 
@@ -2007,13 +2051,16 @@
             showToast('已预览，点击保存应用', 'info');
         }
 
-        function handleWallpaperUpload(e) {
+        async function handleWallpaperUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
             if (file.size > 10*1024*1024) { showToast('图片不超过10MB', 'error'); return; }
+
             const reader = new FileReader();
-            reader.onload = (ev) => {
-                App.tempWallpaper = ev.target.result;
+            reader.onload = async (ev) => {
+                // 压缩壁纸图片
+                const compressed = await compressImage(ev.target.result, 800, 0.8);
+                App.tempWallpaper = compressed;
                 updateWallpaperPreview();
                 showToast('已上传，点击保存应用', 'success');
             };
@@ -2039,11 +2086,14 @@
             }
 
             App.tempWallpaper = null;
-            saveAllData();
-            applyWallpaper();
-            highlightWallpaper();
-            updateWallpaperPreview();
-            showToast('壁纸已保存', 'success');
+
+            if (saveData()) {
+                applyWallpaper();
+                highlightWallpaper();
+                updateWallpaperPreview();
+                checkStorage();
+                showToast('壁纸已保存', 'success');
+            }
         }
 
         function highlightWallpaper() {
@@ -2082,12 +2132,15 @@
             });
         }
 
-        function handleIconUpload(e, appName) {
+        async function handleIconUpload(e, appName) {
             const file = e.target.files[0];
             if (!file) return;
+
             const reader = new FileReader();
-            reader.onload = (ev) => {
-                App.tempIcons[appName] = ev.target.result;
+            reader.onload = async (ev) => {
+                // 压缩图标
+                const compressed = await compressImage(ev.target.result, 120, 0.8);
+                App.tempIcons[appName] = compressed;
                 updateIconPreviews();
                 showToast('已选择，点击保存应用', 'info');
             };
@@ -2104,10 +2157,13 @@
                 }
             });
             App.tempIcons = {};
+
             if (changed) {
-                saveAllData();
-                applyAppIcons();
-                showToast('图标已保存', 'success');
+                if (saveData()) {
+                    applyAppIcons();
+                    checkStorage();
+                    showToast('图标已保存', 'success');
+                }
             } else {
                 showToast('没有更改', 'info');
             }
@@ -2116,7 +2172,7 @@
         function resetIcons() {
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null };
             App.tempIcons = {};
-            saveAllData();
+            saveData();
             applyAppIcons();
             updateIconPreviews();
             showToast('已重置为默认', 'success');
@@ -2133,6 +2189,9 @@
                     updateWallpaperPreview();
                     updateIconPreviews();
                     highlightWallpaper();
+                }
+                if (id === 'settingsPage') {
+                    checkStorage();
                 }
             }
         }
@@ -2207,7 +2266,6 @@
             document.querySelectorAll('.model-item').forEach(el => {
                 el.classList.toggle('selected', el.querySelector('.model-item-name').textContent === id);
             });
-            saveAllData();
             showToast(`已选择: ${id}`, 'success');
         }
 
@@ -2230,7 +2288,7 @@
                     App.settings.apiBaseUrl = url;
                     App.settings.apiKey = key;
                     App.settings.modelName = model;
-                    saveAllData();
+                    saveData();
                     showToast('连接成功！', 'success');
                     addLog('连接成功', 'success');
                 } else throw new Error(`HTTP ${r.status}`);
@@ -2251,7 +2309,7 @@
             App.settings.temperature = parseFloat(document.getElementById('temperature').value);
             App.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
             App.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
-            saveAllData();
+            saveData();
             showToast('设置已保存', 'success');
         }
 
@@ -2279,7 +2337,7 @@
                 messages: []
             };
             App.characters.push(char);
-            saveAllData();
+            saveData();
             hideModal('createCharacterModal');
             renderContacts();
             showToast(`"${name}"创建成功`, 'success');
@@ -2296,8 +2354,8 @@
             list.style.display = 'flex';
             empty.style.display = 'none';
             list.innerHTML = App.characters.map(c => {
-                const lastMsg = c.messages && c.messages.length > 0 ? c.messages[c.messages.length-1].content.substring(0,30)+'...' : '点击开始对话';
-                const lastTime = c.messages && c.messages.length > 0 ? formatTime(c.messages[c.messages.length-1].timestamp) : '';
+                const lastMsg = c.messages.length > 0 ? c.messages[c.messages.length-1].content.substring(0,30)+'...' : '点击开始对话';
+                const lastTime = c.messages.length > 0 ? formatTime(c.messages[c.messages.length-1].timestamp) : '';
                 const avatarHtml = c.avatarImage
                     ? `<img src="${c.avatarImage}" alt="">`
                     : (c.avatar || c.name[0]);
@@ -2332,9 +2390,7 @@
             document.getElementById('chatMessages').classList.remove('select-mode');
             renderMessages();
             openPage('chatPage');
-            if ((!char.messages || char.messages.length === 0) && char.greeting) {
-                addMessage(char.greeting, 'received');
-            }
+            if (char.messages.length === 0 && char.greeting) addMessage(char.greeting, 'received');
         }
 
         function closeChatPage() {
@@ -2343,7 +2399,6 @@
             App.currentCharId = null;
         }
 
-        // 角色设置
         function openCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
@@ -2378,7 +2433,7 @@
             document.getElementById('borderWidthSlider').value = char.borderWidth || 2;
             document.getElementById('borderWidthValue').textContent = char.borderWidth || 2;
 
-            document.getElementById('charName').value = char.name || '';
+            document.getElementById('charName').value = char.name;
             document.getElementById('charAvatar').value = char.avatar || '';
             document.getElementById('charDescription').value = char.description || '';
             document.getElementById('charGreeting').value = char.greeting || '';
@@ -2394,29 +2449,31 @@
 
         function closeCharacterSettings() { closePage('characterSettingsPage'); }
 
-        function handleCharAvatarUpload(e) {
+        async function handleCharAvatarUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = ev => {
+            reader.onload = async ev => {
+                const compressed = await compressImage(ev.target.result, 200, 0.8);
                 const upload = document.getElementById('charAvatarUpload');
-                upload.innerHTML = `<img src="${ev.target.result}">`;
+                upload.innerHTML = `<img src="${compressed}">`;
                 upload.classList.add('has-image');
-                upload.dataset.image = ev.target.result;
+                upload.dataset.image = compressed;
             };
             reader.readAsDataURL(file);
             e.target.value = '';
         }
 
-        function handleUserAvatarUpload(e) {
+        async function handleUserAvatarUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = ev => {
+            reader.onload = async ev => {
+                const compressed = await compressImage(ev.target.result, 200, 0.8);
                 const upload = document.getElementById('userAvatarUpload');
-                upload.innerHTML = `<img src="${ev.target.result}">`;
+                upload.innerHTML = `<img src="${compressed}">`;
                 upload.classList.add('has-image');
-                upload.dataset.image = ev.target.result;
+                upload.dataset.image = compressed;
             };
             reader.readAsDataURL(file);
             e.target.value = '';
@@ -2457,7 +2514,7 @@
 
             document.getElementById('chatTitle').textContent = char.name;
 
-            saveAllData();
+            saveData();
             renderMessages();
             closeCharacterSettings();
             showToast('设置已保存', 'success');
@@ -2485,7 +2542,7 @@
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
-            if (!char.messages || char.messages.length === 0) {
+            if (char.messages.length === 0) {
                 container.innerHTML = '<div class="date-separator"><span class="date-separator-text">今天</span></div>';
                 return;
             }
@@ -2546,8 +2603,6 @@
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
-            if (!char.messages) char.messages = [];
-
             const msg = {
                 id: Date.now().toString() + Math.random().toString(36).substr(2,9),
                 role: type === 'sent' ? 'user' : 'assistant',
@@ -2556,7 +2611,7 @@
             };
 
             char.messages.push(msg);
-            saveAllData();
+            saveData();
             renderMessages();
         }
 
@@ -2595,7 +2650,7 @@
                 return;
             }
 
-            App.lastAIStart = char.messages ? char.messages.length : 0;
+            App.lastAIStart = char.messages.length;
 
             const container = document.getElementById('chatMessages');
             container.insertAdjacentHTML('beforeend', '<div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>');
@@ -2648,7 +2703,7 @@
 
             const wb = App.worldbooks.find(w => w.id === char.worldbookId);
             if (wb?.content) {
-                const inject = wb.alwaysActive || (wb.keywords && char.messages && char.messages.some(m =>
+                const inject = wb.alwaysActive || (wb.keywords && char.messages.some(m =>
                     wb.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))
                 ));
                 if (inject) sys += `\n\n【设定】${wb.content}`;
@@ -2657,8 +2712,7 @@
             msgs.push({ role: 'system', content: sys });
 
             const max = App.settings.maxContextMessages || 200;
-            const charMsgs = char.messages || [];
-            charMsgs.slice(-max).forEach(m => {
+            char.messages.slice(-max).forEach(m => {
                 msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content });
             });
 
@@ -2670,7 +2724,7 @@
             if (!char) return;
             toggleExtensionPanel();
 
-            if (!char.messages || char.messages.length === 0) { showToast('无消息', 'warning'); return; }
+            if (char.messages.length === 0) { showToast('无消息', 'warning'); return; }
 
             if (App.lastAIStart >= 0 && App.lastAIStart < char.messages.length) {
                 let allAI = true;
@@ -2680,7 +2734,7 @@
                 if (allAI) {
                     const count = char.messages.length - App.lastAIStart;
                     char.messages.splice(App.lastAIStart, count);
-                    saveAllData();
+                    saveData();
                     renderMessages();
                     showToast(`已删除${count}条，重新生成...`, 'info');
                     App.lastAIStart = -1;
@@ -2702,7 +2756,7 @@
 
             const count = char.messages.length - first;
             char.messages.splice(first, count);
-            saveAllData();
+            saveData();
             renderMessages();
             showToast(`已删除${count}条，重新生成...`, 'info');
             await triggerAIReply();
@@ -2743,7 +2797,7 @@
             if (App.selectedMsgs.size === 0) { showToast('请先选择', 'warning'); return; }
             const count = App.selectedMsgs.size;
             char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id));
-            saveAllData();
+            saveData();
             exitSelectMode();
             renderMessages();
             showToast(`已删除${count}条`, 'success');
@@ -2777,7 +2831,7 @@
                 alwaysActive: false
             };
             App.worldbooks.push(wb);
-            saveAllData();
+            saveData();
             hideModal('createWorldbookModal');
             renderWorldbooks();
             showToast(`"${name}"创建成功`, 'success');
@@ -2800,7 +2854,7 @@
                         <span class="worldbook-item-title">${escapeHtml(wb.name)}</span>
                         ${wb.alwaysActive ? '<span class="worldbook-item-badge">始终</span>' : ''}
                     </div>
-                    <div class="worldbook-item-preview">${escapeHtml(wb.summary || (wb.content ? wb.content.substring(0,80) : '') || '无内容')}</div>
+                    <div class="worldbook-item-preview">${escapeHtml(wb.summary || wb.content?.substring(0,80) || '无内容')}</div>
                 </div>`
             ).join('');
         }
@@ -2809,7 +2863,7 @@
             const wb = App.worldbooks.find(w => w.id === id);
             if (!wb) return;
             App.currentWbId = id;
-            document.getElementById('worldbookName').value = wb.name || '';
+            document.getElementById('worldbookName').value = wb.name;
             document.getElementById('worldbookSummary').value = wb.summary || '';
             document.getElementById('worldbookKeywords').value = wb.keywords || '';
             document.getElementById('worldbookContent').value = wb.content || '';
@@ -2830,7 +2884,7 @@
             wb.keywords = document.getElementById('worldbookKeywords').value;
             wb.content = document.getElementById('worldbookContent').value;
             wb.alwaysActive = document.getElementById('worldbookAlwaysActive').classList.contains('active');
-            saveAllData();
+            saveData();
             closeWorldbookEdit();
             renderWorldbooks();
             showToast('已保存', 'success');
@@ -2854,7 +2908,7 @@
         function confirmDelete() {
             if (App.pendingDeleteType === 'character') {
                 App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
-                saveAllData();
+                saveData();
                 hideModal('confirmDeleteModal');
                 closeCharacterSettings();
                 closeChatPage();
@@ -2863,7 +2917,7 @@
             } else if (App.pendingDeleteType === 'worldbook') {
                 App.characters.forEach(c => { if (c.worldbookId === App.pendingDeleteId) c.worldbookId = ''; });
                 App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
-                saveAllData();
+                saveData();
                 hideModal('confirmDeleteModal');
                 closeWorldbookEdit();
                 renderWorldbooks();
@@ -2879,7 +2933,7 @@
                 settings: App.settings,
                 appIcons: App.appIcons,
                 version: '4.2.0',
-                exportTime: new Date().toISOString()
+                exportedAt: new Date().toISOString()
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
@@ -2900,15 +2954,16 @@
                     if (data.worldbooks) App.worldbooks = data.worldbooks;
                     if (data.settings) App.settings = {...App.settings, ...data.settings};
                     if (data.appIcons) App.appIcons = {...App.appIcons, ...data.appIcons};
-                    saveAllData();
-                    loadSettingsUI();
-                    applyWallpaper();
-                    applyAppIcons();
-                    updateConnectionUI();
-                    showToast('导入成功', 'success');
+
+                    if (saveData()) {
+                        loadSettingsUI();
+                        applyWallpaper();
+                        applyAppIcons();
+                        checkStorage();
+                        showToast('导入成功', 'success');
+                    }
                 } catch(err) {
-                    console.error('导入失败:', err);
-                    showToast('导入失败', 'error');
+                    showToast('导入失败: ' + err.message, 'error');
                 }
             };
             reader.readAsText(file);
@@ -2916,9 +2971,10 @@
         }
 
         function clearAllData() {
-            if (confirm('确定清除所有数据？此操作无法撤销！')) {
+            if (confirm('确定清除所有数据？此操作不可恢复！')) {
+                // 清除所有相关键
                 Object.values(STORAGE_KEYS).forEach(key => {
-                    try { localStorage.removeItem(key); } catch(e) {}
+                    localStorage.removeItem(key);
                 });
                 location.reload();
             }
@@ -2928,20 +2984,17 @@
         function toggleSwitch(el) { el.classList.toggle('active'); }
 
         function escapeHtml(text) {
-            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
         function formatTime(ts) {
-            if (!ts) return '';
             const d = new Date(ts);
             return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
         }
 
         function formatDate(ts) {
-            if (!ts) return '今天';
             const d = new Date(ts);
             const today = new Date();
             const yesterday = new Date(today);
@@ -2951,7 +3004,7 @@
             return d.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' });
         }
 
-        // 键盘事件
+        // ==================== 键盘事件 ====================
         document.addEventListener('keydown', e => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 const input = document.getElementById('chatInput');
