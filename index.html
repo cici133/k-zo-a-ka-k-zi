@@ -9,7 +9,7 @@
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.12);
-            --glass-bg-dark: rgba(0, 0, 0, 0.85);
+            --glass-bg-dark: rgba(0, 0, 0, 0.4);
             --glass-border: rgba(255, 255, 255, 0.18);
             --blur-amount: 20px;
             --text-primary: #ffffff;
@@ -38,7 +38,6 @@
             background: #000;
         }
 
-        /* 壁纸层 - 独立div，z-index为0 */
         #wallpaperLayer {
             position: fixed;
             top: 0;
@@ -166,7 +165,6 @@
             z-index: 1001;
         }
 
-        /* 页面样式 - 修复顶部露出问题 */
         .page {
             position: absolute;
             top: 0;
@@ -196,31 +194,15 @@
             transform: translateY(0);
         }
 
-        /* 导航栏 - 修复顶部问题，从顶部开始 */
         .nav-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 50px 12px 10px;
-            background: rgba(20, 20, 25, 0.98);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             flex-shrink: 0;
-            /* 确保导航栏覆盖整个顶部区域 */
-            margin: 0;
-            position: relative;
-            z-index: 10;
-        }
-
-        /* 为了确保没有间隙，添加一个顶部填充层 */
-        .page::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 50px;
-            background: rgba(20, 20, 25, 0.98);
-            z-index: 5;
         }
 
         .nav-btn {
@@ -235,8 +217,6 @@
             padding: 6px;
             border-radius: 6px;
             min-width: 60px;
-            position: relative;
-            z-index: 15;
         }
 
         .nav-btn svg { width: 18px; height: 18px; fill: currentColor; }
@@ -248,8 +228,6 @@
             color: var(--text-primary);
             text-align: center;
             flex: 1;
-            position: relative;
-            z-index: 15;
         }
 
         .page-content {
@@ -257,10 +235,8 @@
             overflow-y: auto;
             padding: 14px;
             -webkit-overflow-scrolling: touch;
-            background: rgba(20, 20, 25, 0.95);
         }
 
-        /* 设置组 */
         .settings-group {
             background: var(--glass-bg);
             backdrop-filter: blur(10px);
@@ -372,7 +348,6 @@
 
         .btn-stack { display: flex; flex-direction: column; gap: 8px; }
 
-        /* 联系人列表 */
         .contact-list { display: flex; flex-direction: column; }
 
         .contact-item {
@@ -443,14 +418,12 @@
         .empty-state-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
         .empty-state-desc { font-size: 14px; color: var(--text-secondary); }
 
-        /* 聊天容器 */
         .chat-container {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
-            background: rgba(20, 20, 25, 0.95);
         }
 
         .chat-messages {
@@ -582,17 +555,16 @@
             30% { transform: translateY(-5px); }
         }
 
-        /* 输入区域 */
         .chat-input-area {
             display: flex;
             align-items: flex-end;
             gap: 6px;
             padding: 8px 12px 28px;
-            background: rgba(30, 30, 35, 0.98);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* 美化的按钮 */
         .chat-btn {
             width: 36px;
             height: 36px;
@@ -647,13 +619,12 @@
 
         .chat-input-field::placeholder { color: rgba(255, 255, 255, 0.4); }
 
-        /* 扩展面板 */
         .extension-panel {
             position: absolute;
             bottom: 80px;
             left: 12px;
             right: 12px;
-            background: rgba(30, 30, 35, 0.98);
+            background: rgba(30, 30, 35, 0.95);
             backdrop-filter: blur(30px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
@@ -724,7 +695,6 @@
         .extension-btn-icon.danger { background: rgba(255, 59, 48, 0.2); }
         .extension-btn-icon.purple { background: rgba(175, 82, 222, 0.2); }
 
-        /* 模态框 */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -750,7 +720,7 @@
             max-width: 320px;
             max-height: 80vh;
             overflow-y: auto;
-            background: rgba(30, 30, 35, 0.98);
+            background: rgba(30, 30, 35, 0.95);
             backdrop-filter: blur(40px);
             border-radius: 18px;
             padding: 20px;
@@ -796,7 +766,6 @@
         .modal-btn.cancel { background: rgba(255, 255, 255, 0.12); color: var(--text-primary); }
         .modal-btn.confirm { background: var(--accent-color); color: white; }
 
-        /* Toast */
         .toast-container {
             position: fixed;
             top: 70px;
@@ -811,7 +780,7 @@
 
         .toast {
             padding: 12px 20px;
-            background: rgba(30, 30, 35, 0.98);
+            background: rgba(30, 30, 35, 0.95);
             backdrop-filter: blur(20px);
             border-radius: 12px;
             color: var(--text-primary);
@@ -1031,7 +1000,6 @@
         .select-mode-btn.cancel { background: rgba(255, 255, 255, 0.15); color: var(--text-primary); }
         .select-mode-btn.delete { background: var(--danger-color); color: white; }
 
-        /* 头像上传区域 */
         .avatar-upload-area {
             width: 90px;
             height: 90px;
@@ -1145,7 +1113,6 @@
         .char-counter.warning { color: #FF9500; }
         .char-counter.error { color: var(--danger-color); }
 
-        /* 壁纸预览 */
         .wallpaper-preview {
             width: 100%;
             height: 140px;
@@ -1155,7 +1122,6 @@
             overflow: hidden;
         }
 
-        /* 图标自定义区域 */
         .icon-customize-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -1197,14 +1163,31 @@
             color: var(--text-secondary);
         }
 
+        .data-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 6px 12px;
+            background: rgba(52, 199, 89, 0.9);
+            border-radius: 20px;
+            font-size: 11px;
+            color: white;
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .data-status.show { opacity: 1; }
+        .data-status.error { background: rgba(255, 59, 48, 0.9); }
+
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 3px; }
     </style>
 </head>
 <body>
-    <!-- 壁纸层 - 独立div -->
     <div id="wallpaperLayer"></div>
+    <div id="dataStatus" class="data-status">数据已保存</div>
 
     <div class="phone-container">
         <div class="status-bar">
@@ -1336,10 +1319,10 @@
                     <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 </button>
             </div>
-            <div class="page-content">
-                <div style="margin-bottom:14px">
-                    <input type="text" class="search-field" id="contactSearch" placeholder="搜索角色..." oninput="filterContacts()">
-                </div>
+            <div style="padding:0 14px 14px">
+                <input type="text" class="search-field" id="contactSearch" placeholder="搜索角色..." oninput="filterContacts()">
+            </div>
+            <div class="page-content" id="contactListContainer">
                 <div class="empty-state" id="emptyContactState">
                     <div class="empty-state-icon">💬</div>
                     <div class="empty-state-title">暂无角色</div>
@@ -1678,13 +1661,71 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ==================== 数据存储Key ====================
+        // ==================== 数据存储系统 - 完全重写以确保持久性 ====================
         const STORAGE_KEYS = {
-            chars: 'sms_app_characters_v2',
-            wbs: 'sms_app_worldbooks_v2',
-            settings: 'sms_app_settings_v2',
-            icons: 'sms_app_icons_v2'
+            CHARACTERS: 'smsApp_characters_v2',
+            WORLDBOOKS: 'smsApp_worldbooks_v2',
+            SETTINGS: 'smsApp_settings_v2',
+            ICONS: 'smsApp_icons_v2',
+            BACKUP: 'smsApp_backup_v2'
         };
+
+        // 检查localStorage是否可用
+        function isStorageAvailable() {
+            try {
+                const test = '__storage_test__';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch (e) {
+                console.error('localStorage不可用:', e);
+                return false;
+            }
+        }
+
+        // 安全的存储写入
+        function safeSetItem(key, value) {
+            try {
+                const jsonStr = JSON.stringify(value);
+                localStorage.setItem(key, jsonStr);
+                // 立即验证
+                const verify = localStorage.getItem(key);
+                if (verify !== jsonStr) {
+                    throw new Error('验证失败');
+                }
+                console.log(`✅ 保存成功: ${key}, 大小: ${jsonStr.length}`);
+                return true;
+            } catch (e) {
+                console.error(`❌ 保存失败 ${key}:`, e);
+                showDataStatus('保存失败', true);
+                return false;
+            }
+        }
+
+        // 安全的存储读取
+        function safeGetItem(key, defaultValue) {
+            try {
+                const data = localStorage.getItem(key);
+                if (data === null || data === undefined || data === 'undefined') {
+                    console.log(`ℹ️ ${key} 无数据，使用默认值`);
+                    return defaultValue;
+                }
+                const parsed = JSON.parse(data);
+                console.log(`✅ 读取成功: ${key}`);
+                return parsed;
+            } catch (e) {
+                console.error(`❌ 读取失败 ${key}:`, e);
+                return defaultValue;
+            }
+        }
+
+        // 显示数据状态
+        function showDataStatus(msg, isError = false) {
+            const el = document.getElementById('dataStatus');
+            el.textContent = msg;
+            el.className = 'data-status show' + (isError ? ' error' : '');
+            setTimeout(() => el.classList.remove('show'), 2000);
+        }
 
         // 全局状态
         const App = {
@@ -1724,108 +1765,154 @@
             gradient6: 'linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)'
         };
 
+        // ==================== 核心保存/加载函数 ====================
+        function saveAllData() {
+            if (!isStorageAvailable()) {
+                showToast('存储不可用！', 'error');
+                return false;
+            }
+
+            console.log('📦 开始保存所有数据...');
+
+            const success1 = safeSetItem(STORAGE_KEYS.CHARACTERS, App.characters);
+            const success2 = safeSetItem(STORAGE_KEYS.WORLDBOOKS, App.worldbooks);
+            const success3 = safeSetItem(STORAGE_KEYS.SETTINGS, App.settings);
+            const success4 = safeSetItem(STORAGE_KEYS.ICONS, App.appIcons);
+
+            // 创建备份
+            const backup = {
+                characters: App.characters,
+                worldbooks: App.worldbooks,
+                settings: App.settings,
+                icons: App.appIcons,
+                timestamp: Date.now()
+            };
+            safeSetItem(STORAGE_KEYS.BACKUP, backup);
+
+            if (success1 && success2 && success3 && success4) {
+                showDataStatus('数据已保存');
+                console.log('✅ 所有数据保存完成');
+                return true;
+            } else {
+                showDataStatus('部分数据保存失败', true);
+                return false;
+            }
+        }
+
+        function loadAllData() {
+            if (!isStorageAvailable()) {
+                console.error('❌ localStorage不可用');
+                showToast('存储不可用！', 'error');
+                return;
+            }
+
+            console.log('📂 开始加载数据...');
+
+            // 尝试加载主数据
+            let chars = safeGetItem(STORAGE_KEYS.CHARACTERS, null);
+            let wbs = safeGetItem(STORAGE_KEYS.WORLDBOOKS, null);
+            let settings = safeGetItem(STORAGE_KEYS.SETTINGS, null);
+            let icons = safeGetItem(STORAGE_KEYS.ICONS, null);
+
+            // 如果主数据为空，尝试从备份恢复
+            if (!chars && !wbs && !settings) {
+                console.log('⚠️ 主数据为空，尝试从备份恢复...');
+                const backup = safeGetItem(STORAGE_KEYS.BACKUP, null);
+                if (backup) {
+                    chars = backup.characters || [];
+                    wbs = backup.worldbooks || [];
+                    settings = backup.settings || {};
+                    icons = backup.icons || {};
+                    console.log('✅ 从备份恢复成功');
+                    showToast('数据已从备份恢复', 'warning');
+                }
+            }
+
+            // 应用数据
+            App.characters = Array.isArray(chars) ? chars : [];
+            App.worldbooks = Array.isArray(wbs) ? wbs : [];
+            if (settings && typeof settings === 'object') {
+                App.settings = { ...App.settings, ...settings };
+            }
+            if (icons && typeof icons === 'object') {
+                App.appIcons = { ...App.appIcons, ...icons };
+            }
+
+            console.log(`📊 加载完成: ${App.characters.length}个角色, ${App.worldbooks.length}个世界书`);
+
+            // 更新UI
+            loadSettingsUI();
+
+            // 检查API连接状态
+            if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) {
+                App.connectionStatus = 'connected';
+            }
+        }
+
+        function loadSettingsUI() {
+            const fields = {
+                'apiBaseUrl': App.settings.apiBaseUrl || '',
+                'apiKey': App.settings.apiKey || '',
+                'modelName': App.settings.modelName || '',
+                'maxContextMessages': App.settings.maxContextMessages || 200,
+                'temperature': App.settings.temperature || 0.7,
+                'maxTokens': App.settings.maxTokens || 2048
+            };
+
+            for (const [id, value] of Object.entries(fields)) {
+                const el = document.getElementById(id);
+                if (el) el.value = value;
+            }
+
+            document.getElementById('tempValue').textContent = App.settings.temperature || 0.7;
+            document.getElementById('maxTokensValue').textContent = App.settings.maxTokens || 2048;
+        }
+
         // ==================== 初始化 ====================
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('=== 应用启动 ===');
-            loadData();
+            console.log('🚀 应用启动...');
+
+            // 先加载数据
+            loadAllData();
+
+            // 更新时间
             updateTime();
             setInterval(updateTime, 60000);
+
+            // 应用视觉设置
             applyWallpaper();
             applyAppIcons();
             updateConnectionUI();
             highlightWallpaper();
             updateWallpaperPreview();
             updateIconPreviews();
-            console.log('=== 初始化完成 ===');
+
+            console.log('✅ 应用初始化完成');
         });
+
+        // 页面关闭前保存
+        window.addEventListener('beforeunload', (e) => {
+            console.log('💾 页面关闭前保存...');
+            saveAllData();
+        });
+
+        // 页面可见性变化时保存
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                console.log('💾 页面隐藏，保存数据...');
+                saveAllData();
+            }
+        });
+
+        // 定期自动保存
+        setInterval(() => {
+            saveAllData();
+        }, 30000); // 每30秒自动保存
 
         function updateTime() {
             const now = new Date();
             document.getElementById('statusBarTime').textContent =
                 now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-        }
-
-        // ==================== 数据持久化 - 加强版 ====================
-        function saveData() {
-            try {
-                const charsJson = JSON.stringify(App.characters);
-                const wbsJson = JSON.stringify(App.worldbooks);
-                const settingsJson = JSON.stringify(App.settings);
-                const iconsJson = JSON.stringify(App.appIcons);
-
-                localStorage.setItem(STORAGE_KEYS.chars, charsJson);
-                localStorage.setItem(STORAGE_KEYS.wbs, wbsJson);
-                localStorage.setItem(STORAGE_KEYS.settings, settingsJson);
-                localStorage.setItem(STORAGE_KEYS.icons, iconsJson);
-
-                console.log('数据已保存:', {
-                    chars: App.characters.length,
-                    wbs: App.worldbooks.length,
-                    wallpaper: App.settings.wallpaper,
-                    hasWallpaperData: !!App.settings.wallpaperData
-                });
-            } catch(e) {
-                console.error('保存数据失败:', e);
-                showToast('保存失败: ' + e.message, 'error');
-            }
-        }
-
-        function loadData() {
-            try {
-                console.log('开始加载数据...');
-
-                // 读取角色
-                const charsStr = localStorage.getItem(STORAGE_KEYS.chars);
-                if (charsStr) {
-                    App.characters = JSON.parse(charsStr);
-                    console.log('角色加载成功:', App.characters.length);
-                }
-
-                // 读取世界书
-                const wbsStr = localStorage.getItem(STORAGE_KEYS.wbs);
-                if (wbsStr) {
-                    App.worldbooks = JSON.parse(wbsStr);
-                    console.log('世界书加载成功:', App.worldbooks.length);
-                }
-
-                // 读取设置
-                const settingsStr = localStorage.getItem(STORAGE_KEYS.settings);
-                if (settingsStr) {
-                    const loaded = JSON.parse(settingsStr);
-                    App.settings = {...App.settings, ...loaded};
-                    console.log('设置加载成功, 壁纸:', App.settings.wallpaper, '有图片数据:', !!App.settings.wallpaperData);
-                }
-
-                // 读取图标
-                const iconsStr = localStorage.getItem(STORAGE_KEYS.icons);
-                if (iconsStr) {
-                    const loaded = JSON.parse(iconsStr);
-                    App.appIcons = {...App.appIcons, ...loaded};
-                    console.log('图标加载成功');
-                }
-
-                // 更新UI
-                loadSettingsUI();
-
-                if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) {
-                    App.connectionStatus = 'connected';
-                }
-
-                console.log('数据加载完成');
-            } catch(e) {
-                console.error('加载数据失败:', e);
-            }
-        }
-
-        function loadSettingsUI() {
-            document.getElementById('apiBaseUrl').value = App.settings.apiBaseUrl || '';
-            document.getElementById('apiKey').value = App.settings.apiKey || '';
-            document.getElementById('modelName').value = App.settings.modelName || '';
-            document.getElementById('maxContextMessages').value = App.settings.maxContextMessages || 200;
-            document.getElementById('temperature').value = App.settings.temperature;
-            document.getElementById('tempValue').textContent = App.settings.temperature;
-            document.getElementById('maxTokens').value = App.settings.maxTokens;
-            document.getElementById('maxTokensValue').textContent = App.settings.maxTokens;
         }
 
         // ==================== 壁纸功能 ====================
@@ -1834,62 +1921,75 @@
             const wp = App.settings.wallpaper;
             const wpData = App.settings.wallpaperData;
 
-            console.log('应用壁纸:', wp, '有数据:', !!wpData);
+            console.log('🖼️ 应用壁纸:', wp ? wp.substring(0, 30) + '...' : 'none', '有图片数据:', !!wpData);
 
-            // 清除之前的样式
-            el.removeAttribute('style');
-
-            let css = `
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100% !important;
-                height: 100% !important;
-                z-index: 0 !important;
-            `;
+            el.style.cssText = '';
 
             if (wpData) {
-                css += `background-image: url(${wpData}) !important;
-                        background-size: cover !important;
-                        background-position: center !important;
-                        background-repeat: no-repeat !important;`;
-                console.log('应用自定义图片壁纸');
+                el.style.cssText = `
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                    z-index: 0 !important;
+                    background-image: url(${wpData}) !important;
+                    background-size: cover !important;
+                    background-position: center !important;
+                    background-repeat: no-repeat !important;
+                `;
             } else if (wp && wp.startsWith('http')) {
-                css += `background-image: url(${wp}) !important;
-                        background-size: cover !important;
-                        background-position: center !important;
-                        background-repeat: no-repeat !important;`;
-                console.log('应用URL壁纸');
+                el.style.cssText = `
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                    z-index: 0 !important;
+                    background-image: url(${wp}) !important;
+                    background-size: cover !important;
+                    background-position: center !important;
+                    background-repeat: no-repeat !important;
+                `;
             } else if (GRADIENTS[wp]) {
-                css += `background: ${GRADIENTS[wp]} !important;`;
-                console.log('应用渐变壁纸:', wp);
+                el.style.cssText = `
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                    z-index: 0 !important;
+                    background: ${GRADIENTS[wp]} !important;
+                `;
             } else {
-                css += `background: ${GRADIENTS.gradient1} !important;`;
-                console.log('应用默认壁纸');
+                el.style.cssText = `
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                    z-index: 0 !important;
+                    background: ${GRADIENTS.gradient1} !important;
+                `;
             }
-
-            el.style.cssText = css;
         }
 
         function updateWallpaperPreview() {
             const preview = document.getElementById('wallpaperPreview');
             const wp = App.tempWallpaper || App.settings.wallpaper;
-
-            let css = '';
+            const wpData = (App.tempWallpaper && App.tempWallpaper.startsWith('data:')) ? App.tempWallpaper : App.settings.wallpaperData;
 
             if (App.tempWallpaper && App.tempWallpaper.startsWith('data:')) {
-                css = `background-image: url(${App.tempWallpaper}) !important; background-size: cover !important; background-position: center !important;`;
-            } else if (!App.tempWallpaper && App.settings.wallpaperData) {
-                css = `background-image: url(${App.settings.wallpaperData}) !important; background-size: cover !important; background-position: center !important;`;
+                preview.style.cssText = `background-image: url(${App.tempWallpaper}) !important; background-size: cover !important; background-position: center !important;`;
+            } else if (wpData && !App.tempWallpaper) {
+                preview.style.cssText = `background-image: url(${wpData}) !important; background-size: cover !important; background-position: center !important;`;
             } else if (App.tempWallpaper && App.tempWallpaper.startsWith('http')) {
-                css = `background-image: url(${App.tempWallpaper}) !important; background-size: cover !important; background-position: center !important;`;
+                preview.style.cssText = `background-image: url(${App.tempWallpaper}) !important; background-size: cover !important; background-position: center !important;`;
             } else if (GRADIENTS[wp]) {
-                css = `background: ${GRADIENTS[wp]} !important;`;
+                preview.style.cssText = `background: ${GRADIENTS[wp]} !important;`;
             } else {
-                css = `background: ${GRADIENTS.gradient1} !important;`;
+                preview.style.cssText = `background: ${GRADIENTS.gradient1} !important;`;
             }
-
-            preview.style.cssText = css;
         }
 
         function selectPresetWallpaper(name) {
@@ -1916,7 +2016,6 @@
                 App.tempWallpaper = ev.target.result;
                 updateWallpaperPreview();
                 showToast('已上传，点击保存应用', 'success');
-                console.log('壁纸上传成功, 大小:', ev.target.result.length);
             };
             reader.readAsDataURL(file);
             e.target.value = '';
@@ -1927,8 +2026,6 @@
                 showToast('请先选择壁纸', 'warning');
                 return;
             }
-
-            console.log('保存壁纸:', App.tempWallpaper.substring(0, 50) + '...');
 
             if (App.tempWallpaper.startsWith('data:')) {
                 App.settings.wallpaperData = App.tempWallpaper;
@@ -1942,7 +2039,7 @@
             }
 
             App.tempWallpaper = null;
-            saveData();
+            saveAllData();
             applyWallpaper();
             highlightWallpaper();
             updateWallpaperPreview();
@@ -1960,7 +2057,6 @@
         function updateIconPreviews() {
             ['settings', 'messages', 'worldbook', 'photos'].forEach(app => {
                 const preview = document.getElementById('iconPreview' + app.charAt(0).toUpperCase() + app.slice(1));
-                if (!preview) return;
                 const iconData = App.tempIcons[app] || App.appIcons[app];
 
                 if (iconData) {
@@ -1976,7 +2072,6 @@
         function applyAppIcons() {
             ['settings', 'messages', 'worldbook', 'photos'].forEach(app => {
                 const el = document.getElementById('appIcon' + app.charAt(0).toUpperCase() + app.slice(1));
-                if (!el) return;
                 const iconData = App.appIcons[app];
 
                 if (iconData) {
@@ -1985,7 +2080,6 @@
                     el.innerHTML = App.defaultEmojis[app];
                 }
             });
-            console.log('应用图标已更新');
         }
 
         function handleIconUpload(e, appName) {
@@ -2011,7 +2105,7 @@
             });
             App.tempIcons = {};
             if (changed) {
-                saveData();
+                saveAllData();
                 applyAppIcons();
                 showToast('图标已保存', 'success');
             } else {
@@ -2022,7 +2116,7 @@
         function resetIcons() {
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null };
             App.tempIcons = {};
-            saveData();
+            saveAllData();
             applyAppIcons();
             updateIconPreviews();
             showToast('已重置为默认', 'success');
@@ -2047,7 +2141,6 @@
         function showModal(id) { document.getElementById(id)?.classList.add('active'); }
         function hideModal(id) { document.getElementById(id)?.classList.remove('active'); }
 
-        // Toast
         function showToast(msg, type='info') {
             const c = document.getElementById('toastContainer');
             const t = document.createElement('div');
@@ -2114,6 +2207,7 @@
             document.querySelectorAll('.model-item').forEach(el => {
                 el.classList.toggle('selected', el.querySelector('.model-item-name').textContent === id);
             });
+            saveAllData();
             showToast(`已选择: ${id}`, 'success');
         }
 
@@ -2136,7 +2230,7 @@
                     App.settings.apiBaseUrl = url;
                     App.settings.apiKey = key;
                     App.settings.modelName = model;
-                    saveData();
+                    saveAllData();
                     showToast('连接成功！', 'success');
                     addLog('连接成功', 'success');
                 } else throw new Error(`HTTP ${r.status}`);
@@ -2157,7 +2251,7 @@
             App.settings.temperature = parseFloat(document.getElementById('temperature').value);
             App.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
             App.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
-            saveData();
+            saveAllData();
             showToast('设置已保存', 'success');
         }
 
@@ -2185,7 +2279,7 @@
                 messages: []
             };
             App.characters.push(char);
-            saveData();
+            saveAllData();
             hideModal('createCharacterModal');
             renderContacts();
             showToast(`"${name}"创建成功`, 'success');
@@ -2202,8 +2296,8 @@
             list.style.display = 'flex';
             empty.style.display = 'none';
             list.innerHTML = App.characters.map(c => {
-                const lastMsg = c.messages.length > 0 ? c.messages[c.messages.length-1].content.substring(0,30)+'...' : '点击开始对话';
-                const lastTime = c.messages.length > 0 ? formatTime(c.messages[c.messages.length-1].timestamp) : '';
+                const lastMsg = c.messages && c.messages.length > 0 ? c.messages[c.messages.length-1].content.substring(0,30)+'...' : '点击开始对话';
+                const lastTime = c.messages && c.messages.length > 0 ? formatTime(c.messages[c.messages.length-1].timestamp) : '';
                 const avatarHtml = c.avatarImage
                     ? `<img src="${c.avatarImage}" alt="">`
                     : (c.avatar || c.name[0]);
@@ -2238,7 +2332,9 @@
             document.getElementById('chatMessages').classList.remove('select-mode');
             renderMessages();
             openPage('chatPage');
-            if (char.messages.length === 0 && char.greeting) addMessage(char.greeting, 'received');
+            if ((!char.messages || char.messages.length === 0) && char.greeting) {
+                addMessage(char.greeting, 'received');
+            }
         }
 
         function closeChatPage() {
@@ -2252,7 +2348,6 @@
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
-            // 头像
             const charAvUpload = document.getElementById('charAvatarUpload');
             const userAvUpload = document.getElementById('userAvatarUpload');
 
@@ -2274,7 +2369,6 @@
             }
             userAvUpload.dataset.image = char.userAvatar || '';
 
-            // 头像设置
             document.getElementById('showAvatarToggle').classList.toggle('active', char.showAvatar !== false);
             document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => {
                 el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle'));
@@ -2284,8 +2378,7 @@
             document.getElementById('borderWidthSlider').value = char.borderWidth || 2;
             document.getElementById('borderWidthValue').textContent = char.borderWidth || 2;
 
-            // 基本信息
-            document.getElementById('charName').value = char.name;
+            document.getElementById('charName').value = char.name || '';
             document.getElementById('charAvatar').value = char.avatar || '';
             document.getElementById('charDescription').value = char.description || '';
             document.getElementById('charGreeting').value = char.greeting || '';
@@ -2341,13 +2434,11 @@
             const greeting = document.getElementById('charGreeting').value;
             if (greeting.length > 300) { showToast('开场白不超过300字', 'error'); return; }
 
-            // 头像
             const charUpload = document.getElementById('charAvatarUpload');
             const userUpload = document.getElementById('userAvatarUpload');
             char.avatarImage = charUpload.dataset.image || null;
             char.userAvatar = userUpload.dataset.image || null;
 
-            // 头像设置
             char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
             const shapeEl = document.querySelector('#avatarShapeOptions .shape-option.selected');
             char.avatarShape = shapeEl ? shapeEl.dataset.shape : 'circle';
@@ -2355,7 +2446,6 @@
             char.borderColor = document.getElementById('borderColorPicker').value;
             char.borderWidth = parseInt(document.getElementById('borderWidthSlider').value);
 
-            // 基本信息
             char.name = document.getElementById('charName').value.trim() || char.name;
             char.avatar = document.getElementById('charAvatar').value.trim() || char.avatar;
             char.description = document.getElementById('charDescription').value;
@@ -2367,7 +2457,7 @@
 
             document.getElementById('chatTitle').textContent = char.name;
 
-            saveData();
+            saveAllData();
             renderMessages();
             closeCharacterSettings();
             showToast('设置已保存', 'success');
@@ -2395,7 +2485,7 @@
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
-            if (char.messages.length === 0) {
+            if (!char.messages || char.messages.length === 0) {
                 container.innerHTML = '<div class="date-separator"><span class="date-separator-text">今天</span></div>';
                 return;
             }
@@ -2456,6 +2546,8 @@
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
+            if (!char.messages) char.messages = [];
+
             const msg = {
                 id: Date.now().toString() + Math.random().toString(36).substr(2,9),
                 role: type === 'sent' ? 'user' : 'assistant',
@@ -2464,7 +2556,7 @@
             };
 
             char.messages.push(msg);
-            saveData();
+            saveAllData();
             renderMessages();
         }
 
@@ -2503,7 +2595,7 @@
                 return;
             }
 
-            App.lastAIStart = char.messages.length;
+            App.lastAIStart = char.messages ? char.messages.length : 0;
 
             const container = document.getElementById('chatMessages');
             container.insertAdjacentHTML('beforeend', '<div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>');
@@ -2556,7 +2648,7 @@
 
             const wb = App.worldbooks.find(w => w.id === char.worldbookId);
             if (wb?.content) {
-                const inject = wb.alwaysActive || (wb.keywords && char.messages.some(m =>
+                const inject = wb.alwaysActive || (wb.keywords && char.messages && char.messages.some(m =>
                     wb.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))
                 ));
                 if (inject) sys += `\n\n【设定】${wb.content}`;
@@ -2565,7 +2657,8 @@
             msgs.push({ role: 'system', content: sys });
 
             const max = App.settings.maxContextMessages || 200;
-            char.messages.slice(-max).forEach(m => {
+            const charMsgs = char.messages || [];
+            charMsgs.slice(-max).forEach(m => {
                 msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content });
             });
 
@@ -2577,7 +2670,7 @@
             if (!char) return;
             toggleExtensionPanel();
 
-            if (char.messages.length === 0) { showToast('无消息', 'warning'); return; }
+            if (!char.messages || char.messages.length === 0) { showToast('无消息', 'warning'); return; }
 
             if (App.lastAIStart >= 0 && App.lastAIStart < char.messages.length) {
                 let allAI = true;
@@ -2587,7 +2680,7 @@
                 if (allAI) {
                     const count = char.messages.length - App.lastAIStart;
                     char.messages.splice(App.lastAIStart, count);
-                    saveData();
+                    saveAllData();
                     renderMessages();
                     showToast(`已删除${count}条，重新生成...`, 'info');
                     App.lastAIStart = -1;
@@ -2609,13 +2702,12 @@
 
             const count = char.messages.length - first;
             char.messages.splice(first, count);
-            saveData();
+            saveAllData();
             renderMessages();
             showToast(`已删除${count}条，重新生成...`, 'info');
             await triggerAIReply();
         }
 
-        // 选择删除
         function enterSelectMode() {
             toggleExtensionPanel();
             App.isSelectMode = true;
@@ -2651,7 +2743,7 @@
             if (App.selectedMsgs.size === 0) { showToast('请先选择', 'warning'); return; }
             const count = App.selectedMsgs.size;
             char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id));
-            saveData();
+            saveAllData();
             exitSelectMode();
             renderMessages();
             showToast(`已删除${count}条`, 'success');
@@ -2685,7 +2777,7 @@
                 alwaysActive: false
             };
             App.worldbooks.push(wb);
-            saveData();
+            saveAllData();
             hideModal('createWorldbookModal');
             renderWorldbooks();
             showToast(`"${name}"创建成功`, 'success');
@@ -2708,7 +2800,7 @@
                         <span class="worldbook-item-title">${escapeHtml(wb.name)}</span>
                         ${wb.alwaysActive ? '<span class="worldbook-item-badge">始终</span>' : ''}
                     </div>
-                    <div class="worldbook-item-preview">${escapeHtml(wb.summary || wb.content?.substring(0,80) || '无内容')}</div>
+                    <div class="worldbook-item-preview">${escapeHtml(wb.summary || (wb.content ? wb.content.substring(0,80) : '') || '无内容')}</div>
                 </div>`
             ).join('');
         }
@@ -2717,7 +2809,7 @@
             const wb = App.worldbooks.find(w => w.id === id);
             if (!wb) return;
             App.currentWbId = id;
-            document.getElementById('worldbookName').value = wb.name;
+            document.getElementById('worldbookName').value = wb.name || '';
             document.getElementById('worldbookSummary').value = wb.summary || '';
             document.getElementById('worldbookKeywords').value = wb.keywords || '';
             document.getElementById('worldbookContent').value = wb.content || '';
@@ -2738,7 +2830,7 @@
             wb.keywords = document.getElementById('worldbookKeywords').value;
             wb.content = document.getElementById('worldbookContent').value;
             wb.alwaysActive = document.getElementById('worldbookAlwaysActive').classList.contains('active');
-            saveData();
+            saveAllData();
             closeWorldbookEdit();
             renderWorldbooks();
             showToast('已保存', 'success');
@@ -2759,11 +2851,10 @@
                 App.worldbooks.map(wb => `<option value="${wb.id}">${escapeHtml(wb.name)}</option>`).join('');
         }
 
-        // 删除确认
         function confirmDelete() {
             if (App.pendingDeleteType === 'character') {
                 App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
-                saveData();
+                saveAllData();
                 hideModal('confirmDeleteModal');
                 closeCharacterSettings();
                 closeChatPage();
@@ -2772,7 +2863,7 @@
             } else if (App.pendingDeleteType === 'worldbook') {
                 App.characters.forEach(c => { if (c.worldbookId === App.pendingDeleteId) c.worldbookId = ''; });
                 App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
-                saveData();
+                saveAllData();
                 hideModal('confirmDeleteModal');
                 closeWorldbookEdit();
                 renderWorldbooks();
@@ -2780,14 +2871,15 @@
             }
         }
 
-        // 导入导出
+        // ==================== 导入导出 ====================
         function exportAllData() {
             const data = {
                 characters: App.characters,
                 worldbooks: App.worldbooks,
                 settings: App.settings,
                 appIcons: App.appIcons,
-                version: '4.2.0'
+                version: '4.2.0',
+                exportTime: new Date().toISOString()
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
@@ -2808,42 +2900,48 @@
                     if (data.worldbooks) App.worldbooks = data.worldbooks;
                     if (data.settings) App.settings = {...App.settings, ...data.settings};
                     if (data.appIcons) App.appIcons = {...App.appIcons, ...data.appIcons};
-                    saveData();
+                    saveAllData();
                     loadSettingsUI();
                     applyWallpaper();
                     applyAppIcons();
+                    updateConnectionUI();
                     showToast('导入成功', 'success');
-                } catch(err) { showToast('导入失败', 'error'); }
+                } catch(err) {
+                    console.error('导入失败:', err);
+                    showToast('导入失败', 'error');
+                }
             };
             reader.readAsText(file);
             e.target.value = '';
         }
 
         function clearAllData() {
-            if (confirm('确定清除所有数据？')) {
-                localStorage.removeItem(STORAGE_KEYS.chars);
-                localStorage.removeItem(STORAGE_KEYS.wbs);
-                localStorage.removeItem(STORAGE_KEYS.settings);
-                localStorage.removeItem(STORAGE_KEYS.icons);
+            if (confirm('确定清除所有数据？此操作无法撤销！')) {
+                Object.values(STORAGE_KEYS).forEach(key => {
+                    try { localStorage.removeItem(key); } catch(e) {}
+                });
                 location.reload();
             }
         }
 
-        // 工具函数
+        // ==================== 工具函数 ====================
         function toggleSwitch(el) { el.classList.toggle('active'); }
 
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
         function formatTime(ts) {
+            if (!ts) return '';
             const d = new Date(ts);
             return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
         }
 
         function formatDate(ts) {
+            if (!ts) return '今天';
             const d = new Date(ts);
             const today = new Date();
             const yesterday = new Date(today);
