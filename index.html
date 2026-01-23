@@ -1548,7 +1548,7 @@
                             <span class="settings-icon purple">📱</span>
                             <span class="settings-item-label">版本</span>
                         </div>
-                        <div class="settings-item-value"><span>3.0.0</span></div>
+                        <div class="settings-item-value"><span>3.0.1</span></div>
                     </div>
                 </div>
 
@@ -1882,6 +1882,7 @@
             isSelectMode: false,
             selectedMessages: new Set(),
             editingAppIcon: null,
+            lastAIReplyStartIndex: -1, // 记录上一轮AI回复的起始索引
             appIcons: {
                 settings: '⚙️',
                 messages: '💬',
@@ -2418,6 +2419,7 @@
             AppState.currentCharacterId = characterId;
             AppState.isSelectMode = false;
             AppState.selectedMessages.clear();
+            AppState.lastAIReplyStartIndex = -1; // 重置
 
             document.getElementById('chatTitle').textContent = character.name;
             document.getElementById('selectModeBar').classList.remove('active');
@@ -2435,6 +2437,7 @@
             exitSelectMode();
             closePage('chatPage');
             AppState.currentCharacterId = null;
+            AppState.lastAIReplyStartIndex = -1;
         }
 
         function openCharacterSettings() {
@@ -2610,6 +2613,9 @@
                 return;
             }
 
+            // 记录这一轮AI回复的起始位置
+            AppState.lastAIReplyStartIndex = character.messages.length;
+
             const container = document.getElementById('chatMessages');
             const typingHtml = `
                 <div class="typing-indicator" id="typingIndicator">
@@ -2662,6 +2668,7 @@
 
             } catch (e) {
                 document.getElementById('typingIndicator')?.remove();
+                AppState.lastAIReplyStartIndex = -1; // 失败时重置
                 showToast(`AI回复失败: ${e.message}`, 'error');
             }
         }
@@ -2743,31 +2750,88 @@
             return messages;
         }
 
+        // ==================== 重新生成回复（修复版） ====================
         async function regenerateLastReply() {
             const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
-            if (!character || character.messages.length === 0) return;
+            if (!character) return;
 
             toggleExtensionPanel();
 
-            // 找到最后一组AI回复并删除
-            let deleteCount = 0;
+            // 首先检查是否有任何消息
+            if (character.messages.length === 0) {
+                showToast('当前没有任何聊天记录', 'warning');
+                return;
+            }
+
+            // 方案1：如果有记录的上一轮AI回复起始位置，使用它
+            if (AppState.lastAIReplyStartIndex >= 0 && AppState.lastAIReplyStartIndex < character.messages.length) {
+                // 检查从该位置开始是否都是AI的消息
+                let allAssistant = true;
+                for (let i = AppState.lastAIReplyStartIndex; i < character.messages.length; i++) {
+                    if (character.messages[i].role !== 'assistant') {
+                        allAssistant = false;
+                        break;
+                    }
+                }
+
+                if (allAssistant && AppState.lastAIReplyStartIndex < character.messages.length) {
+                    const deleteCount = character.messages.length - AppState.lastAIReplyStartIndex;
+                    character.messages.splice(AppState.lastAIReplyStartIndex, deleteCount);
+                    saveAllData();
+                    renderMessages();
+                    showToast(`已删除这一轮的 ${deleteCount} 条AI回复，正在重新生成...`, 'info');
+
+                    AppState.lastAIReplyStartIndex = -1; // 重置
+                    await triggerAIReply();
+                    return;
+                }
+            }
+
+            // 方案2：回退检测 - 从消息列表末尾往前找，找到最后一组连续的AI回复
+            let lastAIIndex = -1;
+            let firstAIIndex = -1;
+
+            // 首先检查最后一条消息是否是AI的
+            if (character.messages[character.messages.length - 1].role !== 'assistant') {
+                showToast('最后一条消息不是AI回复，无法重新生成', 'warning');
+                return;
+            }
+
+            // 从后往前遍历，找到这一轮AI回复的范围
             for (let i = character.messages.length - 1; i >= 0; i--) {
                 if (character.messages[i].role === 'assistant') {
-                    deleteCount++;
+                    if (lastAIIndex === -1) {
+                        lastAIIndex = i;
+                    }
+                    firstAIIndex = i;
                 } else {
+                    // 遇到用户消息，停止
                     break;
                 }
             }
 
-            if (deleteCount === 0) {
-                showToast('没有可重新生成的回复', 'warning');
+            // 检查是否找到了AI回复
+            if (firstAIIndex === -1) {
+                showToast('没有找到AI回复消息', 'warning');
                 return;
             }
 
-            character.messages.splice(character.messages.length - deleteCount, deleteCount);
+            // 计算要删除的消息数量
+            const deleteCount = lastAIIndex - firstAIIndex + 1;
+
+            if (deleteCount <= 0) {
+                showToast('没有找到可重新生成的AI回复', 'warning');
+                return;
+            }
+
+            // 删除这一轮的所有AI回复
+            character.messages.splice(firstAIIndex, deleteCount);
             saveAllData();
             renderMessages();
 
+            showToast(`已删除这一轮的 ${deleteCount} 条AI回复，正在重新生成...`, 'info');
+
+            // 重新请求AI回复
             await triggerAIReply();
         }
 
@@ -2822,12 +2886,16 @@
                 return;
             }
 
+            const deleteCount = AppState.selectedMessages.size;
             character.messages = character.messages.filter(m => !AppState.selectedMessages.has(m.id));
             saveAllData();
 
             exitSelectMode();
             renderMessages();
-            showToast(`已删除 ${AppState.selectedMessages.size} 条消息`, 'success');
+            showToast(`已删除 ${deleteCount} 条消息`, 'success');
+
+            // 删除消息后重置AI回复索引
+            AppState.lastAIReplyStartIndex = -1;
         }
 
         // ==================== 扩展面板 ====================
@@ -3099,7 +3167,7 @@
                 settings: AppState.settings,
                 appIcons: AppState.appIcons,
                 exportedAt: new Date().toISOString(),
-                version: '3.0.0'
+                version: '3.0.1'
             };
 
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -3174,6 +3242,7 @@
                 };
 
                 AppState.connectionStatus = 'disconnected';
+                AppState.lastAIReplyStartIndex = -1;
                 loadSettingsToUI();
                 applyWallpaper();
                 applyAppIcons();
