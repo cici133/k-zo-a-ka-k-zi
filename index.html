@@ -1212,7 +1212,6 @@
                 <div class="nav-btn right" style="visibility:hidden">占</div>
             </div>
             <div class="page-content">
-                <!-- 存储状态卡片 -->
                 <div class="storage-card">
                     <div class="storage-header">
                         <span class="storage-title">💾 存储空间</span>
@@ -1813,7 +1812,8 @@
                 updateIconPreviews();
                 updateStorageDisplay();
             } catch (e) {
-                showToast('初始化失败', 'error');
+                console.error('初始化失败:', e);
+                showToast('初始化失败，请刷新', 'error');
             }
         });
 
@@ -1826,9 +1826,7 @@
             document.getElementById('storageTotal').textContent = usage.quota > 0 ? `配额: ${quotaMB} MB` : '无限制';
             const barFill = document.getElementById('storageBarFill');
             barFill.style.width = `${Math.min(usage.percent, 100)}%`;
-            barFill.className = 'storage-bar-fill';
-            if (usage.percent > 80) barFill.classList.add('danger');
-            else if (usage.percent > 60) barFill.classList.add('warning');
+            barFill.className = 'storage-bar-fill' + (usage.percent > 80 ? ' danger' : usage.percent > 60 ? ' warning' : '');
         }
 
         function updateTime() {
@@ -1845,7 +1843,7 @@
                 await saveToIDB('appData', 'appIcons', App.appIcons);
                 return true;
             } catch (e) {
-                showToast('保存失败', 'error');
+                console.error('保存失败:', e);
                 return false;
             }
         }
@@ -1868,7 +1866,10 @@
                 }
                 App.dataLoaded = true;
                 return true;
-            } catch (e) { return false; }
+            } catch (e) {
+                console.error('加载失败:', e);
+                return false;
+            }
         }
 
         async function forceSaveAll() {
@@ -1903,14 +1904,20 @@
         async function compactDatabase() {
             showToast('正在优化...', 'info');
             for (let char of App.characters) {
-                if (char.avatarImage && char.avatarImage.length > 50000) char.avatarImage = await compressImage(char.avatarImage, 150, 0.7);
-                if (char.userAvatar && char.userAvatar.length > 50000) char.userAvatar = await compressImage(char.userAvatar, 150, 0.7);
+                if (char.avatarImage && char.avatarImage.length > 50000) {
+                    char.avatarImage = await compressImage(char.avatarImage, 150, 0.7);
+                }
+                if (char.userAvatar && char.userAvatar.length > 50000) {
+                    char.userAvatar = await compressImage(char.userAvatar, 150, 0.7);
+                }
             }
             if (App.settings.wallpaperData && App.settings.wallpaperData.length > 500000) {
                 App.settings.wallpaperData = await compressImage(App.settings.wallpaperData, 600, 0.7);
             }
             for (let key of Object.keys(App.appIcons)) {
-                if (App.appIcons[key] && App.appIcons[key].length > 30000) App.appIcons[key] = await compressImage(App.appIcons[key], 100, 0.7);
+                if (App.appIcons[key] && App.appIcons[key].length > 30000) {
+                    App.appIcons[key] = await compressImage(App.appIcons[key], 100, 0.7);
+                }
             }
             await saveData();
             await updateStorageDisplay();
@@ -1981,12 +1988,7 @@
             }
         }
 
-        function selectPresetWallpaper(name) {
-            App.tempWallpaper = name;
-            highlightWallpaper();
-            updateWallpaperPreview();
-            showToast('已选择，点击保存应用', 'info');
-        }
+        function selectPresetWallpaper(name) { App.tempWallpaper = name; highlightWallpaper(); updateWallpaperPreview(); showToast('已选择，点击保存应用', 'info'); }
 
         function previewUrlWallpaper() {
             const url = document.getElementById('customWallpaperUrl').value.trim();
@@ -2057,8 +2059,11 @@
             ['settings', 'messages', 'worldbook', 'photos'].forEach(app => {
                 const el = document.getElementById('appIcon' + app.charAt(0).toUpperCase() + app.slice(1));
                 const iconData = App.appIcons[app];
-                if (iconData) el.innerHTML = `<img src="${iconData}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
-                else el.innerHTML = App.defaultEmojis[app];
+                if (iconData) {
+                    el.innerHTML = `<img src="${iconData}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+                } else {
+                    el.innerHTML = App.defaultEmojis[app];
+                }
             });
         }
 
@@ -2094,7 +2099,7 @@
             await saveData();
             applyAppIcons();
             updateIconPreviews();
-            showToast('已重置为默认', 'success');
+            showToast('已重置', 'success');
         }
 
         // ==================== 页面导航 ====================
@@ -2174,9 +2179,7 @@
         function selectModel(id) {
             App.settings.modelName = id;
             document.getElementById('modelName').value = id;
-            document.querySelectorAll('.model-item').forEach(el => {
-                el.classList.toggle('selected', el.querySelector('.model-item-name').textContent === id);
-            });
+            document.querySelectorAll('.model-item').forEach(el => { el.classList.toggle('selected', el.querySelector('.model-item-name').textContent === id); });
             showToast(`已选择: ${id}`, 'success');
         }
 
@@ -2233,7 +2236,8 @@
                 avatar: ['😊','😎','🥰','🦊','🐱','🐰'][Math.floor(Math.random()*6)],
                 avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle',
                 showBorder: false, borderColor: '#007AFF', borderWidth: 2,
-                description: '', greeting: '', scenario: '', worldbookId: '', userNick: '', systemPrompt: '', messages: []
+                description: '', greeting: '', scenario: '', worldbookId: '',
+                userNick: '', systemPrompt: '', messages: []
             };
             App.characters.push(char);
             await saveData();
@@ -2319,8 +2323,7 @@
             reader.onload = async ev => {
                 const compressed = await compressImage(ev.target.result, 200, 0.8);
                 const upload = document.getElementById('charAvatarUpload');
-                upload.innerHTML = `<img src="${compressed}">`;
-                upload.classList.add('has-image');
+                upload.innerHTML = `<img src="${compressed}">`; upload.classList.add('has-image');
                 upload.dataset.image = compressed;
             };
             reader.readAsDataURL(file);
@@ -2334,8 +2337,7 @@
             reader.onload = async ev => {
                 const compressed = await compressImage(ev.target.result, 200, 0.8);
                 const upload = document.getElementById('userAvatarUpload');
-                upload.innerHTML = `<img src="${compressed}">`;
-                upload.classList.add('has-image');
+                upload.innerHTML = `<img src="${compressed}">`; upload.classList.add('has-image');
                 upload.dataset.image = compressed;
             };
             reader.readAsDataURL(file);
@@ -2444,7 +2446,10 @@
 
         function parseAIResponse(text) {
             if (!text) return ['...'];
-            let cleaned = text.trim().replace(/^\s*\[[^\]]*\]\s*[:：]\s*/g, '').replace(/^\s*【[^】]*】\s*[:：]?\s*/g, '').replace(/^[^:：\n]{1,20}[:：]\s*/g, '');
+            let cleaned = text.trim()
+                .replace(/^\s*\[[^\]]*\]\s*[:：]\s*/g, '')
+                .replace(/^\s*【[^】]*】\s*[:：]?\s*/g, '')
+                .replace(/^[^:：\n]{1,20}[:：]\s*/g, '');
             const separators = [/\s*\|\|\|\s*/g, /\s*\|\|\s*/g, /\s*\|\s*/g, /\n\n+/g, /\n/g];
             let parts = [cleaned];
             for (const sep of separators) {
@@ -2486,66 +2491,66 @@
             }
         }
 
-        // ==================== 核心修改：buildAPIMessages ====================
+        // ==================== 核心修复：改进的API消息构建 ====================
         function buildAPIMessages(char) {
             const msgs = [];
 
-            // 开头的系统提示词
-            let sysPrompt = `你是"${char.name}"，正在通过手机短信与用户聊天。
+            // 【核心系统提示词 - 双重强调格式】
+            let systemPrompt = `# 短信模拟规则
+
+你正在扮演"${char.name}"，通过手机短信与对方聊天。
+
+## 【重要】输出格式规则
+1. 每条短信用 ||| 分隔
+2. 每条短信保持简短（5-30字左右）
+3. 不要加任何前缀（如角色名:）
+4. 像真人发短信一样自然
+
+## 正确格式示例
+嗯|||怎么了？|||有事吗
+好无聊啊|||你在干嘛
+真的假的|||太夸张了吧😂
+...行吧|||算你狠
+
+## 错误格式（禁止）
+❌ [角色名]: 内容
+❌ 角色名：内容
+❌ 把所有话挤在一条很长的消息里不分段不加标点一直说下去
 
 ## 角色设定
-${char.description || '一个有趣的朋友'}
+${char.description || '一个普通朋友'}`;
 
-${char.scenario ? `## 当前情景\n${char.scenario}\n` : ''}
-${char.userNick ? `## 称呼用户为\n${char.userNick}\n` : ''}
-${char.systemPrompt ? `## 额外指令\n${char.systemPrompt}\n` : ''}`;
+            if (char.scenario) systemPrompt += `\n\n## 当前情景\n${char.scenario}`;
+            if (char.userNick) systemPrompt += `\n\n## 对用户的称呼\n${char.userNick}`;
+            if (char.systemPrompt) systemPrompt += `\n\n## 额外设定\n${char.systemPrompt}`;
 
             // 世界书注入
             const wb = App.worldbooks.find(w => w.id === char.worldbookId);
             if (wb?.content) {
-                const inject = wb.alwaysActive || (wb.keywords && char.messages.some(m => wb.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))));
-                if (inject) sysPrompt += `\n## 世界设定\n${wb.content}\n`;
+                const inject = wb.alwaysActive || (wb.keywords && char.messages.some(m =>
+                    wb.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))
+                ));
+                if (inject) systemPrompt += `\n\n## 背景知识\n${wb.content}`;
             }
 
-            msgs.push({ role: 'system', content: sysPrompt });
+            msgs.push({ role: 'system', content: systemPrompt });
 
             // 历史消息
             const max = App.settings.maxContextMessages || 200;
-            const historyMessages = char.messages.slice(-max);
+            const history = char.messages.slice(-max);
 
-            historyMessages.forEach(m => {
+            history.forEach(m => {
                 msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content });
             });
 
-            // ★★★ 关键修改：在消息列表末尾添加格式强制指令 ★★★
-            // 这条消息放在最后，最接近AI输出位置，权重最高
-            const formatReminder = `[系统指令 - 输出格式强制要求]
-
-你现在要发送短信回复。请严格遵守以下格式规则：
-
-1. 用 ||| 分隔每条独立的短信
-2. 每条短信要简短自然，像真人发短信一样
-3. 绝对不要把多句话挤在一条里
-4. 不要加任何前缀、角色名、括号
-
-✅ 正确格式示例：
-在呢|||怎么了?|||想我了?😊
-
-❌ 错误格式（绝对不要这样）：
-什么女士你16岁也好意思叫自己女士吗而且我们本来就是同班同学算是认识的吧非要特意说交朋友干嘛很奇怪
-
-❌ 错误格式（绝对不要这样）：
-不过也行吧反正多个朋友没什么坏处但你别再叫我兔子宝宝什么的了还有别老是在班上盯着我看怪怪的
-
-记住：
-- 短信要分开发，不要挤成一坨
-- 每条短信之间用 ||| 分隔
-- 说话要有标点符号
-- 像正常人发短信那样自然
-
-现在请回复：`;
-
-            msgs.push({ role: 'system', content: formatReminder });
+            // 【关键修复】在历史消息后添加格式提醒（作为最后一条system消息注入）
+            // 这会在发送前强调格式要求，防止AI"忘记"
+            if (history.length > 10) {
+                msgs.push({
+                    role: 'system',
+                    content: `【格式提醒】请用 ||| 分隔多条短信。每条短信简短自然（5-30字）。不要把所有话挤在一条里。示例：嗯|||怎么了|||有事？`
+                });
+            }
 
             return msgs;
         }
@@ -2580,30 +2585,11 @@ ${char.systemPrompt ? `## 额外指令\n${char.systemPrompt}\n` : ''}`;
             await triggerAIReply();
         }
 
-        function enterSelectMode() {
-            toggleExtensionPanel();
-            App.isSelectMode = true;
-            App.selectedMsgs.clear();
-            document.getElementById('chatMessages').classList.add('select-mode');
-            document.getElementById('selectModeBar').classList.add('active');
-            updateSelectedCount();
-        }
+        function enterSelectMode() { toggleExtensionPanel(); App.isSelectMode = true; App.selectedMsgs.clear(); document.getElementById('chatMessages').classList.add('select-mode'); document.getElementById('selectModeBar').classList.add('active'); updateSelectedCount(); }
 
-        function exitSelectMode() {
-            App.isSelectMode = false;
-            App.selectedMsgs.clear();
-            document.getElementById('chatMessages').classList.remove('select-mode');
-            document.getElementById('selectModeBar').classList.remove('active');
-            document.querySelectorAll('.message-checkbox').forEach(el => el.classList.remove('checked'));
-        }
+        function exitSelectMode() { App.isSelectMode = false; App.selectedMsgs.clear(); document.getElementById('chatMessages').classList.remove('select-mode'); document.getElementById('selectModeBar').classList.remove('active'); document.querySelectorAll('.message-checkbox').forEach(el => el.classList.remove('checked')); }
 
-        function toggleMsgSelect(id) {
-            if (!App.isSelectMode) return;
-            if (App.selectedMsgs.has(id)) App.selectedMsgs.delete(id);
-            else App.selectedMsgs.add(id);
-            document.querySelector(`[data-msg-id="${id}"] .message-checkbox`)?.classList.toggle('checked', App.selectedMsgs.has(id));
-            updateSelectedCount();
-        }
+        function toggleMsgSelect(id) { if (!App.isSelectMode) return; if (App.selectedMsgs.has(id)) App.selectedMsgs.delete(id); else App.selectedMsgs.add(id); document.querySelector(`[data-msg-id="${id}"] .message-checkbox`)?.classList.toggle('checked', App.selectedMsgs.has(id)); updateSelectedCount(); }
 
         function updateSelectedCount() { document.getElementById('selectedCount').textContent = App.selectedMsgs.size; }
 
@@ -2621,9 +2607,7 @@ ${char.systemPrompt ? `## 额外指令\n${char.systemPrompt}\n` : ''}`;
         }
 
         function toggleExtensionPanel() { document.getElementById('extensionPanel').classList.toggle('active'); }
-
         function autoResizeTextarea(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
-
         function scrollToBottom() { const c = document.getElementById('chatMessages'); c.scrollTop = c.scrollHeight; }
 
         // ==================== 世界书 ====================
@@ -2731,8 +2715,14 @@ ${char.systemPrompt ? `## 额外指令\n${char.systemPrompt}\n` : ''}`;
                     if (data.worldbooks) App.worldbooks = data.worldbooks;
                     if (data.settings) App.settings = {...App.settings, ...data.settings};
                     if (data.appIcons) App.appIcons = {...App.appIcons, ...data.appIcons};
-                    if (await saveData()) { loadSettingsUI(); applyWallpaper(); applyAppIcons(); await updateStorageDisplay(); showToast('导入成功', 'success'); }
-                } catch(err) { showToast('导入失败', 'error'); }
+                    if (await saveData()) {
+                        loadSettingsUI();
+                        applyWallpaper();
+                        applyAppIcons();
+                        await updateStorageDisplay();
+                        showToast('导入成功', 'success');
+                    }
+                } catch(err) { showToast('导入失败: ' + err.message, 'error'); }
             };
             reader.readAsText(file);
             e.target.value = '';
@@ -2749,16 +2739,9 @@ ${char.systemPrompt ? `## 额外指令\n${char.systemPrompt}\n` : ''}`;
         function toggleSwitch(el) { el.classList.toggle('active'); }
         function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
         function formatTime(ts) { const d = new Date(ts); return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); }
-        function formatDate(ts) {
-            const d = new Date(ts);
-            const today = new Date();
-            const yesterday = new Date(today);
-            yesterday.setDate(yesterday.getDate() - 1);
-            if (d.toDateString() === today.toDateString()) return '今天';
-            if (d.toDateString() === yesterday.toDateString()) return '昨天';
-            return d.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' });
-        }
+        function formatDate(ts) { const d = new Date(ts); const today = new Date(); const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1); if (d.toDateString() === today.toDateString()) return '今天'; if (d.toDateString() === yesterday.toDateString()) return '昨天'; return d.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' }); }
 
+        // ==================== 键盘事件 ====================
         document.addEventListener('keydown', e => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 const input = document.getElementById('chatInput');
