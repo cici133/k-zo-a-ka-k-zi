@@ -4,25 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI短信模拟器 v3.0</title>
+    <title>AI短信模拟器 v3</title>
     <style>
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.12);
-            --glass-bg-dark: rgba(0, 0, 0, 0.35);
-            --glass-border: rgba(255, 255, 255, 0.18);
-            --blur-amount: 25px;
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-bg-dark: rgba(0, 0, 0, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.25);
+            --blur-amount: 20px;
             --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.65);
+            --text-secondary: rgba(255, 255, 255, 0.7);
             --accent-color: #007AFF;
             --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --danger-color: #FF3B30;
             --success-color: #34C759;
             --warning-color: #FF9500;
-            --message-sent: rgba(0, 122, 255, 0.9);
-            --message-received: rgba(255, 255, 255, 0.15);
+            --message-sent: rgba(0, 122, 255, 0.85);
+            --message-received: rgba(255, 255, 255, 0.2);
             --transition-smooth: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.4);
-            --shadow-glow: 0 0 40px rgba(102, 126, 234, 0.25);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 40px rgba(102, 126, 234, 0.3);
         }
 
         * {
@@ -35,7 +35,7 @@
         html, body {
             height: 100%;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: #000;
         }
 
@@ -48,7 +48,6 @@
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
             z-index: -2;
             transition: var(--transition-smooth);
         }
@@ -60,8 +59,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(ellipse at top, rgba(102, 126, 234, 0.12) 0%, transparent 50%),
-                        radial-gradient(ellipse at bottom, rgba(118, 75, 162, 0.08) 0%, transparent 50%);
+            background: radial-gradient(ellipse at top, rgba(102, 126, 234, 0.15) 0%, transparent 60%),
+                        radial-gradient(ellipse at bottom, rgba(118, 75, 162, 0.1) 0%, transparent 60%);
             pointer-events: none;
         }
 
@@ -95,14 +94,13 @@
             align-items: center;
             padding: 12px 28px 0;
             z-index: 1000;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), transparent);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), transparent);
         }
 
         .status-bar-time {
             font-size: 17px;
             font-weight: 600;
             color: var(--text-primary);
-            letter-spacing: 0.5px;
         }
 
         .status-bar-icons {
@@ -129,7 +127,6 @@
             gap: 30px;
             overflow-y: auto;
             z-index: 1;
-            -webkit-overflow-scrolling: touch;
         }
 
         .app-grid {
@@ -149,33 +146,33 @@
             position: relative;
         }
 
-        .app-icon-wrapper:active {
-            transform: scale(0.88);
+        .app-icon-wrapper:active:not(.editing) {
+            transform: scale(0.9);
         }
 
-        .app-icon-wrapper.wiggle {
-            animation: wiggle 0.15s ease-in-out infinite alternate;
+        .app-icon-wrapper.editing {
+            animation: iconWiggle 0.3s ease-in-out infinite;
         }
 
-        @keyframes wiggle {
-            0% { transform: rotate(-2deg); }
-            100% { transform: rotate(2deg); }
+        @keyframes iconWiggle {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
         }
 
         .app-icon {
-            width: 68px;
-            height: 68px;
-            border-radius: 16px;
+            width: 72px;
+            height: 72px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+            font-size: 32px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             transition: var(--transition-smooth);
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .app-icon::before {
@@ -185,64 +182,57 @@
             left: 0;
             right: 0;
             height: 50%;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.35), transparent);
-            border-radius: 16px 16px 0 0;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);
+            border-radius: 18px 18px 0 0;
             pointer-events: none;
         }
 
         .app-icon.settings {
-            background: linear-gradient(135deg, rgba(142, 142, 147, 0.9) 0%, rgba(99, 99, 102, 0.9) 100%);
+            background: linear-gradient(135deg, rgba(142, 142, 147, 0.8) 0%, rgba(99, 99, 102, 0.8) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .app-icon.messages {
+            background: linear-gradient(135deg, rgba(52, 199, 89, 0.8) 0%, rgba(48, 179, 80, 0.8) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .app-icon.worldbook {
+            background: linear-gradient(135deg, rgba(255, 149, 0, 0.8) 0%, rgba(255, 107, 0, 0.8) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .app-icon.photos {
+            background: linear-gradient(135deg, rgba(255, 45, 85, 0.8) 0%, rgba(255, 55, 95, 0.8) 100%);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .app-icon.messages {
-            background: linear-gradient(135deg, rgba(52, 199, 89, 0.95) 0%, rgba(48, 179, 80, 0.95) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.25);
+        .app-icon-edit-badge {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            width: 24px;
+            height: 24px;
+            background: var(--danger-color);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
-        .app-icon.worldbook {
-            background: linear-gradient(135deg, rgba(255, 149, 0, 0.95) 0%, rgba(255, 107, 0, 0.95) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-        }
-
-        .app-icon.photos {
-            background: linear-gradient(135deg, rgba(255, 45, 85, 0.95) 0%, rgba(255, 55, 95, 0.95) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.25);
+        .app-icon-wrapper.editing .app-icon-edit-badge {
+            display: flex;
         }
 
         .app-icon-label {
             font-size: 12px;
             color: var(--text-primary);
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
             text-align: center;
             max-width: 72px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            font-weight: 500;
-        }
-
-        .app-icon-edit-btn {
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            width: 22px;
-            height: 22px;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: white;
-            border: 1.5px solid rgba(255, 255, 255, 0.3);
-            z-index: 10;
-        }
-
-        .app-icon-wrapper.wiggle .app-icon-edit-btn {
-            display: flex;
         }
 
         .home-indicator {
@@ -252,7 +242,7 @@
             transform: translateX(-50%);
             width: 134px;
             height: 5px;
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.5);
             border-radius: 3px;
             z-index: 1001;
         }
@@ -268,7 +258,7 @@
             -webkit-backdrop-filter: blur(var(--blur-amount));
             z-index: 100;
             transform: translateX(100%);
-            transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -291,10 +281,10 @@
             align-items: center;
             justify-content: space-between;
             padding: 54px 16px 12px;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.25));
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             flex-shrink: 0;
         }
 
@@ -313,28 +303,11 @@
             min-width: 70px;
         }
 
-        .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .nav-btn:active {
-            background: rgba(255, 255, 255, 0.15);
-            transform: scale(0.95);
-        }
-
-        .nav-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-        }
-
-        .nav-btn.right {
-            justify-content: flex-end;
-        }
-
-        .nav-btn.danger {
-            color: var(--danger-color);
-        }
+        .nav-btn:hover { background: rgba(255, 255, 255, 0.1); }
+        .nav-btn:active { background: rgba(255, 255, 255, 0.2); transform: scale(0.95); }
+        .nav-btn svg { width: 20px; height: 20px; fill: currentColor; }
+        .nav-btn.right { justify-content: flex-end; }
+        .nav-btn.danger { color: var(--danger-color); }
 
         .nav-title {
             font-size: 17px;
@@ -353,8 +326,8 @@
 
         .settings-group {
             background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: 16px;
             margin-bottom: 24px;
             overflow: hidden;
@@ -374,22 +347,14 @@
             align-items: center;
             justify-content: space-between;
             padding: 14px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             cursor: pointer;
             transition: var(--transition-smooth);
         }
 
-        .settings-item:last-child {
-            border-bottom: none;
-        }
-
-        .settings-item:hover {
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .settings-item:active {
-            background: rgba(255, 255, 255, 0.08);
-        }
+        .settings-item:last-child { border-bottom: none; }
+        .settings-item:hover { background: rgba(255, 255, 255, 0.05); }
+        .settings-item:active { background: rgba(255, 255, 255, 0.1); }
 
         .settings-item-left {
             display: flex;
@@ -413,10 +378,7 @@
         .settings-icon.orange { background: #FF9500; }
         .settings-icon.purple { background: #AF52DE; }
 
-        .settings-item-label {
-            color: var(--text-primary);
-            font-size: 17px;
-        }
+        .settings-item-label { color: var(--text-primary); font-size: 17px; }
 
         .settings-item-value {
             color: var(--text-secondary);
@@ -426,19 +388,9 @@
             gap: 8px;
         }
 
-        .settings-item-value svg {
-            width: 14px;
-            height: 14px;
-            fill: var(--text-secondary);
-        }
+        .settings-item-value svg { width: 14px; height: 14px; fill: var(--text-secondary); }
 
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group:last-child {
-            margin-bottom: 0;
-        }
+        .input-group { margin-bottom: 20px; }
 
         .input-label {
             display: block;
@@ -452,27 +404,26 @@
         .input-field {
             width: 100%;
             padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             border-radius: 12px;
             color: var(--text-primary);
             font-size: 16px;
             outline: none;
             transition: var(--transition-smooth);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .input-field:focus {
             border-color: var(--accent-color);
-            background: rgba(255, 255, 255, 0.12);
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
         }
 
-        .input-field::placeholder {
-            color: rgba(255, 255, 255, 0.35);
-        }
+        .input-field::placeholder { color: rgba(255, 255, 255, 0.3); }
 
         textarea.input-field {
-            min-height: 100px;
+            min-height: 120px;
             resize: vertical;
             font-family: inherit;
             line-height: 1.5;
@@ -483,7 +434,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 15px 24px;
+            padding: 16px 24px;
             border: none;
             border-radius: 14px;
             font-size: 17px;
@@ -493,44 +444,31 @@
             width: 100%;
         }
 
-        .btn:active {
-            transform: scale(0.97);
-        }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-primary {
-            background: var(--accent-color);
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: #0056CC;
-        }
+        .btn-primary { background: var(--accent-color); color: white; }
+        .btn-primary:hover:not(:disabled) { background: #0056CC; }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.12);
+            background: var(--glass-bg);
             color: var(--accent-color);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
-        .btn-danger {
-            background: var(--danger-color);
-            color: white;
+        .btn-danger { background: var(--danger-color); color: white; }
+        .btn-success { background: var(--success-color); color: white; }
+        .btn-warning { background: var(--warning-color); color: white; }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
         }
 
-        .btn-success {
-            background: var(--success-color);
-            color: white;
-        }
-
-        .btn-warning {
-            background: var(--warning-color);
-            color: white;
-        }
+        .btn-group .btn { flex: 1; }
 
         .btn-stack {
             display: flex;
@@ -538,19 +476,7 @@
             gap: 10px;
         }
 
-        .btn-group {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn-group .btn {
-            flex: 1;
-        }
-
-        .contact-list {
-            display: flex;
-            flex-direction: column;
-        }
+        .contact-list { display: flex; flex-direction: column; }
 
         .contact-item {
             display: flex;
@@ -558,8 +484,8 @@
             gap: 14px;
             padding: 14px 16px;
             background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: 16px;
             margin-bottom: 10px;
             cursor: pointer;
@@ -568,18 +494,18 @@
         }
 
         .contact-item:hover {
-            background: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.2);
             transform: translateX(4px);
         }
 
         .contact-item:active {
-            background: rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.25);
             transform: scale(0.98);
         }
 
         .contact-avatar {
-            width: 54px;
-            height: 54px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background: var(--accent-gradient);
             display: flex;
@@ -589,13 +515,10 @@
             font-weight: 600;
             color: white;
             flex-shrink: 0;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.35);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .contact-info {
-            flex: 1;
-            min-width: 0;
-        }
+        .contact-info { flex: 1; min-width: 0; }
 
         .contact-name {
             font-size: 17px;
@@ -627,24 +550,9 @@
             text-align: center;
         }
 
-        .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .empty-state-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .empty-state-desc {
-            font-size: 15px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
+        .empty-state-icon { font-size: 64px; margin-bottom: 20px; opacity: 0.5; }
+        .empty-state-title { font-size: 20px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+        .empty-state-desc { font-size: 15px; color: var(--text-secondary); line-height: 1.5; }
 
         .chat-container {
             flex: 1;
@@ -660,37 +568,31 @@
             padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             -webkit-overflow-scrolling: touch;
         }
 
         .message {
-            max-width: 78%;
-            padding: 11px 15px;
-            border-radius: 18px;
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 20px;
             font-size: 16px;
             line-height: 1.4;
             word-wrap: break-word;
-            animation: messageSlide 0.25s ease-out;
+            animation: messageSlide 0.3s ease-out;
             position: relative;
         }
 
         @keyframes messageSlide {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .message.sent {
             background: var(--message-sent);
             color: white;
             align-self: flex-end;
-            border-bottom-right-radius: 5px;
+            border-bottom-right-radius: 6px;
         }
 
         .message.received {
@@ -699,45 +601,52 @@
             -webkit-backdrop-filter: blur(10px);
             color: var(--text-primary);
             align-self: flex-start;
-            border-bottom-left-radius: 5px;
+            border-bottom-left-radius: 6px;
         }
 
         .message-time {
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.55);
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
             margin-top: 4px;
             text-align: right;
         }
 
-        .message.received .message-time {
-            text-align: left;
+        .message.received .message-time { text-align: left; }
+
+        .message-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            max-width: 85%;
+        }
+
+        .message-wrapper.sent {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-wrapper.received {
+            align-self: flex-start;
         }
 
         .message-checkbox {
-            position: absolute;
-            left: -32px;
-            top: 50%;
-            transform: translateY(-50%);
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.5);
             background: transparent;
-            cursor: pointer;
             display: none;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
             transition: var(--transition-smooth);
-        }
-
-        .message.sent .message-checkbox {
-            left: auto;
-            right: -32px;
+            flex-shrink: 0;
+            margin-top: 8px;
         }
 
         .message-checkbox.checked {
-            background: var(--accent-color);
-            border-color: var(--accent-color);
+            background: var(--danger-color);
+            border-color: var(--danger-color);
         }
 
         .message-checkbox.checked::after {
@@ -745,15 +654,6 @@
             color: white;
             font-size: 14px;
             font-weight: bold;
-        }
-
-        .chat-messages.select-mode .message {
-            padding-left: 40px;
-        }
-
-        .chat-messages.select-mode .message.sent {
-            padding-left: 15px;
-            padding-right: 40px;
         }
 
         .chat-messages.select-mode .message-checkbox {
@@ -767,8 +667,8 @@
             background: var(--message-received);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border-radius: 18px;
-            border-bottom-left-radius: 5px;
+            border-radius: 20px;
+            border-bottom-left-radius: 6px;
             align-self: flex-start;
             max-width: fit-content;
         }
@@ -795,58 +695,46 @@
             align-items: flex-end;
             gap: 8px;
             padding: 12px 16px 34px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.35));
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .chat-input-btn {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             border: none;
-            background: rgba(255, 255, 255, 0.12);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             color: var(--accent-color);
-            font-size: 18px;
+            font-size: 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
             transition: var(--transition-smooth);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--glass-border);
         }
 
-        .chat-input-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .chat-input-btn:active {
-            transform: scale(0.9);
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .chat-input-btn.send {
-            background: var(--accent-color);
-            color: white;
-            border: none;
-        }
-
-        .chat-input-btn.ai-reply {
-            background: linear-gradient(135deg, #AF52DE, #FF2D55);
-            color: white;
-            border: none;
-        }
+        .chat-input-btn:hover { background: rgba(255, 255, 255, 0.2); }
+        .chat-input-btn:active { transform: scale(0.9); background: rgba(255, 255, 255, 0.3); }
+        .chat-input-btn.send { background: var(--accent-color); color: white; border: none; }
+        .chat-input-btn.ai-reply { background: linear-gradient(135deg, #AF52DE, #FF2D55); color: white; border: none; }
 
         .chat-input-field {
             flex: 1;
-            min-height: 42px;
-            max-height: 100px;
-            padding: 11px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 21px;
+            min-height: 44px;
+            max-height: 120px;
+            padding: 12px 16px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 22px;
             color: var(--text-primary);
             font-size: 16px;
             resize: none;
@@ -856,123 +744,13 @@
             transition: var(--transition-smooth);
         }
 
-        .chat-input-field:focus {
-            border-color: var(--accent-color);
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .chat-input-field::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .extension-panel {
-            position: absolute;
-            bottom: 88px;
-            left: 16px;
-            right: 16px;
-            background: rgba(30, 30, 35, 0.95);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            padding: 16px;
-            transform: translateY(20px);
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition-smooth);
-            z-index: 50;
-            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        .extension-panel.active {
-            transform: translateY(0);
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .extension-btn-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        .extension-btn {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: var(--transition-smooth);
-        }
-
-        .extension-btn:active {
-            transform: scale(0.95);
-        }
-
-        .extension-btn.delete-btn {
-            background: rgba(255, 59, 48, 0.2);
-            color: var(--danger-color);
-            border: 1px solid rgba(255, 59, 48, 0.3);
-        }
-
-        .extension-btn.regenerate-btn {
-            background: rgba(175, 82, 222, 0.2);
-            color: #AF52DE;
-            border: 1px solid rgba(175, 82, 222, 0.3);
-        }
-
-        .select-mode-bar {
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: rgba(255, 59, 48, 0.15);
-            border-top: 1px solid rgba(255, 59, 48, 0.3);
-        }
-
-        .select-mode-bar.active {
-            display: flex;
-        }
-
-        .select-mode-info {
-            color: var(--text-primary);
-            font-size: 15px;
-        }
-
-        .select-mode-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .select-mode-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-        }
-
-        .select-mode-btn.cancel {
-            background: rgba(255, 255, 255, 0.15);
-            color: var(--text-primary);
-        }
-
-        .select-mode-btn.confirm {
-            background: var(--danger-color);
-            color: white;
-        }
+        .chat-input-field:focus { border-color: var(--accent-color); }
+        .chat-input-field::placeholder { color: rgba(255, 255, 255, 0.4); }
 
         .worldbook-item {
             background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid var(--glass-border);
             border-radius: 16px;
             padding: 16px;
@@ -982,13 +760,11 @@
         }
 
         .worldbook-item:hover {
-            background: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.2);
             transform: translateX(4px);
         }
 
-        .worldbook-item:active {
-            transform: scale(0.98);
-        }
+        .worldbook-item:active { transform: scale(0.98); }
 
         .worldbook-item-header {
             display: flex;
@@ -997,11 +773,7 @@
             margin-bottom: 8px;
         }
 
-        .worldbook-item-title {
-            font-size: 17px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
+        .worldbook-item-title { font-size: 17px; font-weight: 600; color: var(--text-primary); }
 
         .worldbook-item-badge {
             padding: 4px 10px;
@@ -1028,9 +800,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1041,28 +813,23 @@
             padding: 20px;
         }
 
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
 
         .modal {
             width: 100%;
-            max-width: 320px;
-            background: rgba(40, 40, 45, 0.95);
+            max-width: 340px;
+            background: var(--glass-bg-dark);
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
             border-radius: 20px;
             padding: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--glass-border);
             box-shadow: var(--shadow-soft);
             transform: scale(0.9) translateY(20px);
             transition: var(--transition-smooth);
         }
 
-        .modal-overlay.active .modal {
-            transform: scale(1) translateY(0);
-        }
+        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
 
         .modal-title {
             font-size: 20px;
@@ -1075,8 +842,8 @@
         .modal-input {
             width: 100%;
             padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             color: var(--text-primary);
             font-size: 16px;
@@ -1085,19 +852,10 @@
             margin-bottom: 16px;
         }
 
-        .modal-input:focus {
-            border-color: var(--accent-color);
-            background: rgba(255, 255, 255, 0.12);
-        }
+        .modal-input:focus { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.15); }
+        .modal-input::placeholder { color: rgba(255, 255, 255, 0.4); }
 
-        .modal-input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .modal-btns {
-            display: flex;
-            gap: 12px;
-        }
+        .modal-btns { display: flex; gap: 12px; }
 
         .modal-btn {
             flex: 1;
@@ -1110,55 +868,13 @@
             transition: var(--transition-smooth);
         }
 
-        .modal-btn:active {
-            transform: scale(0.95);
-        }
-
-        .modal-btn.cancel {
-            background: rgba(255, 255, 255, 0.12);
-            color: var(--text-primary);
-        }
-
-        .modal-btn.confirm {
-            background: var(--accent-color);
-            color: white;
-        }
-
-        .emoji-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
-            margin-bottom: 16px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .emoji-option {
-            width: 100%;
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            border: 2px solid transparent;
-        }
-
-        .emoji-option:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .emoji-option.selected {
-            background: rgba(0, 122, 255, 0.3);
-            border-color: var(--accent-color);
-        }
+        .modal-btn:active { transform: scale(0.95); }
+        .modal-btn.cancel { background: rgba(255, 255, 255, 0.15); color: var(--text-primary); }
+        .modal-btn.confirm { background: var(--accent-color); color: white; }
 
         .toast-container {
             position: fixed;
-            top: 70px;
+            top: 80px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 3000;
@@ -1169,8 +885,8 @@
         }
 
         .toast {
-            padding: 14px 22px;
-            background: rgba(40, 40, 45, 0.95);
+            padding: 14px 24px;
+            background: var(--glass-bg-dark);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 14px;
@@ -1178,7 +894,7 @@
             font-size: 15px;
             font-weight: 500;
             box-shadow: var(--shadow-soft);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--glass-border);
             animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.7s forwards;
             display: flex;
             align-items: center;
@@ -1202,32 +918,27 @@
             to { opacity: 0; transform: translateY(-20px) scale(0.9); }
         }
 
-        .search-container {
-            padding: 0 16px 16px;
-        }
+        .search-container { padding: 0 16px 16px; }
 
         .search-field {
             width: 100%;
             padding: 12px 16px 12px 44px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
             border-radius: 14px;
             color: var(--text-primary);
             font-size: 16px;
             outline: none;
             transition: var(--transition-smooth);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.45)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: 14px center;
         }
 
-        .search-field:focus {
-            border-color: var(--accent-color);
-        }
-
-        .search-field::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
+        .search-field:focus { border-color: var(--accent-color); }
+        .search-field::placeholder { color: rgba(255, 255, 255, 0.4); }
 
         .toggle-switch {
             position: relative;
@@ -1239,9 +950,7 @@
             transition: var(--transition-smooth);
         }
 
-        .toggle-switch.active {
-            background: var(--success-color);
-        }
+        .toggle-switch.active { background: var(--success-color); }
 
         .toggle-switch::after {
             content: '';
@@ -1256,39 +965,143 @@
             transition: var(--transition-smooth);
         }
 
-        .toggle-switch.active::after {
-            left: 22px;
-        }
+        .toggle-switch.active::after { left: 22px; }
 
         .select-field {
             width: 100%;
             padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             border-radius: 12px;
             color: var(--text-primary);
             font-size: 16px;
             outline: none;
             cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: calc(100% - 14px) center;
             padding-right: 44px;
         }
 
-        .select-field option {
-            background: #1a1a2e;
+        .select-field option { background: #1a1a2e; color: var(--text-primary); }
+
+        .file-input-hidden { display: none; }
+
+        .extension-panel {
+            position: absolute;
+            bottom: 90px;
+            left: 16px;
+            right: 16px;
+            background: var(--glass-bg-dark);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            z-index: 50;
+            box-shadow: var(--shadow-soft);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+        }
+
+        .extension-panel.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .extension-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .extension-panel-title { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+
+        .extension-panel-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
             color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
         }
 
-        .file-input-hidden {
-            display: none;
+        .extension-panel-close:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .extension-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            margin-bottom: 10px;
         }
 
-        .slider-container {
-            margin: 16px 0;
+        .extension-btn:last-child { margin-bottom: 0; }
+        .extension-btn:hover { background: rgba(255, 255, 255, 0.2); }
+        .extension-btn:active { transform: scale(0.98); }
+
+        .extension-btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
         }
+
+        .extension-btn-icon.danger { background: rgba(255, 59, 48, 0.2); }
+        .extension-btn-icon.purple { background: rgba(175, 82, 222, 0.2); }
+
+        .char-counter {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .char-counter.warning { color: #FF9500; }
+        .char-counter.error { color: var(--danger-color); }
+
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 20px 0;
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .slider-container { margin: 16px 0; }
 
         .slider-header {
             display: flex;
@@ -1297,21 +1110,13 @@
             margin-bottom: 8px;
         }
 
-        .slider-label {
-            font-size: 15px;
-            color: var(--text-primary);
-        }
-
-        .slider-value {
-            font-size: 15px;
-            color: var(--accent-color);
-            font-weight: 600;
-        }
+        .slider-label { font-size: 15px; color: var(--text-primary); }
+        .slider-value { font-size: 15px; color: var(--accent-color); font-weight: 600; }
 
         .slider-input {
             width: 100%;
             height: 6px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 3px;
             appearance: none;
             cursor: pointer;
@@ -1323,48 +1128,31 @@
             height: 24px;
             background: white;
             border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             cursor: pointer;
         }
 
         .action-hint {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 12px 14px;
-            background: rgba(0, 122, 255, 0.12);
-            border-radius: 12px;
+            gap: 6px;
+            padding: 10px 14px;
+            background: rgba(0, 122, 255, 0.15);
+            border-radius: 10px;
             margin-bottom: 16px;
-            border: 1px solid rgba(0, 122, 255, 0.2);
         }
 
-        .action-hint-icon {
-            font-size: 16px;
-        }
+        .action-hint-icon { font-size: 16px; }
+        .action-hint-text { font-size: 13px; color: var(--accent-color); }
 
-        .action-hint-text {
-            font-size: 13px;
-            color: var(--accent-color);
-            line-height: 1.4;
-        }
+        .action-hint.warning { background: rgba(255, 149, 0, 0.15); }
+        .action-hint.warning .action-hint-text { color: var(--warning-color); }
 
-        .action-hint.success {
-            background: rgba(52, 199, 89, 0.12);
-            border-color: rgba(52, 199, 89, 0.2);
-        }
+        .action-hint.success { background: rgba(52, 199, 89, 0.15); }
+        .action-hint.success .action-hint-text { color: var(--success-color); }
 
-        .action-hint.success .action-hint-text {
-            color: var(--success-color);
-        }
-
-        .action-hint.warning {
-            background: rgba(255, 149, 0, 0.12);
-            border-color: rgba(255, 149, 0, 0.2);
-        }
-
-        .action-hint.warning .action-hint-text {
-            color: var(--warning-color);
-        }
+        .action-hint.error { background: rgba(255, 59, 48, 0.15); }
+        .action-hint.error .action-hint-text { color: var(--danger-color); }
 
         .delete-zone {
             padding: 20px;
@@ -1378,49 +1166,42 @@
             cursor: pointer;
         }
 
-        .delete-zone:hover {
-            opacity: 1;
-            background: rgba(255, 59, 48, 0.1);
-        }
+        .delete-zone:hover { opacity: 1; background: rgba(255, 59, 48, 0.1); }
 
         .log-container {
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 12px;
             padding: 12px;
             margin-top: 12px;
-            max-height: 180px;
+            max-height: 200px;
             overflow-y: auto;
             font-family: 'SF Mono', 'Menlo', monospace;
-            font-size: 11px;
+            font-size: 12px;
         }
 
         .log-entry {
-            padding: 3px 0;
+            padding: 4px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             word-break: break-all;
-            line-height: 1.4;
         }
 
-        .log-entry:last-child {
-            border-bottom: none;
-        }
-
+        .log-entry:last-child { border-bottom: none; }
         .log-entry.success { color: var(--success-color); }
         .log-entry.error { color: var(--danger-color); }
         .log-entry.info { color: var(--accent-color); }
         .log-entry.warning { color: var(--warning-color); }
 
         .model-list {
-            max-height: 180px;
+            max-height: 200px;
             overflow-y: auto;
             margin-top: 12px;
         }
 
         .model-item {
-            padding: 11px 14px;
-            background: rgba(255, 255, 255, 0.06);
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             cursor: pointer;
             transition: var(--transition-smooth);
             display: flex;
@@ -1428,96 +1209,136 @@
             align-items: center;
         }
 
-        .model-item:hover {
-            background: rgba(255, 255, 255, 0.12);
-        }
-
-        .model-item.selected {
-            background: var(--accent-color);
-        }
+        .model-item:hover { background: rgba(255, 255, 255, 0.1); }
+        .model-item.selected { background: var(--accent-color); }
 
         .model-item-name {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text-primary);
             font-family: 'SF Mono', monospace;
         }
 
-        .char-counter {
-            font-size: 12px;
+        .model-item-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
             color: var(--text-secondary);
-            text-align: right;
-            margin-top: 4px;
         }
 
-        .char-counter.warning { color: var(--warning-color); }
-        .char-counter.error { color: var(--danger-color); }
-
-        .divider {
-            height: 1px;
-            background: rgba(255, 255, 255, 0.08);
-            margin: 20px 0;
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
         }
 
-        .loading-spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-top-color: white;
+        .status-indicator.connected { background: rgba(52, 199, 89, 0.2); color: var(--success-color); }
+        .status-indicator.disconnected { background: rgba(255, 59, 48, 0.2); color: var(--danger-color); }
+        .status-indicator.pending { background: rgba(255, 149, 0, 0.2); color: var(--warning-color); }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            display: inline-block;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+            background: currentColor;
         }
 
         .date-separator {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 14px 0;
+            padding: 16px 0;
         }
 
         .date-separator-text {
-            padding: 5px 14px;
-            background: rgba(255, 255, 255, 0.08);
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             font-size: 12px;
             color: var(--text-secondary);
         }
 
-        .number-input-group {
-            display: flex;
+        .select-mode-bar {
+            display: none;
             align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255, 59, 48, 0.15);
+            border-bottom: 1px solid rgba(255, 59, 48, 0.3);
+        }
+
+        .select-mode-bar.active { display: flex; }
+
+        .select-mode-info {
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+
+        .select-mode-btns {
+            display: flex;
             gap: 12px;
         }
 
-        .number-input {
-            width: 100px;
-            padding: 10px 14px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+        .select-mode-btn {
+            padding: 8px 16px;
+            border: none;
             border-radius: 10px;
-            color: var(--text-primary);
-            font-size: 16px;
-            text-align: center;
-            outline: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
         }
 
-        .number-input:focus {
-            border-color: var(--accent-color);
+        .select-mode-btn.cancel {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
         }
+
+        .select-mode-btn.delete {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .select-mode-btn:active { transform: scale(0.95); }
+
+        .emoji-picker {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            padding: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .emoji-item {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .emoji-item:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
+        .emoji-item:active { transform: scale(0.95); }
 
         @media (max-width: 430px) {
-            .app-grid { gap: 18px; }
-            .app-icon { width: 62px; height: 62px; border-radius: 14px; font-size: 26px; }
+            .app-grid { gap: 20px; }
+            .app-icon { width: 64px; height: 64px; border-radius: 16px; }
         }
 
-        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
     </style>
 </head>
 <body>
@@ -1534,25 +1355,25 @@
 
         <div class="home-screen" id="homeScreen">
             <div class="app-grid" id="appGrid">
-                <div class="app-icon-wrapper" data-app="settings" onclick="handleAppClick('settings')" oncontextmenu="handleAppLongPress(event, 'settings')">
-                    <div class="app-icon-edit-btn" onclick="openIconEditor(event, 'settings')">✏️</div>
-                    <div class="app-icon settings" id="icon-settings">⚙️</div>
-                    <span class="app-icon-label" id="label-settings">设置</span>
+                <div class="app-icon-wrapper" data-app="settings" onclick="handleAppClick(event, 'settingsPage')" oncontextmenu="handleAppLongPress(event, 'settings')">
+                    <div class="app-icon settings" id="app-icon-settings">⚙️</div>
+                    <span class="app-icon-edit-badge">✏️</span>
+                    <span class="app-icon-label">设置</span>
                 </div>
-                <div class="app-icon-wrapper" data-app="messages" onclick="handleAppClick('messages')" oncontextmenu="handleAppLongPress(event, 'messages')">
-                    <div class="app-icon-edit-btn" onclick="openIconEditor(event, 'messages')">✏️</div>
-                    <div class="app-icon messages" id="icon-messages">💬</div>
-                    <span class="app-icon-label" id="label-messages">短信</span>
+                <div class="app-icon-wrapper" data-app="messages" onclick="handleAppClick(event, 'messagesPage')" oncontextmenu="handleAppLongPress(event, 'messages')">
+                    <div class="app-icon messages" id="app-icon-messages">💬</div>
+                    <span class="app-icon-edit-badge">✏️</span>
+                    <span class="app-icon-label">短信</span>
                 </div>
-                <div class="app-icon-wrapper" data-app="worldbook" onclick="handleAppClick('worldbook')" oncontextmenu="handleAppLongPress(event, 'worldbook')">
-                    <div class="app-icon-edit-btn" onclick="openIconEditor(event, 'worldbook')">✏️</div>
-                    <div class="app-icon worldbook" id="icon-worldbook">📚</div>
-                    <span class="app-icon-label" id="label-worldbook">世界书</span>
+                <div class="app-icon-wrapper" data-app="worldbook" onclick="handleAppClick(event, 'worldbookPage')" oncontextmenu="handleAppLongPress(event, 'worldbook')">
+                    <div class="app-icon worldbook" id="app-icon-worldbook">📚</div>
+                    <span class="app-icon-edit-badge">✏️</span>
+                    <span class="app-icon-label">世界书</span>
                 </div>
-                <div class="app-icon-wrapper" data-app="wallpaper" onclick="handleAppClick('wallpaper')" oncontextmenu="handleAppLongPress(event, 'wallpaper')">
-                    <div class="app-icon-edit-btn" onclick="openIconEditor(event, 'wallpaper')">✏️</div>
-                    <div class="app-icon photos" id="icon-wallpaper">🖼️</div>
-                    <span class="app-icon-label" id="label-wallpaper">壁纸</span>
+                <div class="app-icon-wrapper" data-app="photos" onclick="handleAppClick(event, 'wallpaperPage')" oncontextmenu="handleAppLongPress(event, 'photos')">
+                    <div class="app-icon photos" id="app-icon-photos">🖼️</div>
+                    <span class="app-icon-edit-badge">✏️</span>
+                    <span class="app-icon-label">壁纸</span>
                 </div>
             </div>
         </div>
@@ -1579,10 +1400,10 @@
                     </div>
 
                     <div class="input-group">
-                        <label class="input-label">API 基础地址</label>
+                        <label class="input-label">API 基础地址 (Base URL)</label>
                         <input type="text" class="input-field" id="apiBaseUrl" placeholder="https://api.example.com">
-                        <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">
-                            💡 只需输入基础地址，系统自动处理端点
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
+                            💡 只需输入基础地址，系统自动处理路径
                         </div>
                     </div>
 
@@ -1598,13 +1419,13 @@
                     </div>
 
                     <div id="modelListContainer" style="display: none;">
-                        <label class="input-label" style="margin-top: 16px;">可用模型</label>
+                        <label class="input-label" style="margin-top: 16px;">可用模型 (点击选择)</label>
                         <div class="model-list" id="modelList"></div>
                     </div>
 
                     <div class="input-group" style="margin-top: 16px;">
                         <label class="input-label">当前模型</label>
-                        <input type="text" class="input-field" id="modelName" placeholder="选择或输入模型名称">
+                        <input type="text" class="input-field" id="modelName" placeholder="选择或手动输入模型名称">
                     </div>
 
                     <div class="btn-stack" style="margin-top: 16px;">
@@ -1617,22 +1438,20 @@
                     </div>
 
                     <div class="divider"></div>
+
                     <label class="input-label">调试日志</label>
                     <div class="log-container" id="debugLog">
                         <div class="log-entry info">等待操作...</div>
                     </div>
                 </div>
 
-                <p class="settings-group-title">对话记忆</p>
+                <p class="settings-group-title">对话设置</p>
                 <div class="settings-group" style="padding: 16px;">
                     <div class="input-group">
-                        <label class="input-label">发送给AI的最大消息条数</label>
-                        <div class="number-input-group">
-                            <input type="number" class="number-input" id="maxContextMessages" min="10" max="500" value="100">
-                            <span style="color: var(--text-secondary); font-size: 14px;">条消息</span>
-                        </div>
-                        <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px;">
-                            💡 超过此数量的历史消息将不会发送给AI，但聊天记录仍会保留
+                        <label class="input-label">发送给AI的最大对话记忆条数</label>
+                        <input type="number" class="input-field" id="maxContextMessages" min="10" max="1000" value="200" placeholder="200">
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
+                            💡 超过此数量的历史消息不会发送给AI，但仍保留在聊天界面
                         </div>
                     </div>
                 </div>
@@ -1662,21 +1481,29 @@
                         </div>
                         <input type="range" class="slider-input" id="topP" min="0" max="1" step="0.05" value="0.9" oninput="updateSliderValue('topP', 'topPValue')">
                     </div>
+
+                    <div class="slider-container" style="padding: 0 16px 16px;">
+                        <div class="slider-header">
+                            <span class="slider-label">Frequency Penalty</span>
+                            <span class="slider-value" id="freqPenValue">0.0</span>
+                        </div>
+                        <input type="range" class="slider-input" id="frequencyPenalty" min="0" max="2" step="0.1" value="0" oninput="updateSliderValue('frequencyPenalty', 'freqPenValue')">
+                    </div>
+
+                    <div class="slider-container" style="padding: 0 16px 16px;">
+                        <div class="slider-header">
+                            <span class="slider-label">Presence Penalty</span>
+                            <span class="slider-value" id="presPenValue">0.0</span>
+                        </div>
+                        <input type="range" class="slider-input" id="presencePenalty" min="0" max="2" step="0.1" value="0" oninput="updateSliderValue('presencePenalty', 'presPenValue')">
+                    </div>
                 </div>
 
                 <p class="settings-group-title">系统提示词</p>
                 <div class="settings-group" style="padding: 16px;">
                     <div class="input-group">
                         <label class="input-label">全局系统提示词</label>
-                        <textarea class="input-field" id="globalSystemPrompt" rows="4" placeholder="输入全局系统提示词..."></textarea>
-                    </div>
-                </div>
-
-                <p class="settings-group-title">消息格式</p>
-                <div class="settings-group" style="padding: 16px;">
-                    <div class="input-group">
-                        <label class="input-label">消息分隔符</label>
-                        <input type="text" class="input-field" id="messageSeparator" value=" | " placeholder="用于分隔多条消息">
+                        <textarea class="input-field" id="globalSystemPrompt" rows="6" placeholder="输入全局系统提示词..."></textarea>
                     </div>
                 </div>
 
@@ -1768,30 +1595,36 @@
                 </button>
             </div>
 
+            <div class="select-mode-bar" id="selectModeBar">
+                <span class="select-mode-info">已选择 <span id="selectedCount">0</span> 条消息</span>
+                <div class="select-mode-btns">
+                    <button class="select-mode-btn cancel" onclick="exitSelectMode()">取消</button>
+                    <button class="select-mode-btn delete" onclick="deleteSelectedMessages()">删除</button>
+                </div>
+            </div>
+
             <div class="chat-container">
                 <div class="chat-messages" id="chatMessages"></div>
 
                 <div class="extension-panel" id="extensionPanel">
-                    <div class="extension-btn-row">
-                        <button class="extension-btn delete-btn" onclick="enterSelectMode()">
-                            🗑️ 删除消息
-                        </button>
-                        <button class="extension-btn regenerate-btn" onclick="regenerateLastReply()">
-                            🔄 重新回复
-                        </button>
+                    <div class="extension-panel-header">
+                        <span class="extension-panel-title">操作</span>
+                        <button class="extension-panel-close" onclick="toggleExtensionPanel()">×</button>
                     </div>
+
+                    <button class="extension-btn" onclick="enterSelectMode()">
+                        <div class="extension-btn-icon danger">🗑️</div>
+                        <span>选择删除消息</span>
+                    </button>
+
+                    <button class="extension-btn" onclick="regenerateLastReply()">
+                        <div class="extension-btn-icon purple">🔄</div>
+                        <span>重新生成回复</span>
+                    </button>
                 </div>
 
-                <div class="select-mode-bar" id="selectModeBar">
-                    <span class="select-mode-info" id="selectModeInfo">已选择 0 条消息</span>
-                    <div class="select-mode-actions">
-                        <button class="select-mode-btn cancel" onclick="exitSelectMode()">取消</button>
-                        <button class="select-mode-btn confirm" onclick="deleteSelectedMessages()">删除</button>
-                    </div>
-                </div>
-
-                <div class="chat-input-area" id="chatInputArea">
-                    <button class="chat-input-btn" onclick="toggleExtensionPanel()" title="扩展功能">⚡</button>
+                <div class="chat-input-area">
+                    <button class="chat-input-btn" onclick="toggleExtensionPanel()" title="扩展操作">⚡</button>
                     <textarea class="chat-input-field" id="chatInput" placeholder="输入消息..." rows="1" oninput="autoResizeTextarea(this)"></textarea>
                     <button class="chat-input-btn ai-reply" onclick="triggerAIReply()" title="请求AI回复">🤖</button>
                     <button class="chat-input-btn send" onclick="sendMessage()" title="发送消息">➤</button>
@@ -1825,18 +1658,18 @@
 
                 <p class="settings-group-title">角色设定 (无字数限制)</p>
                 <div class="settings-group" style="padding: 16px;">
-                    <textarea class="input-field" id="charDescription" rows="8" placeholder="详细描述角色的性格、背景、说话方式等..."></textarea>
+                    <textarea class="input-field" id="charDescription" rows="10" placeholder="详细描述角色的性格、背景、说话方式等..."></textarea>
                 </div>
 
                 <p class="settings-group-title">开场白 (最多300字符)</p>
                 <div class="settings-group" style="padding: 16px;">
-                    <textarea class="input-field" id="charGreeting" rows="3" maxlength="300" placeholder="角色的第一条消息..." oninput="updateCharCounter()"></textarea>
+                    <textarea class="input-field" id="charGreeting" rows="4" maxlength="300" placeholder="角色的第一条消息..." oninput="updateCharCounter()"></textarea>
                     <div class="char-counter" id="greetingCharCounter">0 / 300</div>
                 </div>
 
                 <p class="settings-group-title">情景设定</p>
                 <div class="settings-group" style="padding: 16px;">
-                    <textarea class="input-field" id="charScenario" rows="4" placeholder="描述对话发生的场景和背景情境..."></textarea>
+                    <textarea class="input-field" id="charScenario" rows="5" placeholder="描述对话发生的场景和背景情境..."></textarea>
                 </div>
 
                 <p class="settings-group-title">绑定世界书</p>
@@ -1854,7 +1687,7 @@
                     </div>
                     <div class="input-group">
                         <label class="input-label">角色专属系统提示词</label>
-                        <textarea class="input-field" id="charSystemPrompt" rows="3" placeholder="仅对此角色生效的额外提示词..."></textarea>
+                        <textarea class="input-field" id="charSystemPrompt" rows="4" placeholder="仅对此角色生效的额外提示词..."></textarea>
                     </div>
                 </div>
 
@@ -1923,7 +1756,7 @@
                     </div>
                     <div class="input-group">
                         <label class="input-label">内容</label>
-                        <textarea class="input-field" id="worldbookContent" rows="8" placeholder="当关键词被提及时注入的内容..."></textarea>
+                        <textarea class="input-field" id="worldbookContent" rows="10" placeholder="当关键词被提及时注入的内容..."></textarea>
                     </div>
                 </div>
 
@@ -1934,6 +1767,14 @@
                             <span class="settings-item-label">始终激活</span>
                         </div>
                         <div class="toggle-switch" id="worldbookAlwaysActive" onclick="toggleSwitch(this)"></div>
+                    </div>
+
+                    <div class="slider-container" style="padding: 16px;">
+                        <div class="slider-header">
+                            <span class="slider-label">注入位置 (深度)</span>
+                            <span class="slider-value" id="worldbookDepthValue">0</span>
+                        </div>
+                        <input type="range" class="slider-input" id="worldbookDepth" min="0" max="10" step="1" value="0" oninput="updateSliderValue('worldbookDepth', 'worldbookDepthValue')">
                     </div>
                 </div>
 
@@ -1956,13 +1797,13 @@
             <div class="page-content">
                 <p class="settings-group-title">预设壁纸</p>
                 <div class="settings-group" style="padding: 16px;">
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;" id="presetWallpapers">
-                        <div class="wallpaper-option" onclick="setWallpaper('gradient1')" style="height: 80px; border-radius: 12px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient1"></div>
-                        <div class="wallpaper-option" onclick="setWallpaper('gradient2')" style="height: 80px; border-radius: 12px; background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient2"></div>
-                        <div class="wallpaper-option" onclick="setWallpaper('gradient3')" style="height: 80px; border-radius: 12px; background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient3"></div>
-                        <div class="wallpaper-option" onclick="setWallpaper('gradient4')" style="height: 80px; border-radius: 12px; background: linear-gradient(135deg, #141e30 0%, #243b55 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient4"></div>
-                        <div class="wallpaper-option" onclick="setWallpaper('gradient5')" style="height: 80px; border-radius: 12px; background: linear-gradient(135deg, #232526 0%, #414345 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient5"></div>
-                        <div class="wallpaper-option" onclick="setWallpaper('gradient6')" style="height: 80px; border-radius: 12px; background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient6"></div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;" id="wallpaperGrid">
+                        <div class="wallpaper-option" onclick="setWallpaper('gradient1')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient1"></div>
+                        <div class="wallpaper-option" onclick="setWallpaper('gradient2')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient2"></div>
+                        <div class="wallpaper-option" onclick="setWallpaper('gradient3')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient3"></div>
+                        <div class="wallpaper-option" onclick="setWallpaper('gradient4')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #141e30 0%, #243b55 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient4"></div>
+                        <div class="wallpaper-option" onclick="setWallpaper('gradient5')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #232526 0%, #414345 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient5"></div>
+                        <div class="wallpaper-option" onclick="setWallpaper('gradient6')" style="height: 100px; border-radius: 12px; background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%); cursor: pointer; border: 3px solid transparent;" data-wallpaper="gradient6"></div>
                     </div>
                 </div>
 
@@ -2015,20 +1856,12 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="iconEditorModal">
-        <div class="modal" style="max-width: 340px;">
-            <div class="modal-title">自定义图标</div>
-            <div class="input-group">
-                <label class="input-label">选择表情</label>
-                <div class="emoji-grid" id="emojiGrid"></div>
-            </div>
-            <div class="input-group">
-                <label class="input-label">应用名称</label>
-                <input type="text" class="modal-input" id="iconAppLabel" placeholder="输入应用名称..." style="margin-bottom: 0;">
-            </div>
-            <div class="modal-btns" style="margin-top: 16px;">
-                <button class="modal-btn cancel" onclick="hideIconEditorModal()">取消</button>
-                <button class="modal-btn confirm" onclick="saveIconSettings()">保存</button>
+    <div class="modal-overlay" id="iconPickerModal">
+        <div class="modal">
+            <div class="modal-title">选择图标</div>
+            <div class="emoji-picker" id="emojiPicker"></div>
+            <div class="modal-btns">
+                <button class="modal-btn cancel" onclick="hideIconPickerModal()">取消</button>
             </div>
         </div>
     </div>
@@ -2048,8 +1881,13 @@
             connectionStatus: 'disconnected',
             isSelectMode: false,
             selectedMessages: new Set(),
-            isEditingIcons: false,
-            currentEditingApp: null,
+            editingAppIcon: null,
+            appIcons: {
+                settings: '⚙️',
+                messages: '💬',
+                worldbook: '📚',
+                photos: '🖼️'
+            },
             settings: {
                 apiBaseUrl: '',
                 apiKey: '',
@@ -2057,30 +1895,34 @@
                 temperature: 0.7,
                 maxTokens: 2048,
                 topP: 0.9,
-                maxContextMessages: 100,
+                frequencyPenalty: 0,
+                presencePenalty: 0,
                 globalSystemPrompt: '',
-                messageSeparator: ' | ',
-                wallpaper: 'gradient1',
-                wallpaperData: null,
-                appIcons: {
-                    settings: { emoji: '⚙️', label: '设置' },
-                    messages: { emoji: '💬', label: '短信' },
-                    worldbook: { emoji: '📚', label: '世界书' },
-                    wallpaper: { emoji: '🖼️', label: '壁纸' }
-                }
+                maxContextMessages: 200,
+                wallpaper: 'gradient1'
             }
         };
 
-        const CUTE_EMOJIS = [
-            '😊', '😎', '🥰', '😘', '🤗', '😋', '🥺', '😇', '🤭', '😏',
-            '🌸', '🌺', '🌷', '🌹', '🌻', '💐', '🍀', '🌙', '⭐', '✨',
-            '💖', '💕', '💗', '💝', '💜', '💙', '💚', '🧡', '❤️', '🖤',
-            '🦊', '🐱', '🐰', '🐻', '🐼', '🦄', '🐶', '🐨', '🐯', '🦁',
-            '🎀', '🎭', '🎪', '🎨', '🎬', '🎤', '🎧', '🎮', '🎯', '🎲',
-            '🍰', '🧁', '🍩', '🍪', '🍭', '🍬', '🍫', '🍡', '🍦', '🎂',
-            '🔮', '💎', '👑', '🏆', '🎁', '🎈', '🎊', '🎉', '💌', '📱',
-            '🌈', '☀️', '🌤️', '⛅', '🌊', '🔥', '❄️', '🍃', '🌿', '🌴'
-        ];
+        const MESSAGE_SEPARATOR = ' | ';
+
+        const SMS_SYSTEM_PROMPT = `你正在通过短信与用户聊天。请遵循以下规则：
+
+【短信格式规则】
+1. 每条短信用 " | " 分隔
+2. 例如发送3条短信: 嗯嗯 | 我知道啦 | 你在干嘛呀
+3. 可以发1-5条不等的短信，模拟真人发短信的习惯
+4. 短信内容要简短、自然、口语化
+
+【聊天记录格式说明】
+- 用户发送的消息格式: [用户]: 内容1 | 内容2 | 内容3
+- 你的回复格式: [角色名]: 内容1 | 内容2 | 内容3
+- 每个 | 代表一条独立的短信消息
+
+【风格要求】
+- 像真人发短信一样，简短自然
+- 可以用语气词、表情符号
+- 一句话可以分成多条发送
+- 也可以只发一条，根据情境决定`;
 
         // ==================== 初始化 ====================
         document.addEventListener('DOMContentLoaded', function() {
@@ -2090,21 +1932,7 @@
             applyWallpaper();
             applyAppIcons();
             updateConnectionStatusUI();
-            updateWallpaperSelection();
-
-            // 阻止右键菜单
-            document.addEventListener('contextmenu', function(e) {
-                if (e.target.closest('.app-icon-wrapper')) {
-                    e.preventDefault();
-                }
-            });
-
-            // 点击空白处退出编辑模式
-            document.getElementById('homeScreen').addEventListener('click', function(e) {
-                if (!e.target.closest('.app-icon-wrapper') && AppState.isEditingIcons) {
-                    exitIconEditMode();
-                }
-            });
+            highlightCurrentWallpaper();
         });
 
         function updateStatusBarTime() {
@@ -2112,96 +1940,6 @@
             const hours = now.getHours().toString().padStart(2, '0');
             const minutes = now.getMinutes().toString().padStart(2, '0');
             document.getElementById('statusBarTime').textContent = `${hours}:${minutes}`;
-        }
-
-        // ==================== 应用图标管理 ====================
-        function handleAppClick(appName) {
-            if (AppState.isEditingIcons) {
-                return;
-            }
-            openPage(appName + 'Page');
-        }
-
-        function handleAppLongPress(event, appName) {
-            event.preventDefault();
-            enterIconEditMode();
-        }
-
-        function enterIconEditMode() {
-            AppState.isEditingIcons = true;
-            document.querySelectorAll('.app-icon-wrapper').forEach(el => {
-                el.classList.add('wiggle');
-            });
-        }
-
-        function exitIconEditMode() {
-            AppState.isEditingIcons = false;
-            document.querySelectorAll('.app-icon-wrapper').forEach(el => {
-                el.classList.remove('wiggle');
-            });
-        }
-
-        function openIconEditor(event, appName) {
-            event.stopPropagation();
-            AppState.currentEditingApp = appName;
-
-            const currentIcon = AppState.settings.appIcons[appName];
-            document.getElementById('iconAppLabel').value = currentIcon.label;
-
-            // 生成emoji选择网格
-            const grid = document.getElementById('emojiGrid');
-            grid.innerHTML = CUTE_EMOJIS.map(emoji => `
-                <div class="emoji-option ${emoji === currentIcon.emoji ? 'selected' : ''}" onclick="selectEmoji('${emoji}')">
-                    ${emoji}
-                </div>
-            `).join('');
-
-            document.getElementById('iconEditorModal').classList.add('active');
-        }
-
-        function selectEmoji(emoji) {
-            document.querySelectorAll('.emoji-option').forEach(el => {
-                el.classList.remove('selected');
-                if (el.textContent.trim() === emoji) {
-                    el.classList.add('selected');
-                }
-            });
-        }
-
-        function hideIconEditorModal() {
-            document.getElementById('iconEditorModal').classList.remove('active');
-            AppState.currentEditingApp = null;
-        }
-
-        function saveIconSettings() {
-            const appName = AppState.currentEditingApp;
-            if (!appName) return;
-
-            const selectedEmoji = document.querySelector('.emoji-option.selected');
-            const label = document.getElementById('iconAppLabel').value.trim();
-
-            if (selectedEmoji) {
-                AppState.settings.appIcons[appName].emoji = selectedEmoji.textContent.trim();
-            }
-            if (label) {
-                AppState.settings.appIcons[appName].label = label;
-            }
-
-            saveAllData();
-            applyAppIcons();
-            hideIconEditorModal();
-            exitIconEditMode();
-            showToast('图标已更新', 'success');
-        }
-
-        function applyAppIcons() {
-            Object.keys(AppState.settings.appIcons).forEach(appName => {
-                const icon = AppState.settings.appIcons[appName];
-                const iconEl = document.getElementById(`icon-${appName}`);
-                const labelEl = document.getElementById(`label-${appName}`);
-                if (iconEl) iconEl.textContent = icon.emoji;
-                if (labelEl) labelEl.textContent = icon.label;
-            });
         }
 
         // ==================== 调试日志 ====================
@@ -2269,6 +2007,7 @@
                 showToast('请输入API基础地址', 'error');
                 return;
             }
+
             if (!apiKey) {
                 showToast('请输入API密钥', 'error');
                 return;
@@ -2280,46 +2019,44 @@
 
             addLog(`开始拉取模型列表...`);
 
-            const endpoints = [
-                getModelsEndpoint(baseUrl),
-                `${normalizeBaseUrl(baseUrl)}/models`,
-                `${baseUrl}/v1/models`,
-                `${baseUrl}/models`
-            ];
+            const modelsEndpoint = getModelsEndpoint(baseUrl);
+            addLog(`端点: ${modelsEndpoint}`);
 
-            for (const endpoint of endpoints) {
-                addLog(`尝试: ${endpoint}`);
-                try {
-                    const response = await fetch(endpoint, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${apiKey}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        let models = data.data || data.models || data || [];
-                        if (Array.isArray(models) && models.length > 0) {
-                            addLog(`成功获取 ${models.length} 个模型`, 'success');
-                            AppState.availableModels = models;
-                            renderModelList(models);
-                            showToast(`获取 ${models.length} 个模型`, 'success');
-                            btn.disabled = false;
-                            btn.innerHTML = '📋 拉取模型列表';
-                            return;
-                        }
+            try {
+                const response = await fetch(modelsEndpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
                     }
-                } catch (e) {
-                    addLog(`${endpoint} 失败: ${e.message}`, 'warning');
-                }
-            }
+                });
 
-            addLog('所有端点都失败了', 'error');
-            showToast('拉取模型失败，请检查API配置', 'error');
-            btn.disabled = false;
-            btn.innerHTML = '📋 拉取模型列表';
+                addLog(`响应状态: ${response.status}`);
+
+                if (!response.ok) {
+                    let errorMsg = `HTTP ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMsg = errorData.error?.message || errorMsg;
+                    } catch (e) {}
+                    throw new Error(errorMsg);
+                }
+
+                const data = await response.json();
+                let models = data.data || data.models || data || [];
+
+                addLog(`找到 ${models.length} 个模型`, 'success');
+                AppState.availableModels = models;
+                renderModelList(models);
+                showToast(`成功获取 ${models.length} 个模型`, 'success');
+
+            } catch (error) {
+                addLog(`拉取失败: ${error.message}`, 'error');
+                showToast(`拉取模型失败: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '📋 拉取模型列表';
+            }
         }
 
         function renderModelList(models) {
@@ -2338,6 +2075,7 @@
                 return `
                     <div class="model-item ${isSelected ? 'selected' : ''}" onclick="selectModel('${modelId}')">
                         <span class="model-item-name">${modelId}</span>
+                        ${model.owned_by ? `<span class="model-item-badge">${model.owned_by}</span>` : ''}
                     </div>
                 `;
             }).join('');
@@ -2364,12 +2102,8 @@
             const apiKey = document.getElementById('apiKey').value.trim();
             const modelName = document.getElementById('modelName').value.trim();
 
-            if (!baseUrl || !apiKey) {
-                showToast('请先填写API地址和密钥', 'error');
-                return;
-            }
-            if (!modelName) {
-                showToast('请先选择或输入模型名称', 'error');
+            if (!baseUrl || !apiKey || !modelName) {
+                showToast('请先填写完整的API配置', 'error');
                 return;
             }
 
@@ -2380,11 +2114,8 @@
             AppState.connectionStatus = 'pending';
             updateConnectionStatusUI();
 
-            const chatEndpoint = getChatEndpoint(baseUrl);
-            addLog(`测试连接: ${chatEndpoint}`);
-
             try {
-                const response = await fetch(chatEndpoint, {
+                const response = await fetch(getChatEndpoint(baseUrl), {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${apiKey}`,
@@ -2398,25 +2129,22 @@
                 });
 
                 if (response.ok) {
-                    addLog(`连接成功!`, 'success');
                     AppState.connectionStatus = 'connected';
-                    updateConnectionStatusUI();
-                    showToast('🎉 连接成功！', 'success');
-
                     AppState.settings.apiBaseUrl = baseUrl;
                     AppState.settings.apiKey = apiKey;
                     AppState.settings.modelName = modelName;
                     saveAllData();
+                    showToast('🎉 连接成功！', 'success');
+                    addLog('连接成功', 'success');
                 } else {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+                    throw new Error(`HTTP ${response.status}`);
                 }
             } catch (error) {
-                addLog(`连接失败: ${error.message}`, 'error');
                 AppState.connectionStatus = 'disconnected';
-                updateConnectionStatusUI();
                 showToast(`连接失败: ${error.message}`, 'error');
+                addLog(`连接失败: ${error.message}`, 'error');
             } finally {
+                updateConnectionStatusUI();
                 btn.disabled = false;
                 btn.innerHTML = '🔗 测试连接';
             }
@@ -2428,9 +2156,9 @@
                 localStorage.setItem('aiSMS_characters', JSON.stringify(AppState.characters));
                 localStorage.setItem('aiSMS_worldbooks', JSON.stringify(AppState.worldbooks));
                 localStorage.setItem('aiSMS_settings', JSON.stringify(AppState.settings));
+                localStorage.setItem('aiSMS_appIcons', JSON.stringify(AppState.appIcons));
             } catch (e) {
                 console.error('保存数据失败:', e);
-                showToast('保存数据失败', 'error');
             }
         }
 
@@ -2439,22 +2167,12 @@
                 const characters = localStorage.getItem('aiSMS_characters');
                 const worldbooks = localStorage.getItem('aiSMS_worldbooks');
                 const settings = localStorage.getItem('aiSMS_settings');
+                const appIcons = localStorage.getItem('aiSMS_appIcons');
 
                 if (characters) AppState.characters = JSON.parse(characters);
                 if (worldbooks) AppState.worldbooks = JSON.parse(worldbooks);
-                if (settings) {
-                    const loadedSettings = JSON.parse(settings);
-                    AppState.settings = { ...AppState.settings, ...loadedSettings };
-                    // 确保appIcons结构完整
-                    if (!AppState.settings.appIcons) {
-                        AppState.settings.appIcons = {
-                            settings: { emoji: '⚙️', label: '设置' },
-                            messages: { emoji: '💬', label: '短信' },
-                            worldbook: { emoji: '📚', label: '世界书' },
-                            wallpaper: { emoji: '🖼️', label: '壁纸' }
-                        };
-                    }
-                }
+                if (settings) AppState.settings = { ...AppState.settings, ...JSON.parse(settings) };
+                if (appIcons) AppState.appIcons = { ...AppState.appIcons, ...JSON.parse(appIcons) };
 
                 loadSettingsToUI();
 
@@ -2470,15 +2188,24 @@
             document.getElementById('apiBaseUrl').value = AppState.settings.apiBaseUrl || '';
             document.getElementById('apiKey').value = AppState.settings.apiKey || '';
             document.getElementById('modelName').value = AppState.settings.modelName || '';
+            document.getElementById('maxContextMessages').value = AppState.settings.maxContextMessages || 200;
+
             document.getElementById('temperature').value = AppState.settings.temperature;
             document.getElementById('tempValue').textContent = AppState.settings.temperature;
+
             document.getElementById('maxTokens').value = AppState.settings.maxTokens;
             document.getElementById('maxTokensValue').textContent = AppState.settings.maxTokens;
+
             document.getElementById('topP').value = AppState.settings.topP;
             document.getElementById('topPValue').textContent = AppState.settings.topP;
-            document.getElementById('maxContextMessages').value = AppState.settings.maxContextMessages || 100;
+
+            document.getElementById('frequencyPenalty').value = AppState.settings.frequencyPenalty;
+            document.getElementById('freqPenValue').textContent = AppState.settings.frequencyPenalty;
+
+            document.getElementById('presencePenalty').value = AppState.settings.presencePenalty;
+            document.getElementById('presPenValue').textContent = AppState.settings.presencePenalty;
+
             document.getElementById('globalSystemPrompt').value = AppState.settings.globalSystemPrompt || '';
-            document.getElementById('messageSeparator').value = AppState.settings.messageSeparator || ' | ';
         }
 
         // ==================== 页面导航 ====================
@@ -2501,8 +2228,8 @@
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : type === 'warning' ? '⚠' : 'ℹ';
-            toast.innerHTML = `${icon} ${message}`;
+            const icons = { success: '✓', error: '✕', warning: '⚠', info: 'ℹ' };
+            toast.innerHTML = `${icons[type] || icons.info} ${message}`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -2521,13 +2248,79 @@
             AppState.settings.temperature = parseFloat(document.getElementById('temperature').value);
             AppState.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
             AppState.settings.topP = parseFloat(document.getElementById('topP').value);
-            AppState.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 100;
+            AppState.settings.frequencyPenalty = parseFloat(document.getElementById('frequencyPenalty').value);
+            AppState.settings.presencePenalty = parseFloat(document.getElementById('presencePenalty').value);
             AppState.settings.globalSystemPrompt = document.getElementById('globalSystemPrompt').value;
-            AppState.settings.messageSeparator = document.getElementById('messageSeparator').value;
+            AppState.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
 
             saveAllData();
             showToast('设置已保存', 'success');
-            addLog('设置已保存', 'success');
+        }
+
+        // ==================== 图标编辑 ====================
+        let longPressTimer = null;
+        let isEditing = false;
+
+        function handleAppClick(event, pageId) {
+            event.preventDefault();
+            if (isEditing) {
+                const wrapper = event.currentTarget;
+                const appName = wrapper.dataset.app;
+                showIconPicker(appName);
+            } else {
+                openPage(pageId);
+            }
+        }
+
+        function handleAppLongPress(event, appName) {
+            event.preventDefault();
+            if (!isEditing) {
+                isEditing = true;
+                document.querySelectorAll('.app-icon-wrapper').forEach(w => w.classList.add('editing'));
+                showToast('点击图标更换，点击空白处退出', 'info');
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            if (isEditing && !e.target.closest('.app-icon-wrapper') && !e.target.closest('.modal-overlay')) {
+                isEditing = false;
+                document.querySelectorAll('.app-icon-wrapper').forEach(w => w.classList.remove('editing'));
+            }
+        });
+
+        const iconEmojis = ['⚙️', '💬', '📚', '🖼️', '💕', '🌸', '✨', '🎀', '🐱', '🐰', '🦊', '🐻', '🌙', '⭐', '🔮', '💎', '🎵', '🎮', '📱', '💻', '🏠', '🌈', '🍀', '🌺', '🦋', '🐾', '👻', '🤖', '💫', '🎭'];
+
+        function showIconPicker(appName) {
+            AppState.editingAppIcon = appName;
+            const picker = document.getElementById('emojiPicker');
+            picker.innerHTML = iconEmojis.map(emoji =>
+                `<div class="emoji-item" onclick="selectAppIcon('${emoji}')">${emoji}</div>`
+            ).join('');
+            document.getElementById('iconPickerModal').classList.add('active');
+        }
+
+        function hideIconPickerModal() {
+            document.getElementById('iconPickerModal').classList.remove('active');
+            AppState.editingAppIcon = null;
+        }
+
+        function selectAppIcon(emoji) {
+            if (AppState.editingAppIcon) {
+                AppState.appIcons[AppState.editingAppIcon] = emoji;
+                applyAppIcons();
+                saveAllData();
+                hideIconPickerModal();
+                showToast('图标已更换', 'success');
+            }
+        }
+
+        function applyAppIcons() {
+            Object.keys(AppState.appIcons).forEach(app => {
+                const iconEl = document.getElementById(`app-icon-${app}`);
+                if (iconEl) {
+                    iconEl.textContent = AppState.appIcons[app];
+                }
+            });
         }
 
         // ==================== 角色管理 ====================
@@ -2590,7 +2383,7 @@
 
             container.innerHTML = AppState.characters.map(char => {
                 const lastMessage = char.messages.length > 0
-                    ? char.messages[char.messages.length - 1].content.substring(0, 25) + '...'
+                    ? char.messages[char.messages.length - 1].content.substring(0, 30) + '...'
                     : '点击开始对话';
                 const lastTime = char.messages.length > 0
                     ? formatTime(char.messages[char.messages.length - 1].timestamp)
@@ -2623,7 +2416,12 @@
             if (!character) return;
 
             AppState.currentCharacterId = characterId;
+            AppState.isSelectMode = false;
+            AppState.selectedMessages.clear();
+
             document.getElementById('chatTitle').textContent = character.name;
+            document.getElementById('selectModeBar').classList.remove('active');
+            document.getElementById('chatMessages').classList.remove('select-mode');
 
             renderMessages();
             openPage('chatPage');
@@ -2719,10 +2517,6 @@
 
             if (!character) return;
 
-            container.classList.remove('select-mode');
-            AppState.isSelectMode = false;
-            AppState.selectedMessages.clear();
-
             if (character.messages.length === 0) {
                 container.innerHTML = `
                     <div class="date-separator">
@@ -2747,11 +2541,16 @@
                     lastDate = msgDate;
                 }
 
+                const msgType = msg.role === 'user' ? 'sent' : 'received';
+                const isChecked = AppState.selectedMessages.has(msg.id);
+
                 html += `
-                    <div class="message ${msg.role === 'user' ? 'sent' : 'received'}" data-msg-id="${msg.id}">
-                        <div class="message-checkbox" onclick="toggleMessageSelect('${msg.id}')"></div>
-                        ${escapeHtml(msg.content)}
-                        <div class="message-time">${formatTime(msg.timestamp)}</div>
+                    <div class="message-wrapper ${msgType}" data-msg-id="${msg.id}">
+                        <div class="message-checkbox ${isChecked ? 'checked' : ''}" onclick="toggleMessageSelect('${msg.id}')"></div>
+                        <div class="message ${msgType}">
+                            ${escapeHtml(msg.content)}
+                            <div class="message-time">${formatTime(msg.timestamp)}</div>
+                        </div>
                     </div>
                 `;
             });
@@ -2765,7 +2564,7 @@
             if (!character) return;
 
             const message = {
-                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
                 role: type === 'sent' ? 'user' : 'assistant',
                 content: content,
                 timestamp: new Date().toISOString()
@@ -2776,11 +2575,14 @@
             saveAllData();
 
             const container = document.getElementById('chatMessages');
+            const msgType = type;
             const msgHtml = `
-                <div class="message ${type}" data-msg-id="${message.id}">
+                <div class="message-wrapper ${msgType}" data-msg-id="${message.id}">
                     <div class="message-checkbox" onclick="toggleMessageSelect('${message.id}')"></div>
-                    ${escapeHtml(content)}
-                    <div class="message-time">${formatTime(message.timestamp)}</div>
+                    <div class="message ${msgType}">
+                        ${escapeHtml(content)}
+                        <div class="message-time">${formatTime(message.timestamp)}</div>
+                    </div>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', msgHtml);
@@ -2798,7 +2600,7 @@
             autoResizeTextarea(input);
         }
 
-        // ==================== AI 回复 ====================
+        // ==================== AI回复相关 ====================
         async function triggerAIReply() {
             const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
             if (!character) return;
@@ -2807,9 +2609,6 @@
                 showToast('请先在设置中配置API', 'error');
                 return;
             }
-
-            // 关闭扩展面板
-            document.getElementById('extensionPanel').classList.remove('active');
 
             const container = document.getElementById('chatMessages');
             const typingHtml = `
@@ -2824,9 +2623,8 @@
 
             try {
                 const messages = buildMessagesForAPI(character);
-                const chatEndpoint = getChatEndpoint(AppState.settings.apiBaseUrl);
 
-                const response = await fetch(chatEndpoint, {
+                const response = await fetch(getChatEndpoint(AppState.settings.apiBaseUrl), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2837,7 +2635,9 @@
                         messages: messages,
                         temperature: AppState.settings.temperature,
                         max_tokens: AppState.settings.maxTokens,
-                        top_p: AppState.settings.topP
+                        top_p: AppState.settings.topP,
+                        frequency_penalty: AppState.settings.frequencyPenalty,
+                        presence_penalty: AppState.settings.presencePenalty
                     })
                 });
 
@@ -2851,9 +2651,7 @@
                 const data = await response.json();
                 const aiReply = data.choices[0].message.content;
 
-                // 解析多条消息
-                const separator = AppState.settings.messageSeparator || ' | ';
-                const messageParts = aiReply.split(separator).map(s => s.trim()).filter(s => s);
+                const messageParts = aiReply.split(MESSAGE_SEPARATOR).map(s => s.trim()).filter(s => s);
 
                 for (let i = 0; i < messageParts.length; i++) {
                     if (i > 0) {
@@ -2870,31 +2668,18 @@
 
         function buildMessagesForAPI(character) {
             const messages = [];
-            const separator = AppState.settings.messageSeparator || ' | ';
-
-            // 构建系统提示词
-            let systemPrompt = `你正在进行短信对话模拟。请遵循以下规则：
-
-【核心规则】
-1. 你的回复将显示为手机短信气泡
-2. 如果你想发送多条消息，请使用 "${separator}" 分隔
-3. 例如: "好的${separator}我马上来${separator}等我一下" 会显示为3条独立的短信
-4. 保持回复简短自然，像真人发短信一样
-5. 可以根据情绪决定发1-5条不等的消息
-6. 不要在回复中包含动作描写或旁白，只发纯文字短信内容
-
-`;
+            let systemPrompt = SMS_SYSTEM_PROMPT + '\n\n';
 
             if (AppState.settings.globalSystemPrompt) {
                 systemPrompt += `【全局设定】\n${AppState.settings.globalSystemPrompt}\n\n`;
             }
 
             if (character.description) {
-                systemPrompt += `【角色设定】\n${character.description}\n\n`;
+                systemPrompt += `【角色设定】\n角色名: ${character.name}\n${character.description}\n\n`;
             }
 
             if (character.scenario) {
-                systemPrompt += `【情景设定】\n${character.scenario}\n\n`;
+                systemPrompt += `【当前情景】\n${character.scenario}\n\n`;
             }
 
             if (character.userNick) {
@@ -2905,9 +2690,8 @@
                 systemPrompt += `【额外指令】\n${character.systemPrompt}\n\n`;
             }
 
-            // 世界书注入
             const worldbook = AppState.worldbooks.find(w => w.id === character.worldbookId);
-            if (worldbook) {
+            if (worldbook && worldbook.content) {
                 const shouldInject = worldbook.alwaysActive ||
                     (worldbook.keywords && character.messages.some(m =>
                         worldbook.keywords.split(',').some(kw =>
@@ -2915,95 +2699,93 @@
                         )
                     ));
 
-                if (shouldInject && worldbook.content) {
+                if (shouldInject) {
                     systemPrompt += `【世界书: ${worldbook.name}】\n${worldbook.content}\n\n`;
                 }
             }
 
             messages.push({ role: 'system', content: systemPrompt.trim() });
 
-            // 获取最近N条消息
-            const maxMessages = AppState.settings.maxContextMessages || 100;
-            const historyMessages = character.messages.slice(-maxMessages);
+            // 限制历史消息数量
+            const maxContext = AppState.settings.maxContextMessages || 200;
+            const historyMessages = character.messages.slice(-maxContext);
 
-            // 将用户连续的多条消息合并（模拟用户分多条发送）
-            let i = 0;
-            while (i < historyMessages.length) {
-                const msg = historyMessages[i];
+            // 将消息转换为对话格式
+            let currentRole = null;
+            let currentMessages = [];
 
-                if (msg.role === 'user') {
-                    // 收集连续的用户消息
-                    let userMessages = [msg.content];
-                    let j = i + 1;
-                    while (j < historyMessages.length && historyMessages[j].role === 'user') {
-                        userMessages.push(historyMessages[j].content);
-                        j++;
+            historyMessages.forEach(msg => {
+                if (msg.role !== currentRole) {
+                    if (currentMessages.length > 0) {
+                        const prefix = currentRole === 'user' ? '[用户]' : `[${character.name}]`;
+                        const content = currentMessages.join(MESSAGE_SEPARATOR);
+                        messages.push({
+                            role: currentRole,
+                            content: `${prefix}: ${content}`
+                        });
                     }
-                    // 用分隔符合并用户消息，让AI理解这是多条短信
-                    const combinedContent = userMessages.join(separator);
-                    messages.push({ role: 'user', content: combinedContent });
-                    i = j;
+                    currentRole = msg.role;
+                    currentMessages = [msg.content];
                 } else {
-                    // AI消息直接添加
-                    messages.push({ role: 'assistant', content: msg.content });
-                    i++;
+                    currentMessages.push(msg.content);
                 }
+            });
+
+            if (currentMessages.length > 0) {
+                const prefix = currentRole === 'user' ? '[用户]' : `[${character.name}]`;
+                const content = currentMessages.join(MESSAGE_SEPARATOR);
+                messages.push({
+                    role: currentRole,
+                    content: `${prefix}: ${content}`
+                });
             }
 
             return messages;
         }
 
-        // ==================== 重新生成回复 ====================
-        function regenerateLastReply() {
+        async function regenerateLastReply() {
             const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
-            if (!character) return;
+            if (!character || character.messages.length === 0) return;
 
-            // 找到最后一个AI回复的位置
-            let lastAIIndex = -1;
+            toggleExtensionPanel();
+
+            // 找到最后一组AI回复并删除
+            let deleteCount = 0;
             for (let i = character.messages.length - 1; i >= 0; i--) {
                 if (character.messages[i].role === 'assistant') {
-                    lastAIIndex = i;
+                    deleteCount++;
+                } else {
                     break;
                 }
             }
 
-            if (lastAIIndex === -1) {
+            if (deleteCount === 0) {
                 showToast('没有可重新生成的回复', 'warning');
                 return;
             }
 
-            // 删除从最后一个AI回复开始的所有消息
-            character.messages = character.messages.slice(0, lastAIIndex);
+            character.messages.splice(character.messages.length - deleteCount, deleteCount);
             saveAllData();
             renderMessages();
 
-            // 关闭扩展面板
-            document.getElementById('extensionPanel').classList.remove('active');
-
-            // 触发新的AI回复
-            triggerAIReply();
+            await triggerAIReply();
         }
 
-        // ==================== 选择模式（删除消息） ====================
+        // ==================== 选择删除模式 ====================
         function enterSelectMode() {
+            toggleExtensionPanel();
             AppState.isSelectMode = true;
             AppState.selectedMessages.clear();
-
             document.getElementById('chatMessages').classList.add('select-mode');
             document.getElementById('selectModeBar').classList.add('active');
-            document.getElementById('chatInputArea').style.display = 'none';
-            document.getElementById('extensionPanel').classList.remove('active');
-
-            updateSelectModeInfo();
+            updateSelectedCount();
         }
 
         function exitSelectMode() {
             AppState.isSelectMode = false;
             AppState.selectedMessages.clear();
-
             document.getElementById('chatMessages').classList.remove('select-mode');
             document.getElementById('selectModeBar').classList.remove('active');
-            document.getElementById('chatInputArea').style.display = 'flex';
 
             document.querySelectorAll('.message-checkbox').forEach(cb => {
                 cb.classList.remove('checked');
@@ -3013,56 +2795,55 @@
         function toggleMessageSelect(msgId) {
             if (!AppState.isSelectMode) return;
 
-            const checkbox = document.querySelector(`[data-msg-id="${msgId}"] .message-checkbox`);
-            if (!checkbox) return;
-
             if (AppState.selectedMessages.has(msgId)) {
                 AppState.selectedMessages.delete(msgId);
-                checkbox.classList.remove('checked');
             } else {
                 AppState.selectedMessages.add(msgId);
-                checkbox.classList.add('checked');
             }
 
-            updateSelectModeInfo();
+            const checkbox = document.querySelector(`[data-msg-id="${msgId}"] .message-checkbox`);
+            if (checkbox) {
+                checkbox.classList.toggle('checked', AppState.selectedMessages.has(msgId));
+            }
+
+            updateSelectedCount();
         }
 
-        function updateSelectModeInfo() {
-            document.getElementById('selectModeInfo').textContent = `已选择 ${AppState.selectedMessages.size} 条消息`;
+        function updateSelectedCount() {
+            document.getElementById('selectedCount').textContent = AppState.selectedMessages.size;
         }
 
         function deleteSelectedMessages() {
+            const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
+            if (!character) return;
+
             if (AppState.selectedMessages.size === 0) {
                 showToast('请先选择要删除的消息', 'warning');
                 return;
             }
 
-            const character = AppState.characters.find(c => c.id === AppState.currentCharacterId);
-            if (!character) return;
-
             character.messages = character.messages.filter(m => !AppState.selectedMessages.has(m.id));
-            character.updatedAt = new Date().toISOString();
             saveAllData();
 
-            showToast(`已删除 ${AppState.selectedMessages.size} 条消息`, 'success');
             exitSelectMode();
             renderMessages();
-        }
-
-        function autoResizeTextarea(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = Math.min(textarea.scrollHeight, 100) + 'px';
-        }
-
-        function scrollToBottom() {
-            const container = document.getElementById('chatMessages');
-            container.scrollTop = container.scrollHeight;
+            showToast(`已删除 ${AppState.selectedMessages.size} 条消息`, 'success');
         }
 
         // ==================== 扩展面板 ====================
         function toggleExtensionPanel() {
             const panel = document.getElementById('extensionPanel');
             panel.classList.toggle('active');
+        }
+
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('chatMessages');
+            container.scrollTop = container.scrollHeight;
         }
 
         // ==================== 世界书管理 ====================
@@ -3090,6 +2871,7 @@
                 keywords: '',
                 content: '',
                 alwaysActive: false,
+                depth: 0,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
@@ -3121,7 +2903,7 @@
                         <span class="worldbook-item-title">${escapeHtml(wb.name)}</span>
                         ${wb.alwaysActive ? '<span class="worldbook-item-badge">始终激活</span>' : ''}
                     </div>
-                    <div class="worldbook-item-preview">${escapeHtml(wb.summary || wb.content?.substring(0, 80) || '暂无内容')}</div>
+                    <div class="worldbook-item-preview">${escapeHtml(wb.summary || wb.content?.substring(0, 100) || '暂无内容')}</div>
                 </div>
             `).join('');
         }
@@ -3137,12 +2919,11 @@
             document.getElementById('worldbookKeywords').value = worldbook.keywords || '';
             document.getElementById('worldbookContent').value = worldbook.content || '';
 
-            const toggle = document.getElementById('worldbookAlwaysActive');
-            if (worldbook.alwaysActive) {
-                toggle.classList.add('active');
-            } else {
-                toggle.classList.remove('active');
-            }
+            const alwaysActiveToggle = document.getElementById('worldbookAlwaysActive');
+            alwaysActiveToggle.classList.toggle('active', worldbook.alwaysActive);
+
+            document.getElementById('worldbookDepth').value = worldbook.depth || 0;
+            document.getElementById('worldbookDepthValue').textContent = worldbook.depth || 0;
 
             openPage('worldbookEditPage');
         }
@@ -3161,6 +2942,7 @@
             worldbook.keywords = document.getElementById('worldbookKeywords').value;
             worldbook.content = document.getElementById('worldbookContent').value;
             worldbook.alwaysActive = document.getElementById('worldbookAlwaysActive').classList.contains('active');
+            worldbook.depth = parseInt(document.getElementById('worldbookDepth').value) || 0;
             worldbook.updatedAt = new Date().toISOString();
 
             saveAllData();
@@ -3221,7 +3003,7 @@
         }
 
         // ==================== 壁纸设置 ====================
-        const wallpaperGradients = {
+        const wallpaperStyles = {
             gradient1: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
             gradient2: 'linear-gradient(135deg, #2d1b69 0%, #11998e 100%)',
             gradient3: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
@@ -3232,10 +3014,9 @@
 
         function setWallpaper(style) {
             AppState.settings.wallpaper = style;
-            AppState.settings.wallpaperData = null;
             applyWallpaper();
             saveAllData();
-            updateWallpaperSelection();
+            highlightCurrentWallpaper();
             showToast('壁纸已更换', 'success');
         }
 
@@ -3246,11 +3027,10 @@
                 return;
             }
 
-            AppState.settings.wallpaper = 'custom';
-            AppState.settings.wallpaperData = url;
+            AppState.settings.wallpaper = `custom:${url}`;
             applyWallpaper();
             saveAllData();
-            updateWallpaperSelection();
+            highlightCurrentWallpaper();
             showToast('自定义壁纸已应用', 'success');
         }
 
@@ -3262,45 +3042,44 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            // 检查文件大小（限制5MB以避免localStorage溢出）
             if (file.size > 5 * 1024 * 1024) {
-                showToast('图片过大，请选择小于5MB的图片', 'error');
+                showToast('图片大小不能超过5MB', 'error');
                 return;
             }
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                AppState.settings.wallpaper = 'custom';
-                AppState.settings.wallpaperData = e.target.result;
+                AppState.settings.wallpaper = `data:${e.target.result}`;
                 applyWallpaper();
                 saveAllData();
-                updateWallpaperSelection();
+                highlightCurrentWallpaper();
                 showToast('壁纸已上传并应用', 'success');
             };
-            reader.onerror = function() {
-                showToast('读取图片失败', 'error');
-            };
             reader.readAsDataURL(file);
-            event.target.value = '';
         }
 
         function applyWallpaper() {
             const wallpaperEl = document.getElementById('wallpaper');
             const wallpaper = AppState.settings.wallpaper || 'gradient1';
 
-            if (wallpaperGradients[wallpaper]) {
-                wallpaperEl.style.background = wallpaperGradients[wallpaper];
+            if (wallpaperStyles[wallpaper]) {
+                wallpaperEl.style.background = wallpaperStyles[wallpaper];
                 wallpaperEl.style.backgroundSize = 'cover';
                 wallpaperEl.style.backgroundPosition = 'center';
-            } else if (wallpaper === 'custom' && AppState.settings.wallpaperData) {
-                wallpaperEl.style.background = `url("${AppState.settings.wallpaperData}")`;
+            } else if (wallpaper.startsWith('custom:')) {
+                const url = wallpaper.substring(7);
+                wallpaperEl.style.background = `url(${url})`;
                 wallpaperEl.style.backgroundSize = 'cover';
                 wallpaperEl.style.backgroundPosition = 'center';
-                wallpaperEl.style.backgroundRepeat = 'no-repeat';
+            } else if (wallpaper.startsWith('data:')) {
+                const dataUrl = wallpaper.substring(5);
+                wallpaperEl.style.background = `url(${dataUrl})`;
+                wallpaperEl.style.backgroundSize = 'cover';
+                wallpaperEl.style.backgroundPosition = 'center';
             }
         }
 
-        function updateWallpaperSelection() {
+        function highlightCurrentWallpaper() {
             document.querySelectorAll('.wallpaper-option').forEach(el => {
                 const isSelected = el.dataset.wallpaper === AppState.settings.wallpaper;
                 el.style.borderColor = isSelected ? 'var(--accent-color)' : 'transparent';
@@ -3318,6 +3097,7 @@
                 characters: AppState.characters,
                 worldbooks: AppState.worldbooks,
                 settings: AppState.settings,
+                appIcons: AppState.appIcons,
                 exportedAt: new Date().toISOString(),
                 version: '3.0.0'
             };
@@ -3348,12 +3128,13 @@
                     if (data.characters) AppState.characters = data.characters;
                     if (data.worldbooks) AppState.worldbooks = data.worldbooks;
                     if (data.settings) AppState.settings = { ...AppState.settings, ...data.settings };
+                    if (data.appIcons) AppState.appIcons = { ...AppState.appIcons, ...data.appIcons };
 
                     saveAllData();
                     loadSettingsToUI();
                     applyWallpaper();
                     applyAppIcons();
-                    updateWallpaperSelection();
+                    highlightCurrentWallpaper();
                     showToast('数据导入成功', 'success');
                 } catch (err) {
                     showToast('导入失败: 文件格式错误', 'error');
@@ -3368,6 +3149,7 @@
                 localStorage.removeItem('aiSMS_characters');
                 localStorage.removeItem('aiSMS_worldbooks');
                 localStorage.removeItem('aiSMS_settings');
+                localStorage.removeItem('aiSMS_appIcons');
 
                 AppState.characters = [];
                 AppState.worldbooks = [];
@@ -3378,17 +3160,17 @@
                     temperature: 0.7,
                     maxTokens: 2048,
                     topP: 0.9,
-                    maxContextMessages: 100,
+                    frequencyPenalty: 0,
+                    presencePenalty: 0,
                     globalSystemPrompt: '',
-                    messageSeparator: ' | ',
-                    wallpaper: 'gradient1',
-                    wallpaperData: null,
-                    appIcons: {
-                        settings: { emoji: '⚙️', label: '设置' },
-                        messages: { emoji: '💬', label: '短信' },
-                        worldbook: { emoji: '📚', label: '世界书' },
-                        wallpaper: { emoji: '🖼️', label: '壁纸' }
-                    }
+                    maxContextMessages: 200,
+                    wallpaper: 'gradient1'
+                };
+                AppState.appIcons = {
+                    settings: '⚙️',
+                    messages: '💬',
+                    worldbook: '📚',
+                    photos: '🖼️'
                 };
 
                 AppState.connectionStatus = 'disconnected';
@@ -3396,14 +3178,13 @@
                 applyWallpaper();
                 applyAppIcons();
                 updateConnectionStatusUI();
-                updateWallpaperSelection();
+                highlightCurrentWallpaper();
                 showToast('所有数据已清除', 'success');
             }
         }
 
         // ==================== 工具函数 ====================
         function escapeHtml(text) {
-            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
@@ -3439,8 +3220,7 @@
                 hideCreateCharacterModal();
                 hideCreateWorldbookModal();
                 hideConfirmDeleteModal();
-                hideIconEditorModal();
-                exitIconEditMode();
+                hideIconPickerModal();
                 if (AppState.isSelectMode) exitSelectMode();
             }
         });
