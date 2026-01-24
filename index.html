@@ -1,4 +1,8 @@
 
+
+
+
+
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -2869,7 +2873,8 @@
 
         function buildAPIMessages(char) {
             const msgs = [];
-            let sys = `# 短信模拟规则\n\n你正在扮演"${char.name}"，通过手机短信聊天。\n\n## 【重要】输出格式\n1. 每条短信用 ||| 分隔\n2. 每条5-20字左右，可长可短\n3. 不要加角色名前缀\n4. 像真人发短信\n\n## 正确示例\n嗯|||怎么了?|||有事?\n好无聊|||你在干嘛\n\n## 错误（禁止）\n❌ 角色名: 内容\n❌ 一条消息太长\n\n## 角色\n${char.description || '朋友'}`;
+            let sys = `# 短信模拟规则\n\n你正在扮演"${char.name}"，通过手机短信聊天。\n\n## 【重要】输出格式\n1. 每条短信用 ||| 分隔，如果只发送了一条消息，则不需要 ||| 进行分隔。 ||| 只是用来区分发送了几条消息的道具\n2. 根据真实现实中人们发短信的风格，
+大概每条5-20字左右，但也可能更长或者更短。完全随情景上下文和角色个性灵活应变，不僵硬死板式的根据上下文决定短信条数和字数，有时角色可能会刷屏，有时角色只发送一条消息，根据情况而定，而不是被上下文格式拘束\n3. 不要加角色名前缀\n4. 像真人发短信\n\n## 正确示例\n嗯|||确实真的蠢\n好无聊|||你在干嘛\n\n## 错误（禁止）\n❌ 角色名: 内容\n❌ 一条消息500字，太长\n\n## 角色\n${char.description || '朋友'}`;
             if (char.scenario) sys += `\n\n## 情景\n${char.scenario}`;
             if (char.userNick) sys += `\n\n## 称呼\n${char.userNick}`;
             if (char.systemPrompt) sys += `\n\n## 额外\n${char.systemPrompt}`;
@@ -2879,7 +2884,7 @@
             const max = App.settings.maxContextMessages || 200, history = char.messages.slice(-max), merged = [];
             for (let i = 0; i < history.length; i++) { const cur = history[i], last = merged[merged.length - 1]; if (last && last.role === cur.role) last.content += '|||' + cur.content; else merged.push({ role: cur.role, content: cur.content }); }
             merged.forEach(m => { msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content }); });
-            if (history.length > 10) msgs.push({ role: 'system', content: '【提醒】用|||分隔短信，每条简短自然。' });
+            if (history.length > 10) msgs.push({ role: 'system', content: '【提醒】Characters may send multiple text messages; in such cases, use ||| to separate messages to simulate the distinction between message counts. The length can vary freely—there may be very few or many. Be flexible and appropriate. Of course, a character may also send only one or two messages in reply; in some cases, four or five explanatory messages are also possible. Overall, this should be based on how a real, modern person would naturally send text messages in conversation, shaped by human, regional, cultural customs, and their own personality from multiple dimensions. Do not be constrained by rigid frameworks' });
             return msgs;
         }
 
