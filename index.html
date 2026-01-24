@@ -1,6 +1,4 @@
 
-
-
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -12,7 +10,7 @@
     <meta name="apple-mobile-web-app-title" content="AI短信">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1a1a2e">
-    <title>AI短信模拟器 v6.2</title>
+    <title>AI短信模拟器 v6.3</title>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.12);
@@ -433,7 +431,6 @@
 
         <div class="home-indicator"></div>
 
-        <!-- 设置页面 -->
         <div class="page" id="settingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('settingsPage')"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>返回</button>
@@ -553,7 +550,6 @@
             </div>
         </div>
 
-        <!-- 短信列表 -->
         <div class="page" id="messagesPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('messagesPage')"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>返回</button>
@@ -573,7 +569,6 @@
             </div>
         </div>
 
-        <!-- 聊天页面 -->
         <div class="page" id="chatPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="openCharacterSettings()"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></button>
@@ -642,7 +637,6 @@
             </div>
         </div>
 
-        <!-- 角色设置页面 -->
         <div class="page slide-from-bottom" id="characterSettingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closeCharacterSettings()"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>取消</button>
@@ -787,7 +781,6 @@
             </div>
         </div>
 
-        <!-- 世界书页面 -->
         <div class="page" id="worldbookPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('worldbookPage')"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>返回</button>
@@ -808,7 +801,6 @@
             </div>
         </div>
 
-        <!-- 世界书编辑 -->
         <div class="page slide-from-bottom" id="worldbookEditPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closeWorldbookEdit()"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>取消</button>
@@ -864,7 +856,6 @@
             </div>
         </div>
 
-        <!-- 壁纸页面 -->
         <div class="page" id="wallpaperPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('wallpaperPage')"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>返回</button>
@@ -946,7 +937,6 @@
         </div>
     </div>
 
-    <!-- 模态框 -->
     <div class="modal-overlay" id="createCharacterModal">
         <div class="modal">
             <div class="modal-title">创建角色</div>
@@ -1123,7 +1113,8 @@
             dataLoaded: false,
             currentQuote: null,
             contextMenuMsgId: null,
-            longPressTimer: null
+            longPressTimer: null,
+            editingMsgId: null  // 【新增】用于保存正在编辑的消息ID
         };
 
         const GRADIENTS = {
@@ -1661,19 +1652,33 @@
 
         function cancelQuote() { App.currentQuote = null; document.getElementById('quotePreviewBar').classList.remove('active'); }
 
+        // 【修复】编辑消息 - 先保存消息ID再关闭菜单
         function editMessage() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             const msg = char.messages.find(m => m.id === App.contextMenuMsgId); if (!msg) return;
+            // 【关键修复】在关闭上下文菜单之前，保存要编辑的消息ID
+            App.editingMsgId = App.contextMenuMsgId;
             document.getElementById('editMessageContent').value = msg.content;
+            hideContextMenu();  // 这会把 App.contextMenuMsgId 设为 null
             showModal('editMessageModal');
-            hideContextMenu();
         }
 
+        // 【修复】保存编辑的消息 - 使用 App.editingMsgId
         async function saveEditedMessage() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const msg = char.messages.find(m => m.id === App.contextMenuMsgId); if (!msg) return;
+            // 【关键修复】使用 App.editingMsgId 而不是 App.contextMenuMsgId
+            const msg = char.messages.find(m => m.id === App.editingMsgId);
+            if (!msg) {
+                showToast('找不到消息', 'error');
+                hideModal('editMessageModal');
+                return;
+            }
             msg.content = document.getElementById('editMessageContent').value;
-            await saveData(); hideModal('editMessageModal'); renderMessages(); showToast('已保存', 'success');
+            await saveData();
+            hideModal('editMessageModal');
+            App.editingMsgId = null;  // 清除编辑状态
+            renderMessages();
+            showToast('已保存', 'success');
         }
 
         function viewImage(msgId) {
@@ -1715,7 +1720,6 @@
             reader.readAsDataURL(file); e.target.value = '';
         }
 
-        // ===================== 【关键修复】AI回复 - 图片传递逻辑 =====================
         async function triggerAIReply() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) { showToast('请配置API', 'error'); return; }
@@ -1724,30 +1728,22 @@
             scrollToBottom();
             try {
                 const max = App.settings.maxContextMessages || 200;
-                // 【关键】直接获取消息数组的引用，包含所有图片数据
                 const history = char.messages.slice(-max);
                 const messages = buildAPIMessages(char, history);
                 const url = App.settings.apiBaseUrl.replace(/\/+$/,'').replace(/\/v1$/,'');
 
-                // 【关键修复】检查history中是否有图片，直接在这里处理
                 const hasImage = history.some(m => m.image);
                 let body;
 
                 if (hasImage) {
-                    // 构建多模态消息
-                    const mmMsgs = [messages[0]]; // system message
+                    const mmMsgs = [messages[0]];
                     let msgIdx = 1;
                     let historyIdx = 0;
 
-                    // 遍历构建的消息，跟踪对应的历史消息索引
                     while (msgIdx < messages.length && historyIdx < history.length) {
                         const apiMsg = messages[msgIdx];
-
-                        // 找到对应的历史消息组
-                        const startIdx = historyIdx;
                         const role = apiMsg.role === 'user' ? 'user' : 'assistant';
 
-                        // 收集同角色的连续消息
                         const samRoleMsgs = [];
                         while (historyIdx < history.length &&
                                ((history[historyIdx].role === 'user' && role === 'user') ||
@@ -1756,11 +1752,9 @@
                             historyIdx++;
                         }
 
-                        // 检查这组消息中是否有图片
                         const hasImageInGroup = samRoleMsgs.some(m => m.image);
 
                         if (hasImageInGroup) {
-                            // 构建带图片的多模态消息
                             const contentParts = [];
                             contentParts.push({ type: 'text', text: apiMsg.content });
                             samRoleMsgs.forEach(m => {
@@ -1775,7 +1769,6 @@
                         msgIdx++;
                     }
 
-                    // 添加剩余的消息
                     while (msgIdx < messages.length) {
                         mmMsgs.push(messages[msgIdx]);
                         msgIdx++;
@@ -1846,7 +1839,6 @@
             return results.length > 0 ? results : [{ content: text.trim(), quote: null }];
         }
 
-        // 【修复】构建API消息 - 保留消息索引用于图片关联
         function buildAPIMessages(char, history) {
             const msgs = [];
             let sys = `# 短信模拟规则\n\n你正在扮演"${char.name}"，通过手机短信聊天。\n\n## 【重要】输出格式\n1. 每条短信用 ||| 分隔\n2. 根据真实短信风格，每条5-20字左右，可长可短，灵活应变\n3. 不要加角色名前缀\n4. 像真人发短信\n5. 【禁止】不要在消息前加编号如#1:等\n\n## 引用回复格式（可选）\n如果要引用历史消息回复，格式：[Q:#编号]回复内容\n例：[Q:#3]确实是这样|||后面的普通消息\n编号对应历史消息序号(从1开始)\n\n## 正确示例\n嗯|||确实\n[Q:#5]真的吗？|||哈哈\n\n## 错误（禁止）\n❌ #1: 内容（禁止加编号前缀）\n❌ 角色名: 内容\n❌ 一条消息500字太长\n\n## 角色\n${char.description || '朋友'}`;
@@ -2018,7 +2010,7 @@
         }
 
         function exportAllData() {
-            const data = { characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, version: '6.2.0', exportedAt: new Date().toISOString() };
+            const data = { characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, version: '6.3.0', exportedAt: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sms-backup-${new Date().toISOString().split('T')[0]}.json`; a.click();
             showToast('已导出', 'success');
