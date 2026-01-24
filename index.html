@@ -1,8 +1,6 @@
 
 
 
-
-
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -14,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="AI短信">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1a1a2e">
-    <title>AI短信模拟器 v6.1</title>
+    <title>AI短信模拟器 v6.2</title>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.12);
@@ -1601,7 +1599,6 @@
         function updateCharCounter() { const ta = document.getElementById('charGreeting'), counter = document.getElementById('greetingCharCounter'); counter.textContent = `${ta.value.length}/300`; counter.className = 'char-counter' + (ta.value.length >= 280 ? ' warning' : '') + (ta.value.length >= 300 ? ' error' : ''); }
         function deleteCurrentCharacter() { const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; App.pendingDeleteType = 'character'; App.pendingDeleteId = char.id; document.getElementById('deleteModalTitle').textContent = `删除"${char.name}"？`; showModal('confirmDeleteModal'); }
 
-        // ===================== 核心修复：消息渲染 =====================
         function renderMessages() {
             const container = document.getElementById('chatMessages');
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
@@ -1618,13 +1615,10 @@
                 const type = msg.role === 'user' ? 'sent' : 'received', checked = App.selectedMsgs.has(msg.id) ? 'checked' : '';
                 let avatarHtml = '';
                 if (showAvatar) { const avatarContent = type === 'received' ? (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0])) : (char.userAvatar ? `<img src="${char.userAvatar}">` : '👤'); avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`; }
-                // 引用内容
                 let quoteHtml = '';
                 if (msg.quoteContent) { quoteHtml = `<div class="message-quote">${escapeHtml(msg.quoteContent)}</div>`; }
-                // 图片
                 let imageHtml = '';
                 if (msg.image) { imageHtml = `<img src="${msg.image}" class="message-image" onclick="viewImage('${msg.id}')">`; }
-                // 【关键修复】显示内容：msg.content已经是干净的，不需要再处理
                 let displayContent = msg.content === '[图片]' && msg.image ? '' : msg.content;
                 html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}" ontouchstart="startLongPress('${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()" oncontextmenu="showContextMenuDirect(event,'${msg.id}')">
                     <div class="message-checkbox ${checked}" onclick="toggleMsgSelect('${msg.id}')"></div>
@@ -1721,7 +1715,7 @@
             reader.readAsDataURL(file); e.target.value = '';
         }
 
-        // ===================== 核心修复：AI回复解析 =====================
+        // ===================== 【关键修复】AI回复 - 图片传递逻辑 =====================
         async function triggerAIReply() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) { showToast('请配置API', 'error'); return; }
@@ -1730,50 +1724,112 @@
             scrollToBottom();
             try {
                 const max = App.settings.maxContextMessages || 200;
+                // 【关键】直接获取消息数组的引用，包含所有图片数据
                 const history = char.messages.slice(-max);
                 const messages = buildAPIMessages(char, history);
                 const url = App.settings.apiBaseUrl.replace(/\/+$/,'').replace(/\/v1$/,'');
-                let hasImage = history.some(m => m.image);
+
+                // 【关键修复】检查history中是否有图片，直接在这里处理
+                const hasImage = history.some(m => m.image);
                 let body;
+
                 if (hasImage) {
-                    const mmMsgs = [messages[0]];
-                    for (let i = 1; i < messages.length; i++) {
-                        const m = messages[i];
-                        const originalIdx = history.findIndex(h => m.content.includes(h.content.substring(0, 20)));
-                        if (originalIdx >= 0 && history[originalIdx].image) {
-                            mmMsgs.push({ role: m.role, content: [{ type: 'text', text: m.content }, { type: 'image_url', image_url: { url: history[originalIdx].image } }] });
-                        } else { mmMsgs.push(m); }
+                    // 构建多模态消息
+                    const mmMsgs = [messages[0]]; // system message
+                    let msgIdx = 1;
+                    let historyIdx = 0;
+
+                    // 遍历构建的消息，跟踪对应的历史消息索引
+                    while (msgIdx < messages.length && historyIdx < history.length) {
+                        const apiMsg = messages[msgIdx];
+
+                        // 找到对应的历史消息组
+                        const startIdx = historyIdx;
+                        const role = apiMsg.role === 'user' ? 'user' : 'assistant';
+
+                        // 收集同角色的连续消息
+                        const samRoleMsgs = [];
+                        while (historyIdx < history.length &&
+                               ((history[historyIdx].role === 'user' && role === 'user') ||
+                                (history[historyIdx].role === 'assistant' && role === 'assistant'))) {
+                            samRoleMsgs.push(history[historyIdx]);
+                            historyIdx++;
+                        }
+
+                        // 检查这组消息中是否有图片
+                        const hasImageInGroup = samRoleMsgs.some(m => m.image);
+
+                        if (hasImageInGroup) {
+                            // 构建带图片的多模态消息
+                            const contentParts = [];
+                            contentParts.push({ type: 'text', text: apiMsg.content });
+                            samRoleMsgs.forEach(m => {
+                                if (m.image) {
+                                    contentParts.push({ type: 'image_url', image_url: { url: m.image } });
+                                }
+                            });
+                            mmMsgs.push({ role: apiMsg.role, content: contentParts });
+                        } else {
+                            mmMsgs.push(apiMsg);
+                        }
+                        msgIdx++;
                     }
-                    body = JSON.stringify({ model: App.settings.modelName, messages: mmMsgs, temperature: App.settings.temperature, max_tokens: App.settings.maxTokens });
+
+                    // 添加剩余的消息
+                    while (msgIdx < messages.length) {
+                        mmMsgs.push(messages[msgIdx]);
+                        msgIdx++;
+                    }
+
+                    body = JSON.stringify({
+                        model: App.settings.modelName,
+                        messages: mmMsgs,
+                        temperature: App.settings.temperature,
+                        max_tokens: App.settings.maxTokens
+                    });
                 } else {
-                    body = JSON.stringify({ model: App.settings.modelName, messages, temperature: App.settings.temperature, max_tokens: App.settings.maxTokens });
+                    body = JSON.stringify({
+                        model: App.settings.modelName,
+                        messages,
+                        temperature: App.settings.temperature,
+                        max_tokens: App.settings.maxTokens
+                    });
                 }
-                const r = await fetch(`${url}/v1/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${App.settings.apiKey}`, 'Content-Type': 'application/json' }, body });
+
+                const r = await fetch(`${url}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${App.settings.apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body
+                });
+
                 document.getElementById('typingIndicator')?.remove();
                 if (!r.ok) throw new Error(`HTTP ${r.status}`);
                 const data = await r.json(), reply = data.choices[0].message.content;
-                // 【关键】解析AI回复，移除编号，解析引用
+
                 const parsedParts = parseAIResponse(reply, history);
                 for (let i = 0; i < parsedParts.length; i++) {
                     if (i > 0) await new Promise(r => setTimeout(r, 300 + Math.random()*400));
                     const p = parsedParts[i];
                     await addMessage(p.content, 'received', null, p.quote ? { msgId: null, content: p.quote } : null);
                 }
-            } catch(e) { document.getElementById('typingIndicator')?.remove(); App.lastAIStart = -1; showToast(`失败: ${e.message}`, 'error'); }
+            } catch(e) {
+                document.getElementById('typingIndicator')?.remove();
+                App.lastAIStart = -1;
+                showToast(`失败: ${e.message}`, 'error');
+            }
         }
 
-        // 【关键修复】解析AI回复：去除编号，解析引用格式
         function parseAIResponse(text, history) {
             if (!text) return [{ content: '...', quote: null }];
-            // 按|||分隔
             const parts = text.trim().split(/\s*\|\|\|\s*/).map(s => s.trim()).filter(s => s);
             const results = [];
-            // 匹配格式：[Q:#数字]内容
             const quoteRegex = /^\[Q:#(\d+)\](.*)$/s;
             for (const part of parts) {
                 let cleanPart = part;
                 let quoteContent = null;
-                // 检查是否有引用格式
                 const match = cleanPart.match(quoteRegex);
                 if (match) {
                     const idx = parseInt(match[1]) - 1;
@@ -1782,7 +1838,6 @@
                         quoteContent = history[idx].content.substring(0, 100);
                     }
                 }
-                // 清理内容
                 cleanPart = cleanPart.replace(/^["「『"]+/, '').replace(/["」』"]+$/, '').trim();
                 if (cleanPart) {
                     results.push({ content: cleanPart, quote: quoteContent });
@@ -1791,7 +1846,7 @@
             return results.length > 0 ? results : [{ content: text.trim(), quote: null }];
         }
 
-        // 【关键修复】构建API消息：不在消息内容中添加编号，只在内部注释中使用
+        // 【修复】构建API消息 - 保留消息索引用于图片关联
         function buildAPIMessages(char, history) {
             const msgs = [];
             let sys = `# 短信模拟规则\n\n你正在扮演"${char.name}"，通过手机短信聊天。\n\n## 【重要】输出格式\n1. 每条短信用 ||| 分隔\n2. 根据真实短信风格，每条5-20字左右，可长可短，灵活应变\n3. 不要加角色名前缀\n4. 像真人发短信\n5. 【禁止】不要在消息前加编号如#1:等\n\n## 引用回复格式（可选）\n如果要引用历史消息回复，格式：[Q:#编号]回复内容\n例：[Q:#3]确实是这样|||后面的普通消息\n编号对应历史消息序号(从1开始)\n\n## 正确示例\n嗯|||确实\n[Q:#5]真的吗？|||哈哈\n\n## 错误（禁止）\n❌ #1: 内容（禁止加编号前缀）\n❌ 角色名: 内容\n❌ 一条消息500字太长\n\n## 角色\n${char.description || '朋友'}`;
@@ -1809,22 +1864,21 @@
                     }
                 });
             }
-            // 添加消息编号参考（仅供AI引用使用，不显示在消息中）
             if (history.length > 0) {
                 sys += `\n\n## 历史消息编号参考（仅供引用时使用编号）\n`;
                 history.forEach((m, i) => {
                     const role = m.role === 'user' ? '用户' : '你';
-                    sys += `#${i+1} ${role}: ${m.content.substring(0, 30)}${m.content.length > 30 ? '...' : ''}\n`;
+                    const hasImg = m.image ? '[有图片]' : '';
+                    sys += `#${i+1} ${role}: ${m.content.substring(0, 30)}${m.content.length > 30 ? '...' : ''}${hasImg}\n`;
                 });
             }
             msgs.push({ role: 'system', content: sys });
-            // 构建消息历史：保持原始格式，用|||分隔同角色连续消息
+
             let currentRole = null;
             let buffer = [];
             const flushBuffer = () => {
                 if (buffer.length > 0) {
                     const role = buffer[0].role === 'user' ? 'user' : 'assistant';
-                    // 【关键】不加编号，只用|||分隔
                     const content = buffer.map(m => {
                         let text = m.content;
                         if (m.quoteContent) text = `[引用:"${m.quoteContent.substring(0,30)}"]${text}`;
@@ -1964,7 +2018,7 @@
         }
 
         function exportAllData() {
-            const data = { characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, version: '6.1.0', exportedAt: new Date().toISOString() };
+            const data = { characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, version: '6.2.0', exportedAt: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sms-backup-${new Date().toISOString().split('T')[0]}.json`; a.click();
             showToast('已导出', 'success');
