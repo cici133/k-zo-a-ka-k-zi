@@ -1,48 +1,18 @@
-
-
-
-
-
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <!-- 关键PWA设置 - iOS全屏模式 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
-    <!-- iOS PWA 核心标签 - 这些是实现全屏的关键 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AI短信">
-
-    <!-- Android PWA 支持 -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1a1a2e">
-
-    <!-- Windows 支持 -->
     <meta name="msapplication-navbutton-color" content="#1a1a2e">
     <meta name="msapplication-TileColor" content="#1a1a2e">
-    <meta name="msapplication-starturl" content="./">
-
-    <!-- 禁用自动检测 -->
-    <meta name="format-detection" content="telephone=no">
-
-    <!-- PWA Manifest - 内联版本 -->
-    <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22AI%E7%9F%AD%E4%BF%A1%E6%A8%A1%E6%8B%9F%E5%99%A8%22%2C%22short_name%22%3A%22AI%E7%9F%AD%E4%BF%A1%22%2C%22description%22%3A%22%E4%B8%8EAI%E8%A7%92%E8%89%B2%E8%81%8A%E5%A4%A9%22%2C%22start_url%22%3A%22.%2F%22%2C%22scope%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait%22%2C%22background_color%22%3A%22%231a1a2e%22%2C%22theme_color%22%3A%22%231a1a2e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%2520viewBox%3D'0%25200%2520512%2520512'%253E%253Crect%2520width%3D'512'%2520height%3D'512'%2520fill%3D'%252334c759'%2520rx%3D'100'%2F%253E%253Ctext%2520x%3D'50%2525'%2520y%3D'55%2525'%2520dominant-baseline%3D'middle'%2520text-anchor%3D'middle'%2520font-size%3D'280'%253E%25F0%259F%2592%25AC%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
-
-    <!-- iOS 图标 - 多种尺寸 -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%2334c759' rx='40'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='100'%3E💬%3C/text%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152 152'%3E%3Crect width='152' height='152' fill='%2334c759' rx='30'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='80'%3E💬%3C/text%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%2334c759' rx='40'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='100'%3E💬%3C/text%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" sizes="167x167" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 167 167'%3E%3Crect width='167' height='167' fill='%2334c759' rx='35'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='90'%3E💬%3C/text%3E%3C/svg%3E">
-
-    <!-- iOS 启动画面颜色 -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    <!-- 防止iOS Safari自动调整字体大小 -->
-    <style>html { -webkit-text-size-adjust: 100%; }</style>
-
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQUnnn63kv6HmqKHmi5/lmagiLCJzaG9ydF9uYW1lIjoiQUnnn63kv6EiLCJzdGFydF91cmwiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxYTFhMmUiLCJ0aGVtZV9jb2xvciI6IiMxYTFhMmUiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJyUzRSUzQ3JlY3Qgd2lkdGg9JzEwMCcgaGVpZ2h0PScxMDAnIGZpbGw9JyUyMzM0Yzc1OScgcng9JzIwJy8lM0UlM0N0ZXh0IHg9JzUwJScgeT0nNTUlJyBkb21pbmFudC1iYXNlbGluZT0nbWlkZGxlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBmb250LXNpemU9JzUwJyUzRfCfkqwlM0MvdGV4dCUzRSUzQy9zdmclM0UiLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2334c759' rx='20'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='50'%3E💬%3C/text%3E%3C/svg%3E">
     <title>AI短信模拟器 v5.0</title>
     <style>
         :root {
@@ -71,14 +41,11 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
         }
 
         html {
             height: 100%;
             height: -webkit-fill-available;
-            /* 防止iOS文本大小自动调整 */
-            -webkit-text-size-adjust: 100%;
         }
 
         body {
@@ -86,25 +53,13 @@
             min-height: 100vh;
             min-height: -webkit-fill-available;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
             background: #000;
             overscroll-behavior: none;
             position: fixed;
             width: 100%;
             top: 0;
             left: 0;
-            /* 防止选择文本 */
-            -webkit-user-select: none;
-            user-select: none;
-            /* 强制GPU加速 */
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-        }
-
-        /* 允许输入框选择文本 */
-        input, textarea {
-            -webkit-user-select: text;
-            user-select: text;
         }
 
         #wallpaperLayer {
@@ -140,8 +95,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-left: calc(24px + var(--safe-left));
-            padding-right: calc(24px + var(--safe-right));
+            padding-left: 24px;
+            padding-right: 24px;
             z-index: 1000;
         }
 
@@ -175,14 +130,13 @@
             height: 100%;
             padding-top: calc(80px + var(--safe-top));
             padding-bottom: calc(80px + var(--safe-bottom));
-            padding-left: calc(20px + var(--safe-left));
-            padding-right: calc(20px + var(--safe-right));
+            padding-left: 20px;
+            padding-right: 20px;
             display: flex;
             flex-direction: column;
             gap: 24px;
             overflow-y: auto;
             z-index: 1;
-            -webkit-overflow-scrolling: touch;
         }
 
         .home-screen.no-statusbar {
@@ -202,7 +156,6 @@
             align-items: center;
             gap: 6px;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .app-icon-wrapper:active {
@@ -283,6 +236,7 @@
             transform: translateY(0);
         }
 
+        /* 聊天页面支持自定义壁纸 */
         .page#chatPage {
             background: var(--glass-bg-dark);
         }
@@ -299,8 +253,8 @@
             justify-content: space-between;
             padding-top: calc(8px + var(--safe-top));
             padding-bottom: 8px;
-            padding-left: calc(12px + var(--safe-left));
-            padding-right: calc(12px + var(--safe-right));
+            padding-left: 12px;
+            padding-right: 12px;
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -321,7 +275,6 @@
             padding: 4px;
             border-radius: 6px;
             min-width: 50px;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .nav-btn svg { width: 16px; height: 16px; fill: currentColor; }
@@ -340,15 +293,12 @@
             overflow-y: auto;
             padding: 12px;
             padding-bottom: calc(12px + var(--safe-bottom));
-            padding-left: calc(12px + var(--safe-left));
-            padding-right: calc(12px + var(--safe-right));
             -webkit-overflow-scrolling: touch;
         }
 
         .settings-group {
             background: var(--glass-bg);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border-radius: 14px;
             margin-bottom: 16px;
             overflow: hidden;
@@ -370,7 +320,6 @@
             padding: 10px 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .settings-item:last-child { border-bottom: none; }
@@ -423,8 +372,6 @@
             color: var(--text-primary);
             font-size: 14px;
             outline: none;
-            -webkit-appearance: none;
-            appearance: none;
         }
 
         .input-field:focus { border-color: var(--accent-color); }
@@ -437,6 +384,7 @@
             line-height: 1.4;
         }
 
+        /* CSS编辑器特殊样式 */
         textarea.css-editor {
             min-height: 150px;
             font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
@@ -458,8 +406,6 @@
             font-weight: 600;
             cursor: pointer;
             width: 100%;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-appearance: none;
         }
 
         .btn:active { transform: scale(0.98); }
@@ -499,7 +445,6 @@
             margin-bottom: 6px;
             cursor: pointer;
             border: 1px solid var(--glass-border);
-            -webkit-tap-highlight-color: transparent;
         }
 
         .contact-avatar {
@@ -566,8 +511,6 @@
             flex: 1;
             overflow-y: auto;
             padding: 10px;
-            padding-left: calc(10px + var(--safe-left));
-            padding-right: calc(10px + var(--safe-right));
             display: flex;
             flex-direction: column;
             gap: 3px;
@@ -627,7 +570,6 @@
         .message.received {
             background: var(--message-received);
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
             color: var(--text-primary);
             border-radius: 16px 16px 16px 4px;
         }
@@ -638,6 +580,7 @@
             margin-top: 2px;
         }
 
+        /* 时间戳位置变体 */
         .message-time.time-hidden { display: none; }
         .message-time.time-side { position: absolute; bottom: 4px; right: -40px; margin-top: 0; }
         .message-wrapper.sent .message-time.time-side { right: auto; left: -40px; }
@@ -700,8 +643,6 @@
             gap: 5px;
             padding: 6px 10px;
             padding-bottom: calc(6px + var(--safe-bottom));
-            padding-left: calc(10px + var(--safe-left));
-            padding-right: calc(10px + var(--safe-right));
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -715,7 +656,6 @@
             border: none;
             background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             color: white;
             font-size: 14px;
             cursor: pointer;
@@ -724,7 +664,6 @@
             justify-content: center;
             flex-shrink: 0;
             transition: all 0.2s ease;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .chat-btn:active {
@@ -743,7 +682,6 @@
             padding: 7px 12px;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 17px;
             color: var(--text-primary);
@@ -751,7 +689,6 @@
             resize: none;
             outline: none;
             font-family: inherit;
-            -webkit-appearance: none;
         }
 
         .chat-input-field::placeholder { color: rgba(255, 255, 255, 0.4); }
@@ -759,11 +696,10 @@
         .extension-panel {
             position: absolute;
             bottom: calc(60px + var(--safe-bottom));
-            left: calc(10px + var(--safe-left));
-            right: calc(10px + var(--safe-right));
+            left: 10px;
+            right: 10px;
             background: rgba(30, 30, 35, 0.95);
             backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 14px;
             padding: 14px;
@@ -816,7 +752,6 @@
             font-size: 14px;
             cursor: pointer;
             margin-bottom: 6px;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .extension-btn:last-child { margin-bottom: 0; }
@@ -842,7 +777,6 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -851,8 +785,6 @@
             visibility: hidden;
             transition: all 0.25s ease;
             padding: 20px;
-            padding-left: calc(20px + var(--safe-left));
-            padding-right: calc(20px + var(--safe-right));
         }
 
         .modal-overlay.active { opacity: 1; visibility: visible; }
@@ -864,13 +796,11 @@
             overflow-y: auto;
             background: rgba(30, 30, 35, 0.95);
             backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
             border-radius: 16px;
             padding: 18px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transform: scale(0.92);
             transition: transform 0.25s ease;
-            -webkit-overflow-scrolling: touch;
         }
 
         .modal-overlay.active .modal { transform: scale(1); }
@@ -900,7 +830,6 @@
             font-size: 14px;
             outline: none;
             margin-bottom: 12px;
-            -webkit-appearance: none;
         }
 
         .modal-btns { display: flex; gap: 8px; }
@@ -913,7 +842,6 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .modal-btn.cancel { background: rgba(255, 255, 255, 0.12); color: var(--text-primary); }
@@ -935,7 +863,6 @@
             padding: 10px 18px;
             background: rgba(30, 30, 35, 0.95);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border-radius: 10px;
             color: var(--text-primary);
             font-size: 13px;
@@ -971,7 +898,6 @@
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: 10px center;
-            -webkit-appearance: none;
         }
 
         .toggle-switch {
@@ -981,7 +907,6 @@
             background: rgba(120, 120, 128, 0.32);
             border-radius: 13px;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .toggle-switch.active { background: var(--success-color); }
@@ -1009,11 +934,7 @@
             color: var(--text-primary);
             font-size: 14px;
             cursor: pointer;
-            -webkit-appearance: none;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='rgba(255,255,255,0.5)'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
         }
 
         .select-field option { background: #1a1a2e; }
@@ -1053,12 +974,10 @@
             height: 4px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 2px;
-            -webkit-appearance: none;
             appearance: none;
         }
 
         .slider-input::-webkit-slider-thumb {
-            -webkit-appearance: none;
             appearance: none;
             width: 18px;
             height: 18px;
@@ -1093,7 +1012,6 @@
             margin-top: 14px;
             cursor: pointer;
             font-size: 14px;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .log-container {
@@ -1103,9 +1021,8 @@
             margin-top: 8px;
             max-height: 140px;
             overflow-y: auto;
-            font-family: 'SF Mono', monospace;
+            font-family: monospace;
             font-size: 10px;
-            -webkit-overflow-scrolling: touch;
         }
 
         .log-entry { padding: 2px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
@@ -1113,7 +1030,7 @@
         .log-entry.error { color: var(--danger-color); }
         .log-entry.info { color: var(--accent-color); }
 
-        .model-list { max-height: 160px; overflow-y: auto; margin-top: 8px; -webkit-overflow-scrolling: touch; }
+        .model-list { max-height: 160px; overflow-y: auto; margin-top: 8px; }
 
         .model-item {
             padding: 8px 12px;
@@ -1121,7 +1038,6 @@
             border-radius: 8px;
             margin-bottom: 5px;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .model-item:hover { background: rgba(255, 255, 255, 0.1); }
@@ -1147,8 +1063,6 @@
             align-items: center;
             justify-content: space-between;
             padding: 8px 12px;
-            padding-left: calc(12px + var(--safe-left));
-            padding-right: calc(12px + var(--safe-right));
             background: rgba(255, 59, 48, 0.12);
         }
 
@@ -1164,7 +1078,6 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .select-mode-btn.cancel { background: rgba(255, 255, 255, 0.15); color: var(--text-primary); }
@@ -1185,7 +1098,6 @@
             color: var(--text-secondary);
             overflow: hidden;
             transition: all 0.2s ease;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .avatar-upload-area:hover { border-color: var(--accent-color); }
@@ -1208,7 +1120,6 @@
             border-radius: 5px;
             cursor: pointer;
             background: transparent;
-            -webkit-appearance: none;
         }
 
         .shape-options {
@@ -1225,7 +1136,6 @@
             color: var(--text-primary);
             font-size: 12px;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .shape-option.selected {
@@ -1240,7 +1150,6 @@
             padding: 12px;
             margin-bottom: 8px;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .worldbook-item-header {
@@ -1312,7 +1221,6 @@
             border: 2px dashed var(--glass-border);
             overflow: hidden;
             transition: all 0.2s ease;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .icon-customize-preview:hover { border-color: var(--accent-color); }
@@ -1364,6 +1272,7 @@
             color: var(--text-secondary);
         }
 
+        /* CSS预设选择器样式 */
         .preset-selector {
             display: flex;
             align-items: center;
@@ -1387,17 +1296,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .preset-btn:hover { background: rgba(255, 255, 255, 0.15); }
         .preset-btn:active { transform: scale(0.95); }
 
+        /* 指南内容样式 */
         .guide-content {
             max-height: 50vh;
             overflow-y: auto;
             padding-right: 5px;
-            -webkit-overflow-scrolling: touch;
         }
 
         .guide-section {
@@ -1420,7 +1328,6 @@
             color: #00ff88;
             margin-bottom: 6px;
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
         .guide-text {
@@ -1429,6 +1336,7 @@
             line-height: 1.5;
         }
 
+        /* 聊天壁纸预览 */
         .chat-wallpaper-preview {
             width: 100%;
             height: 80px;
@@ -1457,24 +1365,14 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 2px; }
 
-        /* PWA全屏模式特殊处理 */
         @media all and (display-mode: standalone) {
-            .status-bar {
-                /* 在standalone模式下可以选择隐藏模拟状态栏 */
-            }
+            body { }
         }
 
-        /* iOS安全区域支持 */
-        @supports (padding: max(0px)) {
-            .page-content {
-                padding-left: max(12px, env(safe-area-inset-left));
-                padding-right: max(12px, env(safe-area-inset-right));
-                padding-bottom: max(12px, env(safe-area-inset-bottom));
-            }
-        }
-
+        /* 自定义CSS注入容器 */
         #customCssStyles { }
     </style>
+    <!-- 自定义CSS注入点 -->
     <style id="customCssStyles"></style>
 </head>
 <body>
@@ -1545,11 +1443,11 @@
                     </div>
                     <div class="input-group">
                         <label class="input-label">API地址</label>
-                        <input type="text" class="input-field" id="apiBaseUrl" placeholder="https://api.example.com" autocomplete="off" autocorrect="off" autocapitalize="off">
+                        <input type="text" class="input-field" id="apiBaseUrl" placeholder="https://api.example.com">
                     </div>
                     <div class="input-group">
                         <label class="input-label">API密钥</label>
-                        <input type="password" class="input-field" id="apiKey" placeholder="sk-xxx" autocomplete="off">
+                        <input type="password" class="input-field" id="apiKey" placeholder="sk-xxx">
                     </div>
                     <button class="btn btn-warning" onclick="fetchModels()" id="fetchModelsBtn">📋 拉取模型</button>
                     <div id="modelListContainer" style="display:none">
@@ -1558,7 +1456,7 @@
                     </div>
                     <div class="input-group" style="margin-top:12px">
                         <label class="input-label">当前模型</label>
-                        <input type="text" class="input-field" id="modelName" placeholder="模型名称" autocomplete="off">
+                        <input type="text" class="input-field" id="modelName" placeholder="模型名称">
                     </div>
                     <div class="btn-stack" style="margin-top:12px">
                         <button class="btn btn-secondary" onclick="testConnection()" id="testConnectionBtn">🔗 测试连接</button>
@@ -1573,7 +1471,7 @@
                 <div class="settings-group" style="padding:12px">
                     <div class="input-group">
                         <label class="input-label">最大记忆条数</label>
-                        <input type="number" class="input-field" id="maxContextMessages" value="200" inputmode="numeric">
+                        <input type="number" class="input-field" id="maxContextMessages" value="200">
                     </div>
                 </div>
 
@@ -1642,23 +1540,6 @@
                         <div class="settings-item-left"><span class="settings-icon red">🗑️</span><span class="settings-item-label">清除所有数据</span></div>
                     </div>
                 </div>
-
-                <p class="settings-group-title">关于</p>
-                <div class="settings-group">
-                    <div class="settings-item">
-                        <div class="settings-item-left"><span class="settings-icon gray">📱</span><span class="settings-item-label">版本</span></div>
-                        <span style="color:var(--text-secondary);font-size:14px">5.0.0</span>
-                    </div>
-                    <div class="settings-item" id="pwaStatusItem">
-                        <div class="settings-item-left">
-                            <span class="settings-icon green">✅</span>
-                            <div>
-                                <span class="settings-item-label">PWA状态</span>
-                                <div class="settings-item-desc" id="pwaStatusDesc">检测中...</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div style="height:30px"></div>
             </div>
         </div>
@@ -1676,7 +1557,7 @@
                 </button>
             </div>
             <div style="padding:0 12px 10px">
-                <input type="text" class="search-field" id="contactSearch" placeholder="搜索角色..." oninput="filterContacts()" autocomplete="off" autocorrect="off">
+                <input type="text" class="search-field" id="contactSearch" placeholder="搜索角色..." oninput="filterContacts()">
             </div>
             <div class="page-content" id="contactListContainer" style="padding-top:0">
                 <div class="empty-state" id="emptyContactState">
@@ -1726,7 +1607,7 @@
                     <button class="chat-btn" onclick="toggleExtensionPanel()" title="更多">
                         <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
                     </button>
-                    <textarea class="chat-input-field" id="chatInput" placeholder="输入消息..." rows="1" oninput="autoResizeTextarea(this)" autocomplete="off" autocorrect="off"></textarea>
+                    <textarea class="chat-input-field" id="chatInput" placeholder="输入消息..." rows="1" oninput="autoResizeTextarea(this)"></textarea>
                     <button class="chat-btn ai" onclick="triggerAIReply()" title="AI回复">
                         <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                     </button>
@@ -1737,7 +1618,7 @@
             </div>
         </div>
 
-        <!-- 角色设置页面 -->
+        <!-- 角色设置页面 - 新增功能区域 -->
         <div class="page slide-from-bottom" id="characterSettingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closeCharacterSettings()">
@@ -1748,6 +1629,7 @@
                 <button class="nav-btn right" onclick="saveCharacterSettings()">保存</button>
             </div>
             <div class="page-content">
+                <!-- 新增：聊天管理 -->
                 <p class="settings-group-title">聊天管理</p>
                 <div class="settings-group">
                     <div class="settings-item" onclick="confirmClearAllMessages()">
@@ -1761,6 +1643,7 @@
                     </div>
                 </div>
 
+                <!-- 新增：聊天窗口壁纸 -->
                 <p class="settings-group-title">聊天窗口壁纸</p>
                 <div class="settings-group" style="padding:12px">
                     <div class="chat-wallpaper-preview" id="chatWallpaperPreview">
@@ -1773,7 +1656,7 @@
                     <input type="file" id="chatWallpaperInput" class="file-input-hidden" accept="image/*" onchange="handleChatWallpaperUpload(event)">
                     <div class="input-group" style="margin-top:10px">
                         <label class="input-label">或输入图片URL</label>
-                        <input type="text" class="input-field" id="chatWallpaperUrl" placeholder="https://..." autocomplete="off">
+                        <input type="text" class="input-field" id="chatWallpaperUrl" placeholder="https://...">
                     </div>
                     <button class="btn btn-secondary btn-small" onclick="applyChatWallpaperUrl()">应用URL</button>
                 </div>
@@ -1824,28 +1707,28 @@
                 <div class="settings-group" style="padding:12px">
                     <div class="input-group">
                         <label class="input-label">名称</label>
-                        <input type="text" class="input-field" id="charName" placeholder="名称" autocomplete="off">
+                        <input type="text" class="input-field" id="charName" placeholder="名称">
                     </div>
                     <div class="input-group">
                         <label class="input-label">表情(无图时)</label>
-                        <input type="text" class="input-field" id="charAvatar" placeholder="😊" autocomplete="off">
+                        <input type="text" class="input-field" id="charAvatar" placeholder="😊">
                     </div>
                 </div>
 
                 <p class="settings-group-title">设定</p>
                 <div class="settings-group" style="padding:12px">
-                    <textarea class="input-field" id="charDescription" rows="5" placeholder="性格、背景..." autocomplete="off"></textarea>
+                    <textarea class="input-field" id="charDescription" rows="5" placeholder="性格、背景..."></textarea>
                 </div>
 
                 <p class="settings-group-title">开场白(300字)</p>
                 <div class="settings-group" style="padding:12px">
-                    <textarea class="input-field" id="charGreeting" rows="2" maxlength="300" placeholder="第一条..." oninput="updateCharCounter()" autocomplete="off"></textarea>
+                    <textarea class="input-field" id="charGreeting" rows="2" maxlength="300" placeholder="第一条..." oninput="updateCharCounter()"></textarea>
                     <div class="char-counter" id="greetingCharCounter">0/300</div>
                 </div>
 
                 <p class="settings-group-title">情景</p>
                 <div class="settings-group" style="padding:12px">
-                    <textarea class="input-field" id="charScenario" rows="2" placeholder="场景..." autocomplete="off"></textarea>
+                    <textarea class="input-field" id="charScenario" rows="2" placeholder="场景..."></textarea>
                 </div>
 
                 <p class="settings-group-title">绑定世界书</p>
@@ -1859,14 +1742,15 @@
                 <div class="settings-group" style="padding:12px">
                     <div class="input-group">
                         <label class="input-label">用户称呼</label>
-                        <input type="text" class="input-field" id="charUserNick" placeholder="亲爱的..." autocomplete="off">
+                        <input type="text" class="input-field" id="charUserNick" placeholder="亲爱的...">
                     </div>
                     <div class="input-group">
                         <label class="input-label">提示词</label>
-                        <textarea class="input-field" id="charSystemPrompt" rows="2" placeholder="额外指令..." autocomplete="off"></textarea>
+                        <textarea class="input-field" id="charSystemPrompt" rows="2" placeholder="额外指令..."></textarea>
                     </div>
                 </div>
 
+                <!-- 新增：自定义CSS美化 -->
                 <p class="settings-group-title">🎨 自定义CSS美化</p>
                 <div class="settings-group" style="padding:12px">
                     <div class="action-hint warning">
@@ -1874,6 +1758,7 @@
                         <span class="action-hint-text">自定义CSS会覆盖上方的头像设置</span>
                     </div>
 
+                    <!-- 预设选择器 -->
                     <div class="input-group">
                         <label class="input-label">CSS预设</label>
                         <div class="preset-selector">
@@ -1886,6 +1771,7 @@
                         </div>
                     </div>
 
+                    <!-- 时间戳设置 -->
                     <div class="input-group">
                         <label class="input-label">消息时间戳</label>
                         <select class="select-field" id="timestampPosition">
@@ -1895,9 +1781,10 @@
                         </select>
                     </div>
 
+                    <!-- CSS编辑器 -->
                     <div class="input-group">
                         <label class="input-label">自定义CSS代码</label>
-                        <textarea class="input-field css-editor" id="customCssEditor" rows="8" placeholder="/* 在此输入自定义CSS */&#10;&#10;.message.sent {&#10;  background: #yourcolor;&#10;}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+                        <textarea class="input-field css-editor" id="customCssEditor" rows="8" placeholder="/* 在此输入自定义CSS */&#10;&#10;.message.sent {&#10;  background: #yourcolor;&#10;}"></textarea>
                     </div>
 
                     <div class="btn-row">
@@ -1951,19 +1838,19 @@
                 <div class="settings-group" style="padding:12px">
                     <div class="input-group">
                         <label class="input-label">名称</label>
-                        <input type="text" class="input-field" id="worldbookName" placeholder="名称" autocomplete="off">
+                        <input type="text" class="input-field" id="worldbookName" placeholder="名称">
                     </div>
                     <div class="input-group">
                         <label class="input-label">简介</label>
-                        <textarea class="input-field" id="worldbookSummary" rows="2" placeholder="简介..." autocomplete="off"></textarea>
+                        <textarea class="input-field" id="worldbookSummary" rows="2" placeholder="简介..."></textarea>
                     </div>
                     <div class="input-group">
                         <label class="input-label">关键词(逗号分隔)</label>
-                        <input type="text" class="input-field" id="worldbookKeywords" placeholder="词1,词2..." autocomplete="off">
+                        <input type="text" class="input-field" id="worldbookKeywords" placeholder="词1,词2...">
                     </div>
                     <div class="input-group">
                         <label class="input-label">内容</label>
-                        <textarea class="input-field" id="worldbookContent" rows="5" placeholder="内容..." autocomplete="off"></textarea>
+                        <textarea class="input-field" id="worldbookContent" rows="5" placeholder="内容..."></textarea>
                     </div>
                     <div class="settings-item" style="padding:10px 0">
                         <span class="settings-item-label">始终激活</span>
@@ -2019,7 +1906,7 @@
                 <div class="settings-group" style="padding:12px">
                     <div class="input-group">
                         <label class="input-label">图片URL</label>
-                        <input type="text" class="input-field" id="customWallpaperUrl" placeholder="https://..." autocomplete="off">
+                        <input type="text" class="input-field" id="customWallpaperUrl" placeholder="https://...">
                     </div>
                     <button class="btn btn-secondary" onclick="previewUrlWallpaper()">预览</button>
                     <div class="divider"></div>
@@ -2067,7 +1954,7 @@
     <div class="modal-overlay" id="createCharacterModal">
         <div class="modal">
             <div class="modal-title">创建角色</div>
-            <input type="text" class="modal-input" id="newCharacterName" placeholder="角色名称..." autocomplete="off">
+            <input type="text" class="modal-input" id="newCharacterName" placeholder="角色名称...">
             <div class="modal-btns">
                 <button class="modal-btn cancel" onclick="hideModal('createCharacterModal')">取消</button>
                 <button class="modal-btn confirm" onclick="createCharacter()">创建</button>
@@ -2078,7 +1965,7 @@
     <div class="modal-overlay" id="createWorldbookModal">
         <div class="modal">
             <div class="modal-title">创建世界书</div>
-            <input type="text" class="modal-input" id="newWorldbookName" placeholder="名称..." autocomplete="off">
+            <input type="text" class="modal-input" id="newWorldbookName" placeholder="名称...">
             <div class="modal-btns">
                 <button class="modal-btn cancel" onclick="hideModal('createWorldbookModal')">取消</button>
                 <button class="modal-btn confirm" onclick="createWorldbook()">创建</button>
@@ -2097,6 +1984,7 @@
         </div>
     </div>
 
+    <!-- 新增：清除聊天记录确认模态框 -->
     <div class="modal-overlay" id="clearMessagesModal">
         <div class="modal">
             <div class="modal-title">⚠️ 清除所有聊天记录</div>
@@ -2110,10 +1998,11 @@
         </div>
     </div>
 
+    <!-- 新增：CSS预设名称输入模态框 -->
     <div class="modal-overlay" id="cssPresetNameModal">
         <div class="modal">
             <div class="modal-title">新建CSS预设</div>
-            <input type="text" class="modal-input" id="newCssPresetName" placeholder="预设名称..." autocomplete="off">
+            <input type="text" class="modal-input" id="newCssPresetName" placeholder="预设名称...">
             <div class="modal-btns">
                 <button class="modal-btn cancel" onclick="hideModal('cssPresetNameModal')">取消</button>
                 <button class="modal-btn confirm" onclick="createCssPreset()">创建</button>
@@ -2121,6 +2010,7 @@
         </div>
     </div>
 
+    <!-- 新增：CSS指南模态框 -->
     <div class="modal-overlay" id="cssGuideModal">
         <div class="modal" style="max-width:380px">
             <div class="modal-title">📖 CSS自定义指南</div>
@@ -2130,32 +2020,39 @@
                     <div class="guide-code">.message.sent { }<br>.message.received { }</div>
                     <div class="guide-text">sent=发送的消息, received=收到的消息</div>
                 </div>
+
                 <div class="guide-section">
                     <div class="guide-section-title">👤 头像</div>
                     <div class="guide-code">.message-avatar { }<br>.message-wrapper.sent .message-avatar { }<br>.message-wrapper.received .message-avatar { }</div>
                     <div class="guide-text">可分别设置发送方和接收方头像</div>
                 </div>
+
                 <div class="guide-section">
                     <div class="guide-section-title">⏰ 时间戳</div>
                     <div class="guide-code">.message-time { }</div>
                     <div class="guide-text">消息下方的时间显示</div>
                 </div>
+
                 <div class="guide-section">
                     <div class="guide-section-title">📝 输入区域</div>
                     <div class="guide-code">.chat-input-area { }<br>.chat-input-field { }<br>.chat-btn { }</div>
                 </div>
+
                 <div class="guide-section">
                     <div class="guide-section-title">🔝 顶栏</div>
                     <div class="guide-code">#chatPage .nav-bar { }<br>.nav-title { }</div>
                 </div>
+
                 <div class="guide-section">
                     <div class="guide-section-title">📦 消息容器</div>
                     <div class="guide-code">.chat-messages { }<br>.message-wrapper { }</div>
                 </div>
+
                 <div class="guide-section">
                     <div class="guide-section-title">🎨 常用属性</div>
                     <div class="guide-code">background: #色值;<br>color: #文字色;<br>border-radius: 圆角px;<br>padding: 内边距;<br>border: 边框;<br>box-shadow: 阴影;</div>
                 </div>
+
                 <div class="guide-section">
                     <div class="guide-section-title">💡 示例</div>
                     <div class="guide-code">/* 粉色气泡 */<br>.message.sent {<br>  background: linear-gradient(135deg, #ff6b9d, #c44569);<br>  border-radius: 20px;<br>}<br><br>/* 圆形大头像 */<br>.message-avatar {<br>  width: 40px;<br>  height: 40px;<br>  border: 2px solid gold;<br>}</div>
@@ -2170,23 +2067,6 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ==================== PWA 检测 ====================
-        function checkPWAStatus() {
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-            const statusDesc = document.getElementById('pwaStatusDesc');
-            const statusItem = document.getElementById('pwaStatusItem');
-
-            if (isStandalone) {
-                statusDesc.textContent = '已在全屏模式运行 ✅';
-                statusItem.querySelector('.settings-icon').textContent = '✅';
-            } else {
-                statusDesc.textContent = '请添加到主屏幕以全屏运行';
-                statusItem.querySelector('.settings-icon').textContent = '📱';
-                statusItem.querySelector('.settings-icon').classList.remove('green');
-                statusItem.querySelector('.settings-icon').classList.add('gray');
-            }
-        }
-
         // ==================== IndexedDB ====================
         const DB_NAME = 'SMSAppDB';
         const DB_VERSION = 2;
@@ -2258,6 +2138,7 @@
                 apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048,
                 maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false
             },
+            // 全局CSS预设库
             globalCssPresets: [],
             dataLoaded: false
         };
@@ -2286,7 +2167,6 @@
                 updateWallpaperPreview();
                 updateIconPreviews();
                 updateStorageDisplay();
-                checkPWAStatus();
             } catch (e) {
                 console.error('初始化失败:', e);
                 showToast('初始化失败', 'error');
@@ -2308,6 +2188,7 @@
             document.getElementById('statusBarTime').textContent = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
         }
 
+        // ==================== 状态栏显示控制 ====================
         function toggleStatusBar() {
             App.settings.hideStatusBar = !App.settings.hideStatusBar;
             applyStatusBarVisibility();
@@ -2318,6 +2199,7 @@
             const statusBar = document.getElementById('statusBar');
             const homeScreen = document.getElementById('homeScreen');
             const toggle = document.getElementById('hideStatusBarToggle');
+
             if (App.settings.hideStatusBar) {
                 statusBar.classList.add('hidden');
                 homeScreen.classList.add('no-statusbar');
@@ -2514,7 +2396,7 @@
                 if (id === 'messagesPage') renderContacts();
                 if (id === 'worldbookPage') renderWorldbooks();
                 if (id === 'wallpaperPage') { updateWallpaperPreview(); updateIconPreviews(); highlightWallpaper(); applyStatusBarVisibility(); }
-                if (id === 'settingsPage') { updateStorageDisplay(); checkPWAStatus(); }
+                if (id === 'settingsPage') updateStorageDisplay();
             }
         }
 
@@ -2571,12 +2453,28 @@
         async function createCharacter() {
             const name = document.getElementById('newCharacterName').value.trim(); if (!name) { showToast('请输入', 'error'); return; }
             const char = {
-                id: Date.now().toString(), name,
+                id: Date.now().toString(),
+                name,
                 avatar: ['😊','😎','🥰','🦊','🐱','🐰'][Math.floor(Math.random()*6)],
-                avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle',
-                showBorder: false, borderColor: '#007AFF', borderWidth: 2,
-                description: '', greeting: '', scenario: '', worldbookId: '', userNick: '', systemPrompt: '',
-                messages: [], chatWallpaper: null, customCss: '', activeCssPresetId: null, timestampPosition: 'default'
+                avatarImage: null,
+                userAvatar: null,
+                showAvatar: true,
+                avatarShape: 'circle',
+                showBorder: false,
+                borderColor: '#007AFF',
+                borderWidth: 2,
+                description: '',
+                greeting: '',
+                scenario: '',
+                worldbookId: '',
+                userNick: '',
+                systemPrompt: '',
+                messages: [],
+                // 新增字段
+                chatWallpaper: null,
+                customCss: '',
+                activeCssPresetId: null,
+                timestampPosition: 'default'
             };
             App.characters.push(char); await saveData(); hideModal('createCharacterModal'); renderContacts(); showToast(`"${name}"已创建`, 'success');
         }
@@ -2601,12 +2499,17 @@
             document.getElementById('chatTitle').textContent = char.name;
             document.getElementById('selectModeBar').classList.remove('active');
             document.getElementById('chatMessages').classList.remove('select-mode');
+
+            // 应用聊天窗口壁纸
             applyChatWallpaper(char);
+            // 应用自定义CSS
             applyCustomCss(char);
+
             renderMessages(); openPage('chatPage');
             if (char.messages.length === 0 && char.greeting) addMessage(char.greeting, 'received');
         }
 
+        // 新增：应用聊天窗口壁纸
         function applyChatWallpaper(char) {
             const chatPage = document.getElementById('chatPage');
             if (char.chatWallpaper) {
@@ -2618,21 +2521,31 @@
             }
         }
 
+        // 新增：应用自定义CSS
         function applyCustomCss(char) {
             const styleEl = document.getElementById('customCssStyles');
             let css = '';
+
+            // 如果有激活的预设，使用预设的CSS
             if (char.activeCssPresetId) {
                 const preset = App.globalCssPresets.find(p => p.id === char.activeCssPresetId);
                 if (preset) css = preset.css;
             }
-            if (char.customCss) css = char.customCss;
+
+            // 如果角色有自定义CSS，追加或覆盖
+            if (char.customCss) {
+                css = char.customCss;
+            }
+
             styleEl.textContent = css;
         }
 
         function closeChatPage() {
             exitSelectMode();
             closePage('chatPage');
+            // 清除自定义CSS
             document.getElementById('customCssStyles').textContent = '';
+            // 清除聊天壁纸
             const chatPage = document.getElementById('chatPage');
             chatPage.classList.remove('has-custom-bg');
             chatPage.style.backgroundImage = '';
@@ -2641,18 +2554,26 @@
 
         function openCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+
+            // 聊天壁纸预览
             updateChatWallpaperPreview(char);
+
+            // 头像
             const charAvUpload = document.getElementById('charAvatarUpload'), userAvUpload = document.getElementById('userAvatarUpload');
             if (char.avatarImage) { charAvUpload.innerHTML = `<img src="${char.avatarImage}">`; charAvUpload.classList.add('has-image'); } else { charAvUpload.innerHTML = '📷'; charAvUpload.classList.remove('has-image'); }
             charAvUpload.dataset.image = char.avatarImage || '';
             if (char.userAvatar) { userAvUpload.innerHTML = `<img src="${char.userAvatar}">`; userAvUpload.classList.add('has-image'); } else { userAvUpload.innerHTML = '👤'; userAvUpload.classList.remove('has-image'); }
             userAvUpload.dataset.image = char.userAvatar || '';
+
+            // 头像设置
             document.getElementById('showAvatarToggle').classList.toggle('active', char.showAvatar !== false);
             document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => { el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle')); });
             document.getElementById('showBorderToggle').classList.toggle('active', char.showBorder === true);
             document.getElementById('borderColorPicker').value = char.borderColor || '#007AFF';
             document.getElementById('borderWidthSlider').value = char.borderWidth || 2;
             document.getElementById('borderWidthValue').textContent = char.borderWidth || 2;
+
+            // 基本信息
             document.getElementById('charName').value = char.name;
             document.getElementById('charAvatar').value = char.avatar || '';
             document.getElementById('charDescription').value = char.description || '';
@@ -2660,15 +2581,19 @@
             document.getElementById('charScenario').value = char.scenario || '';
             document.getElementById('charUserNick').value = char.userNick || '';
             document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
+
+            // CSS相关
             document.getElementById('timestampPosition').value = char.timestampPosition || 'default';
             document.getElementById('customCssEditor').value = char.customCss || '';
             updateCssPresetSelect(char);
+
             updateWorldbookSelect();
             document.getElementById('charWorldbook').value = char.worldbookId || '';
             updateCharCounter();
             openPage('characterSettingsPage');
         }
 
+        // 新增：更新聊天壁纸预览
         function updateChatWallpaperPreview(char) {
             const preview = document.getElementById('chatWallpaperPreview');
             if (char.chatWallpaper) {
@@ -2680,6 +2605,7 @@
             }
         }
 
+        // 新增：更新CSS预设选择器
         function updateCssPresetSelect(char) {
             const select = document.getElementById('cssPresetSelect');
             select.innerHTML = '<option value="">-- 无预设 --</option>' +
@@ -2693,6 +2619,7 @@
         async function handleUserAvatarUpload(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async ev => { const compressed = await compressImage(ev.target.result, 200, 0.8); const upload = document.getElementById('userAvatarUpload'); upload.innerHTML = `<img src="${compressed}">`; upload.classList.add('has-image'); upload.dataset.image = compressed; }; reader.readAsDataURL(file); e.target.value = ''; }
         function selectShape(el) { document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(e => e.classList.remove('selected')); el.classList.add('selected'); }
 
+        // 新增：聊天窗口壁纸上传
         async function handleChatWallpaperUpload(e) {
             const file = e.target.files[0]; if (!file) return;
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
@@ -2705,6 +2632,7 @@
             reader.readAsDataURL(file); e.target.value = '';
         }
 
+        // 新增：应用URL聊天壁纸
         function applyChatWallpaperUrl() {
             const url = document.getElementById('chatWallpaperUrl').value.trim();
             if (!url) { showToast('请输入URL', 'error'); return; }
@@ -2714,6 +2642,7 @@
             showToast('已设置，保存后生效', 'success');
         }
 
+        // 新增：清除聊天壁纸
         function clearChatWallpaper() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             char.chatWallpaper = null;
@@ -2721,8 +2650,12 @@
             showToast('已清除，保存后生效', 'info');
         }
 
-        function confirmClearAllMessages() { showModal('clearMessagesModal'); }
+        // 新增：确认清除所有聊天记录
+        function confirmClearAllMessages() {
+            showModal('clearMessagesModal');
+        }
 
+        // 新增：执行清除所有聊天记录
         async function executeClearAllMessages() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
@@ -2733,52 +2666,81 @@
             showToast('聊天记录已清除', 'success');
         }
 
+        // ==================== CSS预设相关 ====================
+
+        // 加载选中的CSS预设
         function loadCssPreset() {
             const presetId = document.getElementById('cssPresetSelect').value;
-            if (!presetId) { document.getElementById('customCssEditor').value = ''; return; }
+            if (!presetId) {
+                document.getElementById('customCssEditor').value = '';
+                return;
+            }
             const preset = App.globalCssPresets.find(p => p.id === presetId);
-            if (preset) document.getElementById('customCssEditor').value = preset.css;
+            if (preset) {
+                document.getElementById('customCssEditor').value = preset.css;
+            }
         }
 
+        // 新建CSS预设
         function addNewCssPreset() {
             showModal('cssPresetNameModal');
             document.getElementById('newCssPresetName').value = '';
         }
 
+        // 创建CSS预设
         async function createCssPreset() {
             const name = document.getElementById('newCssPresetName').value.trim();
             if (!name) { showToast('请输入名称', 'error'); return; }
+
             const css = document.getElementById('customCssEditor').value;
-            const preset = { id: Date.now().toString(), name: name, css: css };
+            const preset = {
+                id: Date.now().toString(),
+                name: name,
+                css: css
+            };
+
             App.globalCssPresets.push(preset);
             await saveData();
             hideModal('cssPresetNameModal');
+
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (char) {
                 updateCssPresetSelect(char);
                 document.getElementById('cssPresetSelect').value = preset.id;
             }
+
             showToast(`预设"${name}"已创建`, 'success');
         }
 
+        // 保存当前CSS到选中的预设
         async function saveCssPreset() {
             const presetId = document.getElementById('cssPresetSelect').value;
-            if (!presetId) { showToast('请先选择或创建预设', 'warning'); return; }
+            if (!presetId) {
+                showToast('请先选择或创建预设', 'warning');
+                return;
+            }
+
             const preset = App.globalCssPresets.find(p => p.id === presetId);
             if (!preset) return;
+
             preset.css = document.getElementById('customCssEditor').value;
             await saveData();
             showToast(`预设"${preset.name}"已更新`, 'success');
         }
 
-        function showCssGuide() { showModal('cssGuideModal'); }
+        // 显示CSS指南
+        function showCssGuide() {
+            showModal('cssGuideModal');
+        }
 
+        // 预览CSS
         function previewCss() {
             const css = document.getElementById('customCssEditor').value;
             document.getElementById('customCssStyles').textContent = css;
             showToast('CSS已预览', 'info');
         }
 
+        // 清除自定义CSS
         function clearCustomCss() {
             document.getElementById('customCssEditor').value = '';
             document.getElementById('cssPresetSelect').value = '';
@@ -2788,7 +2750,10 @@
 
         async function saveCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+
             const greeting = document.getElementById('charGreeting').value; if (greeting.length > 300) { showToast('开场白过长', 'error'); return; }
+
+            // 头像
             char.avatarImage = document.getElementById('charAvatarUpload').dataset.image || null;
             char.userAvatar = document.getElementById('userAvatarUpload').dataset.image || null;
             char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
@@ -2797,6 +2762,8 @@
             char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
             char.borderColor = document.getElementById('borderColorPicker').value;
             char.borderWidth = parseInt(document.getElementById('borderWidthSlider').value);
+
+            // 基本信息
             char.name = document.getElementById('charName').value.trim() || char.name;
             char.avatar = document.getElementById('charAvatar').value.trim() || char.avatar;
             char.description = document.getElementById('charDescription').value;
@@ -2805,14 +2772,21 @@
             char.worldbookId = document.getElementById('charWorldbook').value;
             char.userNick = document.getElementById('charUserNick').value.trim();
             char.systemPrompt = document.getElementById('charSystemPrompt').value;
+
+            // CSS相关
             char.timestampPosition = document.getElementById('timestampPosition').value;
             char.customCss = document.getElementById('customCssEditor').value;
             char.activeCssPresetId = document.getElementById('cssPresetSelect').value || null;
+
             document.getElementById('chatTitle').textContent = char.name;
+
             await saveData();
+
+            // 重新应用样式
             applyChatWallpaper(char);
             applyCustomCss(char);
             renderMessages();
+
             closeCharacterSettings();
             showToast('已保存', 'success');
         }
@@ -2825,13 +2799,17 @@
             const container = document.getElementById('chatMessages');
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             if (char.messages.length === 0) { container.innerHTML = '<div class="date-separator"><span class="date-separator-text">今天</span></div>'; return; }
+
             const showAvatar = char.showAvatar !== false, avatarShape = char.avatarShape || 'circle', showBorder = char.showBorder === true, borderColor = char.borderColor || '#007AFF', borderWidth = char.borderWidth || 2;
             let shapeClass = avatarShape === 'square' ? 'square' : avatarShape === 'rounded-square' ? 'rounded-square' : '';
             const borderStyle = showBorder ? `border:${borderWidth}px solid ${borderColor};` : '';
+
+            // 时间戳位置
             const timestampPos = char.timestampPosition || 'default';
             let timeClass = '';
             if (timestampPos === 'hidden') timeClass = 'time-hidden';
             else if (timestampPos === 'side') timeClass = 'time-side';
+
             let html = '', lastDate = null;
             char.messages.forEach(msg => {
                 const msgDate = new Date(msg.timestamp).toLocaleDateString();
@@ -2884,7 +2862,7 @@
             const max = App.settings.maxContextMessages || 200, history = char.messages.slice(-max), merged = [];
             for (let i = 0; i < history.length; i++) { const cur = history[i], last = merged[merged.length - 1]; if (last && last.role === cur.role) last.content += '|||' + cur.content; else merged.push({ role: cur.role, content: cur.content }); }
             merged.forEach(m => { msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content }); });
-            if (history.length > 10) msgs.push({ role: 'system', content: '【提醒】Characters may send multiple text messages; in such cases, use ||| to separate messages to simulate the distinction between message counts. The length can vary freely—there may be very few or many. Be flexible and appropriate. Of course, a character may also send only one or two messages in reply; in some cases, four or five explanatory messages are also possible. Overall, this should be based on how a real, modern person would naturally send text messages in conversation, shaped by human, regional, cultural customs, and their own personality from multiple dimensions. Do not be constrained by rigid frameworks' });
+            if (history.length > 10) msgs.push({ role: 'system', content: '【提醒】角色可能会发多条短信，在这种情况下用|||分隔短信来模拟区分条数。长短随意。可能很少可能很多。灵活恰当。当然角色也可能不发送多条短信只回复一条或者两条，解释四五条也有可能。总体应该参考现代短信中一个真实立体的人物在人文地域风俗习惯或者自身性情的多方面影响下该人会怎么自然发送短信对话。不被框架锁死' });
             return msgs;
         }
 
@@ -2937,13 +2915,6 @@
         });
 
         document.querySelectorAll('.modal-overlay').forEach(overlay => { overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); }); });
-
-        // 防止iOS Safari的橡皮筋滚动效果
-        document.body.addEventListener('touchmove', function(e) {
-            if (!e.target.closest('.page-content, .chat-messages, .modal, .guide-content, .model-list, .log-container')) {
-                e.preventDefault();
-            }
-        }, { passive: false });
     </script>
 </body>
 </html>
