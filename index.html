@@ -5,8 +5,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-
-    <!-- PWA全屏模式必需的meta标签 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AI短信">
@@ -14,14 +12,9 @@
     <meta name="theme-color" content="#1a1a2e">
     <meta name="msapplication-navbutton-color" content="#1a1a2e">
     <meta name="msapplication-TileColor" content="#1a1a2e">
-
-    <!-- PWA manifest -->
     <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQUnnn63kv6HmqKHmi5/lmagiLCJzaG9ydF9uYW1lIjoiQUnnn63kv6EiLCJzdGFydF91cmwiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxYTFhMmUiLCJ0aGVtZV9jb2xvciI6IiMxYTFhMmUiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJyUzRSUzQ3JlY3Qgd2lkdGg9JzEwMCcgaGVpZ2h0PScxMDAnIGZpbGw9JyUyMzM0Yzc1OScgcng9JzIwJy8lM0UlM0N0ZXh0IHg9JzUwJScgeT0nNTUlJyBkb21pbmFudC1iYXNlbGluZT0nbWlkZGxlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBmb250LXNpemU9JzUwJyUzRfCfkqwlM0MvdGV4dCUzRSUzQy9zdmclM0UiLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
-
-    <!-- iOS图标 -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2334c759' rx='20'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='50'%3E💬%3C/text%3E%3C/svg%3E">
-
-    <title>AI短信模拟器</title>
+    <title>AI短信模拟器 v5.0</title>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.12);
@@ -38,7 +31,6 @@
             --message-sent: #007AFF;
             --message-received: rgba(255, 255, 255, 0.15);
             --transition-smooth: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            /* iOS安全区域 */
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
             --safe-left: env(safe-area-inset-left, 0px);
@@ -54,7 +46,6 @@
 
         html {
             height: 100%;
-            /* 确保填满整个视口包括安全区域 */
             height: -webkit-fill-available;
         }
 
@@ -65,7 +56,6 @@
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
             background: #000;
-            /* 防止iOS橡皮筋效果 */
             overscroll-behavior: none;
             position: fixed;
             width: 100%;
@@ -96,7 +86,6 @@
             z-index: 1;
         }
 
-        /* 模拟状态栏 - 可隐藏 */
         .status-bar {
             position: absolute;
             top: 0;
@@ -151,7 +140,6 @@
             z-index: 1;
         }
 
-        /* 当状态栏隐藏时调整 */
         .home-screen.no-statusbar {
             padding-top: calc(40px + var(--safe-top));
         }
@@ -218,7 +206,6 @@
             z-index: 1001;
         }
 
-        /* 页面样式 - 关键修复：确保完全覆盖 */
         .page {
             position: fixed;
             top: 0;
@@ -250,7 +237,17 @@
             transform: translateY(0);
         }
 
-        /* 导航栏 - 更紧凑 */
+        /* 聊天页面支持自定义壁纸 */
+        .page#chatPage {
+            background: var(--glass-bg-dark);
+        }
+
+        .page#chatPage.has-custom-bg {
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+        }
+
         .nav-bar {
             display: flex;
             align-items: center;
@@ -351,6 +348,8 @@
         .settings-icon.purple { background: #AF52DE; }
         .settings-icon.cyan { background: #5AC8FA; }
         .settings-icon.gray { background: #8e8e93; }
+        .settings-icon.pink { background: #FF2D55; }
+        .settings-icon.teal { background: #30B0C7; }
 
         .settings-item-label { color: var(--text-primary); font-size: 14px; }
         .settings-item-desc { color: var(--text-secondary); font-size: 11px; margin-top: 1px; }
@@ -386,6 +385,16 @@
             line-height: 1.4;
         }
 
+        /* CSS编辑器特殊样式 */
+        textarea.css-editor {
+            min-height: 150px;
+            font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            background: rgba(0, 0, 0, 0.4);
+            color: #00ff88;
+        }
+
         .btn {
             display: flex;
             align-items: center;
@@ -409,7 +418,21 @@
         .btn-success { background: var(--success-color); color: white; }
         .btn-warning { background: var(--warning-color); color: white; }
 
+        .btn-small {
+            padding: 8px 14px;
+            font-size: 13px;
+        }
+
         .btn-stack { display: flex; flex-direction: column; gap: 6px; }
+
+        .btn-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-row .btn {
+            flex: 1;
+        }
 
         .contact-list { display: flex; flex-direction: column; }
 
@@ -477,7 +500,6 @@
         .empty-state-title { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
         .empty-state-desc { font-size: 13px; color: var(--text-secondary); }
 
-        /* 聊天容器 - 最大化空间 */
         .chat-container {
             flex: 1;
             display: flex;
@@ -559,6 +581,11 @@
             margin-top: 2px;
         }
 
+        /* 时间戳位置变体 */
+        .message-time.time-hidden { display: none; }
+        .message-time.time-side { position: absolute; bottom: 4px; right: -40px; margin-top: 0; }
+        .message-wrapper.sent .message-time.time-side { right: auto; left: -40px; }
+
         .message-checkbox {
             width: 18px;
             height: 18px;
@@ -611,7 +638,6 @@
             30% { transform: translateY(-4px); }
         }
 
-        /* 输入区域 - 更紧凑 */
         .chat-input-area {
             display: flex;
             align-items: flex-end;
@@ -766,8 +792,8 @@
 
         .modal {
             width: 100%;
-            max-width: 300px;
-            max-height: 75vh;
+            max-width: 340px;
+            max-height: 80vh;
             overflow-y: auto;
             background: rgba(30, 30, 35, 0.95);
             backdrop-filter: blur(40px);
@@ -786,6 +812,13 @@
             color: var(--text-primary);
             text-align: center;
             margin-bottom: 14px;
+        }
+
+        .modal-body {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 16px;
         }
 
         .modal-input {
@@ -968,6 +1001,8 @@
         .action-hint-text { font-size: 11px; color: var(--accent-color); }
         .action-hint.success { background: rgba(52, 199, 89, 0.12); }
         .action-hint.success .action-hint-text { color: var(--success-color); }
+        .action-hint.warning { background: rgba(255, 149, 0, 0.12); }
+        .action-hint.warning .action-hint-text { color: var(--warning-color); }
 
         .delete-zone {
             padding: 14px;
@@ -1238,17 +1273,108 @@
             color: var(--text-secondary);
         }
 
+        /* CSS预设选择器样式 */
+        .preset-selector {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .preset-selector select {
+            flex: 1;
+        }
+
+        .preset-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preset-btn:hover { background: rgba(255, 255, 255, 0.15); }
+        .preset-btn:active { transform: scale(0.95); }
+
+        /* 指南内容样式 */
+        .guide-content {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .guide-section {
+            margin-bottom: 14px;
+        }
+
+        .guide-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 6px;
+        }
+
+        .guide-code {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 6px;
+            padding: 8px;
+            font-family: 'SF Mono', monospace;
+            font-size: 11px;
+            color: #00ff88;
+            margin-bottom: 6px;
+            overflow-x: auto;
+        }
+
+        .guide-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* 聊天壁纸预览 */
+        .chat-wallpaper-preview {
+            width: 100%;
+            height: 80px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 2px solid var(--glass-border);
+            background: var(--glass-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+            overflow: hidden;
+        }
+
+        .chat-wallpaper-preview.has-image {
+            background-size: cover !important;
+            background-position: center !important;
+        }
+
+        .chat-wallpaper-preview.has-image span {
+            display: none;
+        }
+
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 2px; }
 
-        /* PWA全屏时隐藏浏览器UI相关的样式 */
         @media all and (display-mode: standalone) {
-            body {
-                /* 确保PWA模式下完全填满 */
-            }
+            body { }
         }
+
+        /* 自定义CSS注入容器 */
+        #customCssStyles { }
     </style>
+    <!-- 自定义CSS注入点 -->
+    <style id="customCssStyles"></style>
 </head>
 <body>
     <div id="wallpaperLayer"></div>
@@ -1493,7 +1619,7 @@
             </div>
         </div>
 
-        <!-- 角色设置页面 -->
+        <!-- 角色设置页面 - 新增功能区域 -->
         <div class="page slide-from-bottom" id="characterSettingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closeCharacterSettings()">
@@ -1504,6 +1630,38 @@
                 <button class="nav-btn right" onclick="saveCharacterSettings()">保存</button>
             </div>
             <div class="page-content">
+                <!-- 新增：聊天管理 -->
+                <p class="settings-group-title">聊天管理</p>
+                <div class="settings-group">
+                    <div class="settings-item" onclick="confirmClearAllMessages()">
+                        <div class="settings-item-left">
+                            <span class="settings-icon red">🗑️</span>
+                            <div>
+                                <span class="settings-item-label">清除所有聊天记录</span>
+                                <div class="settings-item-desc">删除与此角色的全部消息</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 新增：聊天窗口壁纸 -->
+                <p class="settings-group-title">聊天窗口壁纸</p>
+                <div class="settings-group" style="padding:12px">
+                    <div class="chat-wallpaper-preview" id="chatWallpaperPreview">
+                        <span>无自定义壁纸</span>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-secondary btn-small" onclick="document.getElementById('chatWallpaperInput').click()">📤 上传</button>
+                        <button class="btn btn-secondary btn-small" onclick="clearChatWallpaper()">🗑️ 清除</button>
+                    </div>
+                    <input type="file" id="chatWallpaperInput" class="file-input-hidden" accept="image/*" onchange="handleChatWallpaperUpload(event)">
+                    <div class="input-group" style="margin-top:10px">
+                        <label class="input-label">或输入图片URL</label>
+                        <input type="text" class="input-field" id="chatWallpaperUrl" placeholder="https://...">
+                    </div>
+                    <button class="btn btn-secondary btn-small" onclick="applyChatWallpaperUrl()">应用URL</button>
+                </div>
+
                 <p class="settings-group-title">头像</p>
                 <div class="settings-group" style="padding:12px">
                     <label class="input-label">角色头像</label>
@@ -1590,6 +1748,49 @@
                     <div class="input-group">
                         <label class="input-label">提示词</label>
                         <textarea class="input-field" id="charSystemPrompt" rows="2" placeholder="额外指令..."></textarea>
+                    </div>
+                </div>
+
+                <!-- 新增：自定义CSS美化 -->
+                <p class="settings-group-title">🎨 自定义CSS美化</p>
+                <div class="settings-group" style="padding:12px">
+                    <div class="action-hint warning">
+                        <span class="action-hint-icon">⚠️</span>
+                        <span class="action-hint-text">自定义CSS会覆盖上方的头像设置</span>
+                    </div>
+
+                    <!-- 预设选择器 -->
+                    <div class="input-group">
+                        <label class="input-label">CSS预设</label>
+                        <div class="preset-selector">
+                            <select class="select-field" id="cssPresetSelect" onchange="loadCssPreset()">
+                                <option value="">-- 无预设 --</option>
+                            </select>
+                            <button class="preset-btn" onclick="addNewCssPreset()" title="新建预设">＋</button>
+                            <button class="preset-btn" onclick="saveCssPreset()" title="保存预设">💾</button>
+                            <button class="preset-btn" onclick="showCssGuide()" title="CSS指南">❓</button>
+                        </div>
+                    </div>
+
+                    <!-- 时间戳设置 -->
+                    <div class="input-group">
+                        <label class="input-label">消息时间戳</label>
+                        <select class="select-field" id="timestampPosition">
+                            <option value="default">默认(气泡内底部)</option>
+                            <option value="hidden">隐藏</option>
+                            <option value="side">气泡旁边</option>
+                        </select>
+                    </div>
+
+                    <!-- CSS编辑器 -->
+                    <div class="input-group">
+                        <label class="input-label">自定义CSS代码</label>
+                        <textarea class="input-field css-editor" id="customCssEditor" rows="8" placeholder="/* 在此输入自定义CSS */&#10;&#10;.message.sent {&#10;  background: #yourcolor;&#10;}"></textarea>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn btn-secondary btn-small" onclick="previewCss()">👁️ 预览</button>
+                        <button class="btn btn-danger btn-small" onclick="clearCustomCss()">🗑️ 清除CSS</button>
                     </div>
                 </div>
 
@@ -1776,10 +1977,90 @@
     <div class="modal-overlay" id="confirmDeleteModal">
         <div class="modal">
             <div class="modal-title" id="deleteModalTitle">确认删除？</div>
-            <p style="color:var(--text-secondary);text-align:center;margin-bottom:14px;font-size:13px">无法撤销</p>
+            <p style="color:var(--text-secondary);text-align:center;margin-bottom:14px;font-size:13px" id="deleteModalDesc">无法撤销</p>
             <div class="modal-btns">
                 <button class="modal-btn cancel" onclick="hideModal('confirmDeleteModal')">取消</button>
                 <button class="modal-btn confirm" style="background:var(--danger-color)" onclick="confirmDelete()">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增：清除聊天记录确认模态框 -->
+    <div class="modal-overlay" id="clearMessagesModal">
+        <div class="modal">
+            <div class="modal-title">⚠️ 清除所有聊天记录</div>
+            <p style="color:var(--text-secondary);text-align:center;margin-bottom:14px;font-size:13px">
+                确定要删除与此角色的所有聊天记录吗？<br>此操作无法撤销！
+            </p>
+            <div class="modal-btns">
+                <button class="modal-btn cancel" onclick="hideModal('clearMessagesModal')">取消</button>
+                <button class="modal-btn confirm" style="background:var(--danger-color)" onclick="executeClearAllMessages()">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增：CSS预设名称输入模态框 -->
+    <div class="modal-overlay" id="cssPresetNameModal">
+        <div class="modal">
+            <div class="modal-title">新建CSS预设</div>
+            <input type="text" class="modal-input" id="newCssPresetName" placeholder="预设名称...">
+            <div class="modal-btns">
+                <button class="modal-btn cancel" onclick="hideModal('cssPresetNameModal')">取消</button>
+                <button class="modal-btn confirm" onclick="createCssPreset()">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增：CSS指南模态框 -->
+    <div class="modal-overlay" id="cssGuideModal">
+        <div class="modal" style="max-width:380px">
+            <div class="modal-title">📖 CSS自定义指南</div>
+            <div class="guide-content">
+                <div class="guide-section">
+                    <div class="guide-section-title">💬 消息气泡</div>
+                    <div class="guide-code">.message.sent { }<br>.message.received { }</div>
+                    <div class="guide-text">sent=发送的消息, received=收到的消息</div>
+                </div>
+
+                <div class="guide-section">
+                    <div class="guide-section-title">👤 头像</div>
+                    <div class="guide-code">.message-avatar { }<br>.message-wrapper.sent .message-avatar { }<br>.message-wrapper.received .message-avatar { }</div>
+                    <div class="guide-text">可分别设置发送方和接收方头像</div>
+                </div>
+
+                <div class="guide-section">
+                    <div class="guide-section-title">⏰ 时间戳</div>
+                    <div class="guide-code">.message-time { }</div>
+                    <div class="guide-text">消息下方的时间显示</div>
+                </div>
+
+                <div class="guide-section">
+                    <div class="guide-section-title">📝 输入区域</div>
+                    <div class="guide-code">.chat-input-area { }<br>.chat-input-field { }<br>.chat-btn { }</div>
+                </div>
+
+                <div class="guide-section">
+                    <div class="guide-section-title">🔝 顶栏</div>
+                    <div class="guide-code">#chatPage .nav-bar { }<br>.nav-title { }</div>
+                </div>
+
+                <div class="guide-section">
+                    <div class="guide-section-title">📦 消息容器</div>
+                    <div class="guide-code">.chat-messages { }<br>.message-wrapper { }</div>
+                </div>
+
+                <div class="guide-section">
+                    <div class="guide-section-title">🎨 常用属性</div>
+                    <div class="guide-code">background: #色值;<br>color: #文字色;<br>border-radius: 圆角px;<br>padding: 内边距;<br>border: 边框;<br>box-shadow: 阴影;</div>
+                </div>
+
+                <div class="guide-section">
+                    <div class="guide-section-title">💡 示例</div>
+                    <div class="guide-code">/* 粉色气泡 */<br>.message.sent {<br>  background: linear-gradient(135deg, #ff6b9d, #c44569);<br>  border-radius: 20px;<br>}<br><br>/* 圆形大头像 */<br>.message-avatar {<br>  width: 40px;<br>  height: 40px;<br>  border: 2px solid gold;<br>}</div>
+                </div>
+            </div>
+            <div class="modal-btns" style="margin-top:14px">
+                <button class="modal-btn confirm" onclick="hideModal('cssGuideModal')">知道了</button>
             </div>
         </div>
     </div>
@@ -1789,7 +2070,7 @@
     <script>
         // ==================== IndexedDB ====================
         const DB_NAME = 'SMSAppDB';
-        const DB_VERSION = 1;
+        const DB_VERSION = 2;
         let db = null;
 
         function openDB() {
@@ -1858,6 +2139,8 @@
                 apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048,
                 maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false
             },
+            // 全局CSS预设库
+            globalCssPresets: [],
             dataLoaded: false
         };
 
@@ -1936,7 +2219,8 @@
                     saveToIDB('appData', 'characters', App.characters),
                     saveToIDB('appData', 'worldbooks', App.worldbooks),
                     saveToIDB('appData', 'settings', App.settings),
-                    saveToIDB('appData', 'appIcons', App.appIcons)
+                    saveToIDB('appData', 'appIcons', App.appIcons),
+                    saveToIDB('appData', 'globalCssPresets', App.globalCssPresets)
                 ]);
                 return true;
             } catch (e) { console.error('保存失败:', e); return false; }
@@ -1944,16 +2228,18 @@
 
         async function loadData() {
             try {
-                const [characters, worldbooks, settings, icons] = await Promise.all([
+                const [characters, worldbooks, settings, icons, presets] = await Promise.all([
                     loadFromIDB('appData', 'characters'),
                     loadFromIDB('appData', 'worldbooks'),
                     loadFromIDB('appData', 'settings'),
-                    loadFromIDB('appData', 'appIcons')
+                    loadFromIDB('appData', 'appIcons'),
+                    loadFromIDB('appData', 'globalCssPresets')
                 ]);
                 if (characters) App.characters = characters;
                 if (worldbooks) App.worldbooks = worldbooks;
                 if (settings) App.settings = { ...App.settings, ...settings };
                 if (icons) App.appIcons = { ...App.appIcons, ...icons };
+                if (presets) App.globalCssPresets = presets;
                 loadSettingsUI();
                 if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
                 App.dataLoaded = true;
@@ -1967,7 +2253,7 @@
             if (!confirm('确定清除图片缓存？')) return;
             App.settings.wallpaperData = null; App.settings.wallpaper = 'gradient1';
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null };
-            App.characters.forEach(c => { c.avatarImage = null; c.userAvatar = null; });
+            App.characters.forEach(c => { c.avatarImage = null; c.userAvatar = null; c.chatWallpaper = null; });
             await saveData(); applyWallpaper(); applyAppIcons(); updateIconPreviews(); await updateStorageDisplay();
             showToast('已清除', 'success');
         }
@@ -1983,6 +2269,7 @@
             for (let c of App.characters) {
                 if (c.avatarImage?.length > 50000) c.avatarImage = await compressImage(c.avatarImage, 150, 0.7);
                 if (c.userAvatar?.length > 50000) c.userAvatar = await compressImage(c.userAvatar, 150, 0.7);
+                if (c.chatWallpaper?.length > 300000) c.chatWallpaper = await compressImage(c.chatWallpaper, 500, 0.7);
             }
             if (App.settings.wallpaperData?.length > 500000) App.settings.wallpaperData = await compressImage(App.settings.wallpaperData, 600, 0.7);
             for (let k of Object.keys(App.appIcons)) {
@@ -2166,7 +2453,30 @@
         // ==================== 角色 ====================
         async function createCharacter() {
             const name = document.getElementById('newCharacterName').value.trim(); if (!name) { showToast('请输入', 'error'); return; }
-            const char = { id: Date.now().toString(), name, avatar: ['😊','😎','🥰','🦊','🐱','🐰'][Math.floor(Math.random()*6)], avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle', showBorder: false, borderColor: '#007AFF', borderWidth: 2, description: '', greeting: '', scenario: '', worldbookId: '', userNick: '', systemPrompt: '', messages: [] };
+            const char = {
+                id: Date.now().toString(),
+                name,
+                avatar: ['😊','😎','🥰','🦊','🐱','🐰'][Math.floor(Math.random()*6)],
+                avatarImage: null,
+                userAvatar: null,
+                showAvatar: true,
+                avatarShape: 'circle',
+                showBorder: false,
+                borderColor: '#007AFF',
+                borderWidth: 2,
+                description: '',
+                greeting: '',
+                scenario: '',
+                worldbookId: '',
+                userNick: '',
+                systemPrompt: '',
+                messages: [],
+                // 新增字段
+                chatWallpaper: null,
+                customCss: '',
+                activeCssPresetId: null,
+                timestampPosition: 'default'
+            };
             App.characters.push(char); await saveData(); hideModal('createCharacterModal'); renderContacts(); showToast(`"${name}"已创建`, 'success');
         }
 
@@ -2190,25 +2500,81 @@
             document.getElementById('chatTitle').textContent = char.name;
             document.getElementById('selectModeBar').classList.remove('active');
             document.getElementById('chatMessages').classList.remove('select-mode');
+
+            // 应用聊天窗口壁纸
+            applyChatWallpaper(char);
+            // 应用自定义CSS
+            applyCustomCss(char);
+
             renderMessages(); openPage('chatPage');
             if (char.messages.length === 0 && char.greeting) addMessage(char.greeting, 'received');
         }
 
-        function closeChatPage() { exitSelectMode(); closePage('chatPage'); App.currentCharId = null; }
+        // 新增：应用聊天窗口壁纸
+        function applyChatWallpaper(char) {
+            const chatPage = document.getElementById('chatPage');
+            if (char.chatWallpaper) {
+                chatPage.classList.add('has-custom-bg');
+                chatPage.style.backgroundImage = `url(${char.chatWallpaper})`;
+            } else {
+                chatPage.classList.remove('has-custom-bg');
+                chatPage.style.backgroundImage = '';
+            }
+        }
+
+        // 新增：应用自定义CSS
+        function applyCustomCss(char) {
+            const styleEl = document.getElementById('customCssStyles');
+            let css = '';
+
+            // 如果有激活的预设，使用预设的CSS
+            if (char.activeCssPresetId) {
+                const preset = App.globalCssPresets.find(p => p.id === char.activeCssPresetId);
+                if (preset) css = preset.css;
+            }
+
+            // 如果角色有自定义CSS，追加或覆盖
+            if (char.customCss) {
+                css = char.customCss;
+            }
+
+            styleEl.textContent = css;
+        }
+
+        function closeChatPage() {
+            exitSelectMode();
+            closePage('chatPage');
+            // 清除自定义CSS
+            document.getElementById('customCssStyles').textContent = '';
+            // 清除聊天壁纸
+            const chatPage = document.getElementById('chatPage');
+            chatPage.classList.remove('has-custom-bg');
+            chatPage.style.backgroundImage = '';
+            App.currentCharId = null;
+        }
 
         function openCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+
+            // 聊天壁纸预览
+            updateChatWallpaperPreview(char);
+
+            // 头像
             const charAvUpload = document.getElementById('charAvatarUpload'), userAvUpload = document.getElementById('userAvatarUpload');
             if (char.avatarImage) { charAvUpload.innerHTML = `<img src="${char.avatarImage}">`; charAvUpload.classList.add('has-image'); } else { charAvUpload.innerHTML = '📷'; charAvUpload.classList.remove('has-image'); }
             charAvUpload.dataset.image = char.avatarImage || '';
             if (char.userAvatar) { userAvUpload.innerHTML = `<img src="${char.userAvatar}">`; userAvUpload.classList.add('has-image'); } else { userAvUpload.innerHTML = '👤'; userAvUpload.classList.remove('has-image'); }
             userAvUpload.dataset.image = char.userAvatar || '';
+
+            // 头像设置
             document.getElementById('showAvatarToggle').classList.toggle('active', char.showAvatar !== false);
             document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => { el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle')); });
             document.getElementById('showBorderToggle').classList.toggle('active', char.showBorder === true);
             document.getElementById('borderColorPicker').value = char.borderColor || '#007AFF';
             document.getElementById('borderWidthSlider').value = char.borderWidth || 2;
             document.getElementById('borderWidthValue').textContent = char.borderWidth || 2;
+
+            // 基本信息
             document.getElementById('charName').value = char.name;
             document.getElementById('charAvatar').value = char.avatar || '';
             document.getElementById('charDescription').value = char.description || '';
@@ -2216,10 +2582,36 @@
             document.getElementById('charScenario').value = char.scenario || '';
             document.getElementById('charUserNick').value = char.userNick || '';
             document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
+
+            // CSS相关
+            document.getElementById('timestampPosition').value = char.timestampPosition || 'default';
+            document.getElementById('customCssEditor').value = char.customCss || '';
+            updateCssPresetSelect(char);
+
             updateWorldbookSelect();
             document.getElementById('charWorldbook').value = char.worldbookId || '';
             updateCharCounter();
             openPage('characterSettingsPage');
+        }
+
+        // 新增：更新聊天壁纸预览
+        function updateChatWallpaperPreview(char) {
+            const preview = document.getElementById('chatWallpaperPreview');
+            if (char.chatWallpaper) {
+                preview.style.backgroundImage = `url(${char.chatWallpaper})`;
+                preview.classList.add('has-image');
+            } else {
+                preview.style.backgroundImage = '';
+                preview.classList.remove('has-image');
+            }
+        }
+
+        // 新增：更新CSS预设选择器
+        function updateCssPresetSelect(char) {
+            const select = document.getElementById('cssPresetSelect');
+            select.innerHTML = '<option value="">-- 无预设 --</option>' +
+                App.globalCssPresets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+            select.value = char.activeCssPresetId || '';
         }
 
         function closeCharacterSettings() { closePage('characterSettingsPage'); }
@@ -2228,9 +2620,141 @@
         async function handleUserAvatarUpload(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async ev => { const compressed = await compressImage(ev.target.result, 200, 0.8); const upload = document.getElementById('userAvatarUpload'); upload.innerHTML = `<img src="${compressed}">`; upload.classList.add('has-image'); upload.dataset.image = compressed; }; reader.readAsDataURL(file); e.target.value = ''; }
         function selectShape(el) { document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(e => e.classList.remove('selected')); el.classList.add('selected'); }
 
+        // 新增：聊天窗口壁纸上传
+        async function handleChatWallpaperUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const reader = new FileReader();
+            reader.onload = async ev => {
+                char.chatWallpaper = await compressImage(ev.target.result, 600, 0.8);
+                updateChatWallpaperPreview(char);
+                showToast('已设置，保存后生效', 'success');
+            };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        // 新增：应用URL聊天壁纸
+        function applyChatWallpaperUrl() {
+            const url = document.getElementById('chatWallpaperUrl').value.trim();
+            if (!url) { showToast('请输入URL', 'error'); return; }
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            char.chatWallpaper = url;
+            updateChatWallpaperPreview(char);
+            showToast('已设置，保存后生效', 'success');
+        }
+
+        // 新增：清除聊天壁纸
+        function clearChatWallpaper() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            char.chatWallpaper = null;
+            updateChatWallpaperPreview(char);
+            showToast('已清除，保存后生效', 'info');
+        }
+
+        // 新增：确认清除所有聊天记录
+        function confirmClearAllMessages() {
+            showModal('clearMessagesModal');
+        }
+
+        // 新增：执行清除所有聊天记录
+        async function executeClearAllMessages() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            char.messages = [];
+            await saveData();
+            hideModal('clearMessagesModal');
+            renderMessages();
+            showToast('聊天记录已清除', 'success');
+        }
+
+        // ==================== CSS预设相关 ====================
+
+        // 加载选中的CSS预设
+        function loadCssPreset() {
+            const presetId = document.getElementById('cssPresetSelect').value;
+            if (!presetId) {
+                document.getElementById('customCssEditor').value = '';
+                return;
+            }
+            const preset = App.globalCssPresets.find(p => p.id === presetId);
+            if (preset) {
+                document.getElementById('customCssEditor').value = preset.css;
+            }
+        }
+
+        // 新建CSS预设
+        function addNewCssPreset() {
+            showModal('cssPresetNameModal');
+            document.getElementById('newCssPresetName').value = '';
+        }
+
+        // 创建CSS预设
+        async function createCssPreset() {
+            const name = document.getElementById('newCssPresetName').value.trim();
+            if (!name) { showToast('请输入名称', 'error'); return; }
+
+            const css = document.getElementById('customCssEditor').value;
+            const preset = {
+                id: Date.now().toString(),
+                name: name,
+                css: css
+            };
+
+            App.globalCssPresets.push(preset);
+            await saveData();
+            hideModal('cssPresetNameModal');
+
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (char) {
+                updateCssPresetSelect(char);
+                document.getElementById('cssPresetSelect').value = preset.id;
+            }
+
+            showToast(`预设"${name}"已创建`, 'success');
+        }
+
+        // 保存当前CSS到选中的预设
+        async function saveCssPreset() {
+            const presetId = document.getElementById('cssPresetSelect').value;
+            if (!presetId) {
+                showToast('请先选择或创建预设', 'warning');
+                return;
+            }
+
+            const preset = App.globalCssPresets.find(p => p.id === presetId);
+            if (!preset) return;
+
+            preset.css = document.getElementById('customCssEditor').value;
+            await saveData();
+            showToast(`预设"${preset.name}"已更新`, 'success');
+        }
+
+        // 显示CSS指南
+        function showCssGuide() {
+            showModal('cssGuideModal');
+        }
+
+        // 预览CSS
+        function previewCss() {
+            const css = document.getElementById('customCssEditor').value;
+            document.getElementById('customCssStyles').textContent = css;
+            showToast('CSS已预览', 'info');
+        }
+
+        // 清除自定义CSS
+        function clearCustomCss() {
+            document.getElementById('customCssEditor').value = '';
+            document.getElementById('cssPresetSelect').value = '';
+            document.getElementById('customCssStyles').textContent = '';
+            showToast('CSS已清除', 'info');
+        }
+
         async function saveCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+
             const greeting = document.getElementById('charGreeting').value; if (greeting.length > 300) { showToast('开场白过长', 'error'); return; }
+
+            // 头像
             char.avatarImage = document.getElementById('charAvatarUpload').dataset.image || null;
             char.userAvatar = document.getElementById('userAvatarUpload').dataset.image || null;
             char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
@@ -2239,6 +2763,8 @@
             char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
             char.borderColor = document.getElementById('borderColorPicker').value;
             char.borderWidth = parseInt(document.getElementById('borderWidthSlider').value);
+
+            // 基本信息
             char.name = document.getElementById('charName').value.trim() || char.name;
             char.avatar = document.getElementById('charAvatar').value.trim() || char.avatar;
             char.description = document.getElementById('charDescription').value;
@@ -2247,8 +2773,23 @@
             char.worldbookId = document.getElementById('charWorldbook').value;
             char.userNick = document.getElementById('charUserNick').value.trim();
             char.systemPrompt = document.getElementById('charSystemPrompt').value;
+
+            // CSS相关
+            char.timestampPosition = document.getElementById('timestampPosition').value;
+            char.customCss = document.getElementById('customCssEditor').value;
+            char.activeCssPresetId = document.getElementById('cssPresetSelect').value || null;
+
             document.getElementById('chatTitle').textContent = char.name;
-            await saveData(); renderMessages(); closeCharacterSettings(); showToast('已保存', 'success');
+
+            await saveData();
+
+            // 重新应用样式
+            applyChatWallpaper(char);
+            applyCustomCss(char);
+            renderMessages();
+
+            closeCharacterSettings();
+            showToast('已保存', 'success');
         }
 
         function updateCharCounter() { const ta = document.getElementById('charGreeting'), counter = document.getElementById('greetingCharCounter'); counter.textContent = `${ta.value.length}/300`; counter.className = 'char-counter' + (ta.value.length >= 280 ? ' warning' : '') + (ta.value.length >= 300 ? ' error' : ''); }
@@ -2259,9 +2800,17 @@
             const container = document.getElementById('chatMessages');
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             if (char.messages.length === 0) { container.innerHTML = '<div class="date-separator"><span class="date-separator-text">今天</span></div>'; return; }
+
             const showAvatar = char.showAvatar !== false, avatarShape = char.avatarShape || 'circle', showBorder = char.showBorder === true, borderColor = char.borderColor || '#007AFF', borderWidth = char.borderWidth || 2;
             let shapeClass = avatarShape === 'square' ? 'square' : avatarShape === 'rounded-square' ? 'rounded-square' : '';
             const borderStyle = showBorder ? `border:${borderWidth}px solid ${borderColor};` : '';
+
+            // 时间戳位置
+            const timestampPos = char.timestampPosition || 'default';
+            let timeClass = '';
+            if (timestampPos === 'hidden') timeClass = 'time-hidden';
+            else if (timestampPos === 'side') timeClass = 'time-side';
+
             let html = '', lastDate = null;
             char.messages.forEach(msg => {
                 const msgDate = new Date(msg.timestamp).toLocaleDateString();
@@ -2269,7 +2818,7 @@
                 const type = msg.role === 'user' ? 'sent' : 'received', checked = App.selectedMsgs.has(msg.id) ? 'checked' : '';
                 let avatarHtml = '';
                 if (showAvatar) { const avatarContent = type === 'received' ? (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0])) : (char.userAvatar ? `<img src="${char.userAvatar}">` : '👤'); avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`; }
-                html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}"><div class="message-checkbox ${checked}" onclick="toggleMsgSelect('${msg.id}')"></div>${type === 'received' ? avatarHtml : ''}<div class="message ${type}">${escapeHtml(msg.content)}<div class="message-time">${formatTime(msg.timestamp)}</div></div>${type === 'sent' ? avatarHtml : ''}</div>`;
+                html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}"><div class="message-checkbox ${checked}" onclick="toggleMsgSelect('${msg.id}')"></div>${type === 'received' ? avatarHtml : ''}<div class="message ${type}" style="position:relative;">${escapeHtml(msg.content)}<div class="message-time ${timeClass}">${formatTime(msg.timestamp)}</div></div>${type === 'sent' ? avatarHtml : ''}</div>`;
             });
             container.innerHTML = html;
             scrollToBottom();
@@ -2350,8 +2899,8 @@
         }
 
         // ==================== 导入导出 ====================
-        function exportAllData() { const data = { characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, version: '4.5.0', exportedAt: new Date().toISOString() }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sms-backup-${new Date().toISOString().split('T')[0]}.json`; a.click(); showToast('已导出', 'success'); }
-        async function importData(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async ev => { try { const data = JSON.parse(ev.target.result); if (data.characters) App.characters = data.characters; if (data.worldbooks) App.worldbooks = data.worldbooks; if (data.settings) App.settings = {...App.settings, ...data.settings}; if (data.appIcons) App.appIcons = {...App.appIcons, ...data.appIcons}; if (await saveData()) { loadSettingsUI(); applyWallpaper(); applyAppIcons(); applyStatusBarVisibility(); await updateStorageDisplay(); showToast('导入成功', 'success'); } } catch(err) { showToast('导入失败: ' + err.message, 'error'); } }; reader.readAsText(file); e.target.value = ''; }
+        function exportAllData() { const data = { characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, version: '5.0.0', exportedAt: new Date().toISOString() }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sms-backup-${new Date().toISOString().split('T')[0]}.json`; a.click(); showToast('已导出', 'success'); }
+        async function importData(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async ev => { try { const data = JSON.parse(ev.target.result); if (data.characters) App.characters = data.characters; if (data.worldbooks) App.worldbooks = data.worldbooks; if (data.settings) App.settings = {...App.settings, ...data.settings}; if (data.appIcons) App.appIcons = {...App.appIcons, ...data.appIcons}; if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets; if (await saveData()) { loadSettingsUI(); applyWallpaper(); applyAppIcons(); applyStatusBarVisibility(); await updateStorageDisplay(); showToast('导入成功', 'success'); } } catch(err) { showToast('导入失败: ' + err.message, 'error'); } }; reader.readAsText(file); e.target.value = ''; }
         async function clearAllData() { if (confirm('确定清除所有？')) { try { await clearIDBStore('appData'); await clearIDBStore('images'); location.reload(); } catch (e) { indexedDB.deleteDatabase(DB_NAME); location.reload(); } } }
 
         // ==================== 工具 ====================
@@ -2362,7 +2911,7 @@
 
         document.addEventListener('keydown', e => {
             if (e.key === 'Enter' && !e.shiftKey) { const input = document.getElementById('chatInput'); if (document.activeElement === input && document.getElementById('chatPage').classList.contains('active')) { e.preventDefault(); sendMessage(); } }
-            if (e.key === 'Escape') { ['createCharacterModal','createWorldbookModal','confirmDeleteModal'].forEach(hideModal); if (App.isSelectMode) exitSelectMode(); }
+            if (e.key === 'Escape') { ['createCharacterModal','createWorldbookModal','confirmDeleteModal','clearMessagesModal','cssPresetNameModal','cssGuideModal'].forEach(hideModal); if (App.isSelectMode) exitSelectMode(); }
         });
 
         document.querySelectorAll('.modal-overlay').forEach(overlay => { overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); }); });
