@@ -26,64 +26,264 @@
             --warning-color: #FF9500;
             --message-sent: #007AFF;
             --message-received: rgba(255, 255, 255, 0.15);
-            --metal-gradient: linear-gradient(145deg, #2a2a2e 0%, #1a1a1e 50%, #252528 100%);
-            --metal-border: rgba(255, 255, 255, 0.08);
+            --metal-gradient: linear-gradient(145deg, #2a2a2e 0%, #1a1a1e 50%, #0a0a0e 100%);
+            --metal-border: linear-gradient(145deg, #3a3a3e, #1a1a1e);
             --transition-smooth: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html { height: 100%; height: -webkit-fill-available; }
-        body { height: 100%; min-height: 100vh; min-height: -webkit-fill-available; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background: #000; overscroll-behavior: none; position: fixed; width: 100%; top: 0; left: 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
 
-        #wallpaperLayer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-color: #1a1a2e; }
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            position: fixed;
+            width: 100%;
+        }
 
-        .phone-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; margin: 0; overflow: hidden; z-index: 1; }
+        #wallpaperLayer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+        }
 
-        .status-bar { position: absolute; top: 0; left: 0; right: 0; height: calc(44px + var(--safe-top)); padding-top: var(--safe-top); display: flex; justify-content: space-between; align-items: center; padding-left: 24px; padding-right: 24px; z-index: 1000; }
+        .phone-container {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+        }
+
+        .status-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: calc(44px + var(--safe-top));
+            padding: var(--safe-top) 24px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
         .status-bar.hidden { display: none !important; }
-        .status-bar-time { font-size: 16px; font-weight: 600; color: var(--text-primary); }
-        .status-bar-icons { display: flex; gap: 5px; align-items: center; }
-        .status-bar-icons svg { width: 16px; height: 16px; fill: var(--text-primary); }
 
-        .home-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding-top: calc(80px + var(--safe-top)); padding-bottom: calc(80px + var(--safe-bottom)); padding-left: 20px; padding-right: 20px; display: flex; flex-direction: column; gap: 24px; overflow-y: auto; z-index: 1; }
-        .home-screen.no-statusbar { padding-top: calc(40px + var(--safe-top)); }
+        .status-bar-time {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
 
-        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; justify-items: center; }
-        .app-icon-wrapper { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+        .status-bar-icons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .status-bar-icons svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-primary);
+        }
+
+        .home-screen {
+            position: absolute;
+            inset: 0;
+            padding: calc(80px + var(--safe-top)) 20px calc(80px + var(--safe-bottom));
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            overflow-y: auto;
+            z-index: 1;
+        }
+
+        .home-screen.no-statusbar {
+            padding-top: calc(40px + var(--safe-top));
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            justify-items: center;
+        }
+
+        .app-icon-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
         .app-icon-wrapper:active { transform: scale(0.92); }
-        .app-icon { width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); transition: var(--transition-smooth); overflow: hidden; }
+
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
         .app-icon.settings { background: linear-gradient(135deg, #8e8e93, #636366); }
         .app-icon.messages { background: linear-gradient(135deg, #34c759, #30b350); }
         .app-icon.worldbook { background: linear-gradient(135deg, #ff9500, #ff6b00); }
         .app-icon.photos { background: linear-gradient(135deg, #ff2d55, #ff375f); }
-        .app-icon img { width: 100%; height: 100%; object-fit: cover; }
-        .app-icon-label { font-size: 11px; color: var(--text-primary); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); text-align: center; }
 
-        .home-indicator { position: absolute; bottom: calc(8px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); width: 120px; height: 4px; background: rgba(255, 255, 255, 0.4); border-radius: 2px; z-index: 1001; }
+        .app-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-        .page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: var(--glass-bg-dark); backdrop-filter: blur(var(--blur-amount)); -webkit-backdrop-filter: blur(var(--blur-amount)); z-index: 100; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); display: flex; flex-direction: column; overflow: hidden; }
+        .app-icon-label {
+            font-size: 11px;
+            color: var(--text-primary);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .home-indicator {
+            position: absolute;
+            bottom: calc(8px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 2px;
+            z-index: 1001;
+        }
+
+        .page {
+            position: fixed;
+            inset: 0;
+            background: var(--glass-bg-dark);
+            backdrop-filter: blur(var(--blur-amount));
+            -webkit-backdrop-filter: blur(var(--blur-amount));
+            z-index: 100;
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
         .page.active { transform: translateX(0); }
         .page.slide-from-bottom { transform: translateY(100%); }
         .page.slide-from-bottom.active { transform: translateY(0); }
-        .page#chatPage { background: var(--glass-bg-dark); }
-        .page#chatPage.has-custom-bg { background-size: cover !important; background-position: center !important; background-repeat: no-repeat !important; }
 
-        .nav-bar { display: flex; align-items: center; justify-content: space-between; padding-top: calc(8px + var(--safe-top)); padding-bottom: 8px; padding-left: 12px; padding-right: 12px; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-shrink: 0; min-height: calc(44px + var(--safe-top)); }
-        .nav-btn { display: flex; align-items: center; gap: 2px; background: none; border: none; color: var(--accent-color); font-size: 15px; cursor: pointer; padding: 4px; border-radius: 6px; min-width: 50px; }
+        .page#chatPage.has-custom-bg {
+            background-size: cover !important;
+            background-position: center !important;
+        }
+
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: calc(8px + var(--safe-top)) 12px 8px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+            min-height: calc(44px + var(--safe-top));
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-size: 15px;
+            cursor: pointer;
+            padding: 4px;
+            min-width: 50px;
+        }
+
         .nav-btn svg { width: 16px; height: 16px; fill: currentColor; }
         .nav-btn.right { justify-content: flex-end; }
-        .nav-title { font-size: 15px; font-weight: 600; color: var(--text-primary); text-align: center; flex: 1; }
 
-        .page-content { flex: 1; overflow-y: auto; padding: 12px; padding-bottom: calc(12px + var(--safe-bottom)); -webkit-overflow-scrolling: touch; }
+        .nav-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            flex: 1;
+        }
 
-        .settings-group { background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: 14px; margin-bottom: 16px; overflow: hidden; border: 1px solid var(--glass-border); }
-        .settings-group-title { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; padding: 16px 12px 4px; }
-        .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); cursor: pointer; }
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            padding-bottom: calc(12px + var(--safe-bottom));
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .settings-group {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        .settings-group-title {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 16px 12px 4px;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+        }
+
         .settings-item:last-child { border-bottom: none; }
-        .settings-item-left { display: flex; align-items: center; gap: 10px; }
-        .settings-icon { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+
+        .settings-item-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+        }
+
         .settings-icon.blue { background: var(--accent-color); }
         .settings-icon.green { background: var(--success-color); }
         .settings-icon.red { background: var(--danger-color); }
@@ -92,197 +292,792 @@
         .settings-icon.cyan { background: #5AC8FA; }
         .settings-icon.gray { background: #8e8e93; }
         .settings-icon.pink { background: #FF2D55; }
-        .settings-icon.teal { background: #30B0C7; }
+
         .settings-item-label { color: var(--text-primary); font-size: 14px; }
         .settings-item-desc { color: var(--text-secondary); font-size: 11px; margin-top: 1px; }
 
         .input-group { margin-bottom: 14px; }
-        .input-label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; }
-        .input-field { width: 100%; padding: 10px 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text-primary); font-size: 14px; outline: none; }
+
+        .input-label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+        }
+
         .input-field:focus { border-color: var(--accent-color); }
         .input-field::placeholder { color: rgba(255, 255, 255, 0.3); }
-        textarea.input-field { min-height: 80px; resize: vertical; font-family: inherit; line-height: 1.4; }
-        textarea.css-editor { min-height: 150px; font-family: 'SF Mono', 'Menlo', 'Monaco', monospace; font-size: 12px; line-height: 1.5; background: rgba(0, 0, 0, 0.4); color: #00ff88; }
 
-        .btn { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 12px 18px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; }
+        textarea.input-field {
+            min-height: 80px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.4;
+        }
+
+        textarea.css-editor {
+            min-height: 150px;
+            font-family: 'SF Mono', monospace;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            color: #00ff88;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
         .btn:active { transform: scale(0.98); }
         .btn:disabled { opacity: 0.5; }
+
         .btn-primary { background: var(--accent-color); color: white; }
         .btn-secondary { background: var(--glass-bg); color: var(--accent-color); border: 1px solid var(--glass-border); }
         .btn-danger { background: var(--danger-color); color: white; }
         .btn-success { background: var(--success-color); color: white; }
         .btn-warning { background: var(--warning-color); color: white; }
+
         .btn-small { padding: 8px 14px; font-size: 13px; }
         .btn-stack { display: flex; flex-direction: column; gap: 6px; }
         .btn-row { display: flex; gap: 6px; }
         .btn-row .btn { flex: 1; }
 
         .contact-list { display: flex; flex-direction: column; }
-        .contact-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--glass-bg); border-radius: 12px; margin-bottom: 6px; cursor: pointer; border: 1px solid var(--glass-border); }
-        .contact-avatar { width: 46px; height: 46px; border-radius: 50%; background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; flex-shrink: 0; overflow: hidden; }
-        .contact-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .contact-info { flex: 1; min-width: 0; }
-        .contact-name { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
-        .contact-preview { font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .contact-time { font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
 
-        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--glass-bg);
+            border-radius: 12px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            border: 1px solid var(--glass-border);
+        }
+
+        .contact-avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .contact-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .contact-info { flex: 1; min-width: 0; }
+
+        .contact-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .contact-preview {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .contact-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
         .empty-state-icon { font-size: 48px; margin-bottom: 14px; opacity: 0.5; }
         .empty-state-title { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
         .empty-state-desc { font-size: 13px; color: var(--text-secondary); }
 
-        .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
 
-        .chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 3px; -webkit-overflow-scrolling: touch; }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            -webkit-overflow-scrolling: touch;
+        }
 
-        .message-wrapper { display: flex; align-items: flex-end; gap: 5px; margin-bottom: 1px; }
+        .message-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 5px;
+            margin-bottom: 1px;
+        }
+
         .message-wrapper.sent { justify-content: flex-end; }
         .message-wrapper.received { justify-content: flex-start; }
 
-        .message-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; font-size: 11px; color: white; flex-shrink: 0; overflow: hidden; }
+        .message-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: white;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
         .message-avatar.square { border-radius: 5px; }
         .message-avatar.rounded-square { border-radius: 7px; }
-        .message-avatar.hidden { display: none; }
         .message-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-        .message { max-width: 75%; padding: 7px 11px; font-size: 14px; line-height: 1.35; word-wrap: break-word; animation: msgIn 0.2s ease-out; position: relative; }
-        @keyframes msgIn { from { opacity: 0; transform: translateY(6px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .message {
+            max-width: 75%;
+            padding: 7px 11px;
+            font-size: 14px;
+            line-height: 1.35;
+            word-wrap: break-word;
+            animation: msgIn 0.2s ease-out;
+            position: relative;
+        }
 
-        .message.sent { background: var(--message-sent); color: white; border-radius: 16px 16px 4px 16px; }
-        .message.received { background: var(--message-received); backdrop-filter: blur(8px); color: var(--text-primary); border-radius: 16px 16px 16px 4px; }
+        @keyframes msgIn {
+            from { opacity: 0; transform: translateY(6px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
 
-        /* 引用消息样式 */
-        .message-quote { background: rgba(0, 0, 0, 0.2); border-left: 2px solid rgba(255, 255, 255, 0.4); border-radius: 4px; padding: 4px 8px; margin-bottom: 6px; font-size: 12px; color: rgba(255, 255, 255, 0.7); max-height: 40px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-        .message.sent .message-quote { background: rgba(0, 0, 0, 0.15); border-left-color: rgba(255, 255, 255, 0.5); }
+        .message.sent {
+            background: var(--message-sent);
+            color: white;
+            border-radius: 16px 16px 4px 16px;
+        }
+
+        .message.received {
+            background: var(--message-received);
+            backdrop-filter: blur(8px);
+            color: var(--text-primary);
+            border-radius: 16px 16px 16px 4px;
+        }
+
+        /* 引用气泡样式 */
+        .quote-bubble {
+            background: rgba(255, 255, 255, 0.08);
+            border-left: 2px solid var(--accent-color);
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            max-height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .message.sent .quote-bubble {
+            background: rgba(255, 255, 255, 0.15);
+            border-left-color: rgba(255, 255, 255, 0.5);
+        }
 
         /* 图片消息样式 */
-        .message-image { max-width: 200px; max-height: 200px; border-radius: 8px; margin-top: 4px; cursor: pointer; }
+        .message-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+        }
 
-        .message-time { font-size: 9px; color: rgba(255, 255, 255, 0.5); margin-top: 2px; }
+        .message-time {
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 2px;
+        }
+
         .message-time.time-hidden { display: none; }
-        .message-time.time-side { position: absolute; bottom: 4px; right: -40px; margin-top: 0; }
+        .message-time.time-side { position: absolute; bottom: 4px; right: -40px; }
         .message-wrapper.sent .message-time.time-side { right: auto; left: -40px; }
 
-        .message-checkbox { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.4); background: transparent; display: none; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
-        .message-checkbox.checked { background: var(--danger-color); border-color: var(--danger-color); }
-        .message-checkbox.checked::after { content: '✓'; color: white; font-size: 10px; }
+        .message-checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            background: transparent;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .message-checkbox.checked {
+            background: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .message-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 10px;
+        }
+
         .chat-messages.select-mode .message-checkbox { display: flex; }
 
-        .typing-indicator { display: inline-flex; gap: 3px; padding: 9px 12px; background: var(--message-received); border-radius: 16px 16px 16px 4px; width: fit-content; }
-        .typing-indicator span { width: 5px; height: 5px; background: var(--text-secondary); border-radius: 50%; animation: typing 1.4s infinite ease-in-out; }
+        .typing-indicator {
+            display: inline-flex;
+            gap: 3px;
+            padding: 9px 12px;
+            background: var(--message-received);
+            border-radius: 16px 16px 16px 4px;
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            width: 5px;
+            height: 5px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
         .typing-indicator span:nth-child(1) { animation-delay: 0s; }
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
 
         /* 引用预览条 */
-        .quote-preview-bar { display: none; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .quote-preview-bar {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(0, 122, 255, 0.15);
+            border-left: 3px solid var(--accent-color);
+            margin: 0 10px;
+            border-radius: 0 8px 8px 0;
+        }
+
         .quote-preview-bar.active { display: flex; }
-        .quote-preview-content { flex: 1; font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 2px solid var(--accent-color); padding-left: 8px; }
-        .quote-preview-close { width: 24px; height: 24px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: none; color: var(--text-primary); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        .chat-input-area { display: flex; align-items: flex-end; gap: 5px; padding: 6px 10px; padding-bottom: calc(6px + var(--safe-bottom)); background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.08); }
+        .quote-preview-content {
+            flex: 1;
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-        .chat-btn { width: 34px; height: 34px; border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px); color: white; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
-        .chat-btn:active { transform: scale(0.92); background: rgba(255, 255, 255, 0.2); }
+        .quote-preview-close {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-primary);
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-input-area {
+            display: flex;
+            align-items: flex-end;
+            gap: 5px;
+            padding: 6px 10px;
+            padding-bottom: calc(6px + var(--safe-bottom));
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .chat-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .chat-btn:active {
+            transform: scale(0.92);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
         .chat-btn.send { background: var(--accent-color); }
         .chat-btn.ai { background: linear-gradient(135deg, #a855f7, #ec4899); }
         .chat-btn svg { width: 16px; height: 16px; fill: currentColor; }
 
-        .chat-input-field { flex: 1; min-height: 34px; max-height: 90px; padding: 7px 12px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 17px; color: var(--text-primary); font-size: 14px; resize: none; outline: none; font-family: inherit; }
+        .chat-input-field {
+            flex: 1;
+            min-height: 34px;
+            max-height: 90px;
+            padding: 7px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 17px;
+            color: var(--text-primary);
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+        }
+
         .chat-input-field::placeholder { color: rgba(255, 255, 255, 0.4); }
 
-        /* 扩展面板 - ins金属风格 */
-        .extension-panel { position: absolute; bottom: calc(60px + var(--safe-bottom)); left: 10px; right: 10px; background: var(--metal-gradient); backdrop-filter: blur(30px); border: 1px solid var(--metal-border); border-radius: 16px; padding: 14px; z-index: 50; opacity: 0; visibility: hidden; transform: translateY(12px); transition: all 0.25s ease; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
-        .extension-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
-        .extension-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .extension-panel-title { font-size: 14px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.5px; }
-        .extension-panel-close { width: 28px; height: 28px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-primary); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
-        .extension-panel-close:hover { background: rgba(255, 255, 255, 0.15); }
+        /* 扩展面板 - 金属质感风格 */
+        .extension-panel {
+            position: absolute;
+            bottom: calc(60px + var(--safe-bottom));
+            left: 10px;
+            right: 10px;
+            background: var(--metal-gradient);
+            border: 1px solid rgba(80, 80, 85, 0.6);
+            border-radius: 16px;
+            padding: 16px;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(12px);
+            transition: all 0.25s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
 
-        /* ins风格扩展按钮 */
-        .ext-btn { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; background: linear-gradient(145deg, rgba(50, 50, 55, 0.8) 0%, rgba(35, 35, 40, 0.9) 100%); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; color: var(--text-primary); font-size: 14px; cursor: pointer; margin-bottom: 8px; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.04); }
-        .ext-btn:last-child { margin-bottom: 0; }
-        .ext-btn:hover { background: linear-gradient(145deg, rgba(60, 60, 65, 0.9) 0%, rgba(45, 45, 50, 0.95) 100%); }
-        .ext-btn:active { transform: scale(0.98); }
+        .extension-panel.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
 
-        .ext-btn-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .ext-btn-icon svg { width: 18px; height: 18px; fill: currentColor; }
-        .ext-btn-icon.danger { background: linear-gradient(135deg, rgba(255, 59, 48, 0.3) 0%, rgba(255, 59, 48, 0.15) 100%); color: #ff6b6b; }
-        .ext-btn-icon.purple { background: linear-gradient(135deg, rgba(175, 82, 222, 0.3) 0%, rgba(175, 82, 222, 0.15) 100%); color: #c792ea; }
-        .ext-btn-icon.blue { background: linear-gradient(135deg, rgba(0, 122, 255, 0.3) 0%, rgba(0, 122, 255, 0.15) 100%); color: #64b5f6; }
+        .extension-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
 
-        .ext-btn-text { flex: 1; text-align: left; }
-        .ext-btn-title { font-weight: 500; margin-bottom: 2px; }
-        .ext-btn-desc { font-size: 11px; color: var(--text-secondary); }
+        .extension-panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+        }
 
-        /* 长按上下文菜单 */
-        .context-menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px); z-index: 2500; opacity: 0; visibility: hidden; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
-        .context-menu-overlay.active { opacity: 1; visibility: visible; }
+        .extension-panel-close {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #3a3a3e, #2a2a2e);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
 
-        .context-menu { background: var(--metal-gradient); border: 1px solid var(--metal-border); border-radius: 16px; padding: 8px; min-width: 200px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05); transform: scale(0.9); transition: transform 0.2s ease; }
-        .context-menu-overlay.active .context-menu { transform: scale(1); }
+        /* 扩展按钮 - 金属质感 */
+        .extension-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 12px 14px;
+            background: linear-gradient(145deg, #2a2a2e, #1a1a1e);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
 
-        .context-menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; cursor: pointer; transition: all 0.15s ease; }
-        .context-menu-item:hover { background: rgba(255, 255, 255, 0.08); }
-        .context-menu-item:active { background: rgba(255, 255, 255, 0.12); }
+        .extension-btn:last-child { margin-bottom: 0; }
 
-        .context-menu-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.08); }
-        .context-menu-icon svg { width: 16px; height: 16px; fill: var(--text-primary); }
-        .context-menu-icon.copy { background: rgba(0, 122, 255, 0.2); }
-        .context-menu-icon.copy svg { fill: #64b5f6; }
-        .context-menu-icon.quote { background: rgba(52, 199, 89, 0.2); }
-        .context-menu-icon.quote svg { fill: #69f0ae; }
-        .context-menu-icon.edit { background: rgba(255, 149, 0, 0.2); }
-        .context-menu-icon.edit svg { fill: #ffb74d; }
+        .extension-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
 
-        .context-menu-text { color: var(--text-primary); font-size: 14px; font-weight: 500; }
+        .extension-btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #3a3a40, #28282c);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.25s ease; padding: 20px; }
+        .extension-btn-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .extension-btn-icon.danger { color: #ff6b6b; }
+        .extension-btn-icon.purple { color: #a855f7; }
+        .extension-btn-icon.blue { color: #3b82f6; }
+
+        .extension-btn-text {
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* 长按菜单 - 金属质感 */
+        .context-menu {
+            position: fixed;
+            z-index: 2000;
+            background: var(--metal-gradient);
+            border: 1px solid rgba(80, 80, 85, 0.6);
+            border-radius: 14px;
+            padding: 6px;
+            min-width: 160px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.9);
+            transition: all 0.2s ease;
+        }
+
+        .context-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        .context-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .context-menu-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .context-menu-item:active {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .context-menu-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #3a3a40, #28282c);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .context-menu-icon svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--text-primary);
+        }
+
+        .context-menu-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .context-menu-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            margin: 6px 0;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            padding: 20px;
+        }
+
         .modal-overlay.active { opacity: 1; visibility: visible; }
 
-        .modal { width: 100%; max-width: 340px; max-height: 80vh; overflow-y: auto; background: rgba(30, 30, 35, 0.95); backdrop-filter: blur(40px); border-radius: 16px; padding: 18px; border: 1px solid rgba(255, 255, 255, 0.1); transform: scale(0.92); transition: transform 0.25s ease; }
+        .modal {
+            width: 100%;
+            max-width: 340px;
+            max-height: 80vh;
+            overflow-y: auto;
+            background: rgba(30, 30, 35, 0.95);
+            backdrop-filter: blur(40px);
+            border-radius: 16px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: scale(0.92);
+            transition: transform 0.25s ease;
+        }
+
         .modal-overlay.active .modal { transform: scale(1); }
-        .modal-title { font-size: 17px; font-weight: 700; color: var(--text-primary); text-align: center; margin-bottom: 14px; }
-        .modal-body { color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-bottom: 16px; }
-        .modal-input { width: 100%; padding: 10px 12px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 10px; color: var(--text-primary); font-size: 14px; outline: none; margin-bottom: 12px; }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .modal-body {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            margin-bottom: 12px;
+        }
+
         .modal-btns { display: flex; gap: 8px; }
-        .modal-btn { flex: 1; padding: 10px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
         .modal-btn.cancel { background: rgba(255, 255, 255, 0.12); color: var(--text-primary); }
         .modal-btn.confirm { background: var(--accent-color); color: white; }
 
-        .toast-container { position: fixed; top: calc(60px + var(--safe-top)); left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
-        .toast { padding: 10px 18px; background: rgba(30, 30, 35, 0.95); backdrop-filter: blur(20px); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.1); animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.7s forwards; }
+        .toast-container {
+            position: fixed;
+            top: calc(60px + var(--safe-top));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            pointer-events: none;
+        }
+
+        .toast {
+            padding: 10px 18px;
+            background: rgba(30, 30, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.7s forwards;
+        }
+
         .toast.success { border-left: 3px solid var(--success-color); }
         .toast.error { border-left: 3px solid var(--danger-color); }
         .toast.info { border-left: 3px solid var(--accent-color); }
         .toast.warning { border-left: 3px solid var(--warning-color); }
-        @keyframes toastIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
 
-        .search-field { width: 100%; padding: 9px 12px 9px 36px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text-primary); font-size: 14px; outline: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 10px center; }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        .toggle-switch { position: relative; width: 44px; height: 26px; background: rgba(120, 120, 128, 0.32); border-radius: 13px; cursor: pointer; }
+        @keyframes toastOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .search-field {
+            width: 100%;
+            padding: 9px 12px 9px 36px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 10px center;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 26px;
+            background: rgba(120, 120, 128, 0.32);
+            border-radius: 13px;
+            cursor: pointer;
+        }
+
         .toggle-switch.active { background: var(--success-color); }
-        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; background: white; border-radius: 50%; transition: all 0.2s ease; }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
         .toggle-switch.active::after { left: 20px; }
 
-        .select-field { width: 100%; padding: 10px 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text-primary); font-size: 14px; cursor: pointer; appearance: none; }
+        .select-field {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            appearance: none;
+        }
+
         .select-field option { background: #1a1a2e; }
 
         .file-input-hidden { display: none; }
-        .divider { height: 1px; background: rgba(255, 255, 255, 0.08); margin: 14px 0; }
-        .loading-spinner { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.2); border-top-color: var(--accent-color); border-radius: 50%; animation: spin 0.7s linear infinite; }
+
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            margin: 14px 0;
+        }
+
+        .loading-spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .slider-container { margin: 12px 0; }
         .slider-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
         .slider-label { font-size: 13px; color: var(--text-primary); }
         .slider-value { font-size: 13px; color: var(--accent-color); font-weight: 600; }
-        .slider-input { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.2); border-radius: 2px; appearance: none; }
-        .slider-input::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; background: white; border-radius: 50%; cursor: pointer; }
 
-        .action-hint { display: flex; align-items: center; gap: 5px; padding: 7px 10px; background: rgba(0, 122, 255, 0.12); border-radius: 8px; margin-bottom: 12px; }
+        .slider-input {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            appearance: none;
+        }
+
+        .slider-input::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .action-hint {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 10px;
+            background: rgba(0, 122, 255, 0.12);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
         .action-hint-icon { font-size: 13px; }
         .action-hint-text { font-size: 11px; color: var(--accent-color); }
         .action-hint.success { background: rgba(52, 199, 89, 0.12); }
@@ -290,110 +1085,422 @@
         .action-hint.warning { background: rgba(255, 149, 0, 0.12); }
         .action-hint.warning .action-hint-text { color: var(--warning-color); }
 
-        .delete-zone { padding: 14px; border: 2px dashed var(--danger-color); border-radius: 12px; text-align: center; color: var(--danger-color); margin-top: 14px; cursor: pointer; font-size: 14px; }
+        .delete-zone {
+            padding: 14px;
+            border: 2px dashed var(--danger-color);
+            border-radius: 12px;
+            text-align: center;
+            color: var(--danger-color);
+            margin-top: 14px;
+            cursor: pointer;
+            font-size: 14px;
+        }
 
-        .log-container { background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 8px; margin-top: 8px; max-height: 140px; overflow-y: auto; font-family: monospace; font-size: 10px; }
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 8px;
+            margin-top: 8px;
+            max-height: 140px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 10px;
+        }
+
         .log-entry { padding: 2px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
         .log-entry.success { color: var(--success-color); }
         .log-entry.error { color: var(--danger-color); }
         .log-entry.info { color: var(--accent-color); }
 
         .model-list { max-height: 160px; overflow-y: auto; margin-top: 8px; }
-        .model-item { padding: 8px 12px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 5px; cursor: pointer; }
+
+        .model-item {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
         .model-item:hover { background: rgba(255, 255, 255, 0.1); }
         .model-item.selected { background: var(--accent-color); }
         .model-item-name { font-size: 12px; color: var(--text-primary); }
 
-        .date-separator { display: flex; justify-content: center; padding: 8px 0; }
-        .date-separator-text { padding: 3px 9px; background: rgba(255, 255, 255, 0.06); border-radius: 8px; font-size: 10px; color: var(--text-secondary); }
+        .date-separator {
+            display: flex;
+            justify-content: center;
+            padding: 8px 0;
+        }
 
-        .select-mode-bar { display: none; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(255, 59, 48, 0.12); }
+        .date-separator-text {
+            padding: 3px 9px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .select-mode-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: rgba(255, 59, 48, 0.12);
+        }
+
         .select-mode-bar.active { display: flex; }
         .select-mode-info { font-size: 13px; color: var(--text-primary); }
         .select-mode-btns { display: flex; gap: 8px; }
-        .select-mode-btn { padding: 5px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+        .select-mode-btn {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
         .select-mode-btn.cancel { background: rgba(255, 255, 255, 0.15); color: var(--text-primary); }
         .select-mode-btn.delete { background: var(--danger-color); color: white; }
 
-        .avatar-upload-area { width: 80px; height: 80px; border-radius: 50%; background: var(--glass-bg); border: 2px dashed var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; margin: 0 auto 12px; font-size: 26px; color: var(--text-secondary); overflow: hidden; transition: all 0.2s ease; }
+        .avatar-upload-area {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 2px dashed var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 0 auto 12px;
+            font-size: 26px;
+            color: var(--text-secondary);
+            overflow: hidden;
+        }
+
         .avatar-upload-area:hover { border-color: var(--accent-color); }
         .avatar-upload-area.has-image { border-style: solid; border-color: var(--accent-color); }
         .avatar-upload-area img { width: 100%; height: 100%; object-fit: cover; }
 
-        .color-picker-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .color-picker-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
         .color-picker-label { font-size: 12px; color: var(--text-primary); flex: 1; }
-        .color-picker-input { width: 40px; height: 28px; border: none; border-radius: 5px; cursor: pointer; background: transparent; }
+
+        .color-picker-input {
+            width: 40px;
+            height: 28px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: transparent;
+        }
 
         .shape-options { display: flex; gap: 6px; flex-wrap: wrap; }
-        .shape-option { padding: 6px 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 6px; color: var(--text-primary); font-size: 12px; cursor: pointer; }
-        .shape-option.selected { background: var(--accent-color); border-color: var(--accent-color); }
 
-        /* 世界书条目列表 */
-        .entry-list { margin-top: 10px; }
-        .entry-item { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
-        .entry-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .entry-item-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-        .entry-item-badge { padding: 2px 6px; background: var(--accent-color); border-radius: 8px; font-size: 9px; color: white; }
-        .entry-item-keywords { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
-        .entry-item-preview { font-size: 12px; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .entry-item-actions { display: flex; gap: 6px; margin-top: 8px; }
-        .entry-action-btn { padding: 4px 10px; background: rgba(255, 255, 255, 0.1); border: none; border-radius: 6px; color: var(--text-primary); font-size: 11px; cursor: pointer; }
-        .entry-action-btn.danger { background: rgba(255, 59, 48, 0.2); color: #ff6b6b; }
+        .shape-option {
+            padding: 6px 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 12px;
+            cursor: pointer;
+        }
 
-        /* 多选世界书 */
-        .worldbook-multiselect { max-height: 150px; overflow-y: auto; border: 1px solid var(--glass-border); border-radius: 10px; }
-        .worldbook-multiselect-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); cursor: pointer; }
-        .worldbook-multiselect-item:last-child { border-bottom: none; }
-        .worldbook-multiselect-item:hover { background: rgba(255, 255, 255, 0.05); }
-        .worldbook-multiselect-checkbox { width: 18px; height: 18px; border-radius: 4px; border: 2px solid rgba(255, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; }
-        .worldbook-multiselect-checkbox.checked { background: var(--accent-color); border-color: var(--accent-color); }
-        .worldbook-multiselect-checkbox.checked::after { content: '✓'; color: white; font-size: 11px; }
-        .worldbook-multiselect-name { font-size: 13px; color: var(--text-primary); }
+        .shape-option.selected {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
 
-        .worldbook-item { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; margin-bottom: 8px; cursor: pointer; }
-        .worldbook-item-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .worldbook-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .worldbook-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
         .worldbook-item-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
-        .worldbook-item-badge { padding: 2px 7px; background: var(--accent-color); border-radius: 10px; font-size: 10px; color: white; }
-        .worldbook-item-preview { font-size: 12px; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        .char-counter { font-size: 10px; color: var(--text-secondary); text-align: right; margin-top: 2px; }
+        .worldbook-item-badge {
+            padding: 2px 7px;
+            background: var(--accent-color);
+            border-radius: 10px;
+            font-size: 10px;
+            color: white;
+        }
+
+        .worldbook-item-preview {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* 世界书条目样式 */
+        .entry-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .entry-keywords {
+            font-size: 11px;
+            color: var(--accent-color);
+            background: rgba(0, 122, 255, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .entry-delete {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(255, 59, 48, 0.2);
+            border: none;
+            color: var(--danger-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .entry-content {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* 多选世界书样式 */
+        .worldbook-checkbox-list {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .worldbook-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        .worldbook-checkbox-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .worldbook-checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .worldbook-checkbox.checked {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .worldbook-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 11px;
+        }
+
+        .char-counter {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-align: right;
+            margin-top: 2px;
+        }
+
         .char-counter.warning { color: #FF9500; }
         .char-counter.error { color: var(--danger-color); }
 
-        .wallpaper-preview { width: 100%; height: 120px; border-radius: 10px; margin-bottom: 12px; border: 2px solid var(--glass-border); overflow: hidden; }
+        .wallpaper-preview {
+            width: 100%;
+            height: 120px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 2px solid var(--glass-border);
+            overflow: hidden;
+        }
 
-        .icon-customize-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .icon-customize-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .icon-customize-preview { width: 50px; height: 50px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; border: 2px dashed var(--glass-border); overflow: hidden; transition: all 0.2s ease; }
+        .icon-customize-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .icon-customize-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .icon-customize-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            border: 2px dashed var(--glass-border);
+            overflow: hidden;
+        }
+
         .icon-customize-preview:hover { border-color: var(--accent-color); }
         .icon-customize-preview.has-image { border-style: solid; }
         .icon-customize-preview img { width: 100%; height: 100%; object-fit: cover; }
+
         .icon-customize-label { font-size: 10px; color: var(--text-secondary); }
 
-        .storage-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; margin-bottom: 16px; }
-        .storage-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .storage-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .storage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
         .storage-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
         .storage-size { font-size: 12px; color: var(--accent-color); }
-        .storage-bar { height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
-        .storage-bar-fill { height: 100%; background: var(--accent-color); border-radius: 3px; transition: width 0.3s ease; }
+
+        .storage-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .storage-bar-fill {
+            height: 100%;
+            background: var(--accent-color);
+            border-radius: 3px;
+        }
+
         .storage-bar-fill.warning { background: var(--warning-color); }
         .storage-bar-fill.danger { background: var(--danger-color); }
-        .storage-details { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); }
 
-        .preset-selector { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+        .storage-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .preset-selector {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
         .preset-selector select { flex: 1; }
-        .preset-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .preset-btn:hover { background: rgba(255, 255, 255, 0.15); }
-        .preset-btn:active { transform: scale(0.95); }
 
-        .guide-content { max-height: 50vh; overflow-y: auto; padding-right: 5px; }
+        .preset-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preset-btn:hover { background: rgba(255, 255, 255, 0.15); }
+
+        .guide-content {
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+
         .guide-section { margin-bottom: 14px; }
         .guide-section-title { font-size: 13px; font-weight: 600; color: var(--accent-color); margin-bottom: 6px; }
-        .guide-code { background: rgba(0, 0, 0, 0.4); border-radius: 6px; padding: 8px; font-family: 'SF Mono', monospace; font-size: 11px; color: #00ff88; margin-bottom: 6px; overflow-x: auto; }
+
+        .guide-code {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 6px;
+            padding: 8px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #00ff88;
+            margin-bottom: 6px;
+            overflow-x: auto;
+        }
+
         .guide-text { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
 
-        .chat-wallpaper-preview { width: 100%; height: 80px; border-radius: 8px; margin-bottom: 10px; border: 2px solid var(--glass-border); background: var(--glass-bg); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 12px; overflow: hidden; }
-        .chat-wallpaper-preview.has-image { background-size: cover !important; background-position: center !important; }
+        .chat-wallpaper-preview {
+            width: 100%;
+            height: 80px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 2px solid var(--glass-border);
+            background: var(--glass-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+            overflow: hidden;
+        }
+
+        .chat-wallpaper-preview.has-image {
+            background-size: cover !important;
+            background-position: center !important;
+        }
+
         .chat-wallpaper-preview.has-image span { display: none; }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -417,7 +1524,7 @@
         </div>
 
         <div class="home-screen" id="homeScreen">
-            <div class="app-grid" id="appGrid">
+            <div class="app-grid">
                 <div class="app-icon-wrapper" onclick="openPage('settingsPage')">
                     <div class="app-icon settings" id="appIconSettings">⚙️</div>
                     <span class="app-icon-label">设置</span>
@@ -442,7 +1549,10 @@
         <!-- 设置页面 -->
         <div class="page" id="settingsPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closePage('settingsPage')"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>返回</button>
+                <button class="nav-btn" onclick="closePage('settingsPage')">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    返回
+                </button>
                 <span class="nav-title">设置</span>
                 <div class="nav-btn right" style="visibility:hidden">占</div>
             </div>
@@ -452,7 +1562,9 @@
                         <span class="storage-title">💾 存储</span>
                         <span class="storage-size" id="storageSize">计算中...</span>
                     </div>
-                    <div class="storage-bar"><div class="storage-bar-fill" id="storageBarFill" style="width: 0%"></div></div>
+                    <div class="storage-bar">
+                        <div class="storage-bar-fill" id="storageBarFill" style="width:0%"></div>
+                    </div>
                     <div class="storage-details">
                         <span id="storageUsed">已用: 0 MB</span>
                         <span id="storageTotal">无限制</span>
@@ -522,19 +1634,28 @@
                     <div class="settings-item" onclick="clearImageCache()">
                         <div class="settings-item-left">
                             <span class="settings-icon cyan">🧹</span>
-                            <div><span class="settings-item-label">清除图片缓存</span><div class="settings-item-desc">头像、壁纸等</div></div>
+                            <div>
+                                <span class="settings-item-label">清除图片缓存</span>
+                                <div class="settings-item-desc">头像、壁纸等</div>
+                            </div>
                         </div>
                     </div>
                     <div class="settings-item" onclick="clearMessageCache()">
                         <div class="settings-item-left">
                             <span class="settings-icon orange">💬</span>
-                            <div><span class="settings-item-label">清除消息缓存</span><div class="settings-item-desc">保留角色设定</div></div>
+                            <div>
+                                <span class="settings-item-label">清除消息缓存</span>
+                                <div class="settings-item-desc">保留角色设定</div>
+                            </div>
                         </div>
                     </div>
                     <div class="settings-item" onclick="compactDatabase()">
                         <div class="settings-item-left">
                             <span class="settings-icon purple">⚡</span>
-                            <div><span class="settings-item-label">优化存储</span><div class="settings-item-desc">压缩图片</div></div>
+                            <div>
+                                <span class="settings-item-label">优化存储</span>
+                                <div class="settings-item-desc">压缩图片</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -562,14 +1683,19 @@
         <!-- 短信列表 -->
         <div class="page" id="messagesPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closePage('messagesPage')"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>返回</button>
+                <button class="nav-btn" onclick="closePage('messagesPage')">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    返回
+                </button>
                 <span class="nav-title">短信</span>
-                <button class="nav-btn right" onclick="showModal('createCharacterModal')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+                <button class="nav-btn right" onclick="showModal('createCharacterModal')">
+                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                </button>
             </div>
             <div style="padding:0 12px 10px">
                 <input type="text" class="search-field" id="contactSearch" placeholder="搜索角色..." oninput="filterContacts()">
             </div>
-            <div class="page-content" id="contactListContainer" style="padding-top:0">
+            <div class="page-content" style="padding-top:0">
                 <div class="empty-state" id="emptyContactState">
                     <div class="empty-state-icon">💬</div>
                     <div class="empty-state-title">暂无角色</div>
@@ -600,74 +1726,83 @@
             <div class="chat-container">
                 <div class="chat-messages" id="chatMessages"></div>
 
-                <!-- 扩展面板 - ins风格 -->
-                <div class="extension-panel" id="extensionPanel">
-                    <div class="extension-panel-header">
-                        <span class="extension-panel-title">操作菜单</span>
-                        <button class="extension-panel-close" onclick="toggleExtensionPanel()">
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                        </button>
-                    </div>
-
-                    <button class="ext-btn" onclick="enterSelectMode()">
-                        <div class="ext-btn-icon danger">
-                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                        </div>
-                        <div class="ext-btn-text">
-                            <div class="ext-btn-title">选择删除</div>
-                            <div class="ext-btn-desc">选择多条消息删除</div>
-                        </div>
-                    </button>
-
-                    <button class="ext-btn" onclick="regenerateLastReply()">
-                        <div class="ext-btn-icon purple">
-                            <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-                        </div>
-                        <div class="ext-btn-text">
-                            <div class="ext-btn-title">重新生成</div>
-                            <div class="ext-btn-desc">重新生成AI回复</div>
-                        </div>
-                    </button>
-
-                    <button class="ext-btn" onclick="openImagePicker()">
-                        <div class="ext-btn-icon blue">
-                            <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-                        </div>
-                        <div class="ext-btn-text">
-                            <div class="ext-btn-title">发送图片</div>
-                            <div class="ext-btn-desc">发送图片给AI</div>
-                        </div>
-                    </button>
-                    <input type="file" id="chatImageInput" class="file-input-hidden" accept="image/*" onchange="handleChatImageUpload(event)">
-                </div>
-
                 <!-- 引用预览条 -->
                 <div class="quote-preview-bar" id="quotePreviewBar">
-                    <div class="quote-preview-content" id="quotePreviewContent">引用内容</div>
-                    <button class="quote-preview-close" onclick="cancelQuote()">
-                        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    <div class="quote-preview-content" id="quotePreviewContent"></div>
+                    <button class="quote-preview-close" onclick="cancelQuote()">×</button>
+                </div>
+
+                <div class="extension-panel" id="extensionPanel">
+                    <div class="extension-panel-header">
+                        <span class="extension-panel-title">操作</span>
+                        <button class="extension-panel-close" onclick="toggleExtensionPanel()">×</button>
+                    </div>
+                    <button class="extension-btn" onclick="enterSelectMode()">
+                        <div class="extension-btn-icon danger">
+                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </div>
+                        <span class="extension-btn-text">选择删除</span>
                     </button>
+                    <button class="extension-btn" onclick="regenerateLastReply()">
+                        <div class="extension-btn-icon purple">
+                            <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                        </div>
+                        <span class="extension-btn-text">重新生成</span>
+                    </button>
+                    <button class="extension-btn" onclick="sendImage()">
+                        <div class="extension-btn-icon blue">
+                            <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                        </div>
+                        <span class="extension-btn-text">发送图片</span>
+                    </button>
+                    <input type="file" id="imageInput" class="file-input-hidden" accept="image/*" onchange="handleImageSend(event)">
                 </div>
 
                 <div class="chat-input-area">
-                    <button class="chat-btn" onclick="toggleExtensionPanel()" title="更多">
+                    <button class="chat-btn" onclick="toggleExtensionPanel()">
                         <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
                     </button>
                     <textarea class="chat-input-field" id="chatInput" placeholder="输入消息..." rows="1" oninput="autoResizeTextarea(this)"></textarea>
-                    <button class="chat-btn ai" onclick="triggerAIReply()" title="AI回复">
+                    <button class="chat-btn ai" onclick="triggerAIReply()">
                         <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                     </button>
-                    <button class="chat-btn send" onclick="sendMessage()" title="发送">
+                    <button class="chat-btn send" onclick="sendMessage()">
                         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                     </button>
                 </div>
             </div>
         </div>
 
+        <!-- 长按菜单 -->
+        <div class="context-menu" id="contextMenu">
+            <div class="context-menu-item" onclick="copyMessageText()">
+                <div class="context-menu-icon">
+                    <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                </div>
+                <span class="context-menu-text">复制文本</span>
+            </div>
+            <div class="context-menu-item" onclick="quoteMessage()">
+                <div class="context-menu-icon">
+                    <svg viewBox="0 0 24 24"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg>
+                </div>
+                <span class="context-menu-text">引用消息</span>
+            </div>
+            <div class="context-menu-divider"></div>
+            <div class="context-menu-item" onclick="editMessage()">
+                <div class="context-menu-icon">
+                    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                </div>
+                <span class="context-menu-text">编辑消息</span>
+            </div>
+        </div>
+
         <!-- 角色设置页面 -->
         <div class="page slide-from-bottom" id="characterSettingsPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closeCharacterSettings()"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>取消</button>
+                <button class="nav-btn" onclick="closeCharacterSettings()">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    取消
+                </button>
                 <span class="nav-title">角色设置</span>
                 <button class="nav-btn right" onclick="saveCharacterSettings()">保存</button>
             </div>
@@ -677,14 +1812,19 @@
                     <div class="settings-item" onclick="confirmClearAllMessages()">
                         <div class="settings-item-left">
                             <span class="settings-icon red">🗑️</span>
-                            <div><span class="settings-item-label">清除所有聊天记录</span><div class="settings-item-desc">删除全部消息</div></div>
+                            <div>
+                                <span class="settings-item-label">清除所有聊天记录</span>
+                                <div class="settings-item-desc">删除全部消息</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <p class="settings-group-title">聊天窗口壁纸</p>
                 <div class="settings-group" style="padding:12px">
-                    <div class="chat-wallpaper-preview" id="chatWallpaperPreview"><span>无自定义壁纸</span></div>
+                    <div class="chat-wallpaper-preview" id="chatWallpaperPreview">
+                        <span>无自定义壁纸</span>
+                    </div>
                     <div class="btn-row">
                         <button class="btn btn-secondary btn-small" onclick="document.getElementById('chatWallpaperInput').click()">📤 上传</button>
                         <button class="btn btn-secondary btn-small" onclick="clearChatWallpaper()">🗑️ 清除</button>
@@ -697,6 +1837,7 @@
                     <label class="input-label">角色头像</label>
                     <div class="avatar-upload-area" id="charAvatarUpload" onclick="document.getElementById('charAvatarInput').click()">📷</div>
                     <input type="file" id="charAvatarInput" class="file-input-hidden" accept="image/*" onchange="handleCharAvatarUpload(event)">
+
                     <label class="input-label" style="margin-top:12px">用户头像</label>
                     <div class="avatar-upload-area" id="userAvatarUpload" onclick="document.getElementById('userAvatarInput').click()">👤</div>
                     <input type="file" id="userAvatarInput" class="file-input-hidden" accept="image/*" onchange="handleUserAvatarUpload(event)">
@@ -754,9 +1895,9 @@
                     <textarea class="input-field" id="charScenario" rows="2" placeholder="场景..."></textarea>
                 </div>
 
-                <p class="settings-group-title">绑定世界书 (可多选)</p>
+                <p class="settings-group-title">绑定世界书(多选)</p>
                 <div class="settings-group" style="padding:12px">
-                    <div class="worldbook-multiselect" id="worldbookMultiselect"></div>
+                    <div class="worldbook-checkbox-list" id="worldbookCheckboxList"></div>
                 </div>
 
                 <p class="settings-group-title">高级</p>
@@ -775,15 +1916,17 @@
                 <div class="settings-group" style="padding:12px">
                     <div class="action-hint warning">
                         <span class="action-hint-icon">⚠️</span>
-                        <span class="action-hint-text">CSS会覆盖上方设置</span>
+                        <span class="action-hint-text">CSS覆盖头像设置</span>
                     </div>
                     <div class="input-group">
                         <label class="input-label">预设</label>
                         <div class="preset-selector">
-                            <select class="select-field" id="cssPresetSelect" onchange="loadCssPreset()"><option value="">-- 无 --</option></select>
-                            <button class="preset-btn" onclick="addNewCssPreset()" title="新建">＋</button>
-                            <button class="preset-btn" onclick="saveCssPreset()" title="保存">💾</button>
-                            <button class="preset-btn" onclick="showCssGuide()" title="指南">❓</button>
+                            <select class="select-field" id="cssPresetSelect" onchange="loadCssPreset()">
+                                <option value="">-- 无 --</option>
+                            </select>
+                            <button class="preset-btn" onclick="addNewCssPreset()">＋</button>
+                            <button class="preset-btn" onclick="saveCssPreset()">💾</button>
+                            <button class="preset-btn" onclick="showCssGuide()">❓</button>
                         </div>
                     </div>
                     <div class="input-group">
@@ -796,7 +1939,7 @@
                     </div>
                     <div class="input-group">
                         <label class="input-label">CSS代码</label>
-                        <textarea class="input-field css-editor" id="customCssEditor" rows="6" placeholder="/* CSS */"></textarea>
+                        <textarea class="input-field css-editor" id="customCssEditor" rows="6" placeholder="/* 自定义CSS */"></textarea>
                     </div>
                     <div class="btn-row">
                         <button class="btn btn-secondary btn-small" onclick="previewCss()">👁️ 预览</button>
@@ -812,14 +1955,19 @@
         <!-- 世界书页面 -->
         <div class="page" id="worldbookPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closePage('worldbookPage')"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>返回</button>
+                <button class="nav-btn" onclick="closePage('worldbookPage')">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    返回
+                </button>
                 <span class="nav-title">世界书</span>
-                <button class="nav-btn right" onclick="showModal('createWorldbookModal')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+                <button class="nav-btn right" onclick="showModal('createWorldbookModal')">
+                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                </button>
             </div>
             <div class="page-content">
                 <div class="action-hint">
                     <span class="action-hint-icon">📚</span>
-                    <span class="action-hint-text">可添加多个条目</span>
+                    <span class="action-hint-text">每个世界书可包含多个条目</span>
                 </div>
                 <div class="empty-state" id="emptyWorldbookState">
                     <div class="empty-state-icon">📚</div>
@@ -833,15 +1981,18 @@
         <!-- 世界书编辑 -->
         <div class="page slide-from-bottom" id="worldbookEditPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closeWorldbookEdit()"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>取消</button>
+                <button class="nav-btn" onclick="closeWorldbookEdit()">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    取消
+                </button>
                 <span class="nav-title">编辑世界书</span>
                 <button class="nav-btn right" onclick="saveWorldbook()">保存</button>
             </div>
             <div class="page-content">
                 <div class="settings-group" style="padding:12px">
                     <div class="input-group">
-                        <label class="input-label">世界书名称</label>
-                        <input type="text" class="input-field" id="worldbookName" placeholder="名称">
+                        <label class="input-label">名称</label>
+                        <input type="text" class="input-field" id="worldbookName" placeholder="世界书名称">
                     </div>
                     <div class="input-group">
                         <label class="input-label">简介</label>
@@ -850,53 +2001,34 @@
                 </div>
 
                 <p class="settings-group-title">条目列表</p>
-                <div class="settings-group" style="padding:12px">
-                    <button class="btn btn-primary btn-small" onclick="addWorldbookEntry()">+ 添加条目</button>
-                    <div class="entry-list" id="entryList"></div>
-                </div>
+                <div id="worldbookEntriesContainer"></div>
+                <button class="btn btn-secondary" onclick="addWorldbookEntry()" style="margin-bottom:16px">+ 添加条目</button>
 
                 <div class="delete-zone" onclick="deleteCurrentWorldbook()">🗑️ 删除世界书</div>
                 <div style="height:30px"></div>
             </div>
         </div>
 
-        <!-- 条目编辑模态框 -->
-        <div class="modal-overlay" id="entryEditModal">
-            <div class="modal">
-                <div class="modal-title">编辑条目</div>
-                <div class="input-group">
-                    <label class="input-label">关键词(逗号分隔)</label>
-                    <input type="text" class="modal-input" id="entryKeywords" placeholder="词1,词2..." style="margin-bottom:8px">
-                </div>
-                <div class="input-group">
-                    <label class="input-label">内容</label>
-                    <textarea class="input-field" id="entryContent" rows="4" placeholder="条目内容..."></textarea>
-                </div>
-                <div class="settings-item" style="padding:10px 0">
-                    <span class="settings-item-label">始终激活</span>
-                    <div class="toggle-switch" id="entryAlwaysActive" onclick="toggleSwitch(this)"></div>
-                </div>
-                <div class="modal-btns">
-                    <button class="modal-btn cancel" onclick="hideModal('entryEditModal')">取消</button>
-                    <button class="modal-btn confirm" onclick="saveEntry()">保存</button>
-                </div>
-            </div>
-        </div>
-
         <!-- 壁纸页面 -->
         <div class="page" id="wallpaperPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closePage('wallpaperPage')"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>返回</button>
+                <button class="nav-btn" onclick="closePage('wallpaperPage')">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    返回
+                </button>
                 <span class="nav-title">壁纸与图标</span>
                 <div class="nav-btn right" style="visibility:hidden">占</div>
             </div>
             <div class="page-content">
-                <p class="settings-group-title">显示设置</p>
+                <p class="settings-group-title">显示</p>
                 <div class="settings-group">
                     <div class="settings-item" onclick="toggleStatusBar()">
                         <div class="settings-item-left">
                             <span class="settings-icon gray">📱</span>
-                            <div><span class="settings-item-label">隐藏模拟时间栏</span><div class="settings-item-desc">全屏时避免重叠</div></div>
+                            <div>
+                                <span class="settings-item-label">隐藏模拟时间栏</span>
+                                <div class="settings-item-desc">全屏时避免重叠</div>
+                            </div>
                         </div>
                         <div class="toggle-switch" id="hideStatusBarToggle"></div>
                     </div>
@@ -905,7 +2037,7 @@
                 <p class="settings-group-title">预览</p>
                 <div class="wallpaper-preview" id="wallpaperPreview"></div>
 
-                <p class="settings-group-title">预设</p>
+                <p class="settings-group-title">预设壁纸</p>
                 <div class="settings-group" style="padding:12px">
                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="wallpaperGrid">
                         <div onclick="selectPresetWallpaper('gradient1')" style="height:60px;border-radius:8px;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);cursor:pointer;border:2px solid transparent" data-wp="gradient1"></div>
@@ -925,9 +2057,10 @@
                     </div>
                     <button class="btn btn-secondary" onclick="previewUrlWallpaper()">预览</button>
                     <div class="divider"></div>
-                    <button class="btn btn-secondary" onclick="document.getElementById('wallpaperUpload').click()">📤 上传</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('wallpaperUpload').click()">📤 上传图片</button>
                     <input type="file" id="wallpaperUpload" class="file-input-hidden" accept="image/*" onchange="handleWallpaperUpload(event)">
                 </div>
+
                 <button class="btn btn-success" onclick="saveWallpaper()" style="margin-bottom:16px">💾 保存壁纸</button>
 
                 <p class="settings-group-title">图标</p>
@@ -955,47 +2088,11 @@
                         </div>
                     </div>
                     <div class="divider"></div>
-                    <button class="btn btn-primary" onclick="saveIcons()">💾 保存</button>
+                    <button class="btn btn-primary" onclick="saveIcons()">💾 保存图标</button>
                     <div style="height:6px"></div>
                     <button class="btn btn-secondary" onclick="resetIcons()">🔄 重置</button>
                 </div>
                 <div style="height:30px"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 长按上下文菜单 -->
-    <div class="context-menu-overlay" id="contextMenuOverlay" onclick="hideContextMenu()">
-        <div class="context-menu" id="contextMenu" onclick="event.stopPropagation()">
-            <div class="context-menu-item" onclick="copyMessageText()">
-                <div class="context-menu-icon copy">
-                    <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                </div>
-                <span class="context-menu-text">复制文本</span>
-            </div>
-            <div class="context-menu-item" onclick="quoteMessage()">
-                <div class="context-menu-icon quote">
-                    <svg viewBox="0 0 24 24"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg>
-                </div>
-                <span class="context-menu-text">引用回复</span>
-            </div>
-            <div class="context-menu-item" onclick="editMessage()">
-                <div class="context-menu-icon edit">
-                    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                </div>
-                <span class="context-menu-text">编辑内容</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- 编辑消息模态框 -->
-    <div class="modal-overlay" id="editMessageModal">
-        <div class="modal">
-            <div class="modal-title">编辑消息</div>
-            <textarea class="input-field" id="editMessageContent" rows="4" placeholder="消息内容..."></textarea>
-            <div class="modal-btns" style="margin-top:12px">
-                <button class="modal-btn cancel" onclick="hideModal('editMessageModal')">取消</button>
-                <button class="modal-btn confirm" onclick="saveEditedMessage()">保存</button>
             </div>
         </div>
     </div>
@@ -1026,7 +2123,7 @@
     <div class="modal-overlay" id="confirmDeleteModal">
         <div class="modal">
             <div class="modal-title" id="deleteModalTitle">确认删除？</div>
-            <p style="color:var(--text-secondary);text-align:center;margin-bottom:14px;font-size:13px" id="deleteModalDesc">无法撤销</p>
+            <p style="color:var(--text-secondary);text-align:center;margin-bottom:14px;font-size:13px">无法撤销</p>
             <div class="modal-btns">
                 <button class="modal-btn cancel" onclick="hideModal('confirmDeleteModal')">取消</button>
                 <button class="modal-btn confirm" style="background:var(--danger-color)" onclick="confirmDelete()">删除</button>
@@ -1036,8 +2133,8 @@
 
     <div class="modal-overlay" id="clearMessagesModal">
         <div class="modal">
-            <div class="modal-title">⚠️ 清除聊天记录</div>
-            <p style="color:var(--text-secondary);text-align:center;margin-bottom:14px;font-size:13px">确定删除所有消息？无法撤销！</p>
+            <div class="modal-title">⚠️ 清除所有聊天</div>
+            <p style="color:var(--text-secondary);text-align:center;margin-bottom:14px;font-size:13px">无法撤销</p>
             <div class="modal-btns">
                 <button class="modal-btn cancel" onclick="hideModal('clearMessagesModal')">取消</button>
                 <button class="modal-btn confirm" style="background:var(--danger-color)" onclick="executeClearAllMessages()">确认</button>
@@ -1056,6 +2153,17 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="editMessageModal">
+        <div class="modal">
+            <div class="modal-title">编辑消息</div>
+            <textarea class="modal-input" id="editMessageContent" rows="4" style="resize:vertical;min-height:80px"></textarea>
+            <div class="modal-btns">
+                <button class="modal-btn cancel" onclick="hideModal('editMessageModal')">取消</button>
+                <button class="modal-btn confirm" onclick="saveEditedMessage()">保存</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="cssGuideModal">
         <div class="modal" style="max-width:380px">
             <div class="modal-title">📖 CSS指南</div>
@@ -1065,8 +2173,8 @@
                     <div class="guide-code">.message.sent { }<br>.message.received { }</div>
                 </div>
                 <div class="guide-section">
-                    <div class="guide-section-title">💭 引用块</div>
-                    <div class="guide-code">.message-quote { }</div>
+                    <div class="guide-section-title">💭 引用气泡</div>
+                    <div class="guide-code">.quote-bubble { }<br>.message.sent .quote-bubble { }</div>
                 </div>
                 <div class="guide-section">
                     <div class="guide-section-title">👤 头像</div>
@@ -1086,7 +2194,7 @@
                 </div>
                 <div class="guide-section">
                     <div class="guide-section-title">💡 示例</div>
-                    <div class="guide-code">.message.sent {<br>  background: linear-gradient(135deg, #ff6b9d, #c44569);<br>  border-radius: 20px;<br>}<br><br>.message-quote {<br>  background: rgba(255,255,255,0.1);<br>  border-left-color: #ff6b9d;<br>}</div>
+                    <div class="guide-code">.message.sent {<br>  background: linear-gradient(135deg, #ff6b9d, #c44569);<br>  border-radius: 20px;<br>}</div>
                 </div>
             </div>
             <div class="modal-btns" style="margin-top:14px">
@@ -1147,7 +2255,12 @@
         }
 
         async function getStorageUsage() {
-            try { if (navigator.storage?.estimate) { const est = await navigator.storage.estimate(); return { used: est.usage || 0, quota: est.quota || 0, percent: est.quota ? (est.usage / est.quota * 100) : 0 }; } } catch (e) {}
+            try {
+                if (navigator.storage?.estimate) {
+                    const est = await navigator.storage.estimate();
+                    return { used: est.usage || 0, quota: est.quota || 0, percent: est.quota ? (est.usage / est.quota * 100) : 0 };
+                }
+            } catch (e) {}
             return { used: 0, quota: 0, percent: 0 };
         }
 
@@ -1159,15 +2272,14 @@
             lastAIStart: -1, tempWallpaper: null, tempIcons: {},
             appIcons: { settings: null, messages: null, worldbook: null, photos: null },
             defaultEmojis: { settings: '⚙️', messages: '💬', worldbook: '📚', photos: '🖼️' },
-            settings: { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false },
+            settings: {
+                apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048,
+                maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false
+            },
             globalCssPresets: [],
             // 引用相关
-            quoteData: null,
-            // 长按相关
-            contextMsgId: null,
-            // 条目编辑
-            currentEntryIndex: -1,
-            tempEntries: [],
+            quotedMessage: null,
+            contextMenuMsgId: null,
             dataLoaded: false
         };
 
@@ -1196,8 +2308,120 @@
                 updateIconPreviews();
                 updateStorageDisplay();
                 setupLongPress();
-            } catch (e) { console.error('初始化失败:', e); showToast('初始化失败', 'error'); }
+            } catch (e) {
+                console.error('初始化失败:', e);
+                showToast('初始化失败', 'error');
+            }
         });
+
+        // 设置长按事件
+        function setupLongPress() {
+            let longPressTimer = null;
+            const chatMessages = document.getElementById('chatMessages');
+
+            chatMessages.addEventListener('touchstart', (e) => {
+                const msgEl = e.target.closest('.message');
+                if (!msgEl || App.isSelectMode) return;
+                const wrapper = msgEl.closest('.message-wrapper');
+                if (!wrapper) return;
+                const msgId = wrapper.dataset.msgId;
+                longPressTimer = setTimeout(() => {
+                    showContextMenu(e, msgId);
+                }, 500);
+            });
+
+            chatMessages.addEventListener('touchend', () => clearTimeout(longPressTimer));
+            chatMessages.addEventListener('touchmove', () => clearTimeout(longPressTimer));
+
+            // 点击其他地方关闭菜单
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.context-menu') && !e.target.closest('.message')) {
+                    hideContextMenu();
+                }
+            });
+        }
+
+        function showContextMenu(e, msgId) {
+            e.preventDefault();
+            App.contextMenuMsgId = msgId;
+            const menu = document.getElementById('contextMenu');
+            const touch = e.touches ? e.touches[0] : e;
+            let x = touch.clientX;
+            let y = touch.clientY;
+            // 边界检测
+            if (x + 170 > window.innerWidth) x = window.innerWidth - 170;
+            if (y + 150 > window.innerHeight) y = window.innerHeight - 150;
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.classList.add('active');
+        }
+
+        function hideContextMenu() {
+            document.getElementById('contextMenu').classList.remove('active');
+            App.contextMenuMsgId = null;
+        }
+
+        function copyMessageText() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            const msg = char.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg) {
+                navigator.clipboard?.writeText(msg.content) || copyFallback(msg.content);
+                showToast('已复制', 'success');
+            }
+            hideContextMenu();
+        }
+
+        function copyFallback(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        }
+
+        function quoteMessage() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            const msg = char.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg) {
+                App.quotedMessage = { id: msg.id, content: msg.content, role: msg.role };
+                document.getElementById('quotePreviewContent').textContent = msg.content.substring(0, 50) + (msg.content.length > 50 ? '...' : '');
+                document.getElementById('quotePreviewBar').classList.add('active');
+                document.getElementById('chatInput').focus();
+            }
+            hideContextMenu();
+        }
+
+        function cancelQuote() {
+            App.quotedMessage = null;
+            document.getElementById('quotePreviewBar').classList.remove('active');
+        }
+
+        function editMessage() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            const msg = char.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg) {
+                document.getElementById('editMessageContent').value = msg.content;
+                showModal('editMessageModal');
+            }
+            hideContextMenu();
+        }
+
+        async function saveEditedMessage() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            const msg = char.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg) {
+                msg.content = document.getElementById('editMessageContent').value;
+                await saveData();
+                renderMessages();
+                showToast('已保存', 'success');
+            }
+            hideModal('editMessageModal');
+        }
 
         async function updateStorageDisplay() {
             const usage = await getStorageUsage();
@@ -1210,14 +2434,29 @@
             barFill.className = 'storage-bar-fill' + (usage.percent > 80 ? ' danger' : usage.percent > 60 ? ' warning' : '');
         }
 
-        function updateTime() { document.getElementById('statusBarTime').textContent = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); }
+        function updateTime() {
+            document.getElementById('statusBarTime').textContent = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        }
 
-        function toggleStatusBar() { App.settings.hideStatusBar = !App.settings.hideStatusBar; applyStatusBarVisibility(); saveData(); }
+        function toggleStatusBar() {
+            App.settings.hideStatusBar = !App.settings.hideStatusBar;
+            applyStatusBarVisibility();
+            saveData();
+        }
 
         function applyStatusBarVisibility() {
-            const statusBar = document.getElementById('statusBar'), homeScreen = document.getElementById('homeScreen'), toggle = document.getElementById('hideStatusBarToggle');
-            if (App.settings.hideStatusBar) { statusBar.classList.add('hidden'); homeScreen.classList.add('no-statusbar'); toggle?.classList.add('active'); }
-            else { statusBar.classList.remove('hidden'); homeScreen.classList.remove('no-statusbar'); toggle?.classList.remove('active'); }
+            const statusBar = document.getElementById('statusBar');
+            const homeScreen = document.getElementById('homeScreen');
+            const toggle = document.getElementById('hideStatusBarToggle');
+            if (App.settings.hideStatusBar) {
+                statusBar.classList.add('hidden');
+                homeScreen.classList.add('no-statusbar');
+                toggle?.classList.add('active');
+            } else {
+                statusBar.classList.remove('hidden');
+                homeScreen.classList.remove('no-statusbar');
+                toggle?.classList.remove('active');
+            }
         }
 
         // ==================== 数据持久化 ====================
@@ -1237,8 +2476,10 @@
         async function loadData() {
             try {
                 const [characters, worldbooks, settings, icons, presets] = await Promise.all([
-                    loadFromIDB('appData', 'characters'), loadFromIDB('appData', 'worldbooks'),
-                    loadFromIDB('appData', 'settings'), loadFromIDB('appData', 'appIcons'),
+                    loadFromIDB('appData', 'characters'),
+                    loadFromIDB('appData', 'worldbooks'),
+                    loadFromIDB('appData', 'settings'),
+                    loadFromIDB('appData', 'appIcons'),
                     loadFromIDB('appData', 'globalCssPresets')
                 ]);
                 if (characters) App.characters = characters;
@@ -1246,11 +2487,6 @@
                 if (settings) App.settings = { ...App.settings, ...settings };
                 if (icons) App.appIcons = { ...App.appIcons, ...icons };
                 if (presets) App.globalCssPresets = presets;
-
-                // 迁移旧数据结构
-                App.worldbooks.forEach(wb => { if (!wb.entries) wb.entries = [{ keywords: wb.keywords || '', content: wb.content || '', alwaysActive: wb.alwaysActive || false }]; });
-                App.characters.forEach(c => { if (typeof c.worldbookId === 'string') c.worldbookIds = c.worldbookId ? [c.worldbookId] : []; if (!c.worldbookIds) c.worldbookIds = []; });
-
                 loadSettingsUI();
                 if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
                 App.dataLoaded = true;
@@ -1261,7 +2497,7 @@
         async function forceSaveAll() { if (await saveData()) { await updateStorageDisplay(); showToast('已保存', 'success'); } }
 
         async function clearImageCache() {
-            if (!confirm('确定清除图片缓存？')) return;
+            if (!confirm('确定清除？')) return;
             App.settings.wallpaperData = null; App.settings.wallpaper = 'gradient1';
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null };
             App.characters.forEach(c => { c.avatarImage = null; c.userAvatar = null; c.chatWallpaper = null; });
@@ -1270,7 +2506,7 @@
         }
 
         async function clearMessageCache() {
-            if (!confirm('确定清除消息？')) return;
+            if (!confirm('确定清除？')) return;
             App.characters.forEach(c => { c.messages = []; });
             await saveData(); await updateStorageDisplay(); showToast('已清除', 'success');
         }
@@ -1283,7 +2519,6 @@
                 if (c.chatWallpaper?.length > 300000) c.chatWallpaper = await compressImage(c.chatWallpaper, 500, 0.7);
             }
             if (App.settings.wallpaperData?.length > 500000) App.settings.wallpaperData = await compressImage(App.settings.wallpaperData, 600, 0.7);
-            for (let k of Object.keys(App.appIcons)) { if (App.appIcons[k]?.length > 30000) App.appIcons[k] = await compressImage(App.appIcons[k], 100, 0.7); }
             await saveData(); await updateStorageDisplay(); showToast('完成', 'success');
         }
 
@@ -1318,104 +2553,15 @@
             document.getElementById('maxTokensValue').textContent = App.settings.maxTokens;
         }
 
-        // ==================== 长按功能 ====================
-        let longPressTimer = null;
-        let longPressTriggered = false;
-
-        function setupLongPress() {
-            document.getElementById('chatMessages').addEventListener('touchstart', handleTouchStart, { passive: false });
-            document.getElementById('chatMessages').addEventListener('touchend', handleTouchEnd);
-            document.getElementById('chatMessages').addEventListener('touchmove', handleTouchEnd);
-        }
-
-        function handleTouchStart(e) {
-            const msgEl = e.target.closest('.message');
-            if (!msgEl || App.isSelectMode) return;
-            const wrapper = msgEl.closest('.message-wrapper');
-            if (!wrapper) return;
-            const msgId = wrapper.dataset.msgId;
-            longPressTriggered = false;
-            longPressTimer = setTimeout(() => {
-                longPressTriggered = true;
-                e.preventDefault();
-                showContextMenu(msgId, msgEl);
-            }, 500);
-        }
-
-        function handleTouchEnd() {
-            if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
-        }
-
-        function showContextMenu(msgId, msgEl) {
-            App.contextMsgId = msgId;
-            const overlay = document.getElementById('contextMenuOverlay');
-            overlay.classList.add('active');
-        }
-
-        function hideContextMenu() {
-            document.getElementById('contextMenuOverlay').classList.remove('active');
-            App.contextMsgId = null;
-        }
-
-        function copyMessageText() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            const msg = char.messages.find(m => m.id === App.contextMsgId);
-            if (msg) {
-                navigator.clipboard.writeText(msg.content).then(() => showToast('已复制', 'success'));
-            }
-            hideContextMenu();
-        }
-
-        function quoteMessage() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            const msg = char.messages.find(m => m.id === App.contextMsgId);
-            if (msg) {
-                App.quoteData = { id: msg.id, content: msg.content.substring(0, 100), role: msg.role };
-                document.getElementById('quotePreviewContent').textContent = msg.content.substring(0, 50) + (msg.content.length > 50 ? '...' : '');
-                document.getElementById('quotePreviewBar').classList.add('active');
-            }
-            hideContextMenu();
-        }
-
-        function cancelQuote() {
-            App.quoteData = null;
-            document.getElementById('quotePreviewBar').classList.remove('active');
-        }
-
-        function editMessage() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            const msg = char.messages.find(m => m.id === App.contextMsgId);
-            if (msg) {
-                document.getElementById('editMessageContent').value = msg.content;
-                showModal('editMessageModal');
-            }
-            hideContextMenu();
-        }
-
-        async function saveEditedMessage() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            const msg = char.messages.find(m => m.id === App.contextMsgId);
-            if (msg) {
-                msg.content = document.getElementById('editMessageContent').value;
-                await saveData();
-                renderMessages();
-            }
-            hideModal('editMessageModal');
-        }
-
         // ==================== 壁纸 ====================
         function applyWallpaper() {
             const el = document.getElementById('wallpaperLayer');
             const wp = App.settings.wallpaper, wpData = App.settings.wallpaperData;
             el.style.cssText = '';
-            if (wpData) el.style.cssText = `position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:0!important;background-image:url(${wpData})!important;background-size:cover!important;background-position:center!important;`;
-            else if (wp?.startsWith('http')) el.style.cssText = `position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:0!important;background-image:url(${wp})!important;background-size:cover!important;background-position:center!important;`;
-            else if (GRADIENTS[wp]) el.style.cssText = `position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:0!important;background:${GRADIENTS[wp]}!important;`;
-            else el.style.cssText = `position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:0!important;background:${GRADIENTS.gradient1}!important;`;
+            if (wpData) el.style.cssText = `position:fixed!important;inset:0!important;z-index:0!important;background-image:url(${wpData})!important;background-size:cover!important;background-position:center!important;`;
+            else if (wp?.startsWith('http')) el.style.cssText = `position:fixed!important;inset:0!important;z-index:0!important;background-image:url(${wp})!important;background-size:cover!important;background-position:center!important;`;
+            else if (GRADIENTS[wp]) el.style.cssText = `position:fixed!important;inset:0!important;z-index:0!important;background:${GRADIENTS[wp]}!important;`;
+            else el.style.cssText = `position:fixed!important;inset:0!important;z-index:0!important;background:${GRADIENTS.gradient1}!important;`;
         }
 
         function updateWallpaperPreview() {
@@ -1428,9 +2574,15 @@
             else preview.style.cssText = `background:${GRADIENTS.gradient1}!important;`;
         }
 
-        function selectPresetWallpaper(name) { App.tempWallpaper = name; highlightWallpaper(); updateWallpaperPreview(); showToast('点击保存应用', 'info'); }
-        function previewUrlWallpaper() { const url = document.getElementById('customWallpaperUrl').value.trim(); if (!url) { showToast('请输入URL', 'error'); return; } App.tempWallpaper = url; updateWallpaperPreview(); showToast('点击保存应用', 'info'); }
-        async function handleWallpaperUpload(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async (ev) => { App.tempWallpaper = await compressImage(ev.target.result, 800, 0.8); updateWallpaperPreview(); showToast('点击保存应用', 'success'); }; reader.readAsDataURL(file); e.target.value = ''; }
+        function selectPresetWallpaper(name) { App.tempWallpaper = name; highlightWallpaper(); updateWallpaperPreview(); showToast('点击保存', 'info'); }
+        function previewUrlWallpaper() { const url = document.getElementById('customWallpaperUrl').value.trim(); if (!url) { showToast('请输入URL', 'error'); return; } App.tempWallpaper = url; updateWallpaperPreview(); showToast('点击保存', 'info'); }
+
+        async function handleWallpaperUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => { App.tempWallpaper = await compressImage(ev.target.result, 800, 0.8); updateWallpaperPreview(); showToast('点击保存', 'success'); };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
 
         async function saveWallpaper() {
             if (!App.tempWallpaper) { showToast('请先选择', 'warning'); return; }
@@ -1441,7 +2593,10 @@
             if (await saveData()) { applyWallpaper(); highlightWallpaper(); updateWallpaperPreview(); await updateStorageDisplay(); showToast('已保存', 'success'); }
         }
 
-        function highlightWallpaper() { const current = App.tempWallpaper || App.settings.wallpaper; document.querySelectorAll('#wallpaperGrid > div').forEach(el => { el.style.borderColor = el.dataset.wp === current ? 'var(--accent-color)' : 'transparent'; }); }
+        function highlightWallpaper() {
+            const current = App.tempWallpaper || App.settings.wallpaper;
+            document.querySelectorAll('#wallpaperGrid > div').forEach(el => { el.style.borderColor = el.dataset.wp === current ? 'var(--accent-color)' : 'transparent'; });
+        }
 
         // ==================== 图标 ====================
         function updateIconPreviews() {
@@ -1461,8 +2616,21 @@
             });
         }
 
-        async function handleIconUpload(e, appName) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async (ev) => { App.tempIcons[appName] = await compressImage(ev.target.result, 120, 0.8); updateIconPreviews(); showToast('点击保存应用', 'info'); }; reader.readAsDataURL(file); e.target.value = ''; }
-        async function saveIcons() { let changed = false; ['settings', 'messages', 'worldbook', 'photos'].forEach(app => { if (App.tempIcons[app]) { App.appIcons[app] = App.tempIcons[app]; changed = true; } }); App.tempIcons = {}; if (changed && await saveData()) { applyAppIcons(); await updateStorageDisplay(); showToast('已保存', 'success'); } else if (!changed) showToast('没有更改', 'info'); }
+        async function handleIconUpload(e, appName) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => { App.tempIcons[appName] = await compressImage(ev.target.result, 120, 0.8); updateIconPreviews(); showToast('点击保存', 'info'); };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        async function saveIcons() {
+            let changed = false;
+            ['settings', 'messages', 'worldbook', 'photos'].forEach(app => { if (App.tempIcons[app]) { App.appIcons[app] = App.tempIcons[app]; changed = true; } });
+            App.tempIcons = {};
+            if (changed && await saveData()) { applyAppIcons(); await updateStorageDisplay(); showToast('已保存', 'success'); }
+            else if (!changed) showToast('没有更改', 'info');
+        }
+
         async function resetIcons() { App.appIcons = { settings: null, messages: null, worldbook: null, photos: null }; App.tempIcons = {}; await saveData(); applyAppIcons(); updateIconPreviews(); showToast('已重置', 'success'); }
 
         // ==================== 页面导航 ====================
@@ -1498,11 +2666,11 @@
                 document.getElementById('modelListContainer').style.display = 'block';
                 document.getElementById('modelList').innerHTML = models.map(m => { const id = m.id || m.name || m; return `<div class="model-item" onclick="selectModel('${id}')"><span class="model-item-name">${id}</span></div>`; }).join('');
                 addLog(`找到${models.length}个`, 'success');
-            } catch(e) { addLog(`失败: ${e.message}`, 'error'); showToast(`失败: ${e.message}`, 'error'); }
+            } catch(e) { addLog(`失败: ${e.message}`, 'error'); showToast(`失败`, 'error'); }
             finally { btn.disabled = false; btn.innerHTML = '📋 拉取模型'; }
         }
 
-        function selectModel(id) { App.settings.modelName = id; document.getElementById('modelName').value = id; document.querySelectorAll('.model-item').forEach(el => { el.classList.toggle('selected', el.querySelector('.model-item-name').textContent === id); }); showToast(`已选: ${id}`, 'success'); }
+        function selectModel(id) { App.settings.modelName = id; document.getElementById('modelName').value = id; document.querySelectorAll('.model-item').forEach(el => { el.classList.toggle('selected', el.querySelector('.model-item-name').textContent === id); }); showToast(`已选`, 'success'); }
 
         async function testConnection() {
             const url = document.getElementById('apiBaseUrl').value.trim(), key = document.getElementById('apiKey').value.trim(), model = document.getElementById('modelName').value.trim();
@@ -1510,9 +2678,9 @@
             const btn = document.getElementById('testConnectionBtn'); btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span>';
             try {
                 const r = await fetch(`${url.replace(/\/+$/,'').replace(/\/v1$/,'')}/v1/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model, messages: [{ role: 'user', content: 'Hi' }], max_tokens: 5 }) });
-                if (r.ok) { App.connectionStatus = 'connected'; App.settings.apiBaseUrl = url; App.settings.apiKey = key; App.settings.modelName = model; await saveData(); showToast('成功！', 'success'); addLog('连接成功', 'success'); }
+                if (r.ok) { App.connectionStatus = 'connected'; App.settings.apiBaseUrl = url; App.settings.apiKey = key; App.settings.modelName = model; await saveData(); showToast('成功', 'success'); addLog('连接成功', 'success'); }
                 else throw new Error(`HTTP ${r.status}`);
-            } catch(e) { App.connectionStatus = 'disconnected'; showToast(`失败: ${e.message}`, 'error'); }
+            } catch(e) { App.connectionStatus = 'disconnected'; showToast(`失败`, 'error'); }
             finally { updateConnectionUI(); btn.disabled = false; btn.innerHTML = '🔗 测试连接'; }
         }
 
@@ -1530,15 +2698,29 @@
         async function createCharacter() {
             const name = document.getElementById('newCharacterName').value.trim(); if (!name) { showToast('请输入', 'error'); return; }
             const char = {
-                id: Date.now().toString(), name,
+                id: Date.now().toString(),
+                name,
                 avatar: ['😊','😎','🥰','🦊','🐱','🐰'][Math.floor(Math.random()*6)],
-                avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle',
-                showBorder: false, borderColor: '#007AFF', borderWidth: 2,
-                description: '', greeting: '', scenario: '', worldbookIds: [],
-                userNick: '', systemPrompt: '', messages: [],
-                chatWallpaper: null, customCss: '', activeCssPresetId: null, timestampPosition: 'default'
+                avatarImage: null,
+                userAvatar: null,
+                showAvatar: true,
+                avatarShape: 'circle',
+                showBorder: false,
+                borderColor: '#007AFF',
+                borderWidth: 2,
+                description: '',
+                greeting: '',
+                scenario: '',
+                worldbookIds: [], // 改为数组，支持多个
+                userNick: '',
+                systemPrompt: '',
+                messages: [],
+                chatWallpaper: null,
+                customCss: '',
+                activeCssPresetId: null,
+                timestampPosition: 'default'
             };
-            App.characters.push(char); await saveData(); hideModal('createCharacterModal'); renderContacts(); showToast(`"${name}"已创建`, 'success');
+            App.characters.push(char); await saveData(); hideModal('createCharacterModal'); document.getElementById('newCharacterName').value = ''; renderContacts(); showToast(`"${name}"已创建`, 'success');
         }
 
         function renderContacts() {
@@ -1546,7 +2728,7 @@
             if (App.characters.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
             list.style.display = 'flex'; empty.style.display = 'none';
             list.innerHTML = App.characters.map(c => {
-                const lastMsg = c.messages.length > 0 ? c.messages[c.messages.length-1].content.substring(0,25)+'...' : '开始对话';
+                const lastMsg = c.messages.length > 0 ? c.messages[c.messages.length-1].content?.substring(0,25) || '[图片]' : '开始对话';
                 const lastTime = c.messages.length > 0 ? formatTime(c.messages[c.messages.length-1].timestamp) : '';
                 const avatarHtml = c.avatarImage ? `<img src="${c.avatarImage}">` : (c.avatar || c.name[0]);
                 return `<div class="contact-item" onclick="openChat('${c.id}')"><div class="contact-avatar">${avatarHtml}</div><div class="contact-info"><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-preview">${escapeHtml(lastMsg)}</div></div><div class="contact-time">${lastTime}</div></div>`;
@@ -1557,8 +2739,7 @@
 
         function openChat(id) {
             const char = App.characters.find(c => c.id === id); if (!char) return;
-            App.currentCharId = id; App.isSelectMode = false; App.selectedMsgs.clear(); App.lastAIStart = -1;
-            App.quoteData = null;
+            App.currentCharId = id; App.isSelectMode = false; App.selectedMsgs.clear(); App.lastAIStart = -1; App.quotedMessage = null;
             document.getElementById('chatTitle').textContent = char.name;
             document.getElementById('selectModeBar').classList.remove('active');
             document.getElementById('chatMessages').classList.remove('select-mode');
@@ -1571,24 +2752,35 @@
 
         function applyChatWallpaper(char) {
             const chatPage = document.getElementById('chatPage');
-            if (char.chatWallpaper) { chatPage.classList.add('has-custom-bg'); chatPage.style.backgroundImage = `url(${char.chatWallpaper})`; }
-            else { chatPage.classList.remove('has-custom-bg'); chatPage.style.backgroundImage = ''; }
+            if (char.chatWallpaper) {
+                chatPage.classList.add('has-custom-bg');
+                chatPage.style.backgroundImage = `url(${char.chatWallpaper})`;
+            } else {
+                chatPage.classList.remove('has-custom-bg');
+                chatPage.style.backgroundImage = '';
+            }
         }
 
         function applyCustomCss(char) {
             const styleEl = document.getElementById('customCssStyles');
             let css = '';
-            if (char.activeCssPresetId) { const preset = App.globalCssPresets.find(p => p.id === char.activeCssPresetId); if (preset) css = preset.css; }
+            if (char.activeCssPresetId) {
+                const preset = App.globalCssPresets.find(p => p.id === char.activeCssPresetId);
+                if (preset) css = preset.css;
+            }
             if (char.customCss) css = char.customCss;
             styleEl.textContent = css;
         }
 
         function closeChatPage() {
-            exitSelectMode(); closePage('chatPage');
+            exitSelectMode();
+            closePage('chatPage');
             document.getElementById('customCssStyles').textContent = '';
             const chatPage = document.getElementById('chatPage');
-            chatPage.classList.remove('has-custom-bg'); chatPage.style.backgroundImage = '';
-            App.currentCharId = null; App.quoteData = null;
+            chatPage.classList.remove('has-custom-bg');
+            chatPage.style.backgroundImage = '';
+            App.currentCharId = null;
+            App.quotedMessage = null;
         }
 
         function openCharacterSettings() {
@@ -1599,12 +2791,10 @@
             charAvUpload.dataset.image = char.avatarImage || '';
             if (char.userAvatar) { userAvUpload.innerHTML = `<img src="${char.userAvatar}">`; userAvUpload.classList.add('has-image'); } else { userAvUpload.innerHTML = '👤'; userAvUpload.classList.remove('has-image'); }
             userAvUpload.dataset.image = char.userAvatar || '';
-
             document.getElementById('showAvatarToggle').classList.toggle('active', char.showAvatar !== false);
             document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => { el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle')); });
             document.getElementById('showBorderToggle').classList.toggle('active', char.showBorder === true);
             document.getElementById('borderColorPicker').value = char.borderColor || '#007AFF';
-
             document.getElementById('charName').value = char.name;
             document.getElementById('charAvatar').value = char.avatar || '';
             document.getElementById('charDescription').value = char.description || '';
@@ -1614,8 +2804,7 @@
             document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
             document.getElementById('timestampPosition').value = char.timestampPosition || 'default';
             document.getElementById('customCssEditor').value = char.customCss || '';
-
-            updateWorldbookMultiselect(char);
+            updateWorldbookCheckboxes(char);
             updateCssPresetSelect(char);
             updateCharCounter();
             openPage('characterSettingsPage');
@@ -1623,35 +2812,42 @@
 
         function updateChatWallpaperPreview(char) {
             const preview = document.getElementById('chatWallpaperPreview');
-            if (char.chatWallpaper) { preview.style.backgroundImage = `url(${char.chatWallpaper})`; preview.classList.add('has-image'); }
-            else { preview.style.backgroundImage = ''; preview.classList.remove('has-image'); }
+            if (char.chatWallpaper) {
+                preview.style.backgroundImage = `url(${char.chatWallpaper})`;
+                preview.classList.add('has-image');
+            } else {
+                preview.style.backgroundImage = '';
+                preview.classList.remove('has-image');
+            }
         }
 
-        function updateWorldbookMultiselect(char) {
-            const container = document.getElementById('worldbookMultiselect');
-            if (App.worldbooks.length === 0) { container.innerHTML = '<div style="padding:12px;color:var(--text-secondary);text-align:center;font-size:12px">无世界书</div>'; return; }
+        // 更新世界书多选列表
+        function updateWorldbookCheckboxes(char) {
+            const container = document.getElementById('worldbookCheckboxList');
+            if (App.worldbooks.length === 0) {
+                container.innerHTML = '<div style="color:var(--text-secondary);font-size:12px;text-align:center;padding:10px">暂无世界书</div>';
+                return;
+            }
+            const selectedIds = char.worldbookIds || [];
             container.innerHTML = App.worldbooks.map(wb => {
-                const checked = (char.worldbookIds || []).includes(wb.id);
-                return `<div class="worldbook-multiselect-item" onclick="toggleWorldbookBind('${wb.id}')">
-                    <div class="worldbook-multiselect-checkbox ${checked ? 'checked' : ''}" data-wb-id="${wb.id}"></div>
-                    <span class="worldbook-multiselect-name">${escapeHtml(wb.name)}</span>
+                const checked = selectedIds.includes(wb.id);
+                return `<div class="worldbook-checkbox-item" onclick="toggleWorldbookSelection('${wb.id}')">
+                    <div class="worldbook-checkbox ${checked ? 'checked' : ''}" data-wb-id="${wb.id}"></div>
+                    <span style="color:var(--text-primary);font-size:13px">${escapeHtml(wb.name)}</span>
+                    <span style="color:var(--text-secondary);font-size:11px;margin-left:auto">${wb.entries?.length || 0}条目</span>
                 </div>`;
             }).join('');
         }
 
-        function toggleWorldbookBind(wbId) {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            if (!char.worldbookIds) char.worldbookIds = [];
-            const idx = char.worldbookIds.indexOf(wbId);
-            if (idx >= 0) char.worldbookIds.splice(idx, 1);
-            else char.worldbookIds.push(wbId);
-            const checkbox = document.querySelector(`.worldbook-multiselect-checkbox[data-wb-id="${wbId}"]`);
-            if (checkbox) checkbox.classList.toggle('checked');
+        function toggleWorldbookSelection(wbId) {
+            const checkbox = document.querySelector(`.worldbook-checkbox[data-wb-id="${wbId}"]`);
+            checkbox.classList.toggle('checked');
         }
 
         function updateCssPresetSelect(char) {
             const select = document.getElementById('cssPresetSelect');
-            select.innerHTML = '<option value="">-- 无 --</option>' + App.globalCssPresets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+            select.innerHTML = '<option value="">-- 无 --</option>' +
+                App.globalCssPresets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
             select.value = char.activeCssPresetId || '';
         }
 
@@ -1665,22 +2861,34 @@
             const file = e.target.files[0]; if (!file) return;
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             const reader = new FileReader();
-            reader.onload = async ev => { char.chatWallpaper = await compressImage(ev.target.result, 600, 0.8); updateChatWallpaperPreview(char); showToast('已设置', 'success'); };
+            reader.onload = async ev => {
+                char.chatWallpaper = await compressImage(ev.target.result, 600, 0.8);
+                updateChatWallpaperPreview(char);
+                showToast('保存后生效', 'success');
+            };
             reader.readAsDataURL(file); e.target.value = '';
         }
 
         function clearChatWallpaper() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            char.chatWallpaper = null; updateChatWallpaperPreview(char); showToast('已清除', 'info');
+            char.chatWallpaper = null;
+            updateChatWallpaperPreview(char);
+            showToast('保存后生效', 'info');
         }
 
         function confirmClearAllMessages() { showModal('clearMessagesModal'); }
 
         async function executeClearAllMessages() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            char.messages = []; await saveData(); hideModal('clearMessagesModal'); renderMessages(); showToast('已清除', 'success');
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            char.messages = [];
+            await saveData();
+            hideModal('clearMessagesModal');
+            renderMessages();
+            showToast('已清除', 'success');
         }
 
+        // CSS预设相关
         function loadCssPreset() {
             const presetId = document.getElementById('cssPresetSelect').value;
             if (!presetId) { document.getElementById('customCssEditor').value = ''; return; }
@@ -1691,25 +2899,30 @@
         function addNewCssPreset() { showModal('cssPresetNameModal'); document.getElementById('newCssPresetName').value = ''; }
 
         async function createCssPreset() {
-            const name = document.getElementById('newCssPresetName').value.trim(); if (!name) { showToast('请输入名称', 'error'); return; }
-            const css = document.getElementById('customCssEditor').value;
-            const preset = { id: Date.now().toString(), name, css };
-            App.globalCssPresets.push(preset); await saveData(); hideModal('cssPresetNameModal');
+            const name = document.getElementById('newCssPresetName').value.trim();
+            if (!name) { showToast('请输入名称', 'error'); return; }
+            const preset = { id: Date.now().toString(), name, css: document.getElementById('customCssEditor').value };
+            App.globalCssPresets.push(preset);
+            await saveData();
+            hideModal('cssPresetNameModal');
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (char) { updateCssPresetSelect(char); document.getElementById('cssPresetSelect').value = preset.id; }
-            showToast(`预设"${name}"已创建`, 'success');
+            showToast(`预设已创建`, 'success');
         }
 
         async function saveCssPreset() {
             const presetId = document.getElementById('cssPresetSelect').value;
             if (!presetId) { showToast('请选择预设', 'warning'); return; }
-            const preset = App.globalCssPresets.find(p => p.id === presetId); if (!preset) return;
-            preset.css = document.getElementById('customCssEditor').value; await saveData(); showToast(`预设已更新`, 'success');
+            const preset = App.globalCssPresets.find(p => p.id === presetId);
+            if (!preset) return;
+            preset.css = document.getElementById('customCssEditor').value;
+            await saveData();
+            showToast('预设已更新', 'success');
         }
 
         function showCssGuide() { showModal('cssGuideModal'); }
-        function previewCss() { document.getElementById('customCssStyles').textContent = document.getElementById('customCssEditor').value; showToast('CSS已预览', 'info'); }
-        function clearCustomCss() { document.getElementById('customCssEditor').value = ''; document.getElementById('cssPresetSelect').value = ''; document.getElementById('customCssStyles').textContent = ''; showToast('CSS已清除', 'info'); }
+        function previewCss() { document.getElementById('customCssStyles').textContent = document.getElementById('customCssEditor').value; showToast('已预览', 'info'); }
+        function clearCustomCss() { document.getElementById('customCssEditor').value = ''; document.getElementById('cssPresetSelect').value = ''; document.getElementById('customCssStyles').textContent = ''; showToast('已清除', 'info'); }
 
         async function saveCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
@@ -1722,7 +2935,6 @@
             char.avatarShape = shapeEl ? shapeEl.dataset.shape : 'circle';
             char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
             char.borderColor = document.getElementById('borderColorPicker').value;
-
             char.name = document.getElementById('charName').value.trim() || char.name;
             char.avatar = document.getElementById('charAvatar').value.trim() || char.avatar;
             char.description = document.getElementById('charDescription').value;
@@ -1734,10 +2946,20 @@
             char.customCss = document.getElementById('customCssEditor').value;
             char.activeCssPresetId = document.getElementById('cssPresetSelect').value || null;
 
+            // 获取选中的世界书
+            const selectedWbs = [];
+            document.querySelectorAll('.worldbook-checkbox.checked').forEach(el => {
+                selectedWbs.push(el.dataset.wbId);
+            });
+            char.worldbookIds = selectedWbs;
+
             document.getElementById('chatTitle').textContent = char.name;
             await saveData();
-            applyChatWallpaper(char); applyCustomCss(char); renderMessages();
-            closeCharacterSettings(); showToast('已保存', 'success');
+            applyChatWallpaper(char);
+            applyCustomCss(char);
+            renderMessages();
+            closeCharacterSettings();
+            showToast('已保存', 'success');
         }
 
         function updateCharCounter() { const ta = document.getElementById('charGreeting'), counter = document.getElementById('greetingCharCounter'); counter.textContent = `${ta.value.length}/300`; counter.className = 'char-counter' + (ta.value.length >= 280 ? ' warning' : '') + (ta.value.length >= 300 ? ' error' : ''); }
@@ -1756,35 +2978,38 @@
             let timeClass = timestampPos === 'hidden' ? 'time-hidden' : timestampPos === 'side' ? 'time-side' : '';
 
             let html = '', lastDate = null;
-            char.messages.forEach(msg => {
+            char.messages.forEach((msg, idx) => {
                 const msgDate = new Date(msg.timestamp).toLocaleDateString();
                 if (msgDate !== lastDate) { html += `<div class="date-separator"><span class="date-separator-text">${formatDate(msg.timestamp)}</span></div>`; lastDate = msgDate; }
                 const type = msg.role === 'user' ? 'sent' : 'received', checked = App.selectedMsgs.has(msg.id) ? 'checked' : '';
-                let avatarHtml = '';
-                if (showAvatar) { const avatarContent = type === 'received' ? (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0])) : (char.userAvatar ? `<img src="${char.userAvatar}">` : '👤'); avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`; }
 
-                // 解析引用
-                let quoteHtml = '', displayContent = msg.content;
-                const quoteMatch = msg.content.match(/^\[Q:(.+?)\]/);
-                if (quoteMatch) {
-                    const quotedText = quoteMatch[1];
-                    displayContent = msg.content.replace(/^\[Q:.+?\]/, '').trim();
-                    quoteHtml = `<div class="message-quote">${escapeHtml(quotedText)}</div>`;
+                let avatarHtml = '';
+                if (showAvatar) {
+                    const avatarContent = type === 'received' ? (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0])) : (char.userAvatar ? `<img src="${char.userAvatar}">` : '👤');
+                    avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`;
                 }
 
-                // 图片消息
-                let imageHtml = '';
-                if (msg.image) { imageHtml = `<img src="${msg.image}" class="message-image" onclick="viewImage('${msg.id}')">`; }
+                // 解析消息内容（可能包含引用和图片）
+                let contentHtml = '';
+                if (msg.image) {
+                    contentHtml = `<img src="${msg.image}" class="message-image" onclick="viewImage('${msg.id}')">`;
+                } else {
+                    // 检查是否有引用
+                    const quoteMatch = msg.content?.match(/^\[Q:#(\d+)\]([\s\S]*)$/);
+                    if (quoteMatch) {
+                        const quotedIdx = parseInt(quoteMatch[1]);
+                        const quotedMsg = char.messages[quotedIdx];
+                        const quotedText = quotedMsg?.content?.substring(0, 50) || '已删除';
+                        contentHtml = `<div class="quote-bubble">${escapeHtml(quotedText)}</div>${escapeHtml(quoteMatch[2])}`;
+                    } else {
+                        contentHtml = escapeHtml(msg.content || '');
+                    }
+                }
 
-                html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}">
+                html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}" data-msg-idx="${idx}">
                     <div class="message-checkbox ${checked}" onclick="toggleMsgSelect('${msg.id}')"></div>
                     ${type === 'received' ? avatarHtml : ''}
-                    <div class="message ${type}">
-                        ${quoteHtml}
-                        ${escapeHtml(displayContent)}
-                        ${imageHtml}
-                        <div class="message-time ${timeClass}">${formatTime(msg.timestamp)}</div>
-                    </div>
+                    <div class="message ${type}">${contentHtml}<div class="message-time ${timeClass}">${formatTime(msg.timestamp)}</div></div>
                     ${type === 'sent' ? avatarHtml : ''}
                 </div>`;
             });
@@ -1792,72 +3017,79 @@
             scrollToBottom();
         }
 
-        async function addMessage(content, type, imageData = null) {
+        async function addMessage(content, type, options = {}) {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-
-            // 处理引用
-            let finalContent = content;
-            if (App.quoteData && type === 'sent') {
-                finalContent = `[Q:${App.quoteData.content.substring(0, 50)}]${content}`;
-                cancelQuote();
-            }
-
             const msg = {
                 id: Date.now().toString() + Math.random().toString(36).substr(2,9),
                 role: type === 'sent' ? 'user' : 'assistant',
-                content: finalContent,
+                content,
                 timestamp: new Date().toISOString(),
-                image: imageData
+                image: options.image || null
             };
-            char.messages.push(msg); await saveData(); renderMessages();
+            char.messages.push(msg);
+            await saveData();
+            renderMessages();
+            return msg;
         }
 
         function sendMessage() {
             const input = document.getElementById('chatInput'), content = input.value.trim();
-            if (!content) return;
-            addMessage(content, 'sent');
-            input.value = ''; autoResizeTextarea(input);
+            if (!content && !App.quotedMessage) return;
+
+            let finalContent = content;
+            if (App.quotedMessage) {
+                // 找到引用消息的索引
+                const char = App.characters.find(c => c.id === App.currentCharId);
+                if (char) {
+                    const quotedIdx = char.messages.findIndex(m => m.id === App.quotedMessage.id);
+                    if (quotedIdx !== -1) {
+                        finalContent = `[Q:#${quotedIdx}]${content}`;
+                    }
+                }
+                cancelQuote();
+            }
+
+            if (finalContent) {
+                addMessage(finalContent, 'sent');
+                input.value = '';
+                autoResizeTextarea(input);
+            }
         }
 
         // 发送图片
-        function openImagePicker() {
+        function sendImage() {
             toggleExtensionPanel();
-            document.getElementById('chatImageInput').click();
+            document.getElementById('imageInput').click();
         }
 
-        async function handleChatImageUpload(e) {
+        async function handleImageSend(e) {
             const file = e.target.files[0]; if (!file) return;
-            if (file.size > 2 * 1024 * 1024 * 1024) { showToast('图片过大', 'error'); return; }
+            if (file.size > 2 * 1024 * 1024 * 1024) { showToast('图片不超过2GB', 'error'); return; }
             const reader = new FileReader();
             reader.onload = async (ev) => {
-                const compressed = await compressImage(ev.target.result, 800, 0.8);
-                await addMessage('[图片]', 'sent', compressed);
+                const imageData = await compressImage(ev.target.result, 800, 0.8);
+                await addMessage('[图片]', 'sent', { image: imageData });
             };
-            reader.readAsDataURL(file); e.target.value = '';
+            reader.readAsDataURL(file);
+            e.target.value = '';
         }
 
         function viewImage(msgId) {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
             const msg = char.messages.find(m => m.id === msgId);
-            if (msg?.image) { window.open(msg.image, '_blank'); }
+            if (msg?.image) window.open(msg.image, '_blank');
         }
 
-        // 解析AI响应
         function parseAIResponse(text) {
-            if (!text) return [{ quote: null, content: '...' }];
-            let cleaned = text.trim().replace(/^\s*\[[^\]]*\]\s*[:：]\s*/g, '').replace(/^\s*【[^】]*】\s*[:：]?\s*/g, '').replace(/^[^:：\n]{1,20}[:：]\s*/g, '');
+            if (!text) return ['...'];
+            let cleaned = text.trim()
+                .replace(/^\s*\[[^\]]*\]\s*[:：]\s*/g, '')
+                .replace(/^\s*【[^】]*】\s*[:：]?\s*/g, '')
+                .replace(/^[^:：\n]{1,20}[:：]\s*/g, '');
 
-            const seps = [/\s*\|\|\|\s*/g, /\s*\|\|\s*/g, /\n\n+/g, /\n/g];
-            let parts = [cleaned];
-            for (const sep of seps) { const test = cleaned.split(sep).map(s => s.trim()).filter(s => s); if (test.length > 1) { parts = test; break; } }
-
-            return parts.map(p => {
-                let quote = null, content = p;
-                const quoteMatch = p.match(/^\[Q:(.+?)\]/);
-                if (quoteMatch) { quote = quoteMatch[1]; content = p.replace(/^\[Q:.+?\]/, '').trim(); }
-                content = content.replace(/^["「『"]+/, '').replace(/["」』"]+$/, '').trim();
-                return { quote, content };
-            }).filter(p => p.content);
+            const parts = cleaned.split(/\|\|\|/).map(s => s.trim()).filter(s => s);
+            return parts.length > 0 ? parts : [cleaned];
         }
 
         async function triggerAIReply() {
@@ -1872,13 +3104,10 @@
                 const r = await fetch(`${url}/v1/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${App.settings.apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: App.settings.modelName, messages, temperature: App.settings.temperature, max_tokens: App.settings.maxTokens }) });
                 document.getElementById('typingIndicator')?.remove();
                 if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                const data = await r.json(), reply = data.choices[0].message.content;
-                const parts = parseAIResponse(reply);
+                const data = await r.json(), reply = data.choices[0].message.content, parts = parseAIResponse(reply);
                 for (let i = 0; i < parts.length; i++) {
                     if (i > 0) await new Promise(r => setTimeout(r, 300 + Math.random()*400));
-                    let msgContent = parts[i].content;
-                    if (parts[i].quote) msgContent = `[Q:${parts[i].quote}]${msgContent}`;
-                    await addMessage(msgContent, 'received');
+                    await addMessage(parts[i], 'received');
                 }
             } catch(e) { document.getElementById('typingIndicator')?.remove(); App.lastAIStart = -1; showToast(`失败: ${e.message}`, 'error'); }
         }
@@ -1886,88 +3115,156 @@
         function buildAPIMessages(char) {
             const msgs = [];
 
-            // 收集世界书内容
-            let worldbookContent = '';
-            (char.worldbookIds || []).forEach(wbId => {
+            // 系统提示词
+            let sys = `# 短信模拟
+你是"${char.name}"，通过手机短信聊天。
+
+## 格式规则
+1. 用|||分隔多条短信
+2. 每条短信简短自然(5-30字)
+3. 不要加角色名前缀
+4. 可以引用消息：[Q:#编号]回复内容
+
+## 引用格式
+引用历史消息时使用 [Q:#编号]回复内容
+例如：[Q:#3]对对就是这个意思
+
+## 角色设定
+${char.description || '一个友善的朋友'}`;
+
+            if (char.scenario) sys += `\n\n## 情景\n${char.scenario}`;
+            if (char.userNick) sys += `\n\n## 用户称呼\n${char.userNick}`;
+            if (char.systemPrompt) sys += `\n\n${char.systemPrompt}`;
+
+            // 处理多个世界书
+            const wbIds = char.worldbookIds || [];
+            wbIds.forEach(wbId => {
                 const wb = App.worldbooks.find(w => w.id === wbId);
                 if (wb?.entries) {
                     wb.entries.forEach(entry => {
-                        const inject = entry.alwaysActive || (entry.keywords && char.messages.some(m => entry.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))));
-                        if (inject && entry.content) worldbookContent += entry.content + '\n\n';
+                        if (entry.alwaysActive || (entry.keywords && char.messages.some(m =>
+                            entry.keywords.split(',').some(k => m.content?.toLowerCase().includes(k.trim().toLowerCase()))
+                        ))) {
+                            sys += `\n\n## ${wb.name} - ${entry.keywords}\n${entry.content}`;
+                        }
                     });
                 }
             });
 
-            let sys = `# 短信模拟规则
-
-你正在扮演"${char.name}"，通过手机短信聊天。
-
-## 【重要】输出格式
-1. 多条短信用 ||| 分隔
-2. 每条短信长短自然，像真人
-3. 不要加角色名前缀
-4. 可以引用用户的话回复，格式: [Q:引用内容]你的回复
-
-## 正确示例
-嗯|||确实
-好无聊|||你在干嘛
-[Q:我今天好累]辛苦了|||早点休息
-
-## 角色
-${char.description || '朋友'}`;
-
-            if (char.scenario) sys += `\n\n## 情景\n${char.scenario}`;
-            if (char.userNick) sys += `\n\n## 称呼\n${char.userNick}`;
-            if (char.systemPrompt) sys += `\n\n## 额外\n${char.systemPrompt}`;
-            if (worldbookContent) sys += `\n\n## 背景知识\n${worldbookContent}`;
-
             msgs.push({ role: 'system', content: sys });
 
+            // 构建带编号的历史消息
             const max = App.settings.maxContextMessages || 200;
             const history = char.messages.slice(-max);
 
-            // 检查是否有图片
-            let hasImage = false;
-            history.forEach(m => { if (m.image) hasImage = true; });
+            // 合并连续的同角色消息
+            const merged = [];
+            for (let i = 0; i < history.length; i++) {
+                const msg = history[i];
+                const last = merged[merged.length - 1];
 
-            if (hasImage) {
-                // 使用多模态格式
-                history.forEach(m => {
-                    if (m.image) {
-                        msgs.push({
-                            role: m.role === 'user' ? 'user' : 'assistant',
-                            content: [
-                                { type: 'text', text: m.content.replace('[图片]', '').trim() || '请看图片' },
-                                { type: 'image_url', image_url: { url: m.image } }
-                            ]
-                        });
+                let content = msg.content || '';
+                // 如果是图片消息，需要特殊处理
+                if (msg.image) {
+                    // 使用多模态格式
+                    if (last && last.role === msg.role && !last.hasImage) {
+                        last.content += '|||[图片]';
+                        last.images = last.images || [];
+                        last.images.push(msg.image);
                     } else {
-                        msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content });
+                        merged.push({
+                            role: msg.role,
+                            content: '[图片]',
+                            images: [msg.image],
+                            hasImage: true,
+                            startIdx: i
+                        });
                     }
-                });
-            } else {
-                // 普通文本格式，合并连续同角色消息
-                const merged = [];
-                for (let i = 0; i < history.length; i++) {
-                    const cur = history[i], last = merged[merged.length - 1];
-                    if (last && last.role === cur.role) last.content += '|||' + cur.content;
-                    else merged.push({ role: cur.role, content: cur.content });
+                } else {
+                    if (last && last.role === msg.role && !last.hasImage) {
+                        last.content += '|||' + content;
+                    } else {
+                        merged.push({ role: msg.role, content, startIdx: i });
+                    }
                 }
-                merged.forEach(m => { msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content }); });
             }
 
-            if (history.length > 10) msgs.push({ role: 'system', content: '【提醒】用|||分隔多条短信。可用[Q:内容]格式引用用户的话回复。' });
+            // 添加历史消息提示
+            if (history.length > 0) {
+                let historyHint = '\n\n## 历史消息编号参考\n';
+                history.forEach((m, i) => {
+                    const role = m.role === 'user' ? 'user' : 'char';
+                    const preview = (m.content || '[图片]').substring(0, 30);
+                    historyHint += `[#${i}] ${role}: ${preview}\n`;
+                });
+                msgs[0].content += historyHint;
+            }
+
+            // 转换为API格式
+            merged.forEach(m => {
+                if (m.hasImage && m.images?.length > 0) {
+                    // 多模态格式
+                    const contentArr = [];
+                    contentArr.push({ type: 'text', text: m.content });
+                    m.images.forEach(img => {
+                        contentArr.push({
+                            type: 'image_url',
+                            image_url: { url: img }
+                        });
+                    });
+                    msgs.push({
+                        role: m.role === 'user' ? 'user' : 'assistant',
+                        content: contentArr
+                    });
+                } else {
+                    msgs.push({
+                        role: m.role === 'user' ? 'user' : 'assistant',
+                        content: m.content
+                    });
+                }
+            });
+
+            // 提醒消息格式
+            if (history.length > 5) {
+                msgs.push({
+                    role: 'system',
+                    content: '【格式提醒】用|||分隔多条短信。引用消息用[Q:#编号]格式。'
+                });
+            }
 
             return msgs;
         }
 
         async function regenerateLastReply() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; toggleExtensionPanel();
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            toggleExtensionPanel();
             if (char.messages.length === 0) { showToast('无消息', 'warning'); return; }
-            if (App.lastAIStart >= 0 && App.lastAIStart < char.messages.length) { let allAI = true; for (let i = App.lastAIStart; i < char.messages.length; i++) { if (char.messages[i].role !== 'assistant') { allAI = false; break; } } if (allAI) { const count = char.messages.length - App.lastAIStart; char.messages.splice(App.lastAIStart, count); await saveData(); renderMessages(); showToast(`已删${count}条`, 'info'); App.lastAIStart = -1; await triggerAIReply(); return; } }
+            if (App.lastAIStart >= 0 && App.lastAIStart < char.messages.length) {
+                let allAI = true;
+                for (let i = App.lastAIStart; i < char.messages.length; i++) {
+                    if (char.messages[i].role !== 'assistant') { allAI = false; break; }
+                }
+                if (allAI) {
+                    const count = char.messages.length - App.lastAIStart;
+                    char.messages.splice(App.lastAIStart, count);
+                    await saveData(); renderMessages();
+                    showToast(`已删${count}条`, 'info');
+                    App.lastAIStart = -1;
+                    await triggerAIReply();
+                    return;
+                }
+            }
             if (char.messages[char.messages.length-1].role !== 'assistant') { showToast('最后非AI', 'warning'); return; }
-            let first = char.messages.length - 1; for (let i = char.messages.length - 1; i >= 0; i--) { if (char.messages[i].role === 'assistant') first = i; else break; }
-            const count = char.messages.length - first; char.messages.splice(first, count); await saveData(); renderMessages(); showToast(`已删${count}条`, 'info'); await triggerAIReply();
+            let first = char.messages.length - 1;
+            for (let i = char.messages.length - 1; i >= 0; i--) {
+                if (char.messages[i].role === 'assistant') first = i;
+                else break;
+            }
+            const count = char.messages.length - first;
+            char.messages.splice(first, count);
+            await saveData(); renderMessages();
+            showToast(`已删${count}条`, 'info');
+            await triggerAIReply();
         }
 
         function enterSelectMode() { toggleExtensionPanel(); App.isSelectMode = true; App.selectedMsgs.clear(); document.getElementById('chatMessages').classList.add('select-mode'); document.getElementById('selectModeBar').classList.add('active'); updateSelectedCount(); }
@@ -1981,112 +3278,239 @@ ${char.description || '朋友'}`;
 
         // ==================== 世界书 ====================
         async function createWorldbook() {
-            const name = document.getElementById('newWorldbookName').value.trim(); if (!name) { showToast('请输入', 'error'); return; }
-            const wb = { id: Date.now().toString(), name, summary: '', entries: [] };
-            App.worldbooks.push(wb); await saveData(); hideModal('createWorldbookModal'); renderWorldbooks(); showToast(`"${name}"已创建`, 'success'); openWorldbookEdit(wb.id);
+            const name = document.getElementById('newWorldbookName').value.trim();
+            if (!name) { showToast('请输入', 'error'); return; }
+            const wb = {
+                id: Date.now().toString(),
+                name,
+                summary: '',
+                entries: [] // 条目数组
+            };
+            App.worldbooks.push(wb);
+            await saveData();
+            hideModal('createWorldbookModal');
+            document.getElementById('newWorldbookName').value = '';
+            renderWorldbooks();
+            showToast(`"${name}"已创建`, 'success');
+            openWorldbookEdit(wb.id);
         }
 
         function renderWorldbooks() {
             const list = document.getElementById('worldbookList'), empty = document.getElementById('emptyWorldbookState');
             if (App.worldbooks.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
             list.style.display = 'block'; empty.style.display = 'none';
-            list.innerHTML = App.worldbooks.map(wb => `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${wb.entries?.length || 0}条目</span></div><div class="worldbook-item-preview">${escapeHtml(wb.summary || '无简介')}</div></div>`).join('');
+            list.innerHTML = App.worldbooks.map(wb => {
+                const entryCount = wb.entries?.length || 0;
+                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')">
+                    <div class="worldbook-item-header">
+                        <span class="worldbook-item-title">${escapeHtml(wb.name)}</span>
+                        <span class="worldbook-item-badge">${entryCount}条目</span>
+                    </div>
+                    <div class="worldbook-item-preview">${escapeHtml(wb.summary || '无简介')}</div>
+                </div>`;
+            }).join('');
         }
 
         function openWorldbookEdit(id) {
-            const wb = App.worldbooks.find(w => w.id === id); if (!wb) return;
+            const wb = App.worldbooks.find(w => w.id === id);
+            if (!wb) return;
             App.currentWbId = id;
-            App.tempEntries = JSON.parse(JSON.stringify(wb.entries || []));
             document.getElementById('worldbookName').value = wb.name;
             document.getElementById('worldbookSummary').value = wb.summary || '';
-            renderEntryList();
+            renderWorldbookEntries(wb);
             openPage('worldbookEditPage');
         }
 
-        function renderEntryList() {
-            const list = document.getElementById('entryList');
-            if (App.tempEntries.length === 0) { list.innerHTML = '<div style="padding:12px;color:var(--text-secondary);text-align:center;font-size:12px">无条目，点击上方添加</div>'; return; }
-            list.innerHTML = App.tempEntries.map((entry, idx) => `<div class="entry-item">
-                <div class="entry-item-header">
-                    <span class="entry-item-title">条目 ${idx + 1}</span>
-                    ${entry.alwaysActive ? '<span class="entry-item-badge">始终</span>' : ''}
+        function renderWorldbookEntries(wb) {
+            const container = document.getElementById('worldbookEntriesContainer');
+            if (!wb.entries || wb.entries.length === 0) {
+                container.innerHTML = '<div style="color:var(--text-secondary);font-size:12px;text-align:center;padding:20px">暂无条目，点击下方添加</div>';
+                return;
+            }
+            container.innerHTML = wb.entries.map((entry, idx) => `
+                <div class="entry-item" data-entry-idx="${idx}">
+                    <div class="entry-header">
+                        <span class="entry-keywords">${escapeHtml(entry.keywords || '无关键词')}</span>
+                        <button class="entry-delete" onclick="deleteWorldbookEntry(${idx})">×</button>
+                    </div>
+                    <div class="entry-content">${escapeHtml(entry.content?.substring(0, 100) || '无内容')}...</div>
+                    <div style="margin-top:8px">
+                        <button class="btn btn-secondary btn-small" onclick="editWorldbookEntry(${idx})">编辑</button>
+                    </div>
                 </div>
-                <div class="entry-item-keywords">关键词: ${escapeHtml(entry.keywords) || '无'}</div>
-                <div class="entry-item-preview">${escapeHtml(entry.content?.substring(0, 80)) || '无内容'}</div>
-                <div class="entry-item-actions">
-                    <button class="entry-action-btn" onclick="editEntry(${idx})">编辑</button>
-                    <button class="entry-action-btn danger" onclick="deleteEntry(${idx})">删除</button>
-                </div>
-            </div>`).join('');
+            `).join('');
         }
 
         function addWorldbookEntry() {
-            App.tempEntries.push({ keywords: '', content: '', alwaysActive: false });
-            renderEntryList();
-            editEntry(App.tempEntries.length - 1);
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb) return;
+            if (!wb.entries) wb.entries = [];
+            wb.entries.push({
+                id: Date.now().toString(),
+                keywords: '',
+                content: '',
+                alwaysActive: false
+            });
+            renderWorldbookEntries(wb);
+            // 自动打开编辑
+            editWorldbookEntry(wb.entries.length - 1);
         }
 
-        function editEntry(idx) {
-            App.currentEntryIndex = idx;
-            const entry = App.tempEntries[idx];
-            document.getElementById('entryKeywords').value = entry.keywords || '';
-            document.getElementById('entryContent').value = entry.content || '';
-            document.getElementById('entryAlwaysActive').classList.toggle('active', entry.alwaysActive);
-            showModal('entryEditModal');
+        function editWorldbookEntry(idx) {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb || !wb.entries[idx]) return;
+            const entry = wb.entries[idx];
+            // 简单使用prompt编辑
+            const newKeywords = prompt('关键词(逗号分隔):', entry.keywords || '');
+            if (newKeywords === null) return;
+            const newContent = prompt('内容:', entry.content || '');
+            if (newContent === null) return;
+            const alwaysActive = confirm('始终激活？');
+            entry.keywords = newKeywords;
+            entry.content = newContent;
+            entry.alwaysActive = alwaysActive;
+            renderWorldbookEntries(wb);
+            showToast('条目已更新', 'success');
         }
 
-        function saveEntry() {
-            if (App.currentEntryIndex < 0) return;
-            App.tempEntries[App.currentEntryIndex] = {
-                keywords: document.getElementById('entryKeywords').value,
-                content: document.getElementById('entryContent').value,
-                alwaysActive: document.getElementById('entryAlwaysActive').classList.contains('active')
-            };
-            hideModal('entryEditModal');
-            renderEntryList();
+        function deleteWorldbookEntry(idx) {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb || !wb.entries[idx]) return;
+            if (!confirm('删除此条目？')) return;
+            wb.entries.splice(idx, 1);
+            renderWorldbookEntries(wb);
+            showToast('已删除', 'success');
         }
 
-        function deleteEntry(idx) {
-            if (confirm('删除此条目？')) {
-                App.tempEntries.splice(idx, 1);
-                renderEntryList();
+        function closeWorldbookEdit() { closePage('worldbookEditPage'); App.currentWbId = null; }
+
+        async function saveWorldbook() {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb) return;
+            wb.name = document.getElementById('worldbookName').value.trim() || wb.name;
+            wb.summary = document.getElementById('worldbookSummary').value;
+            await saveData();
+            closeWorldbookEdit();
+            renderWorldbooks();
+            showToast('已保存', 'success');
+        }
+
+        function deleteCurrentWorldbook() {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb) return;
+            App.pendingDeleteType = 'worldbook';
+            App.pendingDeleteId = wb.id;
+            document.getElementById('deleteModalTitle').textContent = `删除"${wb.name}"？`;
+            showModal('confirmDeleteModal');
+        }
+
+        async function confirmDelete() {
+            if (App.pendingDeleteType === 'character') {
+                App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
+                await saveData();
+                hideModal('confirmDeleteModal');
+                closeCharacterSettings();
+                closeChatPage();
+                renderContacts();
+                showToast('已删除', 'success');
+            } else if (App.pendingDeleteType === 'worldbook') {
+                // 移除所有角色对该世界书的绑定
+                App.characters.forEach(c => {
+                    if (c.worldbookIds) {
+                        c.worldbookIds = c.worldbookIds.filter(id => id !== App.pendingDeleteId);
+                    }
+                });
+                App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
+                await saveData();
+                hideModal('confirmDeleteModal');
+                closeWorldbookEdit();
+                renderWorldbooks();
+                showToast('已删除', 'success');
             }
         }
 
-        function closeWorldbookEdit() { closePage('worldbookEditPage'); App.currentWbId = null; App.tempEntries = []; }
-
-        async function saveWorldbook() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            wb.name = document.getElementById('worldbookName').value.trim() || wb.name;
-            wb.summary = document.getElementById('worldbookSummary').value;
-            wb.entries = App.tempEntries;
-            await saveData(); closeWorldbookEdit(); renderWorldbooks(); showToast('已保存', 'success');
-        }
-
-        function deleteCurrentWorldbook() { const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return; App.pendingDeleteType = 'worldbook'; App.pendingDeleteId = wb.id; document.getElementById('deleteModalTitle').textContent = `删除"${wb.name}"？`; showModal('confirmDeleteModal'); }
-
-        async function confirmDelete() {
-            if (App.pendingDeleteType === 'character') { App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId); await saveData(); hideModal('confirmDeleteModal'); closeCharacterSettings(); closeChatPage(); renderContacts(); showToast('已删除', 'success'); }
-            else if (App.pendingDeleteType === 'worldbook') { App.characters.forEach(c => { if (c.worldbookIds) c.worldbookIds = c.worldbookIds.filter(id => id !== App.pendingDeleteId); }); App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId); await saveData(); hideModal('confirmDeleteModal'); closeWorldbookEdit(); renderWorldbooks(); showToast('已删除', 'success'); }
-        }
-
         // ==================== 导入导出 ====================
-        function exportAllData() { const data = { characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, version: '6.0.0', exportedAt: new Date().toISOString() }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sms-backup-${new Date().toISOString().split('T')[0]}.json`; a.click(); showToast('已导出', 'success'); }
-        async function importData(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async ev => { try { const data = JSON.parse(ev.target.result); if (data.characters) App.characters = data.characters; if (data.worldbooks) App.worldbooks = data.worldbooks; if (data.settings) App.settings = {...App.settings, ...data.settings}; if (data.appIcons) App.appIcons = {...App.appIcons, ...data.appIcons}; if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets; if (await saveData()) { loadSettingsUI(); applyWallpaper(); applyAppIcons(); applyStatusBarVisibility(); await updateStorageDisplay(); showToast('导入成功', 'success'); } } catch(err) { showToast('导入失败: ' + err.message, 'error'); } }; reader.readAsText(file); e.target.value = ''; }
-        async function clearAllData() { if (confirm('确定清除所有？')) { try { await clearIDBStore('appData'); await clearIDBStore('images'); location.reload(); } catch (e) { indexedDB.deleteDatabase(DB_NAME); location.reload(); } } }
+        function exportAllData() {
+            const data = {
+                characters: App.characters,
+                worldbooks: App.worldbooks,
+                settings: App.settings,
+                appIcons: App.appIcons,
+                globalCssPresets: App.globalCssPresets,
+                version: '6.0.0',
+                exportedAt: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `sms-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            showToast('已导出', 'success');
+        }
 
-        // ==================== 工具 ====================
+        async function importData(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async ev => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (data.characters) App.characters = data.characters;
+                    if (data.worldbooks) App.worldbooks = data.worldbooks;
+                    if (data.settings) App.settings = {...App.settings, ...data.settings};
+                    if (data.appIcons) App.appIcons = {...App.appIcons, ...data.appIcons};
+                    if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets;
+                    if (await saveData()) {
+                        loadSettingsUI();
+                        applyWallpaper();
+                        applyAppIcons();
+                        applyStatusBarVisibility();
+                        await updateStorageDisplay();
+                        showToast('导入成功', 'success');
+                    }
+                } catch(err) { showToast('导入失败', 'error'); }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+
+        async function clearAllData() {
+            if (confirm('确定清除所有？')) {
+                try {
+                    await clearIDBStore('appData');
+                    await clearIDBStore('images');
+                    location.reload();
+                } catch (e) {
+                    indexedDB.deleteDatabase(DB_NAME);
+                    location.reload();
+                }
+            }
+        }
+
+        // ==================== 工具函数 ====================
         function toggleSwitch(el) { el.classList.toggle('active'); }
         function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
         function formatTime(ts) { return new Date(ts).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); }
         function formatDate(ts) { const d = new Date(ts), today = new Date(), yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1); if (d.toDateString() === today.toDateString()) return '今天'; if (d.toDateString() === yesterday.toDateString()) return '昨天'; return d.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' }); }
 
         document.addEventListener('keydown', e => {
-            if (e.key === 'Enter' && !e.shiftKey) { const input = document.getElementById('chatInput'); if (document.activeElement === input && document.getElementById('chatPage').classList.contains('active')) { e.preventDefault(); sendMessage(); } }
-            if (e.key === 'Escape') { ['createCharacterModal','createWorldbookModal','confirmDeleteModal','clearMessagesModal','cssPresetNameModal','cssGuideModal','entryEditModal','editMessageModal'].forEach(hideModal); hideContextMenu(); if (App.isSelectMode) exitSelectMode(); }
+            if (e.key === 'Enter' && !e.shiftKey) {
+                const input = document.getElementById('chatInput');
+                if (document.activeElement === input && document.getElementById('chatPage').classList.contains('active')) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            }
+            if (e.key === 'Escape') {
+                ['createCharacterModal','createWorldbookModal','confirmDeleteModal','clearMessagesModal','cssPresetNameModal','cssGuideModal','editMessageModal'].forEach(hideModal);
+                if (App.isSelectMode) exitSelectMode();
+                hideContextMenu();
+                cancelQuote();
+            }
         });
 
-        document.querySelectorAll('.modal-overlay').forEach(overlay => { overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); }); });
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); });
+        });
     </script>
 </body>
 </html>
