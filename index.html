@@ -1,4 +1,8 @@
 
+
+
+
+
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -10,7 +14,7 @@
     <meta name="apple-mobile-web-app-title" content="AI短信">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1a1a2e">
-    <title>AI短信模拟器 v6.0</title>
+    <title>AI短信模拟器 v6.1</title>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.12);
@@ -149,7 +153,6 @@
         .message.sent { background: var(--message-sent); color: white; border-radius: 16px 16px 4px 16px; }
         .message.received { background: var(--message-received); backdrop-filter: blur(8px); color: var(--text-primary); border-radius: 16px 16px 16px 4px; }
 
-        /* 引用气泡样式 */
         .message-quote { background: rgba(0, 0, 0, 0.2); border-left: 2px solid rgba(255, 255, 255, 0.4); border-radius: 4px; padding: 4px 8px; margin-bottom: 6px; font-size: 12px; color: rgba(255, 255, 255, 0.7); max-height: 40px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .message.sent .message-quote { background: rgba(255, 255, 255, 0.15); border-left-color: rgba(255, 255, 255, 0.5); }
 
@@ -172,10 +175,8 @@
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes typing { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
 
-        /* 输入区域 */
         .chat-input-wrapper { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.08); }
 
-        /* 引用预览条 */
         .quote-preview-bar { display: none; padding: 8px 12px; background: rgba(0, 0, 0, 0.3); border-bottom: 1px solid rgba(255, 255, 255, 0.08); align-items: center; gap: 10px; }
         .quote-preview-bar.active { display: flex; }
         .quote-preview-content { flex: 1; font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 2px solid var(--accent-color); padding-left: 8px; }
@@ -192,7 +193,6 @@
         .chat-input-field { flex: 1; min-height: 34px; max-height: 90px; padding: 7px 12px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 17px; color: var(--text-primary); font-size: 14px; resize: none; outline: none; font-family: inherit; }
         .chat-input-field::placeholder { color: rgba(255, 255, 255, 0.4); }
 
-        /* 扩展面板 - INS金属风格 */
         .extension-panel { position: absolute; bottom: calc(60px + var(--safe-bottom)); left: 10px; right: 10px; background: var(--metal-gradient); border: 1px solid var(--metal-border); border-radius: 16px; padding: 0; z-index: 50; opacity: 0; visibility: hidden; transform: translateY(12px); transition: all 0.25s ease; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 var(--metal-highlight); }
         .extension-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
 
@@ -219,7 +219,6 @@
         .ext-btn-title { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
         .ext-btn-desc { font-size: 11px; color: var(--text-secondary); }
 
-        /* 长按菜单 - INS风格 */
         .context-menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); z-index: 2500; opacity: 0; visibility: hidden; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
         .context-menu-overlay.active { opacity: 1; visibility: visible; }
 
@@ -328,7 +327,6 @@
         .shape-option { padding: 6px 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 6px; color: var(--text-primary); font-size: 12px; cursor: pointer; }
         .shape-option.selected { background: var(--accent-color); border-color: var(--accent-color); }
 
-        /* 世界书条目列表 */
         .worldbook-entries { margin-top: 10px; }
         .worldbook-entry-item { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
         .worldbook-entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
@@ -385,7 +383,6 @@
         .chat-wallpaper-preview.has-image { background-size: cover !important; background-position: center !important; }
         .chat-wallpaper-preview.has-image span { display: none; }
 
-        /* 多选世界书 */
         .worldbook-multi-select { max-height: 150px; overflow-y: auto; border: 1px solid var(--glass-border); border-radius: 10px; background: var(--glass-bg); }
         .worldbook-multi-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer; }
         .worldbook-multi-item:last-child { border-bottom: none; }
@@ -595,65 +592,41 @@
             <div class="chat-container">
                 <div class="chat-messages" id="chatMessages"></div>
 
-                <!-- 扩展面板 - INS金属风格 -->
                 <div class="extension-panel" id="extensionPanel">
                     <div class="ext-panel-header">
                         <span class="ext-panel-title">操作</span>
                         <button class="ext-panel-close" onclick="toggleExtensionPanel()">✕</button>
                     </div>
                     <button class="ext-btn" onclick="enterSelectMode()">
-                        <div class="ext-btn-icon danger">
-                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                        </div>
-                        <div class="ext-btn-text">
-                            <div class="ext-btn-title">选择删除</div>
-                            <div class="ext-btn-desc">批量删除消息</div>
-                        </div>
+                        <div class="ext-btn-icon danger"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div>
+                        <div class="ext-btn-text"><div class="ext-btn-title">选择删除</div><div class="ext-btn-desc">批量删除消息</div></div>
                     </button>
                     <button class="ext-btn" onclick="regenerateLastReply()">
-                        <div class="ext-btn-icon purple">
-                            <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-                        </div>
-                        <div class="ext-btn-text">
-                            <div class="ext-btn-title">重新生成</div>
-                            <div class="ext-btn-desc">重新生成AI回复</div>
-                        </div>
+                        <div class="ext-btn-icon purple"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></div>
+                        <div class="ext-btn-text"><div class="ext-btn-title">重新生成</div><div class="ext-btn-desc">重新生成AI回复</div></div>
                     </button>
                     <button class="ext-btn" onclick="openImagePicker()">
-                        <div class="ext-btn-icon blue">
-                            <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-                        </div>
-                        <div class="ext-btn-text">
-                            <div class="ext-btn-title">发送图片</div>
-                            <div class="ext-btn-desc">发送图片给AI</div>
-                        </div>
+                        <div class="ext-btn-icon blue"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div>
+                        <div class="ext-btn-text"><div class="ext-btn-title">发送图片</div><div class="ext-btn-desc">发送图片给AI</div></div>
                     </button>
                 </div>
 
                 <div class="chat-input-wrapper">
-                    <!-- 引用预览条 -->
                     <div class="quote-preview-bar" id="quotePreviewBar">
                         <div class="quote-preview-content" id="quotePreviewContent"></div>
                         <button class="quote-preview-close" onclick="cancelQuote()">✕</button>
                     </div>
                     <div class="chat-input-area">
-                        <button class="chat-btn" onclick="toggleExtensionPanel()" title="更多">
-                            <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
-                        </button>
+                        <button class="chat-btn" onclick="toggleExtensionPanel()" title="更多"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></button>
                         <textarea class="chat-input-field" id="chatInput" placeholder="输入消息..." rows="1" oninput="autoResizeTextarea(this)"></textarea>
-                        <button class="chat-btn ai" onclick="triggerAIReply()" title="AI回复">
-                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                        </button>
-                        <button class="chat-btn send" onclick="sendMessage()" title="发送">
-                            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                        </button>
+                        <button class="chat-btn ai" onclick="triggerAIReply()" title="AI回复"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></button>
+                        <button class="chat-btn send" onclick="sendMessage()" title="发送"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
                     </div>
                 </div>
             </div>
             <input type="file" id="chatImageInput" class="file-input-hidden" accept="image/*" onchange="handleChatImageUpload(event)">
         </div>
 
-        <!-- 长按上下文菜单 -->
         <div class="context-menu-overlay" id="contextMenuOverlay" onclick="hideContextMenu()">
             <div class="context-menu" id="contextMenu" onclick="event.stopPropagation()">
                 <div class="context-menu-item" onclick="copyMessageText()">
@@ -697,11 +670,6 @@
                         <button class="btn btn-secondary btn-small" onclick="clearChatWallpaper()">🗑️ 清除</button>
                     </div>
                     <input type="file" id="chatWallpaperInput" class="file-input-hidden" accept="image/*" onchange="handleChatWallpaperUpload(event)">
-                    <div class="input-group" style="margin-top:10px">
-                        <label class="input-label">或输入图片URL</label>
-                        <input type="text" class="input-field" id="chatWallpaperUrl" placeholder="https://...">
-                    </div>
-                    <button class="btn btn-secondary btn-small" onclick="applyChatWallpaperUrl()">应用URL</button>
                 </div>
 
                 <p class="settings-group-title">头像</p>
@@ -735,13 +703,6 @@
                     <div class="color-picker-row">
                         <span class="color-picker-label">边框颜色</span>
                         <input type="color" class="color-picker-input" id="borderColorPicker" value="#007AFF">
-                    </div>
-                    <div class="slider-container">
-                        <div class="slider-header">
-                            <span class="slider-label">边框宽度</span>
-                            <span class="slider-value" id="borderWidthValue">2</span>
-                        </div>
-                        <input type="range" class="slider-input" id="borderWidthSlider" min="0" max="5" step="1" value="2" oninput="document.getElementById('borderWidthValue').textContent=this.value">
                     </div>
                 </div>
 
@@ -879,7 +840,6 @@
             </div>
         </div>
 
-        <!-- 世界书条目编辑模态框 -->
         <div class="modal-overlay" id="entryEditModal">
             <div class="modal">
                 <div class="modal-title">编辑条目</div>
@@ -1055,7 +1015,6 @@
                 <div class="guide-section">
                     <div class="guide-section-title">💬 引用气泡</div>
                     <div class="guide-code">.message-quote { }</div>
-                    <div class="guide-text">引用消息的样式</div>
                 </div>
                 <div class="guide-section">
                     <div class="guide-section-title">👤 头像</div>
@@ -1102,7 +1061,6 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ==================== IndexedDB ====================
         const DB_NAME = 'SMSAppDB';
         const DB_VERSION = 3;
         let db = null;
@@ -1155,7 +1113,6 @@
             return { used: 0, quota: 0, percent: 0 };
         }
 
-        // ==================== 全局状态 ====================
         const App = {
             characters: [], worldbooks: [], currentCharId: null, currentWbId: null,
             currentEntryIndex: -1, pendingDeleteType: null, pendingDeleteId: null, models: [],
@@ -1166,8 +1123,7 @@
             settings: { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false },
             globalCssPresets: [],
             dataLoaded: false,
-            // 引用相关
-            currentQuote: null, // { msgId, content }
+            currentQuote: null,
             contextMenuMsgId: null,
             longPressTimer: null
         };
@@ -1181,7 +1137,6 @@
             gradient6: 'linear-gradient(135deg, #1f1c2c, #928dab)'
         };
 
-        // ==================== 初始化 ====================
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 await openDB();
@@ -1222,7 +1177,6 @@
             else { statusBar.classList.remove('hidden'); homeScreen.classList.remove('no-statusbar'); toggle?.classList.remove('active'); }
         }
 
-        // ==================== 数据持久化 ====================
         async function saveData() {
             try {
                 await Promise.all([
@@ -1250,9 +1204,7 @@
                 if (settings) App.settings = { ...App.settings, ...settings };
                 if (icons) App.appIcons = { ...App.appIcons, ...icons };
                 if (presets) App.globalCssPresets = presets;
-                // 兼容旧数据：世界书条目
                 App.worldbooks.forEach(wb => { if (!wb.entries) wb.entries = [{ name: '默认条目', keywords: wb.keywords || '', content: wb.content || '', alwaysActive: wb.alwaysActive || false }]; });
-                // 兼容旧数据：角色绑定多世界书
                 App.characters.forEach(c => { if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId]; if (!c.worldbookIds) c.worldbookIds = []; });
                 loadSettingsUI();
                 if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
@@ -1315,7 +1267,6 @@
             document.getElementById('maxTokensValue').textContent = App.settings.maxTokens;
         }
 
-        // ==================== 壁纸 ====================
         function applyWallpaper() {
             const el = document.getElementById('wallpaperLayer');
             const wp = App.settings.wallpaper, wpData = App.settings.wallpaperData;
@@ -1360,7 +1311,6 @@
             document.querySelectorAll('#wallpaperGrid > div').forEach(el => { el.style.borderColor = el.dataset.wp === current ? 'var(--accent-color)' : 'transparent'; });
         }
 
-        // ==================== 图标 ====================
         function updateIconPreviews() {
             ['settings', 'messages', 'worldbook', 'photos'].forEach(app => {
                 const preview = document.getElementById('iconPreview' + app.charAt(0).toUpperCase() + app.slice(1));
@@ -1395,7 +1345,6 @@
 
         async function resetIcons() { App.appIcons = { settings: null, messages: null, worldbook: null, photos: null }; App.tempIcons = {}; await saveData(); applyAppIcons(); updateIconPreviews(); showToast('已重置', 'success'); }
 
-        // ==================== 页面导航 ====================
         function openPage(id) {
             const page = document.getElementById(id);
             if (page) {
@@ -1412,7 +1361,6 @@
         function hideModal(id) { document.getElementById(id)?.classList.remove('active'); }
         function showToast(msg, type='info') { const c = document.getElementById('toastContainer'); const t = document.createElement('div'); t.className = `toast ${type}`; t.textContent = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000); }
 
-        // ==================== API ====================
         function addLog(msg, type='info') { const c = document.getElementById('debugLog'); const e = document.createElement('div'); e.className = `log-entry ${type}`; e.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`; c.appendChild(e); c.scrollTop = c.scrollHeight; }
         function updateConnectionUI() { const h = document.getElementById('connectionStatusHint'); if (App.connectionStatus === 'connected') { h.className = 'action-hint success'; h.innerHTML = `<span class="action-hint-icon">✅</span><span class="action-hint-text">已连接 - ${App.settings.modelName}</span>`; } else { h.className = 'action-hint'; h.innerHTML = `<span class="action-hint-icon">⚠️</span><span class="action-hint-text">未连接</span>`; } }
 
@@ -1456,7 +1404,6 @@
             await saveData(); showToast('已保存', 'success');
         }
 
-        // ==================== 角色 ====================
         async function createCharacter() {
             const name = document.getElementById('newCharacterName').value.trim(); if (!name) { showToast('请输入', 'error'); return; }
             const char = {
@@ -1533,8 +1480,6 @@
             document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => { el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle')); });
             document.getElementById('showBorderToggle').classList.toggle('active', char.showBorder === true);
             document.getElementById('borderColorPicker').value = char.borderColor || '#007AFF';
-            document.getElementById('borderWidthSlider').value = char.borderWidth || 2;
-            document.getElementById('borderWidthValue').textContent = char.borderWidth || 2;
             document.getElementById('charName').value = char.name;
             document.getElementById('charAvatar').value = char.avatar || '';
             document.getElementById('charDescription').value = char.description || '';
@@ -1567,10 +1512,7 @@
             if (App.worldbooks.length === 0) { container.innerHTML = '<div style="padding:10px;color:var(--text-secondary);font-size:13px">暂无世界书</div>'; return; }
             container.innerHTML = App.worldbooks.map(wb => {
                 const checked = (char.worldbookIds || []).includes(wb.id);
-                return `<div class="worldbook-multi-item" onclick="toggleWorldbookBinding('${wb.id}')">
-                    <div class="worldbook-multi-checkbox ${checked ? 'checked' : ''}"></div>
-                    <span class="worldbook-multi-name">${escapeHtml(wb.name)}</span>
-                </div>`;
+                return `<div class="worldbook-multi-item" onclick="toggleWorldbookBinding('${wb.id}')"><div class="worldbook-multi-checkbox ${checked ? 'checked' : ''}"></div><span class="worldbook-multi-name">${escapeHtml(wb.name)}</span></div>`;
             }).join('');
         }
 
@@ -1595,12 +1537,6 @@
             const reader = new FileReader();
             reader.onload = async ev => { char.chatWallpaper = await compressImage(ev.target.result, 600, 0.8); updateChatWallpaperPreview(char); showToast('已设置，保存后生效', 'success'); };
             reader.readAsDataURL(file); e.target.value = '';
-        }
-
-        function applyChatWallpaperUrl() {
-            const url = document.getElementById('chatWallpaperUrl').value.trim(); if (!url) { showToast('请输入URL', 'error'); return; }
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            char.chatWallpaper = url; updateChatWallpaperPreview(char); showToast('已设置，保存后生效', 'success');
         }
 
         function clearChatWallpaper() {
@@ -1648,7 +1584,6 @@
             char.avatarShape = shapeEl ? shapeEl.dataset.shape : 'circle';
             char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
             char.borderColor = document.getElementById('borderColorPicker').value;
-            char.borderWidth = parseInt(document.getElementById('borderWidthSlider').value);
             char.name = document.getElementById('charName').value.trim() || char.name;
             char.avatar = document.getElementById('charAvatar').value.trim() || char.avatar;
             char.description = document.getElementById('charDescription').value;
@@ -1666,7 +1601,7 @@
         function updateCharCounter() { const ta = document.getElementById('charGreeting'), counter = document.getElementById('greetingCharCounter'); counter.textContent = `${ta.value.length}/300`; counter.className = 'char-counter' + (ta.value.length >= 280 ? ' warning' : '') + (ta.value.length >= 300 ? ' error' : ''); }
         function deleteCurrentCharacter() { const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; App.pendingDeleteType = 'character'; App.pendingDeleteId = char.id; document.getElementById('deleteModalTitle').textContent = `删除"${char.name}"？`; showModal('confirmDeleteModal'); }
 
-        // ==================== 消息渲染 ====================
+        // ===================== 核心修复：消息渲染 =====================
         function renderMessages() {
             const container = document.getElementById('chatMessages');
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
@@ -1689,7 +1624,7 @@
                 // 图片
                 let imageHtml = '';
                 if (msg.image) { imageHtml = `<img src="${msg.image}" class="message-image" onclick="viewImage('${msg.id}')">`; }
-                // 显示内容
+                // 【关键修复】显示内容：msg.content已经是干净的，不需要再处理
                 let displayContent = msg.content === '[图片]' && msg.image ? '' : msg.content;
                 html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}" ontouchstart="startLongPress('${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()" oncontextmenu="showContextMenuDirect(event,'${msg.id}')">
                     <div class="message-checkbox ${checked}" onclick="toggleMsgSelect('${msg.id}')"></div>
@@ -1707,20 +1642,10 @@
             scrollToBottom();
         }
 
-        // 长按检测
-        function startLongPress(msgId) {
-            App.longPressTimer = setTimeout(() => { showContextMenu(msgId); }, 500);
-        }
+        function startLongPress(msgId) { App.longPressTimer = setTimeout(() => { showContextMenu(msgId); }, 500); }
         function endLongPress() { if (App.longPressTimer) { clearTimeout(App.longPressTimer); App.longPressTimer = null; } }
-
-        function showContextMenu(msgId) {
-            App.contextMenuMsgId = msgId;
-            document.getElementById('contextMenuOverlay').classList.add('active');
-        }
-        function showContextMenuDirect(e, msgId) {
-            e.preventDefault();
-            showContextMenu(msgId);
-        }
+        function showContextMenu(msgId) { App.contextMenuMsgId = msgId; document.getElementById('contextMenuOverlay').classList.add('active'); }
+        function showContextMenuDirect(e, msgId) { e.preventDefault(); showContextMenu(msgId); }
         function hideContextMenu() { document.getElementById('contextMenuOverlay').classList.remove('active'); App.contextMenuMsgId = null; }
 
         function copyMessageText() {
@@ -1783,7 +1708,6 @@
             cancelQuote();
         }
 
-        // 发送图片
         function openImagePicker() { toggleExtensionPanel(); document.getElementById('chatImageInput').click(); }
 
         async function handleChatImageUpload(e) {
@@ -1797,28 +1721,7 @@
             reader.readAsDataURL(file); e.target.value = '';
         }
 
-        // ==================== AI回复 ====================
-        function parseAIResponse(text, history) {
-            if (!text) return [{ content: '...', quote: null }];
-            // 解析格式：普通内容|||[Q:#编号]引用回复|||普通内容
-            const parts = text.trim().split(/\s*\|\|\|\s*/).map(s => s.trim()).filter(s => s);
-            const results = [];
-            const quoteRegex = /^\[Q:#(\d+)\](.*)$/s;
-            for (const part of parts) {
-                const match = part.match(quoteRegex);
-                if (match) {
-                    const idx = parseInt(match[1]) - 1;
-                    const replyContent = match[2].trim();
-                    let quoteContent = null;
-                    if (idx >= 0 && idx < history.length) { quoteContent = history[idx].content.substring(0, 100); }
-                    results.push({ content: replyContent || '...', quote: quoteContent });
-                } else {
-                    results.push({ content: part.replace(/^["「『"]+/, '').replace(/["」』"]+$/, '').trim(), quote: null });
-                }
-            }
-            return results.filter(r => r.content);
-        }
-
+        // ===================== 核心修复：AI回复解析 =====================
         async function triggerAIReply() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) { showToast('请配置API', 'error'); return; }
@@ -1830,31 +1733,16 @@
                 const history = char.messages.slice(-max);
                 const messages = buildAPIMessages(char, history);
                 const url = App.settings.apiBaseUrl.replace(/\/+$/,'').replace(/\/v1$/,'');
-                // 检查是否有图片
                 let hasImage = history.some(m => m.image);
                 let body;
                 if (hasImage) {
-                    // 多模态格式
-                    const mmMsgs = [];
-                    mmMsgs.push(messages[0]); // system
+                    const mmMsgs = [messages[0]];
                     for (let i = 1; i < messages.length; i++) {
                         const m = messages[i];
-                        // 找到原始消息看有没有图片
-                        const originalIdx = history.findIndex(h => {
-                            const hContent = h.content + (h.quoteContent ? `[Q:${h.quoteContent}]` : '');
-                            return m.content.includes(h.content.substring(0, 20));
-                        });
+                        const originalIdx = history.findIndex(h => m.content.includes(h.content.substring(0, 20)));
                         if (originalIdx >= 0 && history[originalIdx].image) {
-                            mmMsgs.push({
-                                role: m.role,
-                                content: [
-                                    { type: 'text', text: m.content },
-                                    { type: 'image_url', image_url: { url: history[originalIdx].image } }
-                                ]
-                            });
-                        } else {
-                            mmMsgs.push(m);
-                        }
+                            mmMsgs.push({ role: m.role, content: [{ type: 'text', text: m.content }, { type: 'image_url', image_url: { url: history[originalIdx].image } }] });
+                        } else { mmMsgs.push(m); }
                     }
                     body = JSON.stringify({ model: App.settings.modelName, messages: mmMsgs, temperature: App.settings.temperature, max_tokens: App.settings.maxTokens });
                 } else {
@@ -1864,6 +1752,7 @@
                 document.getElementById('typingIndicator')?.remove();
                 if (!r.ok) throw new Error(`HTTP ${r.status}`);
                 const data = await r.json(), reply = data.choices[0].message.content;
+                // 【关键】解析AI回复，移除编号，解析引用
                 const parsedParts = parseAIResponse(reply, history);
                 for (let i = 0; i < parsedParts.length; i++) {
                     if (i > 0) await new Promise(r => setTimeout(r, 300 + Math.random()*400));
@@ -1873,14 +1762,42 @@
             } catch(e) { document.getElementById('typingIndicator')?.remove(); App.lastAIStart = -1; showToast(`失败: ${e.message}`, 'error'); }
         }
 
+        // 【关键修复】解析AI回复：去除编号，解析引用格式
+        function parseAIResponse(text, history) {
+            if (!text) return [{ content: '...', quote: null }];
+            // 按|||分隔
+            const parts = text.trim().split(/\s*\|\|\|\s*/).map(s => s.trim()).filter(s => s);
+            const results = [];
+            // 匹配格式：[Q:#数字]内容
+            const quoteRegex = /^\[Q:#(\d+)\](.*)$/s;
+            for (const part of parts) {
+                let cleanPart = part;
+                let quoteContent = null;
+                // 检查是否有引用格式
+                const match = cleanPart.match(quoteRegex);
+                if (match) {
+                    const idx = parseInt(match[1]) - 1;
+                    cleanPart = match[2].trim();
+                    if (idx >= 0 && idx < history.length) {
+                        quoteContent = history[idx].content.substring(0, 100);
+                    }
+                }
+                // 清理内容
+                cleanPart = cleanPart.replace(/^["「『"]+/, '').replace(/["」』"]+$/, '').trim();
+                if (cleanPart) {
+                    results.push({ content: cleanPart, quote: quoteContent });
+                }
+            }
+            return results.length > 0 ? results : [{ content: text.trim(), quote: null }];
+        }
+
+        // 【关键修复】构建API消息：不在消息内容中添加编号，只在内部注释中使用
         function buildAPIMessages(char, history) {
             const msgs = [];
-            // System prompt
-            let sys = `# 短信模拟规则\n\n你正在扮演"${char.name}"，通过手机短信聊天。\n\n## 【重要】输出格式\n1. 每条短信用 ||| 分隔\n2. 根据真实短信风格，每条5-20字左右，可长可短，灵活应变\n3. 不要加角色名前缀\n4. 像真人发短信\n\n## 引用回复格式\n如果要引用历史消息回复，格式：[Q:#编号]回复内容\n例：[Q:#3]确实是这样|||后面的普通消息\n编号对应消息序号(从1开始)\n\n## 正确示例\n嗯|||确实\n[Q:#5]真的吗？|||哈哈\n\n## 错误（禁止）\n❌ 角色名: 内容\n❌ 一条消息500字太长\n\n## 角色\n${char.description || '朋友'}`;
+            let sys = `# 短信模拟规则\n\n你正在扮演"${char.name}"，通过手机短信聊天。\n\n## 【重要】输出格式\n1. 每条短信用 ||| 分隔\n2. 根据真实短信风格，每条5-20字左右，可长可短，灵活应变\n3. 不要加角色名前缀\n4. 像真人发短信\n5. 【禁止】不要在消息前加编号如#1:等\n\n## 引用回复格式（可选）\n如果要引用历史消息回复，格式：[Q:#编号]回复内容\n例：[Q:#3]确实是这样|||后面的普通消息\n编号对应历史消息序号(从1开始)\n\n## 正确示例\n嗯|||确实\n[Q:#5]真的吗？|||哈哈\n\n## 错误（禁止）\n❌ #1: 内容（禁止加编号前缀）\n❌ 角色名: 内容\n❌ 一条消息500字太长\n\n## 角色\n${char.description || '朋友'}`;
             if (char.scenario) sys += `\n\n## 情景\n${char.scenario}`;
             if (char.userNick) sys += `\n\n## 称呼\n${char.userNick}`;
             if (char.systemPrompt) sys += `\n\n## 额外\n${char.systemPrompt}`;
-            // 多世界书支持
             if (char.worldbookIds?.length > 0) {
                 char.worldbookIds.forEach(wbId => {
                     const wb = App.worldbooks.find(w => w.id === wbId);
@@ -1892,34 +1809,39 @@
                     }
                 });
             }
+            // 添加消息编号参考（仅供AI引用使用，不显示在消息中）
+            if (history.length > 0) {
+                sys += `\n\n## 历史消息编号参考（仅供引用时使用编号）\n`;
+                history.forEach((m, i) => {
+                    const role = m.role === 'user' ? '用户' : '你';
+                    sys += `#${i+1} ${role}: ${m.content.substring(0, 30)}${m.content.length > 30 ? '...' : ''}\n`;
+                });
+            }
             msgs.push({ role: 'system', content: sys });
-            // 构建带编号的历史记录（不合并！用|||分隔）
-            // 按角色分组，但每条消息保持独立
+            // 构建消息历史：保持原始格式，用|||分隔同角色连续消息
             let currentRole = null;
             let buffer = [];
             const flushBuffer = () => {
                 if (buffer.length > 0) {
                     const role = buffer[0].role === 'user' ? 'user' : 'assistant';
-                    const content = buffer.map((m, i) => {
-                        let prefix = `#${m.idx}: `;
+                    // 【关键】不加编号，只用|||分隔
+                    const content = buffer.map(m => {
                         let text = m.content;
                         if (m.quoteContent) text = `[引用:"${m.quoteContent.substring(0,30)}"]${text}`;
                         if (m.image) text += '[图片]';
-                        return prefix + text;
+                        return text;
                     }).join('|||');
                     msgs.push({ role, content });
                     buffer = [];
                 }
             };
-            history.forEach((m, i) => {
-                const r = m.role;
-                if (currentRole !== r) { flushBuffer(); currentRole = r; }
-                buffer.push({ ...m, idx: i + 1 });
+            history.forEach((m) => {
+                if (currentRole !== m.role) { flushBuffer(); currentRole = m.role; }
+                buffer.push(m);
             });
             flushBuffer();
-            // 添加提醒
             if (history.length > 10) {
-                msgs.push({ role: 'system', content: '【格式提醒】用|||分隔多条短信。引用格式[Q:#编号]。编号对应#数字。灵活自然。' });
+                msgs.push({ role: 'system', content: '【提醒】用|||分隔多条短信。如需引用可用[Q:#编号]。【禁止在消息内容前加#数字:前缀】' });
             }
             return msgs;
         }
@@ -1947,7 +1869,6 @@
         function autoResizeTextarea(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 90) + 'px'; }
         function scrollToBottom() { const c = document.getElementById('chatMessages'); c.scrollTop = c.scrollHeight; }
 
-        // ==================== 世界书 ====================
         async function createWorldbook() {
             const name = document.getElementById('newWorldbookName').value.trim(); if (!name) { showToast('请输入', 'error'); return; }
             const wb = { id: Date.now().toString(), name, summary: '', entries: [{ name: '默认条目', keywords: '', content: '', alwaysActive: false }] };
@@ -1960,13 +1881,7 @@
             list.style.display = 'block'; empty.style.display = 'none';
             list.innerHTML = App.worldbooks.map(wb => {
                 const entryCount = wb.entries?.length || 0;
-                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')">
-                    <div class="worldbook-item-header">
-                        <span class="worldbook-item-title">${escapeHtml(wb.name)}</span>
-                        <span class="worldbook-item-badge">${entryCount}条目</span>
-                    </div>
-                    <div class="worldbook-item-preview">${escapeHtml(wb.summary || '无简介')}</div>
-                </div>`;
+                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entryCount}条目</span></div><div class="worldbook-item-preview">${escapeHtml(wb.summary || '无简介')}</div></div>`;
             }).join('');
         }
 
@@ -1982,19 +1897,7 @@
         function renderWorldbookEntries(wb) {
             const container = document.getElementById('worldbookEntries');
             if (!wb.entries || wb.entries.length === 0) { container.innerHTML = '<div style="color:var(--text-secondary);font-size:13px;padding:10px">暂无条目</div>'; return; }
-            container.innerHTML = wb.entries.map((entry, i) => `
-                <div class="worldbook-entry-item">
-                    <div class="worldbook-entry-header">
-                        <span class="worldbook-entry-title">${escapeHtml(entry.name || `条目${i+1}`)}${entry.alwaysActive ? ' 🔒' : ''}</span>
-                        <div class="worldbook-entry-actions">
-                            <button class="worldbook-entry-btn" onclick="editWorldbookEntry(${i})">✏️</button>
-                            <button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${i})">🗑️</button>
-                        </div>
-                    </div>
-                    <div class="worldbook-entry-keywords">${entry.keywords ? '关键词: ' + escapeHtml(entry.keywords) : '无关键词'}</div>
-                    <div class="worldbook-entry-preview">${escapeHtml(entry.content?.substring(0, 80) || '无内容')}...</div>
-                </div>
-            `).join('');
+            container.innerHTML = wb.entries.map((entry, i) => `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(entry.name || `条目${i+1}`)}${entry.alwaysActive ? ' 🔒' : ''}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${i})">✏️</button><button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${i})">🗑️</button></div></div><div class="worldbook-entry-keywords">${entry.keywords ? '关键词: ' + escapeHtml(entry.keywords) : '无关键词'}</div><div class="worldbook-entry-preview">${escapeHtml(entry.content?.substring(0, 80) || '无内容')}...</div></div>`).join('');
         }
 
         function addWorldbookEntry() {
@@ -2020,12 +1923,7 @@
 
         async function saveWorldbookEntry() {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            const entry = {
-                name: document.getElementById('entryName').value.trim() || '未命名条目',
-                keywords: document.getElementById('entryKeywords').value,
-                content: document.getElementById('entryContent').value,
-                alwaysActive: document.getElementById('entryAlwaysActive').classList.contains('active')
-            };
+            const entry = { name: document.getElementById('entryName').value.trim() || '未命名条目', keywords: document.getElementById('entryKeywords').value, content: document.getElementById('entryContent').value, alwaysActive: document.getElementById('entryAlwaysActive').classList.contains('active') };
             if (App.currentEntryIndex >= 0) { wb.entries[App.currentEntryIndex] = entry; }
             else { wb.entries.push(entry); }
             await saveData(); hideModal('entryEditModal'); renderWorldbookEntries(wb); showToast('条目已保存', 'success');
@@ -2065,9 +1963,8 @@
             }
         }
 
-        // ==================== 导入导出 ====================
         function exportAllData() {
-            const data = { characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, version: '6.0.0', exportedAt: new Date().toISOString() };
+            const data = { characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, version: '6.1.0', exportedAt: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `sms-backup-${new Date().toISOString().split('T')[0]}.json`; a.click();
             showToast('已导出', 'success');
@@ -2084,7 +1981,6 @@
                     if (data.settings) App.settings = {...App.settings, ...data.settings};
                     if (data.appIcons) App.appIcons = {...App.appIcons, ...data.appIcons};
                     if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets;
-                    // 兼容处理
                     App.worldbooks.forEach(wb => { if (!wb.entries) wb.entries = [{ name: '默认条目', keywords: wb.keywords || '', content: wb.content || '', alwaysActive: wb.alwaysActive || false }]; });
                     App.characters.forEach(c => { if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId]; if (!c.worldbookIds) c.worldbookIds = []; });
                     if (await saveData()) { loadSettingsUI(); applyWallpaper(); applyAppIcons(); applyStatusBarVisibility(); await updateStorageDisplay(); showToast('导入成功', 'success'); }
@@ -2100,7 +1996,6 @@
             }
         }
 
-        // ==================== 工具 ====================
         function toggleSwitch(el) { el.classList.toggle('active'); }
         function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
         function formatTime(ts) { return new Date(ts).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); }
