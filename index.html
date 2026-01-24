@@ -1,4 +1,7 @@
 
+
+
+
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -2429,19 +2432,52 @@
             }
         });
 
-        // 长按事件设置
-        function setupLongPress() {
-            let longPressTimer = null;
-            let longPressTarget = null;
+        // 修复后的长按事件设置
+function setupLongPress() {
+    let longPressTimer = null;
+    let isLongPress = false;
+    let startX = 0, startY = 0;
 
-            document.getElementById('chatMessages').addEventListener('touchstart', (e) => {
-                const wrapper = e.target.closest('.message-wrapper');
-                if (!wrapper || App.isSelectMode) return;
-                longPressTarget = wrapper;
-                longPressTimer = setTimeout(() => {
-                    showContextMenu(e, wrapper.dataset.msgId);
-                }, 500);
-            }, { passive: true });
+    const chatMessages = document.getElementById('chatMessages');
+
+    chatMessages.addEventListener('touchstart', (e) => {
+        const wrapper = e.target.closest('.message-wrapper');
+        if (!wrapper || App.isSelectMode) return;
+
+        isLongPress = false;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+
+        longPressTimer = setTimeout(() => {
+            isLongPress = true;
+            showContextMenu(e, wrapper.dataset.msgId);
+        }, 500);
+    }, { passive: true }); // 关键：保持passive为true
+
+    chatMessages.addEventListener('touchend', (e) => {
+        clearTimeout(longPressTimer);
+        // 不阻止默认行为，让点击正常传递
+    }, { passive: true });
+
+    chatMessages.addEventListener('touchmove', (e) => {
+        // 移动超过10px则取消长按
+        if (longPressTimer) {
+            const moveX = Math.abs(e.touches[0].clientX - startX);
+            const moveY = Math.abs(e.touches[0].clientY - startY);
+            if (moveX > 10 || moveY > 10) {
+                clearTimeout(longPressTimer);
+            }
+        }
+    }, { passive: true });
+
+    // 鼠标右键支持（桌面端）
+    chatMessages.addEventListener('contextmenu', (e) => {
+        const wrapper = e.target.closest('.message-wrapper');
+        if (!wrapper || App.isSelectMode) return;
+        e.preventDefault();
+        showContextMenu(e, wrapper.dataset.msgId);
+    });
+}
 
             document.getElementById('chatMessages').addEventListener('touchend', () => {
                 clearTimeout(longPressTimer);
