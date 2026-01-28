@@ -3204,7 +3204,7 @@
                 const options = {};
                 if (App.currentQuote) { options.quoteId = App.currentQuote.id; cancelQuote(); }
                 options.image = compressed;
-                addMessage('[Image]', 'sent', options);
+                addMessage('', 'sent', options);
             };
             reader.readAsDataURL(file);
             e.target.value = '';
