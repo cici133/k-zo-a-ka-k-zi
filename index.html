@@ -10,9 +10,10 @@
     <meta name="apple-mobile-web-app-title" content="NOIR">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a0a">
-    <title>NOIR · Premium SMS</title>
+    <title>NOIR · Premium SMS v7</title>
     <style id="globalFontStyle"></style>
-    <style id="bubbleStyleSheet"></style>
+    <style id="globalFontSizeStyle"></style>
+    <style id="bubbleStyleOverride"></style>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap');
 
@@ -45,18 +46,18 @@
             --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
             --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             --transition-fast: all 0.2s ease;
-            --global-font-size: 14px;
+            --font-size-base: 14px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html { height: 100%; height: -webkit-fill-available; font-size: var(--global-font-size); }
+        html { height: 100%; height: -webkit-fill-available; }
         body {
             height: 100%; min-height: 100vh; min-height: -webkit-fill-available;
             overflow: hidden; font-family: var(--font-sans);
             background: var(--bg-primary); color: var(--text-primary);
             overscroll-behavior: none; position: fixed; width: 100%; top: 0; left: 0;
             letter-spacing: 0.02em; line-height: 1.5;
-            font-size: var(--global-font-size);
+            font-size: var(--font-size-base);
         }
 
         #wallpaperLayer {
@@ -420,7 +421,7 @@
 
         .message {
             max-width: 72%; padding: 12px 16px;
-            font-size: 1em; line-height: 1.5;
+            font-size: inherit; line-height: 1.5;
             word-wrap: break-word;
             animation: msgIn 0.25s ease-out;
             position: relative;
@@ -432,17 +433,16 @@
         }
 
         .message.sent {
-            background: rgba(60, 60, 60, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(135deg, rgba(201, 169, 98, 0.25), rgba(160, 128, 64, 0.2));
+            border: 1px solid rgba(201, 169, 98, 0.3);
             color: var(--text-primary);
             border-radius: 18px 18px 4px 18px;
-            backdrop-filter: blur(12px);
         }
 
         .message.received {
-            background: rgba(40, 40, 40, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(12px);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            backdrop-filter: blur(10px);
             color: var(--text-primary);
             border-radius: 18px 18px 18px 4px;
         }
@@ -551,19 +551,19 @@
         .chat-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.5; fill: none; }
 
         .chat-btn.send {
-            background: rgba(45, 45, 45, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(40, 40, 45, 0.9);
+            border: 1px solid rgba(60, 60, 65, 0.8);
             backdrop-filter: blur(10px);
         }
-        .chat-btn.send:hover { background: rgba(55, 55, 55, 0.95); }
+        .chat-btn.send:hover { background: rgba(50, 50, 55, 0.95); }
         .chat-btn.send svg { stroke: var(--text-secondary); }
 
         .chat-btn.ai {
-            background: rgba(35, 35, 35, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(35, 35, 40, 0.9);
+            border: 1px solid rgba(55, 55, 60, 0.8);
             backdrop-filter: blur(10px);
         }
-        .chat-btn.ai:hover { background: rgba(45, 45, 45, 0.95); }
+        .chat-btn.ai:hover { background: rgba(45, 45, 50, 0.95); }
         .chat-btn.ai svg { stroke: var(--text-secondary); }
 
         .chat-input-field {
@@ -572,7 +572,7 @@
             background: var(--bg-glass);
             border: 1px solid var(--border-subtle);
             border-radius: 20px; color: var(--text-primary);
-            font-size: 14px; resize: none; outline: none;
+            font-size: inherit; resize: none; outline: none;
             font-family: inherit; line-height: 1.4;
         }
         .chat-input-field:focus { border-color: var(--accent-gold); }
@@ -1148,7 +1148,7 @@
         .color-wheel-container {
             position: relative;
             width: 200px; height: 200px;
-            margin: 0 auto 16px;
+            margin: 16px auto;
         }
         .color-wheel {
             width: 200px; height: 200px;
@@ -1157,56 +1157,53 @@
             position: relative;
             cursor: crosshair;
         }
-        .color-wheel::before {
-            content: '';
+        .color-wheel-inner {
             position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 120px; height: 120px;
+            top: 30px; left: 30px;
+            width: 140px; height: 140px;
             border-radius: 50%;
             background: radial-gradient(circle, white 0%, transparent 70%);
+            pointer-events: none;
         }
-        .color-wheel::after {
-            content: '';
+        .color-wheel-dark {
             position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 120px; height: 120px;
+            top: 30px; left: 30px;
+            width: 140px; height: 140px;
             border-radius: 50%;
-            background: radial-gradient(circle, transparent 0%, rgba(0,0,0,0.8) 100%);
+            background: radial-gradient(circle, transparent 0%, black 100%);
+            pointer-events: none;
+            opacity: 0.5;
         }
-        .color-wheel-handle {
+        .color-wheel-picker {
             position: absolute;
             width: 20px; height: 20px;
             border: 3px solid white;
             border-radius: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            z-index: 10;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
         }
         .color-preview-box {
-            display: flex; align-items: center; gap: 12px;
-            margin-bottom: 12px;
-        }
-        .color-preview-swatch {
-            width: 48px; height: 48px;
-            border-radius: 12px;
-            border: 2px solid var(--border-accent);
+            width: 100%; height: 40px;
+            border-radius: 10px;
+            margin: 12px 0;
+            border: 1px solid var(--border-subtle);
         }
         .color-hex-input {
-            flex: 1; padding: 12px 14px;
+            width: 100%; padding: 12px 16px;
             background: var(--bg-glass);
             border: 1px solid var(--border-subtle);
             border-radius: 10px;
             color: var(--text-primary);
             font-size: 14px;
             font-family: 'SF Mono', monospace;
+            text-align: center;
+            text-transform: uppercase;
         }
         .color-hex-input:focus { border-color: var(--accent-gold); outline: none; }
 
         /* Bubble Style Options */
-        .bubble-style-grid {
+        .bubble-style-options {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
@@ -1215,45 +1212,103 @@
         .bubble-style-option {
             padding: 12px 8px;
             background: var(--bg-glass);
-            border: 2px solid var(--border-subtle);
-            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
             text-align: center;
             cursor: pointer;
             transition: var(--transition-fast);
+            font-size: 11px;
+            color: var(--text-secondary);
         }
         .bubble-style-option:hover { border-color: var(--border-accent); }
-        .bubble-style-option.selected { border-color: var(--accent-gold); background: var(--accent-gold-dim); }
-        .bubble-style-option-name { font-size: 11px; color: var(--text-primary); font-weight: 500; }
-        .bubble-style-option-preview {
-            width: 100%; height: 24px;
-            border-radius: 8px;
-            margin-top: 8px;
+        .bubble-style-option.selected {
+            border-color: var(--accent-gold);
+            background: var(--accent-gold-dim);
+            color: var(--accent-gold);
+        }
+        .bubble-style-icon {
+            width: 36px; height: 24px;
+            margin: 0 auto 6px;
+            border-radius: 6px;
+        }
+        .bubble-style-icon.glass {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .bubble-style-icon.metal {
+            background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 50%, #3a3a3a 100%);
+            border: 1px solid #555;
+        }
+        .bubble-style-icon.solid {
+            background: #3a3a3a;
+        }
+        .bubble-style-icon.neon {
+            background: rgba(0,200,255,0.2);
+            border: 1px solid rgba(0,200,255,0.5);
+            box-shadow: 0 0 8px rgba(0,200,255,0.3);
+        }
+        .bubble-style-icon.gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
-        /* Bubble Preview */
-        .bubble-preview-container {
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
+        .bubble-color-section {
+            margin-top: 16px;
             padding: 16px;
-            margin-bottom: 16px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
         }
-        .bubble-preview-label {
-            font-size: 10px;
+        .bubble-color-title {
+            font-size: 11px;
             color: var(--text-tertiary);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 12px;
         }
-        .bubble-preview-row {
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
+        .bubble-preview-area {
+            padding: 16px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            margin-bottom: 16px;
         }
-        .bubble-preview-item {
+        .bubble-preview-msg {
+            max-width: 70%;
             padding: 10px 14px;
             border-radius: 14px;
-            font-size: 12px;
-            max-width: 45%;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        .bubble-preview-msg.sent {
+            margin-left: auto;
+            border-radius: 14px 14px 4px 14px;
+        }
+        .bubble-preview-msg.received {
+            margin-right: auto;
+            border-radius: 14px 14px 14px 4px;
+        }
+
+        .color-swatch-btn {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            border: 3px solid var(--border-accent);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+        .color-swatch-btn:hover { border-color: var(--accent-gold); transform: scale(1.05); }
+        .color-swatch-btn.active { border-color: var(--accent-gold); box-shadow: 0 0 12px rgba(201, 169, 98, 0.5); }
+
+        .border-width-input {
+            width: 80px;
+            padding: 8px 12px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            text-align: center;
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -1327,12 +1382,9 @@
         <!-- Settings Page -->
         <div class="page" id="settingsPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closePage('settingsPage')">
-                    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-                    Back
-                </button>
+                <button class="nav-btn" onclick="closePage('settingsPage')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
                 <span class="nav-title">Settings</span>
-                <button class="nav-btn" onclick="saveGlobalSettings()">Save</button>
+                <button class="nav-btn" onclick="saveMainSettings()">Save</button>
             </div>
             <div class="page-content">
                 <div class="storage-card">
@@ -1591,107 +1643,76 @@
 
                 <p class="settings-group-title">Bubble Style</p>
                 <div class="settings-group" style="padding:16px">
-                    <div class="input-group">
-                        <label class="input-label">Style</label>
-                        <div class="bubble-style-grid" id="bubbleStyleGrid">
-                            <div class="bubble-style-option selected" data-style="none" onclick="selectBubbleStyle('none')">
-                                <div class="bubble-style-option-name">None</div>
-                                <div class="bubble-style-option-preview" style="background:transparent;border:1px dashed rgba(255,255,255,0.2)"></div>
-                            </div>
-                            <div class="bubble-style-option" data-style="glass" onclick="selectBubbleStyle('glass')">
-                                <div class="bubble-style-option-name">Glass</div>
-                                <div class="bubble-style-option-preview" style="background:rgba(255,255,255,0.1);backdrop-filter:blur(10px)"></div>
-                            </div>
-                            <div class="bubble-style-option" data-style="solid" onclick="selectBubbleStyle('solid')">
-                                <div class="bubble-style-option-name">Solid</div>
-                                <div class="bubble-style-option-preview" style="background:#3a3a3a"></div>
-                            </div>
-                            <div class="bubble-style-option" data-style="metal" onclick="selectBubbleStyle('metal')">
-                                <div class="bubble-style-option-name">Metal</div>
-                                <div class="bubble-style-option-preview" style="background:linear-gradient(180deg,#4a4a4a,#2a2a2a)"></div>
-                            </div>
-                            <div class="bubble-style-option" data-style="neon" onclick="selectBubbleStyle('neon')">
-                                <div class="bubble-style-option-name">Neon</div>
-                                <div class="bubble-style-option-preview" style="background:rgba(0,0,0,0.6);box-shadow:inset 0 0 8px rgba(100,200,255,0.3)"></div>
-                            </div>
-                            <div class="bubble-style-option" data-style="gradient" onclick="selectBubbleStyle('gradient')">
-                                <div class="bubble-style-option-name">Gradient</div>
-                                <div class="bubble-style-option-preview" style="background:linear-gradient(135deg,#3a3a4a,#2a2a3a)"></div>
-                            </div>
+                    <div class="bubble-style-options" id="bubbleStyleOptions">
+                        <div class="bubble-style-option" data-style="none" onclick="selectBubbleStyle('none')">
+                            <div class="bubble-style-icon" style="background:transparent;border:1px dashed var(--border-subtle)"></div>
+                            <span>None</span>
+                        </div>
+                        <div class="bubble-style-option selected" data-style="glass" onclick="selectBubbleStyle('glass')">
+                            <div class="bubble-style-icon glass"></div>
+                            <span>Glass</span>
+                        </div>
+                        <div class="bubble-style-option" data-style="metal" onclick="selectBubbleStyle('metal')">
+                            <div class="bubble-style-icon metal"></div>
+                            <span>Metal</span>
+                        </div>
+                        <div class="bubble-style-option" data-style="solid" onclick="selectBubbleStyle('solid')">
+                            <div class="bubble-style-icon solid"></div>
+                            <span>Solid</span>
+                        </div>
+                        <div class="bubble-style-option" data-style="neon" onclick="selectBubbleStyle('neon')">
+                            <div class="bubble-style-icon neon"></div>
+                            <span>Neon</span>
+                        </div>
+                        <div class="bubble-style-option" data-style="gradient" onclick="selectBubbleStyle('gradient')">
+                            <div class="bubble-style-icon gradient"></div>
+                            <span>Gradient</span>
                         </div>
                     </div>
 
-                    <div id="bubbleColorSettings" style="display:none">
-                        <div class="divider"></div>
+                    <div id="bubbleStyleSettings" style="display:none">
+                        <div class="bubble-preview-area">
+                            <div class="bubble-preview-msg received" id="bubblePreviewReceived">Hello there!</div>
+                            <div class="bubble-preview-msg sent" id="bubblePreviewSent">Hi, how are you?</div>
+                        </div>
 
-                        <div class="bubble-preview-container">
-                            <div class="bubble-preview-label">Preview</div>
-                            <div class="bubble-preview-row">
-                                <div class="bubble-preview-item" id="bubblePreviewReceived" style="background:rgba(40,40,40,0.8)">Hello!</div>
-                                <div style="flex:1"></div>
-                                <div class="bubble-preview-item" id="bubblePreviewSent" style="background:rgba(60,60,60,0.8)">Hi there</div>
+                        <div class="bubble-color-section">
+                            <div class="bubble-color-title">User Bubble Colors</div>
+                            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+                                <span style="font-size:12px;color:var(--text-secondary);width:70px">Primary</span>
+                                <div class="color-swatch-btn" id="userColor1Swatch" onclick="openColorPicker('userColor1')" style="background:#3a3a3a"></div>
+                                <span style="font-size:12px;color:var(--text-secondary);width:70px" id="userColor2Label">Secondary</span>
+                                <div class="color-swatch-btn" id="userColor2Swatch" onclick="openColorPicker('userColor2')" style="background:#2a2a2a"></div>
+                            </div>
+                            <div style="display:flex;gap:12px;align-items:center">
+                                <span style="font-size:12px;color:var(--text-secondary);width:70px">Text</span>
+                                <div class="color-swatch-btn" id="userTextColorSwatch" onclick="openColorPicker('userTextColor')" style="background:#ffffff"></div>
                             </div>
                         </div>
 
-                        <div class="input-group">
-                            <label class="input-label">User Bubble Color 1</label>
-                            <div class="color-preview-box">
-                                <div class="color-preview-swatch" id="userColor1Swatch" style="background:#3a3a3a" onclick="openColorPicker('userColor1')"></div>
-                                <input type="text" class="color-hex-input" id="userColor1Hex" value="#3a3a3a" oninput="updateColorFromHex('userColor1', this.value)">
+                        <div class="bubble-color-section" style="margin-top:12px">
+                            <div class="bubble-color-title">Character Bubble Colors</div>
+                            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+                                <span style="font-size:12px;color:var(--text-secondary);width:70px">Primary</span>
+                                <div class="color-swatch-btn" id="charColor1Swatch" onclick="openColorPicker('charColor1')" style="background:#2a2a2a"></div>
+                                <span style="font-size:12px;color:var(--text-secondary);width:70px" id="charColor2Label">Secondary</span>
+                                <div class="color-swatch-btn" id="charColor2Swatch" onclick="openColorPicker('charColor2')" style="background:#1a1a1a"></div>
+                            </div>
+                            <div style="display:flex;gap:12px;align-items:center">
+                                <span style="font-size:12px;color:var(--text-secondary);width:70px">Text</span>
+                                <div class="color-swatch-btn" id="charTextColorSwatch" onclick="openColorPicker('charTextColor')" style="background:#ffffff"></div>
                             </div>
                         </div>
 
-                        <div class="input-group" id="userColor2Group">
-                            <label class="input-label">User Bubble Color 2</label>
-                            <div class="color-preview-box">
-                                <div class="color-preview-swatch" id="userColor2Swatch" style="background:#2a2a2a" onclick="openColorPicker('userColor2')"></div>
-                                <input type="text" class="color-hex-input" id="userColor2Hex" value="#2a2a2a" oninput="updateColorFromHex('userColor2', this.value)">
+                        <div id="glassBorderSettings" style="margin-top:16px;display:none">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                                <span style="font-size:12px;color:var(--text-secondary)">Border</span>
+                                <div class="toggle-switch" id="bubbleBorderToggle" onclick="toggleSwitch(this);updateBubblePreview()"></div>
                             </div>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">User Text Color</label>
-                            <div class="color-preview-box">
-                                <div class="color-preview-swatch" id="userTextColorSwatch" style="background:#ffffff" onclick="openColorPicker('userTextColor')"></div>
-                                <input type="text" class="color-hex-input" id="userTextColorHex" value="#ffffff" oninput="updateColorFromHex('userTextColor', this.value)">
-                            </div>
-                        </div>
-
-                        <div class="divider"></div>
-
-                        <div class="input-group">
-                            <label class="input-label">Char Bubble Color 1</label>
-                            <div class="color-preview-box">
-                                <div class="color-preview-swatch" id="charColor1Swatch" style="background:#2a2a2a" onclick="openColorPicker('charColor1')"></div>
-                                <input type="text" class="color-hex-input" id="charColor1Hex" value="#2a2a2a" oninput="updateColorFromHex('charColor1', this.value)">
-                            </div>
-                        </div>
-
-                        <div class="input-group" id="charColor2Group">
-                            <label class="input-label">Char Bubble Color 2</label>
-                            <div class="color-preview-box">
-                                <div class="color-preview-swatch" id="charColor2Swatch" style="background:#1a1a1a" onclick="openColorPicker('charColor2')"></div>
-                                <input type="text" class="color-hex-input" id="charColor2Hex" value="#1a1a1a" oninput="updateColorFromHex('charColor2', this.value)">
-                            </div>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">Char Text Color</label>
-                            <div class="color-preview-box">
-                                <div class="color-preview-swatch" id="charTextColorSwatch" style="background:#ffffff" onclick="openColorPicker('charTextColor')"></div>
-                                <input type="text" class="color-hex-input" id="charTextColorHex" value="#ffffff" oninput="updateColorFromHex('charTextColor', this.value)">
-                            </div>
-                        </div>
-
-                        <div id="glassBorderSettings" style="display:none">
-                            <div class="divider"></div>
-                            <div class="settings-item" style="padding:12px 0">
-                                <span class="settings-item-label">Show Border</span>
-                                <div class="toggle-switch" id="glassBorderToggle" onclick="toggleSwitch(this);updateBubblePreview()"></div>
-                            </div>
-                            <div class="input-group" id="glassBorderWidthGroup">
-                                <label class="input-label">Border Width (px)</label>
-                                <input type="number" class="input-field" id="glassBorderWidth" value="0.5" step="0.1" min="0" max="3" oninput="updateBubblePreview()">
+                            <div style="display:flex;align-items:center;gap:12px">
+                                <span style="font-size:12px;color:var(--text-secondary)">Width</span>
+                                <input type="number" class="border-width-input" id="bubbleBorderWidth" value="1" min="0.1" max="5" step="0.1" oninput="updateBubblePreview()">
+                                <span style="font-size:11px;color:var(--text-tertiary)">px</span>
                             </div>
                         </div>
                     </div>
@@ -1851,7 +1872,7 @@
                         <div onclick="selectPresetWallpaper('gradient2')" style="height:70px;border-radius:10px;background:linear-gradient(135deg,#1a1520,#0d1a15);cursor:pointer;border:2px solid transparent" data-wp="gradient2"></div>
                         <div onclick="selectPresetWallpaper('gradient3')" style="height:70px;border-radius:10px;background:linear-gradient(135deg,#0f0c16,#1a1530,#12121a);cursor:pointer;border:2px solid transparent" data-wp="gradient3"></div>
                         <div onclick="selectPresetWallpaper('gradient4')" style="height:70px;border-radius:10px;background:linear-gradient(135deg,#0d1015,#151a20);cursor:pointer;border:2px solid transparent" data-wp="gradient4"></div>
-                        <div onclick="selectPresetWallpaper('gradient5')" style="height:70px;border-radius:10px;background:linear-gradient(180deg,#101010,#1a1a1a);cursor:pointer;border:2px solid transparent" data-wp="gradient5"></div>
+                        <div onclick="selectPresetWallpaper('gradient5')" style="height:70px;border-radius:10px;background:linear-gradient(135deg,#101010,#1a1a1a);cursor:pointer;border:2px solid transparent" data-wp="gradient5"></div>
                         <div onclick="selectPresetWallpaper('gradient6')" style="height:70px;border-radius:10px;background:linear-gradient(135deg,#0f0d12,#201a28);cursor:pointer;border:2px solid transparent" data-wp="gradient6"></div>
                     </div>
                 </div>
@@ -2028,19 +2049,17 @@
 
     <!-- Color Picker Modal -->
     <div class="modal-overlay" id="colorPickerModal">
-        <div class="modal">
-            <div class="modal-title">Choose Color</div>
-            <div class="color-wheel-container">
-                <div class="color-wheel" id="colorWheel"></div>
-                <div class="color-wheel-handle" id="colorWheelHandle" style="left:100px;top:100px;background:#ff0000"></div>
+        <div class="modal" style="max-width:280px">
+            <div class="modal-title" id="colorPickerTitle">Select Color</div>
+            <div class="color-wheel-container" id="colorWheelContainer">
+                <canvas id="colorWheelCanvas" width="200" height="200" style="border-radius:50%;cursor:crosshair"></canvas>
+                <div class="color-wheel-picker" id="colorWheelPicker" style="top:100px;left:100px"></div>
             </div>
-            <div class="color-preview-box" style="margin-top:16px">
-                <div class="color-preview-swatch" id="pickerPreviewSwatch" style="background:#ff0000"></div>
-                <input type="text" class="color-hex-input" id="pickerHexInput" value="#ff0000">
-            </div>
+            <div class="color-preview-box" id="colorPreviewBox" style="background:#ffffff"></div>
+            <input type="text" class="color-hex-input" id="colorHexInput" value="#FFFFFF" maxlength="7" oninput="handleHexInput(this.value)">
             <div class="modal-btns" style="margin-top:16px">
                 <button class="modal-btn cancel" onclick="hideModal('colorPickerModal')">Cancel</button>
-                <button class="modal-btn confirm" onclick="confirmColorPick()">Apply</button>
+                <button class="modal-btn confirm" onclick="confirmColorSelection()">Apply</button>
             </div>
         </div>
     </div>
@@ -2122,7 +2141,11 @@
             pendingDeleteFontId: null,
             pendingDeleteCssPresetId: null,
             pendingDeleteApiPresetId: null,
-            currentColorPickerTarget: null
+            currentColorTarget: null,
+            currentBubbleColors: {
+                userColor1: '#3a3a3a', userColor2: '#2a2a2a', userTextColor: '#ffffff',
+                charColor1: '#2a2a2a', charColor2: '#1a1a1a', charTextColor: '#ffffff'
+            }
         };
 
         const GRADIENTS = {
@@ -2160,7 +2183,7 @@
                 updateStorageDisplay();
                 renderFontList();
                 updateApiPresetSelect();
-                initColorPicker();
+                initColorWheel();
             } catch (e) { console.error('Init failed:', e); showToast('Initialization failed', 'error'); }
         });
 
@@ -2185,25 +2208,6 @@
             const toggle = document.getElementById('hideStatusBarToggle');
             if (App.settings.hideStatusBar) { statusBar.classList.add('hidden'); homeScreen.classList.add('no-statusbar'); toggle?.classList.add('active'); }
             else { statusBar.classList.remove('hidden'); homeScreen.classList.remove('no-statusbar'); toggle?.classList.remove('active'); }
-        }
-
-        function previewFontSize(val) {
-            document.getElementById('fontSizeValue').textContent = val + 'px';
-            document.documentElement.style.setProperty('--global-font-size', val + 'px');
-        }
-
-        function applyGlobalFontSize() {
-            const size = App.settings.globalFontSize || 14;
-            document.documentElement.style.setProperty('--global-font-size', size + 'px');
-            document.getElementById('globalFontSize').value = size;
-            document.getElementById('fontSizeValue').textContent = size + 'px';
-        }
-
-        async function saveGlobalSettings() {
-            App.settings.globalFontSize = parseInt(document.getElementById('globalFontSize').value) || 14;
-            await saveData();
-            applyGlobalFontSize();
-            showToast('Settings saved', 'success');
         }
 
         async function saveData() {
@@ -2246,7 +2250,13 @@
                 App.characters.forEach(c => {
                     if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId];
                     if (!c.worldbookIds) c.worldbookIds = [];
-                    if (!c.bubbleStyle) c.bubbleStyle = { style: 'none', userColor1: '#3a3a3a', userColor2: '#2a2a2a', userTextColor: '#ffffff', charColor1: '#2a2a2a', charColor2: '#1a1a1a', charTextColor: '#ffffff', glassBorder: false, glassBorderWidth: 0.5 };
+                    if (!c.bubbleStyle) c.bubbleStyle = 'glass';
+                    if (!c.bubbleColors) c.bubbleColors = {
+                        userColor1: '#3a3a3a', userColor2: '#2a2a2a', userTextColor: '#ffffff',
+                        charColor1: '#2a2a2a', charColor2: '#1a1a1a', charTextColor: '#ffffff'
+                    };
+                    if (c.bubbleBorderEnabled === undefined) c.bubbleBorderEnabled = false;
+                    if (!c.bubbleBorderWidth) c.bubbleBorderWidth = 1;
                 });
 
                 loadSettingsUI();
@@ -2257,6 +2267,25 @@
         }
 
         async function forceSaveAll() { if (await saveData()) { await updateStorageDisplay(); showToast('Saved successfully', 'success'); } }
+
+        async function saveMainSettings() {
+            App.settings.globalFontSize = parseInt(document.getElementById('globalFontSize').value);
+            applyGlobalFontSize();
+            await saveData();
+            showToast('Settings saved', 'success');
+        }
+
+        function previewFontSize(value) {
+            document.getElementById('fontSizeValue').textContent = value + 'px';
+            document.documentElement.style.setProperty('--font-size-base', value + 'px');
+        }
+
+        function applyGlobalFontSize() {
+            const size = App.settings.globalFontSize || 14;
+            document.getElementById('globalFontSize').value = size;
+            document.getElementById('fontSizeValue').textContent = size + 'px';
+            document.documentElement.style.setProperty('--font-size-base', size + 'px');
+        }
 
         async function clearImageCache() {
             if (!confirm('Clear all image cache?')) return;
@@ -2312,195 +2341,259 @@
             document.getElementById('fontSizeValue').textContent = (App.settings.globalFontSize || 14) + 'px';
         }
 
-        // ════════════════════════════════════════════════════════════════════════════════
-        // COLOR PICKER
-        // ════════════════════════════════════════════════════════════════════════════════
-        function initColorPicker() {
-            const wheel = document.getElementById('colorWheel');
-            if (!wheel) return;
-            let isDragging = false;
-            const handleMove = (e) => {
-                if (!isDragging) return;
-                const rect = wheel.getBoundingClientRect();
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                let x = clientX - rect.left - centerX;
-                let y = clientY - rect.top - centerY;
-                const dist = Math.sqrt(x*x + y*y);
-                const maxDist = rect.width / 2;
-                if (dist > maxDist) { x = x * maxDist / dist; y = y * maxDist / dist; }
-                const handle = document.getElementById('colorWheelHandle');
-                handle.style.left = (centerX + x) + 'px';
-                handle.style.top = (centerY + y) + 'px';
-                const angle = Math.atan2(y, x) * 180 / Math.PI + 180;
-                const saturation = Math.min(dist / maxDist, 1);
-                const color = hslToHex(angle, saturation * 100, 50);
-                handle.style.background = color;
-                document.getElementById('pickerPreviewSwatch').style.background = color;
-                document.getElementById('pickerHexInput').value = color;
-            };
-            wheel.addEventListener('mousedown', (e) => { isDragging = true; handleMove(e); });
-            wheel.addEventListener('touchstart', (e) => { isDragging = true; handleMove(e); }, { passive: true });
-            document.addEventListener('mousemove', handleMove);
-            document.addEventListener('touchmove', handleMove, { passive: true });
-            document.addEventListener('mouseup', () => { isDragging = false; });
-            document.addEventListener('touchend', () => { isDragging = false; });
-            document.getElementById('pickerHexInput').addEventListener('input', (e) => {
-                const val = e.target.value;
-                if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-                    document.getElementById('pickerPreviewSwatch').style.background = val;
-                    document.getElementById('colorWheelHandle').style.background = val;
-                }
-            });
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // COLOR WHEEL PICKER
+        // ═══════════════════════════════════════════════════════════════════════════════
+        let colorWheelCtx = null;
+
+        function initColorWheel() {
+            const canvas = document.getElementById('colorWheelCanvas');
+            if (!canvas) return;
+            colorWheelCtx = canvas.getContext('2d');
+            drawColorWheel();
+
+            canvas.addEventListener('click', handleColorWheelClick);
+            canvas.addEventListener('mousedown', (e) => { canvas.dataset.dragging = 'true'; handleColorWheelClick(e); });
+            canvas.addEventListener('mousemove', (e) => { if (canvas.dataset.dragging === 'true') handleColorWheelClick(e); });
+            canvas.addEventListener('mouseup', () => { canvas.dataset.dragging = 'false'; });
+            canvas.addEventListener('mouseleave', () => { canvas.dataset.dragging = 'false'; });
+
+            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); canvas.dataset.dragging = 'true'; handleColorWheelTouch(e); });
+            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if (canvas.dataset.dragging === 'true') handleColorWheelTouch(e); });
+            canvas.addEventListener('touchend', () => { canvas.dataset.dragging = 'false'; });
         }
 
-        function hslToHex(h, s, l) {
-            s /= 100; l /= 100;
-            const c = (1 - Math.abs(2 * l - 1)) * s;
-            const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-            const m = l - c / 2;
-            let r = 0, g = 0, b = 0;
-            if (h < 60) { r = c; g = x; }
-            else if (h < 120) { r = x; g = c; }
-            else if (h < 180) { g = c; b = x; }
-            else if (h < 240) { g = x; b = c; }
-            else if (h < 300) { r = x; b = c; }
-            else { r = c; b = x; }
-            const toHex = (n) => Math.round((n + m) * 255).toString(16).padStart(2, '0');
-            return '#' + toHex(r) + toHex(g) + toHex(b);
+        function drawColorWheel() {
+            if (!colorWheelCtx) return;
+            const canvas = colorWheelCtx.canvas;
+            const cx = canvas.width / 2, cy = canvas.height / 2, radius = canvas.width / 2;
+
+            for (let angle = 0; angle < 360; angle++) {
+                const startAngle = (angle - 1) * Math.PI / 180;
+                const endAngle = (angle + 1) * Math.PI / 180;
+                colorWheelCtx.beginPath();
+                colorWheelCtx.moveTo(cx, cy);
+                colorWheelCtx.arc(cx, cy, radius, startAngle, endAngle);
+                colorWheelCtx.closePath();
+                const gradient = colorWheelCtx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+                gradient.addColorStop(0, 'white');
+                gradient.addColorStop(0.5, `hsl(${angle}, 100%, 50%)`);
+                gradient.addColorStop(1, `hsl(${angle}, 100%, 25%)`);
+                colorWheelCtx.fillStyle = gradient;
+                colorWheelCtx.fill();
+            }
+        }
+
+        function handleColorWheelClick(e) {
+            const canvas = e.target;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            pickColorFromWheel(x, y);
+        }
+
+        function handleColorWheelTouch(e) {
+            const canvas = document.getElementById('colorWheelCanvas');
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            pickColorFromWheel(x, y);
+        }
+
+        function pickColorFromWheel(x, y) {
+            if (!colorWheelCtx) return;
+            const canvas = colorWheelCtx.canvas;
+            const cx = canvas.width / 2, cy = canvas.height / 2, radius = canvas.width / 2;
+
+            const dx = x - cx, dy = y - cy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist > radius) return;
+
+            const picker = document.getElementById('colorWheelPicker');
+            picker.style.left = x + 'px';
+            picker.style.top = y + 'px';
+
+            const pixel = colorWheelCtx.getImageData(x, y, 1, 1).data;
+            const hex = '#' + ((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1).toUpperCase();
+
+            document.getElementById('colorPreviewBox').style.background = hex;
+            document.getElementById('colorHexInput').value = hex;
+            picker.style.background = hex;
+        }
+
+        function handleHexInput(value) {
+            if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                document.getElementById('colorPreviewBox').style.background = value;
+                document.getElementById('colorWheelPicker').style.background = value;
+            }
         }
 
         function openColorPicker(target) {
-            App.currentColorPickerTarget = target;
-            const currentHex = document.getElementById(target + 'Hex')?.value || '#888888';
-            document.getElementById('pickerPreviewSwatch').style.background = currentHex;
-            document.getElementById('pickerHexInput').value = currentHex;
-            document.getElementById('colorWheelHandle').style.background = currentHex;
+            App.currentColorTarget = target;
+            const titles = {
+                userColor1: 'User Bubble - Primary',
+                userColor2: 'User Bubble - Secondary',
+                userTextColor: 'User Bubble - Text',
+                charColor1: 'Character Bubble - Primary',
+                charColor2: 'Character Bubble - Secondary',
+                charTextColor: 'Character Bubble - Text'
+            };
+            document.getElementById('colorPickerTitle').textContent = titles[target] || 'Select Color';
+
+            const currentColor = App.currentBubbleColors[target] || '#ffffff';
+            document.getElementById('colorPreviewBox').style.background = currentColor;
+            document.getElementById('colorHexInput').value = currentColor.toUpperCase();
+            document.getElementById('colorWheelPicker').style.background = currentColor;
+
             showModal('colorPickerModal');
         }
 
-        function confirmColorPick() {
-            const color = document.getElementById('pickerHexInput').value;
-            const target = App.currentColorPickerTarget;
-            if (target && /^#[0-9A-Fa-f]{6}$/.test(color)) {
-                document.getElementById(target + 'Swatch').style.background = color;
-                document.getElementById(target + 'Hex').value = color;
-                updateBubblePreview();
+        function confirmColorSelection() {
+            const hex = document.getElementById('colorHexInput').value;
+            if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+                showToast('Invalid hex color', 'error');
+                return;
             }
+
+            App.currentBubbleColors[App.currentColorTarget] = hex;
+            const swatch = document.getElementById(App.currentColorTarget + 'Swatch');
+            if (swatch) swatch.style.background = hex;
+
+            updateBubblePreview();
             hideModal('colorPickerModal');
         }
 
-        function updateColorFromHex(target, val) {
-            if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-                document.getElementById(target + 'Swatch').style.background = val;
-                updateBubblePreview();
-            }
-        }
-
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         // BUBBLE STYLE SYSTEM
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         function selectBubbleStyle(style) {
-            document.querySelectorAll('.bubble-style-option').forEach(el => {
+            document.querySelectorAll('#bubbleStyleOptions .bubble-style-option').forEach(el => {
                 el.classList.toggle('selected', el.dataset.style === style);
             });
-            const colorSettings = document.getElementById('bubbleColorSettings');
+
+            const settingsDiv = document.getElementById('bubbleStyleSettings');
             const glassBorderSettings = document.getElementById('glassBorderSettings');
-            const userColor2Group = document.getElementById('userColor2Group');
-            const charColor2Group = document.getElementById('charColor2Group');
+            const userColor2Label = document.getElementById('userColor2Label');
+            const charColor2Label = document.getElementById('charColor2Label');
+
             if (style === 'none') {
-                colorSettings.style.display = 'none';
+                settingsDiv.style.display = 'none';
             } else {
-                colorSettings.style.display = 'block';
-                const needsTwoColors = ['metal', 'gradient', 'neon'].includes(style);
-                userColor2Group.style.display = needsTwoColors ? 'block' : 'none';
-                charColor2Group.style.display = needsTwoColors ? 'block' : 'none';
+                settingsDiv.style.display = 'block';
+
+                const hasSecondary = ['metal', 'gradient', 'neon'].includes(style);
+                userColor2Label.parentElement.querySelector('#userColor2Swatch').style.display = hasSecondary ? 'block' : 'none';
+                userColor2Label.style.display = hasSecondary ? 'block' : 'none';
+                charColor2Label.parentElement.querySelector('#charColor2Swatch').style.display = hasSecondary ? 'block' : 'none';
+                charColor2Label.style.display = hasSecondary ? 'block' : 'none';
+
                 glassBorderSettings.style.display = style === 'glass' ? 'block' : 'none';
             }
+
             updateBubblePreview();
         }
 
         function updateBubblePreview() {
-            const style = document.querySelector('.bubble-style-option.selected')?.dataset.style || 'none';
-            const userColor1 = document.getElementById('userColor1Hex')?.value || '#3a3a3a';
-            const userColor2 = document.getElementById('userColor2Hex')?.value || '#2a2a2a';
-            const userTextColor = document.getElementById('userTextColorHex')?.value || '#ffffff';
-            const charColor1 = document.getElementById('charColor1Hex')?.value || '#2a2a2a';
-            const charColor2 = document.getElementById('charColor2Hex')?.value || '#1a1a1a';
-            const charTextColor = document.getElementById('charTextColorHex')?.value || '#ffffff';
-            const glassBorder = document.getElementById('glassBorderToggle')?.classList.contains('active');
-            const glassBorderWidth = parseFloat(document.getElementById('glassBorderWidth')?.value) || 0.5;
+            const style = document.querySelector('#bubbleStyleOptions .bubble-style-option.selected')?.dataset.style || 'glass';
+            const colors = App.currentBubbleColors;
+
             const sentPreview = document.getElementById('bubblePreviewSent');
             const receivedPreview = document.getElementById('bubblePreviewReceived');
-            if (!sentPreview || !receivedPreview) return;
+
+            if (style === 'none') return;
+
             let sentStyle = '', receivedStyle = '';
+
             switch (style) {
                 case 'glass':
-                    sentStyle = `background:${userColor1}40;backdrop-filter:blur(12px);color:${userTextColor};${glassBorder ? `border:${glassBorderWidth}px solid rgba(255,255,255,0.15);` : ''}`;
-                    receivedStyle = `background:${charColor1}40;backdrop-filter:blur(12px);color:${charTextColor};${glassBorder ? `border:${glassBorderWidth}px solid rgba(255,255,255,0.15);` : ''}`;
-                    break;
-                case 'solid':
-                    sentStyle = `background:${userColor1};color:${userTextColor};`;
-                    receivedStyle = `background:${charColor1};color:${charTextColor};`;
+                    const borderEnabled = document.getElementById('bubbleBorderToggle')?.classList.contains('active');
+                    const borderWidth = parseFloat(document.getElementById('bubbleBorderWidth')?.value || 1);
+                    const borderCss = borderEnabled ? `border: ${borderWidth}px solid rgba(255,255,255,0.2);` : '';
+                    sentStyle = `background: ${hexToRgba(colors.userColor1, 0.4)}; backdrop-filter: blur(10px); color: ${colors.userTextColor}; ${borderCss}`;
+                    receivedStyle = `background: ${hexToRgba(colors.charColor1, 0.4)}; backdrop-filter: blur(10px); color: ${colors.charTextColor}; ${borderCss}`;
                     break;
                 case 'metal':
-                    sentStyle = `background:linear-gradient(180deg,${userColor1},${userColor2});color:${userTextColor};box-shadow:inset 0 1px 0 rgba(255,255,255,0.1),inset 0 -1px 0 rgba(0,0,0,0.2);`;
-                    receivedStyle = `background:linear-gradient(180deg,${charColor1},${charColor2});color:${charTextColor};box-shadow:inset 0 1px 0 rgba(255,255,255,0.1),inset 0 -1px 0 rgba(0,0,0,0.2);`;
+                    sentStyle = `background: linear-gradient(180deg, ${colors.userColor1} 0%, ${colors.userColor2} 50%, ${lightenColor(colors.userColor1, 10)} 100%); border: 1px solid ${lightenColor(colors.userColor1, 20)}; color: ${colors.userTextColor};`;
+                    receivedStyle = `background: linear-gradient(180deg, ${colors.charColor1} 0%, ${colors.charColor2} 50%, ${lightenColor(colors.charColor1, 10)} 100%); border: 1px solid ${lightenColor(colors.charColor1, 20)}; color: ${colors.charTextColor};`;
+                    break;
+                case 'solid':
+                    sentStyle = `background: ${colors.userColor1}; color: ${colors.userTextColor};`;
+                    receivedStyle = `background: ${colors.charColor1}; color: ${colors.charTextColor};`;
                     break;
                 case 'neon':
-                    sentStyle = `background:rgba(0,0,0,0.7);color:${userTextColor};box-shadow:inset 0 0 12px ${userColor1}40,0 0 8px ${userColor1}30;border:1px solid ${userColor1}50;`;
-                    receivedStyle = `background:rgba(0,0,0,0.7);color:${charTextColor};box-shadow:inset 0 0 12px ${charColor1}40,0 0 8px ${charColor1}30;border:1px solid ${charColor1}50;`;
+                    sentStyle = `background: ${hexToRgba(colors.userColor1, 0.3)}; border: 1px solid ${colors.userColor2}; box-shadow: 0 0 10px ${hexToRgba(colors.userColor2, 0.5)}, inset 0 0 10px ${hexToRgba(colors.userColor2, 0.2)}; color: ${colors.userTextColor};`;
+                    receivedStyle = `background: ${hexToRgba(colors.charColor1, 0.3)}; border: 1px solid ${colors.charColor2}; box-shadow: 0 0 10px ${hexToRgba(colors.charColor2, 0.5)}, inset 0 0 10px ${hexToRgba(colors.charColor2, 0.2)}; color: ${colors.charTextColor};`;
                     break;
                 case 'gradient':
-                    sentStyle = `background:linear-gradient(135deg,${userColor1},${userColor2});color:${userTextColor};`;
-                    receivedStyle = `background:linear-gradient(135deg,${charColor1},${charColor2});color:${charTextColor};`;
+                    sentStyle = `background: linear-gradient(135deg, ${colors.userColor1}, ${colors.userColor2}); color: ${colors.userTextColor};`;
+                    receivedStyle = `background: linear-gradient(135deg, ${colors.charColor1}, ${colors.charColor2}); color: ${colors.charTextColor};`;
                     break;
-                default:
-                    sentStyle = 'background:rgba(60,60,60,0.6);color:#fff;';
-                    receivedStyle = 'background:rgba(40,40,40,0.6);color:#fff;';
             }
+
             sentPreview.style.cssText = sentStyle;
             receivedPreview.style.cssText = receivedStyle;
         }
 
-        function applyBubbleStyle(char) {
-            const styleSheet = document.getElementById('bubbleStyleSheet');
-            if (!char.bubbleStyle || char.bubbleStyle.style === 'none' || char.customCss) {
-                styleSheet.textContent = '';
-                return;
-            }
-            const bs = char.bubbleStyle;
-            let css = '';
-            switch (bs.style) {
-                case 'glass':
-                    css = `.message.sent{background:${bs.userColor1}40!important;backdrop-filter:blur(12px)!important;color:${bs.userTextColor}!important;${bs.glassBorder ? `border:${bs.glassBorderWidth}px solid rgba(255,255,255,0.15)!important;` : 'border:none!important;'}}`;
-                    css += `.message.received{background:${bs.charColor1}40!important;backdrop-filter:blur(12px)!important;color:${bs.charTextColor}!important;${bs.glassBorder ? `border:${bs.glassBorderWidth}px solid rgba(255,255,255,0.15)!important;` : 'border:none!important;'}}`;
-                    break;
-                case 'solid':
-                    css = `.message.sent{background:${bs.userColor1}!important;color:${bs.userTextColor}!important;border:none!important;}`;
-                    css += `.message.received{background:${bs.charColor1}!important;color:${bs.charTextColor}!important;border:none!important;}`;
-                    break;
-                case 'metal':
-                    css = `.message.sent{background:linear-gradient(180deg,${bs.userColor1},${bs.userColor2})!important;color:${bs.userTextColor}!important;box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),inset 0 -1px 0 rgba(0,0,0,0.3)!important;border:none!important;}`;
-                    css += `.message.received{background:linear-gradient(180deg,${bs.charColor1},${bs.charColor2})!important;color:${bs.charTextColor}!important;box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),inset 0 -1px 0 rgba(0,0,0,0.3)!important;border:none!important;}`;
-                    break;
-                case 'neon':
-                    css = `.message.sent{background:rgba(0,0,0,0.75)!important;color:${bs.userTextColor}!important;box-shadow:inset 0 0 15px ${bs.userColor1}50,0 0 10px ${bs.userColor1}40!important;border:1px solid ${bs.userColor1}60!important;}`;
-                    css += `.message.received{background:rgba(0,0,0,0.75)!important;color:${bs.charTextColor}!important;box-shadow:inset 0 0 15px ${bs.charColor1}50,0 0 10px ${bs.charColor1}40!important;border:1px solid ${bs.charColor1}60!important;}`;
-                    break;
-                case 'gradient':
-                    css = `.message.sent{background:linear-gradient(135deg,${bs.userColor1},${bs.userColor2})!important;color:${bs.userTextColor}!important;border:none!important;}`;
-                    css += `.message.received{background:linear-gradient(135deg,${bs.charColor1},${bs.charColor2})!important;color:${bs.charTextColor}!important;border:none!important;}`;
-                    break;
-            }
-            styleSheet.textContent = css;
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         }
 
-        // ════════════════════════════════════════════════════════════════════════════════
+        function lightenColor(hex, percent) {
+            const num = parseInt(hex.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+        }
+
+        function applyBubbleStyleToChat(char) {
+            const styleEl = document.getElementById('bubbleStyleOverride');
+            if (!char.bubbleStyle || char.bubbleStyle === 'none' || char.customCss) {
+                styleEl.textContent = '';
+                return;
+            }
+
+            const colors = char.bubbleColors || App.currentBubbleColors;
+            const style = char.bubbleStyle;
+            let css = '';
+
+            switch (style) {
+                case 'glass':
+                    const borderEnabled = char.bubbleBorderEnabled;
+                    const borderWidth = char.bubbleBorderWidth || 1;
+                    const borderCss = borderEnabled ? `border: ${borderWidth}px solid rgba(255,255,255,0.2) !important;` : 'border: none !important;';
+                    css = `.message.sent { background: ${hexToRgba(colors.userColor1, 0.4)} !important; backdrop-filter: blur(10px) !important; color: ${colors.userTextColor} !important; ${borderCss} }
+                           .message.received { background: ${hexToRgba(colors.charColor1, 0.4)} !important; backdrop-filter: blur(10px) !important; color: ${colors.charTextColor} !important; ${borderCss} }`;
+                    break;
+                case 'metal':
+                    css = `.message.sent { background: linear-gradient(180deg, ${colors.userColor1} 0%, ${colors.userColor2} 50%, ${lightenColor(colors.userColor1, 10)} 100%) !important; border: 1px solid ${lightenColor(colors.userColor1, 20)} !important; color: ${colors.userTextColor} !important; }
+                           .message.received { background: linear-gradient(180deg, ${colors.charColor1} 0%, ${colors.charColor2} 50%, ${lightenColor(colors.charColor1, 10)} 100%) !important; border: 1px solid ${lightenColor(colors.charColor1, 20)} !important; color: ${colors.charTextColor} !important; }`;
+                    break;
+                case 'solid':
+                    css = `.message.sent { background: ${colors.userColor1} !important; color: ${colors.userTextColor} !important; border: none !important; }
+                           .message.received { background: ${colors.charColor1} !important; color: ${colors.charTextColor} !important; border: none !important; }`;
+                    break;
+                case 'neon':
+                    css = `.message.sent { background: ${hexToRgba(colors.userColor1, 0.3)} !important; border: 1px solid ${colors.userColor2} !important; box-shadow: 0 0 10px ${hexToRgba(colors.userColor2, 0.5)}, inset 0 0 10px ${hexToRgba(colors.userColor2, 0.2)} !important; color: ${colors.userTextColor} !important; }
+                           .message.received { background: ${hexToRgba(colors.charColor1, 0.3)} !important; border: 1px solid ${colors.charColor2} !important; box-shadow: 0 0 10px ${hexToRgba(colors.charColor2, 0.5)}, inset 0 0 10px ${hexToRgba(colors.charColor2, 0.2)} !important; color: ${colors.charTextColor} !important; }`;
+                    break;
+                case 'gradient':
+                    css = `.message.sent { background: linear-gradient(135deg, ${colors.userColor1}, ${colors.userColor2}) !important; color: ${colors.userTextColor} !important; border: none !important; }
+                           .message.received { background: linear-gradient(135deg, ${colors.charColor1}, ${colors.charColor2}) !important; color: ${colors.charTextColor} !important; border: none !important; }`;
+                    break;
+            }
+
+            styleEl.textContent = css;
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════════
         // FONT MANAGEMENT
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         function applyGlobalFont() {
             const styleEl = document.getElementById('globalFontStyle');
             const selectedId = App.settings.selectedFontId;
@@ -2553,9 +2646,9 @@
             App.pendingDeleteFontId = null; await saveData(); hideModal('deleteFontModal'); renderFontList(); showToast('Font deleted', 'success');
         }
 
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         // API PRESETS
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         function updateApiPresetSelect() {
             const select = document.getElementById('apiPresetSelect');
             if (!select) return;
@@ -2607,9 +2700,9 @@
             App.pendingDeleteApiPresetId = null; await saveData(); hideModal('deleteApiPresetModal'); updateApiPresetSelect(); showToast('Preset deleted', 'success');
         }
 
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         // CSS PRESETS
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         function deleteCssPreset() {
             const presetId = document.getElementById('cssPresetSelect').value;
             if (!presetId) { showToast('Please select a preset to delete', 'warning'); return; }
@@ -2626,9 +2719,9 @@
             showToast('CSS Preset deleted', 'success');
         }
 
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         // WALLPAPER
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         function applyWallpaper() {
             const el = document.getElementById('wallpaperLayer');
             const wp = App.settings.wallpaper, wpData = App.settings.wallpaperData;
@@ -2673,9 +2766,9 @@
             document.querySelectorAll('#wallpaperGrid > div').forEach(el => { el.style.borderColor = el.dataset.wp === current ? 'var(--accent-gold)' : 'transparent'; });
         }
 
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         // ICONS
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         function updateIconPreviews() {
             ['settings', 'messages', 'worldbook', 'photos', 'fonts'].forEach(app => {
                 const preview = document.getElementById('iconPreview' + app.charAt(0).toUpperCase() + app.slice(1));
@@ -2731,9 +2824,9 @@
 
         async function resetIcons() { App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null }; App.tempIcons = {}; await saveData(); applyAppIcons(); updateIconPreviews(); showToast('Icons reset', 'success'); }
 
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         // NAVIGATION
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         function openPage(id) {
             const page = document.getElementById(id);
             if (page) {
@@ -2753,9 +2846,9 @@
         function addLog(msg, type='info') { const c = document.getElementById('debugLog'); const e = document.createElement('div'); e.className = `log-entry ${type}`; e.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`; c.appendChild(e); c.scrollTop = c.scrollHeight; }
         function updateConnectionUI() { const h = document.getElementById('connectionStatusHint'); if (App.connectionStatus === 'connected') { h.className = 'action-hint success'; h.innerHTML = `<span class="action-hint-icon">✓</span><span class="action-hint-text">Connected - ${App.settings.modelName}</span>`; } else { h.className = 'action-hint'; h.innerHTML = `<span class="action-hint-icon">⚠</span><span class="action-hint-text">API not configured</span>`; } }
 
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         // API FUNCTIONS
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         async function fetchModels() {
             const url = document.getElementById('apiBaseUrl').value.trim(), key = document.getElementById('apiKey').value.trim();
             if (!url || !key) { showToast('Please fill in fields', 'error'); return; }
@@ -2796,20 +2889,24 @@
             await saveData(); showToast('Settings saved', 'success');
         }
 
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         // CHARACTER MANAGEMENT
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
         async function createCharacter() {
             const name = document.getElementById('newCharacterName').value.trim(); if (!name) { showToast('Please enter name', 'error'); return; }
             const char = {
-                id: Date.now().toString(), name,
-                avatar: ['◆','◇','●','○','■','□'][Math.floor(Math.random()*6)],
+                id: Date.now().toString(), name, avatar: ['◆','◇','●','○','■','□'][Math.floor(Math.random()*6)],
                 avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle',
                 showBorder: false, borderColor: '#c9a962', borderWidth: 2,
                 description: '', greeting: '', scenario: '', worldbookIds: [],
                 userNick: '', systemPrompt: '', messages: [],
                 chatWallpaper: null, customCss: '', activeCssPresetId: null, timestampPosition: 'default',
-                bubbleStyle: { style: 'none', userColor1: '#3a3a3a', userColor2: '#2a2a2a', userTextColor: '#ffffff', charColor1: '#2a2a2a', charColor2: '#1a1a1a', charTextColor: '#ffffff', glassBorder: false, glassBorderWidth: 0.5 }
+                bubbleStyle: 'glass',
+                bubbleColors: {
+                    userColor1: '#3a3a3a', userColor2: '#2a2a2a', userTextColor: '#ffffff',
+                    charColor1: '#2a2a2a', charColor2: '#1a1a1a', charTextColor: '#ffffff'
+                },
+                bubbleBorderEnabled: false, bubbleBorderWidth: 1
             };
             App.characters.push(char); await saveData(); hideModal('createCharacterModal'); document.getElementById('newCharacterName').value = ''; renderContacts(); showToast(`"${name}" created`, 'success');
         }
@@ -2835,7 +2932,11 @@
             document.getElementById('chatTitle').textContent = char.name;
             document.getElementById('selectModeBar').classList.remove('active');
             document.getElementById('chatMessages').classList.remove('select-mode');
-            applyChatWallpaper(char); applyCustomCss(char); applyBubbleStyle(char); renderMessages(); openPage('chatPage');
+            applyChatWallpaper(char);
+            applyCustomCss(char);
+            applyBubbleStyleToChat(char);
+            renderMessages();
+            openPage('chatPage');
             if (char.messages.length === 0 && char.greeting) addMessage(char.greeting, 'received');
         }
 
@@ -2851,13 +2952,16 @@
             if (char.activeCssPresetId) { const preset = App.globalCssPresets.find(p => p.id === char.activeCssPresetId); if (preset) css = preset.css; }
             if (char.customCss) css = char.customCss;
             styleEl.textContent = css;
-            if (css) document.getElementById('bubbleStyleSheet').textContent = '';
+
+            if (css) {
+                document.getElementById('bubbleStyleOverride').textContent = '';
+            }
         }
 
         function closeChatPage() {
             exitSelectMode(); closePage('chatPage');
             document.getElementById('customCssStyles').textContent = '';
-            document.getElementById('bubbleStyleSheet').textContent = '';
+            document.getElementById('bubbleStyleOverride').textContent = '';
             const chatPage = document.getElementById('chatPage');
             chatPage.classList.remove('has-custom-bg'); chatPage.style.backgroundImage = '';
             App.currentCharId = null; App.currentQuote = null;
@@ -2865,8 +2969,33 @@
 
         function openCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            if (!char.bubbleStyle) char.bubbleStyle = { style: 'none', userColor1: '#3a3a3a', userColor2: '#2a2a2a', userTextColor: '#ffffff', charColor1: '#2a2a2a', charColor2: '#1a1a1a', charTextColor: '#ffffff', glassBorder: false, glassBorderWidth: 0.5 };
             updateChatWallpaperPreview(char);
+
+            // Load bubble style settings
+            const bubbleStyle = char.bubbleStyle || 'glass';
+            document.querySelectorAll('#bubbleStyleOptions .bubble-style-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.style === bubbleStyle);
+            });
+            selectBubbleStyle(bubbleStyle);
+
+            // Load bubble colors
+            App.currentBubbleColors = { ...char.bubbleColors } || {
+                userColor1: '#3a3a3a', userColor2: '#2a2a2a', userTextColor: '#ffffff',
+                charColor1: '#2a2a2a', charColor2: '#1a1a1a', charTextColor: '#ffffff'
+            };
+            document.getElementById('userColor1Swatch').style.background = App.currentBubbleColors.userColor1;
+            document.getElementById('userColor2Swatch').style.background = App.currentBubbleColors.userColor2;
+            document.getElementById('userTextColorSwatch').style.background = App.currentBubbleColors.userTextColor;
+            document.getElementById('charColor1Swatch').style.background = App.currentBubbleColors.charColor1;
+            document.getElementById('charColor2Swatch').style.background = App.currentBubbleColors.charColor2;
+            document.getElementById('charTextColorSwatch').style.background = App.currentBubbleColors.charTextColor;
+
+            // Load border settings
+            document.getElementById('bubbleBorderToggle').classList.toggle('active', char.bubbleBorderEnabled);
+            document.getElementById('bubbleBorderWidth').value = char.bubbleBorderWidth || 1;
+
+            updateBubblePreview();
+
             const charAvUpload = document.getElementById('charAvatarUpload'), userAvUpload = document.getElementById('userAvatarUpload');
             if (char.avatarImage) { charAvUpload.innerHTML = `<img src="${char.avatarImage}">`; charAvUpload.classList.add('has-image'); } else { charAvUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'; charAvUpload.classList.remove('has-image'); }
             charAvUpload.dataset.image = char.avatarImage || '';
@@ -2885,26 +3014,6 @@
             document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
             document.getElementById('timestampPosition').value = char.timestampPosition || 'default';
             document.getElementById('customCssEditor').value = char.customCss || '';
-
-            // Bubble style
-            const bs = char.bubbleStyle;
-            document.querySelectorAll('.bubble-style-option').forEach(el => { el.classList.toggle('selected', el.dataset.style === bs.style); });
-            document.getElementById('userColor1Hex').value = bs.userColor1;
-            document.getElementById('userColor1Swatch').style.background = bs.userColor1;
-            document.getElementById('userColor2Hex').value = bs.userColor2;
-            document.getElementById('userColor2Swatch').style.background = bs.userColor2;
-            document.getElementById('userTextColorHex').value = bs.userTextColor;
-            document.getElementById('userTextColorSwatch').style.background = bs.userTextColor;
-            document.getElementById('charColor1Hex').value = bs.charColor1;
-            document.getElementById('charColor1Swatch').style.background = bs.charColor1;
-            document.getElementById('charColor2Hex').value = bs.charColor2;
-            document.getElementById('charColor2Swatch').style.background = bs.charColor2;
-            document.getElementById('charTextColorHex').value = bs.charTextColor;
-            document.getElementById('charTextColorSwatch').style.background = bs.charTextColor;
-            document.getElementById('glassBorderToggle').classList.toggle('active', bs.glassBorder);
-            document.getElementById('glassBorderWidth').value = bs.glassBorderWidth;
-            selectBubbleStyle(bs.style);
-
             updateCssPresetSelect(char);
             updateWorldbookMultiSelect(char);
             updateCharCounter();
@@ -2951,272 +3060,163 @@
             const file = e.target.files[0]; if (!file) return;
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             const reader = new FileReader();
-            reader.onload = async ev => { char.chatWallpaper = await compressImage(ev.target.result, 600, 0.8); updateChatWallpaperPreview(char); showToast('Set successfully, save to apply', 'success'); };
+            reader.onload = async ev => { char.chatWallpaper = await compressImage(ev.target.result, 600, 0.8); updateChatWallpaperPreview(char); showToast('Set successfully,  save to apply', 'info'); };
             reader.readAsDataURL(file); e.target.value = '';
         }
 
-        function clearChatWallpaper() {
+        async function clearChatWallpaper() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            char.chatWallpaper = null; updateChatWallpaperPreview(char); showToast('Cleared, save to apply', 'info');
+            char.chatWallpaper = null; updateChatWallpaperPreview(char); showToast('Wallpaper cleared', 'success');
         }
-
-        function confirmClearAllMessages() { showModal('clearMessagesModal'); }
-
-        async function executeClearAllMessages() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            char.messages = []; await saveData(); hideModal('clearMessagesModal'); renderMessages(); showToast('Messages cleared', 'success');
-        }
-
-        function loadCssPreset() { const presetId = document.getElementById('cssPresetSelect').value; if (!presetId) { document.getElementById('customCssEditor').value = ''; return; } const preset = App.globalCssPresets.find(p => p.id === presetId); if (preset) document.getElementById('customCssEditor').value = preset.css; }
-        function addNewCssPreset() { showModal('cssPresetNameModal'); document.getElementById('newCssPresetName').value = ''; }
-
-        async function createCssPreset() {
-            const name = document.getElementById('newCssPresetName').value.trim(); if (!name) { showToast('Please enter name', 'error'); return; }
-            const css = document.getElementById('customCssEditor').value;
-            const preset = { id: Date.now().toString(), name, css };
-            App.globalCssPresets.push(preset); await saveData(); hideModal('cssPresetNameModal');
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (char) { updateCssPresetSelect(char); document.getElementById('cssPresetSelect').value = preset.id; }
-            showToast(`Preset "${name}" created`, 'success');
-        }
-
-        async function saveCssPreset() {
-            const presetId = document.getElementById('cssPresetSelect').value; if (!presetId) { showToast('Please select or create a preset first', 'warning'); return; }
-            const preset = App.globalCssPresets.find(p => p.id === presetId); if (!preset) return;
-            preset.css = document.getElementById('customCssEditor').value; await saveData(); showToast(`Preset "${preset.name}" updated`, 'success');
-        }
-
-        function showCssGuide() { showModal('cssGuideModal'); }
-        function previewCss() { document.getElementById('customCssStyles').textContent = document.getElementById('customCssEditor').value; document.getElementById('bubbleStyleSheet').textContent = ''; showToast('CSS previewed', 'info'); }
-        function clearCustomCss() { document.getElementById('customCssEditor').value = ''; document.getElementByI d('customCssStyles').textContent = ''; showToast('CSS cleared', 'info'); }
-        function toggleSwitch(el) { el.classList.toggle('active'); }
 
         async function saveCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             char.name = document.getElementById('charName').value.trim() || char.name;
-            char.avatar = document.getElementById('charAvatar').value;
-            char.description = document.getElementById('charDescription').value;
-            char.greeting = document.getElementById('charGreeting').value;
-            char.scenario = document.getElementById('charScenario').value;
-            char.userNick = document.getElementById('charUserNick').value;
-            char.systemPrompt = document.getElementById('charSystemPrompt').value;
+            char.avatar = document.getElementById('charAvatar').value.trim();
+            char.description = document.getElementById('charDescription').value.trim();
+            char.greeting = document.getElementById('charGreeting').value.trim();
+            char.scenario = document.getElementById('charScenario').value.trim();
+            char.userNick = document.getElementById('charUserNick').value.trim();
+            char.systemPrompt = document.getElementById('charSystemPrompt').value.trim();
             char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
             char.avatarShape = document.querySelector('#avatarShapeOptions .shape-option.selected')?.dataset.shape || 'circle';
             char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
             char.borderColor = document.getElementById('borderColorPicker').value;
             char.timestampPosition = document.getElementById('timestampPosition').value;
-            char.customCss = document.getElementById('customCssEditor').value;
+            char.customCss = document.getElementById('customCssEditor').value.trim();
             char.activeCssPresetId = document.getElementById('cssPresetSelect').value || null;
+
+            // Save bubble style settings
+            const selectedStyle = document.querySelector('#bubbleStyleOptions .bubble-style-option.selected')?.dataset.style || 'glass';
+            char.bubbleStyle = selectedStyle;
+            char.bubbleColors = { ...App.currentBubbleColors };
+            char.bubbleBorderEnabled = document.getElementById('bubbleBorderToggle')?.classList.contains('active') || false;
+            char.bubbleBorderWidth = parseFloat(document.getElementById('bubbleBorderWidth')?.value || 1);
 
             const charAvUpload = document.getElementById('charAvatarUpload');
             const userAvUpload = document.getElementById('userAvatarUpload');
             if (charAvUpload.dataset.image) char.avatarImage = charAvUpload.dataset.image;
             if (userAvUpload.dataset.image) char.userAvatar = userAvUpload.dataset.image;
 
-            // Save bubble style
-            const selectedStyle = document.querySelector('.bubble-style-option.selected')?.dataset.style || 'none';
-            char.bubbleStyle = {
-                style: selectedStyle,
-                userColor1: document.getElementById('userColor1Hex').value,
-                userColor2: document.getElementById('userColor2Hex').value,
-                userTextColor: document.getElementById('userTextColorHex').value,
-                charColor1: document.getElementById('charColor1Hex').value,
-                charColor2: document.getElementById('charColor2Hex').value,
-                charTextColor: document.getElementById('charTextColorHex').value,
-                glassBorder: document.getElementById('glassBorderToggle').classList.contains('active'),
-                glassBorderWidth: parseFloat(document.getElementById('glassBorderWidth').value) || 0.5
-            };
-
             document.getElementById('chatTitle').textContent = char.name;
-            await saveData(); applyChatWallpaper(char); applyCustomCss(char); applyBubbleStyle(char); renderMessages();
-            closeCharacterSettings(); showToast('Settings saved', 'success');
+            await saveData();
+            applyCustomCss(char);
+            applyBubbleStyleToChat(char);
+            applyChatWallpaper(char);
+            renderMessages();
+            closeCharacterSettings();
+            await updateStorageDisplay();
+            showToast('Settings saved', 'success');
         }
 
-        function updateCharCounter() { const v = document.getElementById('charGreeting').value; const counter = document.getElementById('greetingCharCounter'); counter.textContent = `${v.length}/300`; counter.className = 'char-counter' + (v.length > 280 ? v.length >= 300 ? ' error' : ' warning' : ''); }
+        function confirmClearAllMessages() { showModal('clearMessagesModal'); }
 
-        function deleteCurrentCharacter() { App.pendingDeleteType = 'character'; App.pendingDeleteId = App.currentCharId; document.getElementById('deleteModalTitle').textContent = 'Delete Character?'; document.getElementById('deleteModalDesc').textContent = 'All messages will be lost.'; showModal('confirmDeleteModal'); }
+        async function executeClearAllMessages() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            char.messages = []; await saveData(); renderMessages(); hideModal('clearMessagesModal'); showToast('All messages cleared', 'success');
+        }
+
+        function deleteCurrentCharacter() {
+            App.pendingDeleteType = 'character'; App.pendingDeleteId = App.currentCharId;
+            document.getElementById('deleteModalTitle').textContent = 'Delete Character?';
+            document.getElementById('deleteModalDesc').textContent = 'This will delete the character and all messages. This action cannot be undone.';
+            showModal('confirmDeleteModal');
+        }
 
         async function confirmDelete() {
-            if (App.pendingDeleteType === 'character') { App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId); closeCharacterSettings(); closeChatPage(); renderContacts(); }
-            else if (App.pendingDeleteType === 'worldbook') { App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId); closeWorldbookEdit(); renderWorldbooks(); }
-            await saveData(); hideModal('confirmDeleteModal'); showToast('Deleted', 'success');
+            if (App.pendingDeleteType === 'character') {
+                App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
+                await saveData(); hideModal('confirmDeleteModal'); closeCharacterSettings(); closeChatPage(); renderContacts(); showToast('Character deleted', 'success');
+            } else if (App.pendingDeleteType === 'worldbook') {
+                App.worldbooks = App.worldbooks.filter(wb => wb.id !== App.pendingDeleteId);
+                App.characters.forEach(c => { if (c.worldbookIds) c.worldbookIds = c.worldbookIds.filter(id => id !== App.pendingDeleteId); });
+                await saveData(); hideModal('confirmDeleteModal'); closeWorldbookEdit(); renderWorldbooks(); showToast('Worldbook deleted', 'success');
+            }
+            App.pendingDeleteType = null; App.pendingDeleteId = null;
         }
 
-        // ════════════════════════════════════════════════════════════════════════════════
-        // MESSAGE HANDLING - COMPLETE WITH QUOTE AND IMAGE SUPPORT
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // MESSAGE HANDLING WITH QUOTE FORMAT ||| AND [Q:#编号]
+        // ═══════════════════════════════════════════════════════════════════════════════
         function renderMessages() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             const container = document.getElementById('chatMessages');
+            const timestampPos = char.timestampPosition || 'default';
+            const showAvatar = char.showAvatar !== false;
+            const avatarShape = char.avatarShape || 'circle';
+            const showBorder = char.showBorder === true;
+            const borderColor = char.borderColor || '#c9a962';
+
             let html = '';
             let lastDate = '';
+
             char.messages.forEach((msg, idx) => {
                 const msgDate = new Date(msg.timestamp).toLocaleDateString();
                 if (msgDate !== lastDate) { html += `<div class="date-separator"><span class="date-separator-text">${msgDate}</span></div>`; lastDate = msgDate; }
-                html += buildMessageHtml(msg, idx, char);
+
+                const isSent = msg.type === 'sent';
+                const avatarHtml = isSent
+                    ? (char.userAvatar ? `<img src="${char.userAvatar}">` : '👤')
+                    : (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0]));
+
+                const avatarClasses = ['message-avatar'];
+                if (!showAvatar) avatarClasses.push('hidden');
+                if (avatarShape === 'square') avatarClasses.push('square');
+                else if (avatarShape === 'rounded-square') avatarClasses.push('rounded-square');
+
+                const avatarStyle = showBorder ? `border: 2px solid ${borderColor};` : '';
+
+                const timeClasses = ['message-time'];
+                if (timestampPos === 'hidden') timeClasses.push('time-hidden');
+                else if (timestampPos === 'side') timeClasses.push('time-side');
+
+                let contentHtml = '';
+                if (msg.quoteId) {
+                    const quotedMsg = char.messages.find(m => m.id === msg.quoteId);
+                    if (quotedMsg) contentHtml += `<div class="message-quote">${escapeHtml(quotedMsg.content.substring(0, 80))}${quotedMsg.content.length > 80 ? '...' : ''}</div>`;
+                }
+                contentHtml += `<div>${escapeHtml(msg.content)}</div>`;
+                if (msg.image) contentHtml += `<img src="${msg.image}" class="message-image" onclick="viewImage(this.src)">`;
+                contentHtml += `<div class="${timeClasses.join(' ')}">${formatTime(msg.timestamp)}</div>`;
+
+                html += `<div class="message-wrapper ${isSent ? 'sent' : 'received'}">`;
+                if (App.isSelectMode) html += `<div class="message-checkbox ${App.selectedMsgs.has(msg.id) ? 'checked' : ''}" onclick="toggleMessageSelect('${msg.id}')"></div>`;
+                if (!isSent) html += `<div class="${avatarClasses.join(' ')}" style="${avatarStyle}">${avatarHtml}</div>`;
+                html += `<div class="message ${isSent ? 'sent' : 'received'}" data-id="${msg.id}" oncontextmenu="showContextMenu(event, '${msg.id}')" ontouchstart="startLongPress(event, '${msg.id}')" ontouchend="cancelLongPress()" ontouchmove="cancelLongPress()">${contentHtml}</div>`;
+                if (isSent) html += `<div class="${avatarClasses.join(' ')}" style="${avatarStyle}">${avatarHtml}</div>`;
+                html += `</div>`;
             });
+
             container.innerHTML = html;
             container.scrollTop = container.scrollHeight;
-            attachMessageEvents();
         }
 
-        function buildMessageHtml(msg, idx, char) {
-            const isSent = msg.type === 'sent';
-            const showAvatar = char.showAvatar !== false;
-            const avatarShape = char.avatarShape || 'circle';
-            const shapeClass = avatarShape === 'square' ? 'square' : avatarShape === 'rounded-square' ? 'rounded-square' : '';
-            const borderStyle = char.showBorder ? `border: 2px solid ${char.borderColor || '#c9a962'};` : '';
-            const tsPos = char.timestampPosition || 'default';
-            const timeClass = tsPos === 'hidden' ? 'time-hidden' : tsPos === 'side' ? 'time-side' : '';
-
-            let avatarHtml = '';
-            if (showAvatar && !isSent) {
-                const avContent = char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0]);
-                avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avContent}</div>`;
-            } else if (showAvatar && isSent) {
-                const avContent = char.userAvatar ? `<img src="${char.userAvatar}">` : '👤';
-                avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avContent}</div>`;
-            }
-
-            let quoteHtml = '';
-            if (msg.quote) { quoteHtml = `<div class="message-quote">${escapeHtml(msg.quote.substring(0, 100))}${msg.quote.length > 100 ? '...' : ''}</div>`; }
-
-            let imageHtml = '';
-            if (msg.image) { imageHtml = `<img src="${msg.image}" class="message-image" onclick="viewImage('${msg.image}')">`; }
-
-            const content = formatMessageContent(msg.content);
-            const time = formatTime(msg.timestamp);
-
-            return `<div class="message-wrapper ${isSent ? 'sent' : 'received'}" data-idx="${idx}">
-                <div class="message-checkbox" onclick="toggleMessageSelect(${idx})"></div>
-                ${!isSent ? avatarHtml : ''}
-                <div class="message ${isSent ? 'sent' : 'received'}" data-idx="${idx}">
-                    ${quoteHtml}
-                    <div class="message-content">${content}</div>
-                    ${imageHtml}
-                    <div class="message-time ${timeClass}">${time}</div>
-                </div>
-                ${isSent ? avatarHtml : ''}
-            </div>`;
-        }
-
-        function formatMessageContent(text) {
-            if (!text) return '';
-            let html = escapeHtml(text);
-            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-            html = html.replace(/\n/g, '<br>');
-            return html;
-        }
-
-        function attachMessageEvents() {
-            document.querySelectorAll('.message').forEach(el => {
-                el.addEventListener('touchstart', (e) => { App.longPressTimer = setTimeout(() => showContextMenu(parseInt(el.dataset.idx)), 500); }, { passive: true });
-                el.addEventListener('touchend', () => { clearTimeout(App.longPressTimer); });
-                el.addEventListener('touchmove', () => { clearTimeout(App.longPressTimer); });
-                el.addEventListener('contextmenu', (e) => { e.preventDefault(); showContextMenu(parseInt(el.dataset.idx)); });
-            });
-        }
-
-        function showContextMenu(idx) { App.contextMenuMsgId = idx; document.getElementById('contextMenuOverlay').classList.add('active'); }
-        function hideContextMenu() { document.getElementById('contextMenuOverlay').classList.remove('active'); App.contextMenuMsgId = null; }
-
-        function copyMessageText() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char || App.contextMenuMsgId === null) return;
-            const msg = char.messages[App.contextMenuMsgId];
-            if (msg) { navigator.clipboard.writeText(msg.content).then(() => showToast('Copied', 'success')).catch(() => showToast('Copy failed', 'error')); }
-            hideContextMenu();
-        }
-
-        function quoteMessage() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char || App.contextMenuMsgId === null) return;
-            const msg = char.messages[App.contextMenuMsgId];
-            if (msg) {
-                App.currentQuote = { content: msg.content, index: App.contextMenuMsgId };
-                document.getElementById('quotePreviewContent').textContent = msg.content.substring(0, 80) + (msg.content.length > 80 ? '...' : '');
-                document.getElementById('quotePreviewBar').classList.add('active');
-            }
-            hideContextMenu();
-        }
-
-        function cancelQuote() { App.currentQuote = null; document.getElementById('quotePreviewBar').classList.remove('active'); }
-
-        function editMessage() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char || App.contextMenuMsgId === null) return;
-            const msg = char.messages[App.contextMenuMsgId];
-            if (msg) { App.editingMsgId = App.contextMenuMsgId; document.getElementById('editMessageContent').value = msg.content; showModal('editMessageModal'); }
-            hideContextMenu();
-        }
-
-        async function saveEditedMessage() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char || App.editingMsgId === null) return;
-            const newContent = document.getElementById('editMessageContent').value.trim();
-            if (newContent) { char.messages[App.editingMsgId].content = newContent; await saveData(); renderMessages(); }
-            App.editingMsgId = null; hideModal('editMessageModal'); showToast('Message updated', 'success');
-        }
-
-        async function addMessage(content, type, options = {}) {
+        function addMessage(content, type, quoteId = null, image = null) {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const msg = { id: Date.now().toString(), content, type, timestamp: Date.now(), quote: options.quote || null, image: options.image || null };
+            const msg = { id: Date.now().toString(), content, type, timestamp: Date.now(), quoteId, image };
             char.messages.push(msg);
-            await saveData(); renderMessages();
+            if (type === 'sent') App.lastAIStart = char.messages.length;
+            saveData(); renderMessages();
         }
 
-        function autoResizeTextarea(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
-
-        async function sendMessage() {
+        function sendMessage() {
             const input = document.getElementById('chatInput');
-            let content = input.value.trim(); if (!content && !App.currentQuote) return;
-
-            // Handle quote with ||| separator format
-            let quoteContent = null;
-            if (App.currentQuote) {
-                quoteContent = App.currentQuote.content;
-                content = `[Q:#${App.currentQuote.index + 1}]|||${content}`;
-            }
-
-            await addMessage(content.replace(/^\[Q:#\d+\]\|\|\|/, ''), 'sent', { quote: quoteContent });
+            const content = input.value.trim(); if (!content) return;
+            const quoteId = App.currentQuote?.id || null;
+            addMessage(content, 'sent', quoteId);
             input.value = ''; input.style.height = 'auto';
-            cancelQuote(); toggleExtensionPanel(false);
+            App.currentQuote = null; document.getElementById('quotePreviewBar').classList.remove('active');
         }
 
-        function toggleExtensionPanel(show) {
-            const panel = document.getElementById('extensionPanel');
-            if (typeof show === 'boolean') panel.classList.toggle('active', show);
-            else panel.classList.toggle('active');
-        }
-
-        function openImagePicker() { document.getElementById('chatImageInput').click(); toggleExtensionPanel(false); }
-
-        async function handleChatImageUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async ev => {
-                const compressed = await compressImage(ev.target.result, 400, 0.8);
-                await addMessage('[Image]', 'sent', { image: compressed });
-            };
-            reader.readAsDataURL(file); e.target.value = '';
-        }
-
-        function viewImage(src) { window.open(src, '_blank'); }
-
-        // ════════════════════════════════════════════════════════════════════════════════
-        // AI REPLY - COMPLETE WITH buildAPIMessages AND parseAIResponse
-        // ════════════════════════════════════════════════════════════════════════════════
         async function triggerAIReply() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) { showToast('Please configure API first', 'error'); return; }
-            toggleExtensionPanel(false);
+
             const container = document.getElementById('chatMessages');
-            const typingEl = document.createElement('div');
-            typingEl.className = 'message-wrapper received';
-            typingEl.id = 'typingIndicator';
-            typingEl.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
-            container.appendChild(typingEl);
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message-wrapper received';
+            typingDiv.innerHTML = `<div class="message-avatar">${char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0])}</div><div class="typing-indicator"><span></span><span></span><span></span></div>`;
+            container.appendChild(typingDiv);
             container.scrollTop = container.scrollHeight;
 
             try {
@@ -3226,45 +3226,66 @@
                     headers: { 'Authorization': `Bearer ${App.settings.apiKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         model: App.settings.modelName,
-                        messages,
+                        messages: messages,
                         temperature: App.settings.temperature,
                         max_tokens: App.settings.maxTokens
                     })
                 });
+
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
-                const aiContent = parseAIResponse(data);
-                document.getElementById('typingIndicator')?.remove();
-                if (aiContent) await addMessage(aiContent, 'received');
+                const aiContent = data.choices?.[0]?.message?.content || 'No response';
+
+                typingDiv.remove();
+                const parsedContent = parseAIResponse(aiContent, char);
+                addMessage(parsedContent, 'received');
             } catch (e) {
-                document.getElementById('typingIndicator')?.remove();
+                typingDiv.remove();
                 showToast(`AI Error: ${e.message}`, 'error');
+                addLog(`AI Error: ${e.message}`, 'error');
             }
+        }
+
+        async function regenerateLastReply() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            toggleExtensionPanel();
+
+            // Find last AI message and remove it
+            for (let i = char.messages.length - 1; i >= 0; i--) {
+                if (char.messages[i].type === 'received') {
+                    char.messages.splice(i, 1);
+                    break;
+                }
+            }
+            await saveData();
+            renderMessages();
+            await triggerAIReply();
         }
 
         function buildAPIMessages(char) {
             const messages = [];
-            let systemContent = '';
+            const maxContext = App.settings.maxContextMessages || 200;
 
-            // System prompt
-            if (char.systemPrompt) systemContent += char.systemPrompt + '\n\n';
-            if (char.description) systemContent += `Character: ${char.name}\n${char.description}\n\n`;
-            if (char.scenario) systemContent += `Scenario: ${char.scenario}\n\n`;
-            if (char.userNick) systemContent += `User's name/identity: ${char.userNick}\n\n`;
+            // System prompt construction
+            let systemPrompt = '';
+            if (char.description) systemPrompt += `Character: ${char.description}\n`;
+            if (char.scenario) systemPrompt += `Scenario: ${char.scenario}\n`;
+            if (char.userNick) systemPrompt += `The user's name/identity: ${char.userNick}\n`;
+            if (char.systemPrompt) systemPrompt += `${char.systemPrompt}\n`;
 
-            // Worldbook entries - with keyword trigger and always active support
-            if (char.worldbookIds?.length > 0) {
-                const recentMessages = char.messages.slice(-10).map(m => m.content.toLowerCase()).join(' ');
+            // Worldbook entries - keyword triggered mode
+            if (char.worldbookIds && char.worldbookIds.length > 0) {
+                const recentText = char.messages.slice(-10).map(m => m.content).join(' ').toLowerCase();
                 char.worldbookIds.forEach(wbId => {
                     const wb = App.worldbooks.find(w => w.id === wbId);
-                    if (wb?.entries) {
+                    if (wb && wb.entries) {
                         wb.entries.forEach(entry => {
                             if (entry.alwaysActive) {
-                                systemContent += `[Lore: ${entry.name}]\n${entry.content}\n\n`;
+                                systemPrompt += `\n[Lore: ${entry.name}]\n${entry.content}\n`;
                             } else if (entry.keywords) {
                                 const keywords = entry.keywords.split(',').map(k => k.trim().toLowerCase());
-                                if (keywords.some(kw => kw && recentMessages.includes(kw))) {
-                                    systemContent += `[Lore: ${entry.name}]\n${entry.content}\n\n`;
+                                if (keywords.some(kw => kw && recentText.includes(kw))) {
+                                    systemPrompt += `\n[Lore: ${entry.name}]\n${entry.content}\n`;
                                 }
                             }
                         });
@@ -3272,86 +3293,163 @@
                 });
             }
 
-            if (systemContent.trim()) messages.push({ role: 'system', content: systemContent.trim() });
+            // Quote format instruction
+            systemPrompt += `\n[Quote Format] When the user quotes a previous message using the format "|||quoted content|||[Q:#number]", they are referencing message #number. Respond naturally to both the quote and their new message.`;
 
-            // Chat history with multimodal image support
-            const maxMsgs = App.settings.maxContextMessages || 200;
-            const historySlice = char.messages.slice(-maxMsgs);
-            historySlice.forEach(msg => {
-                const role = msg.type === 'sent' ? 'user' : 'assistant';
+            if (systemPrompt.trim()) messages.push({ role: 'system', content: systemPrompt.trim() });
 
-                // Handle messages with quotes (||| separator format)
+            // Greeting as first assistant message
+            if (char.greeting) messages.push({ role: 'assistant', content: char.greeting });
+
+            // Recent messages with quote format
+            const recentMessages = char.messages.slice(-maxContext);
+            recentMessages.forEach((msg, idx) => {
                 let content = msg.content;
-                if (msg.quote) {
-                    content = `[Quoting: "${msg.quote.substring(0, 100)}${msg.quote.length > 100 ? '...' : ''}"]\n${content}`;
+
+                // Handle quote format: |||quoted content|||[Q:#number]
+                if (msg.quoteId) {
+                    const quotedMsg = char.messages.find(m => m.id === msg.quoteId);
+                    if (quotedMsg) {
+                        const quotedIdx = char.messages.findIndex(m => m.id === msg.quoteId) + 1;
+                        content = `|||${quotedMsg.content.substring(0, 100)}|||[Q:#${quotedIdx}]\n${msg.content}`;
+                    }
                 }
 
-                // Handle multimodal image messages
-                if (msg.image) {
-                    messages.push({
-                        role,
-                        content: [
-                            { type: 'text', text: content || 'User sent an image' },
-                            { type: 'image_url', image_url: { url: msg.image } }
-                        ]
-                    });
-                } else {
-                    messages.push({ role, content });
-                }
+                if (msg.image) content += '\n[User sent an image]';
+
+                messages.push({ role: msg.type === 'sent' ? 'user' : 'assistant', content });
             });
 
             return messages;
         }
 
-        function parseAIResponse(data) {
-            if (!data) return null;
-            if (data.choices?.[0]?.message?.content) return data.choices[0].message.content;
-            if (data.choices?.[0]?.text) return data.choices[0].text;
-            if (data.content) return data.content;
-            if (data.response) return data.response;
-            if (data.output) return data.output;
-            if (typeof data === 'string') return data;
-            return null;
+        function parseAIResponse(content, char) {
+            // Remove common AI artifacts
+            let parsed = content.trim();
+            parsed = parsed.replace(/^\*\*.*?\*\*\n?/gm, '');
+            parsed = parsed.replace(/^As an AI.*?\n?/gi, '');
+            parsed = parsed.replace(/^I'm an AI.*?\n?/gi, '');
+            return parsed;
         }
 
-        async function regenerateLastReply() {
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // CONTEXT MENU AND LONG PRESS
+        // ═══════════════════════════════════════════════════════════════════════════════
+        function showContextMenu(e, msgId) {
+            e.preventDefault();
+            App.contextMenuMsgId = msgId;
+            document.getElementById('contextMenuOverlay').classList.add('active');
+        }
+
+        function hideContextMenu() {
+            document.getElementById('contextMenuOverlay').classList.remove('active');
+            App.contextMenuMsgId = null;
+        }
+
+        function startLongPress(e, msgId) {
+            App.longPressTimer = setTimeout(() => { showContextMenu(e, msgId); }, 500);
+        }
+
+        function cancelLongPress() { if (App.longPressTimer) { clearTimeout(App.longPressTimer); App.longPressTimer = null; } }
+
+        function copyMessageText() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            toggleExtensionPanel(false);
-            for (let i = char.messages.length - 1; i >= 0; i--) {
-                if (char.messages[i].type === 'received') { char.messages.splice(i, 1); break; }
-            }
-            await saveData(); renderMessages(); await triggerAIReply();
+            const msg = char.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg) { navigator.clipboard.writeText(msg.content); showToast('Copied to clipboard', 'success'); }
+            hideContextMenu();
         }
 
-        // ════════════════════════════════════════════════════════════════════════════════
-        // SELECT MODE
-        // ════════════════════════════════════════════════════════════════════════════════
-        function enterSelectMode() { App.isSelectMode = true; App.selectedMsgs.clear(); document.getElementById('selectModeBar').classList.add('active'); document.getElementById('chatMessages').classList.add('select-mode'); document.getElementById('selectedCount').textContent = '0'; toggleExtensionPanel(false); }
-        function exitSelectMode() { App.isSelectMode = false; App.selectedMsgs.clear(); document.getElementById('selectModeBar').classList.remove('active'); document.getElementById('chatMessages').classList.remove('select-mode'); document.querySelectorAll('.message-checkbox').forEach(el => el.classList.remove('checked')); }
+        function quoteMessage() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const msg = char.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg) {
+                App.currentQuote = msg;
+                document.getElementById('quotePreviewContent').textContent = msg.content.substring(0, 50) + (msg.content.length > 50 ? '...' : '');
+                document.getElementById('quotePreviewBar').classList.add('active');
+            }
+            hideContextMenu();
+        }
 
-        function toggleMessageSelect(idx) {
-            if (!App.isSelectMode) return;
-            const checkbox = document.querySelector(`.message-wrapper[data-idx="${idx}"] .message-checkbox`);
-            if (App.selectedMsgs.has(idx)) { App.selectedMsgs.delete(idx); checkbox?.classList.remove('checked'); }
-            else { App.selectedMsgs.add(idx); checkbox?.classList.add('checked'); }
+        function cancelQuote() { App.currentQuote = null; document.getElementById('quotePreviewBar').classList.remove('active'); }
+
+        function editMessage() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const msg = char.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg) {
+                App.editingMsgId = msg.id;
+                document.getElementById('editMessageContent').value = msg.content;
+                showModal('editMessageModal');
+            }
+            hideContextMenu();
+        }
+
+        async function saveEditedMessage() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const msg = char.messages.find(m => m.id === App.editingMsgId);
+            if (msg) {
+                msg.content = document.getElementById('editMessageContent').value.trim();
+                await saveData(); renderMessages();
+            }
+            App.editingMsgId = null; hideModal('editMessageModal'); showToast('Message updated', 'success');
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // SELECT MODE
+        // ═══════════════════════════════════════════════════════════════════════════════
+        function enterSelectMode() {
+            App.isSelectMode = true; App.selectedMsgs.clear();
+            document.getElementById('selectModeBar').classList.add('active');
+            document.getElementById('chatMessages').classList.add('select-mode');
+            toggleExtensionPanel(); renderMessages();
+        }
+
+        function exitSelectMode() {
+            App.isSelectMode = false; App.selectedMsgs.clear();
+            document.getElementById('selectModeBar').classList.remove('active');
+            document.getElementById('chatMessages').classList.remove('select-mode');
+            renderMessages();
+        }
+
+        function toggleMessageSelect(msgId) {
+            if (App.selectedMsgs.has(msgId)) App.selectedMsgs.delete(msgId);
+            else App.selectedMsgs.add(msgId);
             document.getElementById('selectedCount').textContent = App.selectedMsgs.size;
+            renderMessages();
         }
 
         async function deleteSelectedMessages() {
-            if (App.selectedMsgs.size === 0) { showToast('No messages selected', 'warning'); return; }
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const indices = Array.from(App.selectedMsgs).sort((a, b) => b - a);
-            indices.forEach(idx => { if (idx < char.messages.length) char.messages.splice(idx, 1); });
-            await saveData(); exitSelectMode(); renderMessages(); showToast(`Deleted ${indices.length} messages`, 'success');
+            char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id));
+            await saveData(); exitSelectMode(); showToast(`Deleted ${App.selectedMsgs.size} messages`, 'success');
         }
 
-        // ════════════════════════════════════════════════════════════════════════════════
-        // WORLDBOOK MANAGEMENT - MULTIPLE ENTRIES SUPPORT
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // IMAGE HANDLING
+        // ═══════════════════════════════════════════════════════════════════════════════
+        function openImagePicker() { toggleExtensionPanel(); document.getElementById('chatImageInput').click(); }
+
+        async function handleChatImageUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const compressed = await compressImage(ev.target.result, 400, 0.7);
+                const content = document.getElementById('chatInput').value.trim() || '[Image]';
+                addMessage(content, 'sent', null, compressed);
+                document.getElementById('chatInput').value = '';
+            };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        function viewImage(src) { window.open(src, '_blank'); }
+
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // WORLDBOOK MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════════════════════
         async function createWorldbook() {
             const name = document.getElementById('newWorldbookName').value.trim(); if (!name) { showToast('Please enter name', 'error'); return; }
-            const wb = { id: Date.now().toString(), name, summary: '', entries: [{ name: 'Entry 1', keywords: '', content: '', alwaysActive: false }] };
-            App.worldbooks.push(wb); await saveData(); hideModal('createWorldbookModal'); document.getElementById('newWorldbookName').value = ''; renderWorldbooks(); showToast(`"${name}" created`, 'success');
+            const wb = { id: Date.now().toString(), name, summary: '', entries: [{ name: 'New Entry', keywords: '', content: '', alwaysActive: false }] };
+            App.worldbooks.push(wb); await saveData(); hideModal('createWorldbookModal');
+            document.getElementById('newWorldbookName').value = ''; renderWorldbooks(); showToast(`"${name}" created`, 'success');
         }
 
         function renderWorldbooks() {
@@ -3360,14 +3458,14 @@
             list.style.display = 'block'; empty.style.display = 'none';
             list.innerHTML = App.worldbooks.map(wb => {
                 const entryCount = wb.entries?.length || 0;
-                const preview = wb.summary || (wb.entries?.[0]?.content?.substring(0, 80) + '...') || 'No content';
+                const preview = wb.summary || (wb.entries?.[0]?.content?.substring(0, 50) || 'No entries');
                 return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entryCount} entries</span></div><div class="worldbook-item-preview">${escapeHtml(preview)}</div></div>`;
             }).join('');
         }
 
-        function openWorldbookEdit(id) {
-            const wb = App.worldbooks.find(w => w.id === id); if (!wb) return;
-            App.currentWbId = id;
+        function openWorldbookEdit(wbId) {
+            const wb = App.worldbooks.find(w => w.id === wbId); if (!wb) return;
+            App.currentWbId = wbId;
             document.getElementById('worldbookName').value = wb.name;
             document.getElementById('worldbookSummary').value = wb.summary || '';
             renderWorldbookEntries(wb);
@@ -3377,30 +3475,14 @@
         function renderWorldbookEntries(wb) {
             const container = document.getElementById('worldbookEntries');
             if (!wb.entries || wb.entries.length === 0) { container.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px;padding:12px">No entries yet</div>'; return; }
-            container.innerHTML = wb.entries.map((entry, idx) => `
-                <div class="worldbook-entry-item">
-                    <div class="worldbook-entry-header">
-                        <span class="worldbook-entry-title">${escapeHtml(entry.name || 'Unnamed')}</span>
-                        <div class="worldbook-entry-actions">
-                            <button class="worldbook-entry-btn" onclick="editWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                            <button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${idx})" style="border-color:rgba(199,80,80,0.3)"><svg viewBox="0 0 24 24" style="stroke:var(--danger)"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                        </div>
-                    </div>
-                    <div class="worldbook-entry-keywords">${entry.alwaysActive ? '⚡ Always Active' : (entry.keywords ? `Keywords: ${escapeHtml(entry.keywords)}` : 'No keywords')}</div>
-                    <div class="worldbook-entry-preview">${escapeHtml(entry.content?.substring(0, 100) || 'No content')}${entry.content?.length > 100 ? '...' : ''}</div>
-                </div>
-            `).join('');
+            container.innerHTML = wb.entries.map((entry, idx) => `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(entry.name || `Entry ${idx + 1}`)}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div><div class="worldbook-entry-keywords">${entry.alwaysActive ? '⚡ Always Active' : (entry.keywords || 'No keywords')}</div><div class="worldbook-entry-preview">${escapeHtml(entry.content?.substring(0, 80) || 'No content')}...</div></div>`).join('');
         }
 
         function addWorldbookEntry() {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
             if (!wb.entries) wb.entries = [];
-            App.currentEntryIndex = wb.entries.length;
-            document.getElementById('entryName').value = '';
-            document.getElementById('entryKeywords').value = '';
-            document.getElementById('entryContent').value = '';
-            document.getElementById('entryAlwaysActive').classList.remove('active');
-            showModal('entryEditModal');
+            wb.entries.push({ name: 'New Entry', keywords: '', content: '', alwaysActive: false });
+            renderWorldbookEntries(wb);
         }
 
         function editWorldbookEntry(idx) {
@@ -3415,30 +3497,25 @@
         }
 
         async function saveWorldbookEntry() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            if (!wb.entries) wb.entries = [];
-            const entry = {
-                name: document.getElementById('entryName').value.trim() || 'Unnamed Entry',
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb || App.currentEntryIndex < 0) return;
+            wb.entries[App.currentEntryIndex] = {
+                name: document.getElementById('entryName').value.trim(),
                 keywords: document.getElementById('entryKeywords').value.trim(),
-                content: document.getElementById('entryContent').value,
+                content: document.getElementById('entryContent').value.trim(),
                 alwaysActive: document.getElementById('entryAlwaysActive').classList.contains('active')
             };
-            if (App.currentEntryIndex >= wb.entries.length) wb.entries.push(entry);
-            else wb.entries[App.currentEntryIndex] = entry;
             await saveData(); hideModal('entryEditModal'); renderWorldbookEntries(wb); showToast('Entry saved', 'success');
         }
 
         async function deleteWorldbookEntry(idx) {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb || !wb.entries[idx]) return;
-            if (!confirm('Delete this entry?')) return;
-            wb.entries.splice(idx, 1);
-            await saveData(); renderWorldbookEntries(wb); showToast('Entry deleted', 'success');
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
+            if (confirm('Delete this entry?')) { wb.entries.splice(idx, 1); await saveData(); renderWorldbookEntries(wb); showToast('Entry deleted', 'success'); }
         }
 
         async function saveWorldbook() {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
             wb.name = document.getElementById('worldbookName').value.trim() || wb.name;
-            wb.summary = document.getElementById('worldbookSummary').value;
+            wb.summary = document.getElementById('worldbookSummary').value.trim();
             await saveData(); closeWorldbookEdit(); renderWorldbooks(); showToast('Worldbook saved', 'success');
         }
 
@@ -3447,16 +3524,64 @@
         function deleteCurrentWorldbook() {
             App.pendingDeleteType = 'worldbook'; App.pendingDeleteId = App.currentWbId;
             document.getElementById('deleteModalTitle').textContent = 'Delete Worldbook?';
-            document.getElementById('deleteModalDesc').textContent = 'All entries will be lost.';
+            document.getElementById('deleteModalDesc').textContent = 'This will delete the worldbook and all its entries. This action cannot be undone.';
             showModal('confirmDeleteModal');
         }
 
-        // ════════════════════════════════════════════════════════════════════════════════
-        // DATA EXPORT/IMPORT
-        // ════════════════════════════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // CSS PRESET FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════════════════
+        function loadCssPreset() {
+            const presetId = document.getElementById('cssPresetSelect').value;
+            if (!presetId) { document.getElementById('customCssEditor').value = ''; return; }
+            const preset = App.globalCssPresets.find(p => p.id === presetId);
+            if (preset) { document.getElementById('customCssEditor').value = preset.css || ''; }
+        }
+
+        function addNewCssPreset() { showModal('cssPresetNameModal'); document.getElementById('newCssPresetName').value = ''; }
+
+        async function createCssPreset() {
+            const name = document.getElementById('newCssPresetName').value.trim(); if (!name) { showToast('Please enter name', 'error'); return; }
+            const preset = { id: Date.now().toString(), name, css: document.getElementById('customCssEditor').value.trim() };
+            App.globalCssPresets.push(preset); await saveData(); hideModal('cssPresetNameModal');
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (char) updateCssPresetSelect(char);
+            document.getElementById('cssPresetSelect').value = preset.id;
+            showToast(`Preset "${name}" created`, 'success');
+        }
+
+        async function saveCssPreset() {
+            const presetId = document.getElementById('cssPresetSelect').value;
+            if (!presetId) { showToast('Please select or create a preset first', 'warning'); return; }
+            const preset = App.globalCssPresets.find(p => p.id === presetId);
+            if (!preset) return;
+            preset.css = document.getElementById('customCssEditor').value.trim();
+            await saveData(); showToast(`Preset "${preset.name}" updated`, 'success');
+        }
+
+        function previewCss() {
+            const css = document.getElementById('customCssEditor').value.trim();
+            document.getElementById('customCssStyles').textContent = css;
+            document.getElementById('bubbleStyleOverride').textContent = '';
+            showToast('CSS preview applied', 'info');
+        }
+
+        function clearCustomCss() {
+            document.getElementById('customCssEditor').value = '';
+            document.getElementById('customCssStyles').textContent = '';
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (char) applyBubbleStyleToChat(char);
+            showToast('CSS cleared', 'info');
+        }
+
+        function showCssGuide() { showModal('cssGuideModal'); }
+
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // EXPORT / IMPORT / CLEAR DATA
+        // ═══════════════════════════════════════════════════════════════════════════════
         async function exportAllData() {
             const data = {
-                version: 2,
+                version: '7.0',
                 exportDate: new Date().toISOString(),
                 characters: App.characters,
                 worldbooks: App.worldbooks,
@@ -3468,8 +3593,8 @@
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url;
-            a.download = `noir-backup-${new Date().toISOString().slice(0, 10)}.json`;
+            const a = document.createElement('a');
+            a.href = url; a.download = `noir_backup_${Date.now()}.json`;
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
             URL.revokeObjectURL(url);
             showToast('Data exported', 'success');
@@ -3477,44 +3602,76 @@
 
         async function importData(e) {
             const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                try {
-                    const data = JSON.parse(ev.target.result);
-                    if (data.characters) App.characters = data.characters;
-                    if (data.worldbooks) App.worldbooks = data.worldbooks;
-                    if (data.settings) App.settings = { ...App.settings, ...data.settings };
-                    if (data.appIcons) App.appIcons = { ...App.appIcons, ...data.appIcons };
-                    if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets;
-                    if (data.apiPresets) App.apiPresets = data.apiPresets;
-                    if (data.fonts) { data.fonts.forEach(f => { if (!App.fonts.find(ef => ef.id === f.id)) App.fonts.push(f); }); }
-                    await saveData();
-                    applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyGlobalFontSize();
-                    loadSettingsUI(); updateApiPresetSelect(); renderFontList();
-                    showToast('Data imported successfully', 'success');
-                } catch (err) { showToast('Import failed: Invalid file', 'error'); }
-            };
-            reader.readAsText(file); e.target.value = '';
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+                if (data.characters) App.characters = data.characters;
+                if (data.worldbooks) App.worldbooks = data.worldbooks;
+                if (data.settings) App.settings = { ...App.settings, ...data.settings };
+                if (data.appIcons) App.appIcons = { ...App.appIcons, ...data.appIcons };
+                if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets;
+                if (data.apiPresets) App.apiPresets = data.apiPresets;
+                if (data.fonts) {
+                    data.fonts.forEach(f => { if (!App.fonts.find(ef => ef.id === f.id)) App.fonts.push(f); });
+                }
+                await saveData();
+                applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyGlobalFontSize(); loadSettingsUI();
+                showToast('Data imported successfully', 'success');
+            } catch (err) { showToast('Import failed: ' + err.message, 'error'); }
+            e.target.value = '';
         }
 
         async function clearAllData() {
-            if (!confirm('Delete ALL data? This cannot be undone!')) return;
-            if (!confirm('Are you absolutely sure?')) return;
-            App.characters = []; App.worldbooks = [];
-            App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null, globalFontSize: 14 };
-            App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null };
-            App.globalCssPresets = []; App.apiPresets = [];
-            App.fonts = [...DEFAULT_FONTS];
-            await saveData(); applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyGlobalFontSize(); loadSettingsUI();
-            renderContacts(); renderWorldbooks(); renderFontList(); updateApiPresetSelect();
-            showToast('All data cleared', 'success');
+            if (!confirm('This will delete ALL data including characters, messages, worldbooks, and settings. Continue?')) return;
+            if (!confirm('Are you absolutely sure? This cannot be undone!')) return;
+            try {
+                await clearIDBStore('appData');
+                await clearIDBStore('images');
+                App.characters = []; App.worldbooks = [];
+                App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null, globalFontSize: 14 };
+                App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null };
+                App.globalCssPresets = []; App.apiPresets = [];
+                App.fonts = [...DEFAULT_FONTS];
+                await saveData(); applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyGlobalFontSize(); loadSettingsUI(); renderContacts(); renderWorldbooks();
+                await updateStorageDisplay();
+                showToast('All data cleared', 'success');
+            } catch (e) { showToast('Error clearing data', 'error'); }
         }
 
-        // ════════════════════════════════════════════════════════════════════════════════
-        // UTILITIES
-        // ════════════════════════════════════════════════════════════════════════════════
-        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
-        function formatTime(ts) { if (!ts) return ''; const d = new Date(ts); return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); }
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // UTILITY FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════════════════
+        function toggleSwitch(el) { el.classList.toggle('active'); }
+
+        function toggleExtensionPanel() {
+            const panel = document.getElementById('extensionPanel');
+            panel.classList.toggle('active');
+        }
+
+        function updateCharCounter() {
+            const textarea = document.getElementById('charGreeting');
+            const counter = document.getElementById('greetingCharCounter');
+            const len = textarea.value.length;
+            counter.textContent = `${len}/300`;
+            counter.className = 'char-counter' + (len > 280 ? ' warning' : '') + (len >= 300 ? ' error' : '');
+        }
+
+        function autoResizeTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
     </script>
 </body>
 </html>
