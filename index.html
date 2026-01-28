@@ -3032,7 +3032,7 @@
             initBubbleStyleUI(char);
             updateChatWallpaperPreview(char);
             const charAvUpload = document.getElementById('charAvatarUpload'), userAvUpload = document.getElementById('userAvatarUpload');
-            if (char.avatarImage) { charAvUploa d.innerHTML = `<img src="${char.avatarImage}">`; charAvUpload.classList.add('has-image'); }
+            if (char.avatarImage) { charAvUpload.innerHTML = `<img src="${char.avatarImage}">`; charAvUpload.classList.add('has-image'); }
             else { charAvUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'; charAvUpload.classList.remove('has-image'); }
             if (char.userAvatar) { userAvUpload.innerHTML = `<img src="${char.userAvatar}">`; userAvUpload.classList.add('has-image'); }
             else { userAvUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'; userAvUpload.classList.remove('has-image'); }
