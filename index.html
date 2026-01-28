@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-title" content="NOIR">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a0a">
-    <title>NOIR · Premium SMS v7</title>
+    <title>NOIR · Premium SMS v8</title>
     <style id="globalFontStyle"></style>
     <style id="globalFontSizeStyle"></style>
     <style id="bubbleStyleSheet"></style>
@@ -281,7 +281,7 @@
             font-family: var(--font-sans);
             transition: var(--transition-fast);
         }
-        .input-field:focus { border-color: var(--accent-gold); background: var(--bg-glass-hover); }
+        .input-field:focus { border-color: rgba(255,255,255,0.2); background: var(--bg-glass-hover); }
         .input-field::placeholder { color: var(--text-muted); }
 
         textarea.input-field {
@@ -1147,44 +1147,18 @@
         .font-item-btn.danger:hover { background: rgba(199, 80, 80, 0.1); }
         .font-item-btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.5; fill: none; }
 
-        /* Color Picker Styles */
+        /* Color Picker Styles - Enhanced for dragging */
         .color-wheel-container {
-            width: 100%; max-width: 280px; margin: 0 auto 20px;
-            position: relative;
+            width: 100%; max-width: 260px; margin: 0 auto 16px;
+            position: relative; touch-action: none;
         }
-        .color-wheel-wrapper {
+        .color-wheel-canvas-wrapper {
             position: relative; width: 100%; padding-bottom: 100%;
         }
-        .color-wheel {
+        #colorWheelCanvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            border-radius: 50%; cursor: crosshair;
-            background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
-        }
-        .color-wheel::after {
-            content: ''; position: absolute;
-            top: 15%; left: 15%; right: 15%; bottom: 15%;
-            background: radial-gradient(circle, white 0%, transparent 70%);
-            border-radius: 50%; pointer-events: none;
-        }
-        .color-square {
-            position: absolute; top: 25%; left: 25%; width: 50%; height: 50%;
-            transform: rotate(45deg); cursor: crosshair;
-            background: linear-gradient(to right, white, transparent),
-                        linear-gradient(to bottom, transparent, black);
-        }
-        .color-wheel-handle {
-            position: absolute; width: 20px; height: 20px;
-            border: 3px solid white; border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-        }
-        .color-square-handle {
-            position: absolute; width: 16px; height: 16px;
-            border: 2px solid white; border-radius: 50%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-            transform: translate(-50%, -50%);
-            pointer-events: none;
+            cursor: crosshair; border-radius: 50%;
+            touch-action: none;
         }
         .color-hex-input {
             width: 100%; padding: 12px 16px;
@@ -1262,7 +1236,7 @@
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
-        ::-webkit-scroll bar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
         #customCssStyles { }
     </style>
@@ -1363,91 +1337,6 @@
                         <span>Compact</span>
                         <span>Standard</span>
                         <span>Large</span>
-                    </div>
-                </div>
-
-                <p class="settings-group-title">Bubble Style</p>
-                <div class="settings-group" style="padding:16px">
-                    <div class="bubble-style-grid" id="bubbleStyleGrid">
-                        <div class="bubble-style-option selected" data-style="none" onclick="selectBubbleStyle('none')">
-                            <div class="bubble-style-option-name">None</div>
-                        </div>
-                        <div class="bubble-style-option" data-style="glass" onclick="selectBubbleStyle('glass')">
-                            <div class="bubble-style-option-name">Glass</div>
-                        </div>
-                        <div class="bubble-style-option" data-style="metal" onclick="selectBubbleStyle('metal')">
-                            <div class="bubble-style-option-name">Metal</div>
-                        </div>
-                        <div class="bubble-style-option" data-style="solid" onclick="selectBubbleStyle('solid')">
-                            <div class="bubble-style-option-name">Solid</div>
-                        </div>
-                        <div class="bubble-style-option" data-style="neon" onclick="selectBubbleStyle('neon')">
-                            <div class="bubble-style-option-name">Neon</div>
-                        </div>
-                        <div class="bubble-style-option" data-style="gradient" onclick="selectBubbleStyle('gradient')">
-                            <div class="bubble-style-option-name">Aurora</div>
-                        </div>
-                    </div>
-
-                    <div id="bubbleStyleOptions" style="display:none">
-                        <div class="bubble-preview-container" id="bubblePreviewContainer">
-                            <div class="bubble-preview-received" id="previewReceived">Hello there!</div>
-                            <div class="bubble-preview-sent" id="previewSent">Hi, how are you?</div>
-                        </div>
-
-                        <div class="color-section">
-                            <div class="color-section-title">User Bubble</div>
-                            <div class="color-btn-row">
-                                <div class="color-btn" onclick="openColorPicker('userBg1')">
-                                    <div class="color-swatch" id="swatchUserBg1" style="background:#3c3c41"></div>
-                                    <span class="color-btn-label">Color 1</span>
-                                </div>
-                                <div class="color-btn" onclick="openColorPicker('userBg2')" id="userBg2Btn">
-                                    <div class="color-swatch" id="swatchUserBg2" style="background:#2d2d32"></div>
-                                    <span class="color-btn-label">Color 2</span>
-                                </div>
-                            </div>
-                            <div class="color-btn-row">
-                                <div class="color-btn" onclick="openColorPicker('userText')">
-                                    <div class="color-swatch" id="swatchUserText" style="background:#ffffff"></div>
-                                    <span class="color-btn-label">Text Color</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="color-section">
-                            <div class="color-section-title">Character Bubble</div>
-                            <div class="color-btn-row">
-                                <div class="color-btn" onclick="openColorPicker('charBg1')">
-                                    <div class="color-swatch" id="swatchCharBg1" style="background:#2d2d32"></div>
-                                    <span class="color-btn-label">Color 1</span>
-                                </div>
-                                <div class="color-btn" onclick="openColorPicker('charBg2')" id="charBg2Btn">
-                                    <div class="color-swatch" id="swatchCharBg2" style="background:#232328"></div>
-                                    <span class="color-btn-label">Color 2</span>
-                                </div>
-                            </div>
-                            <div class="color-btn-row">
-                                <div class="color-btn" onclick="openColorPicker('charText')">
-                                    <div class="color-swatch" id="swatchCharText" style="background:#ffffff"></div>
-                                    <span class="color-btn-label">Text Color</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="glassBorderOptions" style="display:none">
-                            <div class="settings-item" style="padding:12px 0">
-                                <span class="settings-item-label">Border</span>
-                                <div class="toggle-switch" id="glassBorderToggle" onclick="toggleSwitch(this);updateBubblePreview()"></div>
-                            </div>
-                            <div class="slider-container" id="glassBorderWidthContainer" style="display:none">
-                                <div class="slider-header">
-                                    <span class="slider-label">Border Width</span>
-                                    <span class="slider-value" id="glassBorderWidthValue">1px</span>
-                                </div>
-                                <input type="range" class="slider-input" id="glassBorderWidth" min="0.5" max="3" step="0.5" value="1" oninput="updateGlassBorderWidth()">
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -1659,7 +1548,7 @@
             </div>
         </div>
 
-        <!-- Character Settings Page -->
+        <!-- Character Settings Page (with Bubble Style) -->
         <div class="page slide-from-bottom" id="characterSettingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closeCharacterSettings()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Cancel</button>
@@ -1673,6 +1562,91 @@
                         <div class="settings-item-left">
                             <span class="settings-icon danger"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>
                             <div><span class="settings-item-label">Clear All Messages</span><div class="settings-item-desc">Delete all chat history</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="settings-group-title">Bubble Style</p>
+                <div class="settings-group" style="padding:16px">
+                    <div class="bubble-style-grid" id="bubbleStyleGrid">
+                        <div class="bubble-style-option selected" data-style="none" onclick="selectBubbleStyle('none')">
+                            <div class="bubble-style-option-name">None</div>
+                        </div>
+                        <div class="bubble-style-option" data-style="glass" onclick="selectBubbleStyle('glass')">
+                            <div class="bubble-style-option-name">Glass</div>
+                        </div>
+                        <div class="bubble-style-option" data-style="metal" onclick="selectBubbleStyle('metal')">
+                            <div class="bubble-style-option-name">Metal</div>
+                        </div>
+                        <div class="bubble-style-option" data-style="solid" onclick="selectBubbleStyle('solid')">
+                            <div class="bubble-style-option-name">Solid</div>
+                        </div>
+                        <div class="bubble-style-option" data-style="neon" onclick="selectBubbleStyle('neon')">
+                            <div class="bubble-style-option-name">Neon</div>
+                        </div>
+                        <div class="bubble-style-option" data-style="gradient" onclick="selectBubbleStyle('gradient')">
+                            <div class="bubble-style-option-name">Aurora</div>
+                        </div>
+                    </div>
+
+                    <div id="bubbleStyleOptions" style="display:none">
+                        <div class="bubble-preview-container" id="bubblePreviewContainer">
+                            <div class="bubble-preview-received" id="previewReceived">Hello there!</div>
+                            <div class="bubble-preview-sent" id="previewSent">Hi, how are you?</div>
+                        </div>
+
+                        <div class="color-section">
+                            <div class="color-section-title">User Bubble</div>
+                            <div class="color-btn-row">
+                                <div class="color-btn" onclick="openColorPicker('userBg1')">
+                                    <div class="color-swatch" id="swatchUserBg1" style="background:#3c3c41"></div>
+                                    <span class="color-btn-label">Color 1</span>
+                                </div>
+                                <div class="color-btn" onclick="openColorPicker('userBg2')" id="userBg2Btn">
+                                    <div class="color-swatch" id="swatchUserBg2" style="background:#2d2d32"></div>
+                                    <span class="color-btn-label">Color 2</span>
+                                </div>
+                            </div>
+                            <div class="color-btn-row">
+                                <div class="color-btn" onclick="openColorPicker('userText')">
+                                    <div class="color-swatch" id="swatchUserText" style="background:#ffffff"></div>
+                                    <span class="color-btn-label">Text Color</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="color-section">
+                            <div class="color-section-title">Character Bubble</div>
+                            <div class="color-btn-row">
+                                <div class="color-btn" onclick="openColorPicker('charBg1')">
+                                    <div class="color-swatch" id="swatchCharBg1" style="background:#2d2d32"></div>
+                                    <span class="color-btn-label">Color 1</span>
+                                </div>
+                                <div class="color-btn" onclick="openColorPicker('charBg2')" id="charBg2Btn">
+                                    <div class="color-swatch" id="swatchCharBg2" style="background:#232328"></div>
+                                    <span class="color-btn-label">Color 2</span>
+                                </div>
+                            </div>
+                            <div class="color-btn-row">
+                                <div class="color-btn" onclick="openColorPicker('charText')">
+                                    <div class="color-swatch" id="swatchCharText" style="background:#ffffff"></div>
+                                    <span class="color-btn-label">Text Color</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="glassBorderOptions" style="display:none">
+                            <div class="settings-item" style="padding:12px 0">
+                                <span class="settings-item-label">Border</span>
+                                <div class="toggle-switch" id="glassBorderToggle" onclick="toggleSwitch(this);updateBubblePreview()"></div>
+                            </div>
+                            <div class="slider-container" id="glassBorderWidthContainer" style="display:none">
+                                <div class="slider-header">
+                                    <span class="slider-label">Border Width</span>
+                                    <span class="slider-value" id="glassBorderWidthValue">1px</span>
+                                </div>
+                                <input type="range" class="slider-input" id="glassBorderWidth" min="0.5" max="3" step="0.5" value="1" oninput="updateGlassBorderWidth()">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2006,23 +1980,26 @@
         </div>
     </div>
 
+    <!-- Enhanced Color Picker Modal with Drag Support -->
     <div class="modal-overlay" id="colorPickerModal">
         <div class="modal" style="max-width:320px">
             <div class="modal-title">Select Color</div>
             <div class="color-preview-swatch" id="colorPickerPreview"></div>
             <div class="color-wheel-container">
-                <canvas id="colorWheelCanvas" width="260" height="260" style="width:100%;height:auto;cursor:crosshair;border-radius:50%"></canvas>
+                <div class="color-wheel-canvas-wrapper">
+                    <canvas id="colorWheelCanvas" width="260" height="260"></canvas>
+                </div>
             </div>
             <input type="text" class="color-hex-input" id="colorHexInput" placeholder="#FFFFFF" maxlength="7" oninput="updateColorFromHex()">
             <div class="modal-btns" style="margin-top:16px"><button class="modal-btn cancel" onclick="hideModal('colorPickerModal')">Cancel</button><button class="modal-btn confirm" onclick="applySelectedColor()">Apply</button></div>
         </div>
     </div>
 
-    <div class=" toast-container" id="toastContainer"></div>
+    <div class="toast-container" id="toastContainer"></div>
 
     <script>
         const DB_NAME = 'NoirAppDB';
-        const DB_VERSION = 5;
+        const DB_VERSION = 6;
         let db = null;
 
         function openDB() {
@@ -2072,13 +2049,7 @@
             settings: {
                 apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048,
                 maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false,
-                selectedFontId: null, fontScale: 1,
-                bubbleStyle: 'none',
-                bubbleColors: {
-                    userBg1: '#3c3c41', userBg2: '#2d2d32', userText: '#ffffff',
-                    charBg1: '#2d2d32', charBg2: '#232328', charText: '#ffffff'
-                },
-                glassBorder: false, glassBorderWidth: 1
+                selectedFontId: null, fontScale: 1
             },
             globalCssPresets: [],
             apiPresets: [],
@@ -2092,7 +2063,9 @@
             pendingDeleteCssPresetId: null,
             pendingDeleteApiPresetId: null,
             currentColorTarget: null,
-            selectedColor: '#ffffff'
+            selectedColor: '#ffffff',
+            colorPickerHue: 0,
+            colorPickerIsDragging: false
         };
 
         const GRADIENTS = {
@@ -2112,6 +2085,11 @@
             { id: 'cormorant', name: 'Cormorant Garamond', url: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap', isGoogleFont: true, isDefault: true }
         ];
 
+        const DEFAULT_BUBBLE_COLORS = {
+            userBg1: '#3c3c41', userBg2: '#2d2d32', userText: '#ffffff',
+            charBg1: '#2d2d32', charBg2: '#232328', charText: '#ffffff'
+        };
+
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 await openDB();
@@ -2123,7 +2101,6 @@
                 applyStatusBarVisibility();
                 applyGlobalFont();
                 applyFontScale();
-                applyBubbleStyles();
                 updateConnectionUI();
                 highlightWallpaper();
                 updateWallpaperPreview();
@@ -2131,7 +2108,6 @@
                 updateStorageDisplay();
                 renderFontList();
                 updateApiPresetSelect();
-                initBubbleStyleUI();
                 initColorWheel();
             } catch (e) { console.error('Init failed:', e); showToast('Initialization failed', 'error'); }
         });
@@ -2196,11 +2172,14 @@
                 DEFAULT_FONTS.forEach(df => { if (!App.fonts.find(f => f.id === df.id)) App.fonts.push(df); });
 
                 App.worldbooks.forEach(wb => { if (!wb.entries) wb.entries = [{ name: 'Default Entry', keywords: wb.keywords || '', content: wb.content || '', alwaysActive: wb.alwaysActive || false }]; });
-                App.characters.forEach(c => { if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId]; if (!c.worldbookIds) c.worldbookIds = []; });
-
-                if (!App.settings.bubbleColors) {
-                    App.settings.bubbleColors = { userBg1: '#3c3c41', userBg2: '#2d2d32', userText: '#ffffff', charBg1: '#2d2d32', charBg2: '#232328', charText: '#ffffff' };
-                }
+                App.characters.forEach(c => {
+                    if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId];
+                    if (!c.worldbookIds) c.worldbookIds = [];
+                    if (!c.bubbleStyle) c.bubbleStyle = 'none';
+                    if (!c.bubbleColors) c.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
+                    if (c.glassBorder === undefined) c.glassBorder = false;
+                    if (c.glassBorderWidth === undefined) c.glassBorderWidth = 1;
+                });
 
                 loadSettingsUI();
                 if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
@@ -2214,7 +2193,6 @@
         async function saveMainSettings() {
             App.settings.fontScale = parseFloat(document.getElementById('fontScaleSlider').value);
             applyFontScale();
-            applyBubbleStyles();
             await saveData();
             showToast('Settings saved', 'success');
         }
@@ -2231,43 +2209,51 @@
             document.getElementById('fontScaleValue').textContent = Math.round(scale * 100) + '%';
         }
 
-        function initBubbleStyleUI() {
-            const style = App.settings.bubbleStyle || 'none';
-            document.querySelectorAll('.bubble-style-option').forEach(el => {
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // BUBBLE STYLE - Per Character (moved from global settings)
+        // ═══════════════════════════════════════════════════════════════════════════════
+        function initBubbleStyleUI(char) {
+            if (!char) return;
+            const style = char.bubbleStyle || 'none';
+            document.querySelectorAll('#bubbleStyleGrid .bubble-style-option').forEach(el => {
                 el.classList.toggle('selected', el.dataset.style === style);
             });
             document.getElementById('bubbleStyleOptions').style.display = style === 'none' ? 'none' : 'block';
             document.getElementById('glassBorderOptions').style.display = style === 'glass' ? 'block' : 'none';
             if (style === 'glass') {
-                document.getElementById('glassBorderToggle').classList.toggle('active', App.settings.glassBorder);
-                document.getElementById('glassBorderWidthContainer').style.display = App.settings.glassBorder ? 'block' : 'none';
-                document.getElementById('glassBorderWidth').value = App.settings.glassBorderWidth || 1;
-                document.getElementById('glassBorderWidthValue').textContent = (App.settings.glassBorderWidth || 1) + 'px';
+                document.getElementById('glassBorderToggle').classList.toggle('active', char.glassBorder);
+                document.getElementById('glassBorderWidthContainer').style.display = char.glassBorder ? 'block' : 'none';
+                document.getElementById('glassBorderWidth').value = char.glassBorderWidth || 1;
+                document.getElementById('glassBorderWidthValue').textContent = (char.glassBorderWidth || 1) + 'px';
             }
-            updateColorSwatches();
-            updateBubblePreview();
+            updateColorSwatches(char);
+            updateBubblePreview(char);
         }
 
         function selectBubbleStyle(style) {
-            App.settings.bubbleStyle = style;
-            document.querySelectorAll('.bubble-style-option').forEach(el => {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            char.bubbleStyle = style;
+            document.querySelectorAll('#bubbleStyleGrid .bubble-style-option').forEach(el => {
                 el.classList.toggle('selected', el.dataset.style === style);
             });
             document.getElementById('bubbleStyleOptions').style.display = style === 'none' ? 'none' : 'block';
             document.getElementById('glassBorderOptions').style.display = style === 'glass' ? 'block' : 'none';
-            updateBubblePreview();
-            applyBubbleStyles();
+            updateBubblePreview(char);
         }
 
         function updateGlassBorderWidth() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
             const val = parseFloat(document.getElementById('glassBorderWidth').value);
             document.getElementById('glassBorderWidthValue').textContent = val + 'px';
-            App.settings.glassBorderWidth = val;
-            updateBubblePreview();
+            char.glassBorderWidth = val;
+            updateBubblePreview(char);
         }
 
-        function updateColorSwatches() {
-            const c = App.settings.bubbleColors;
+        function updateColorSwatches(char) {
+            if (!char || !char.bubbleColors) return;
+            const c = char.bubbleColors;
             document.getElementById('swatchUserBg1').style.background = c.userBg1;
             document.getElementById('swatchUserBg2').style.background = c.userBg2;
             document.getElementById('swatchUserText').style.background = c.userText;
@@ -2276,15 +2262,16 @@
             document.getElementById('swatchCharText').style.background = c.charText;
         }
 
-        function updateBubblePreview() {
-            const style = App.settings.bubbleStyle;
-            const c = App.settings.bubbleColors;
+        function updateBubblePreview(char) {
+            if (!char) return;
+            const style = char.bubbleStyle || 'none';
+            const c = char.bubbleColors || DEFAULT_BUBBLE_COLORS;
             const sent = document.getElementById('previewSent');
             const recv = document.getElementById('previewReceived');
             if (!sent || !recv) return;
 
             let sentStyle = '', recvStyle = '';
-            const glassBorder = App.settings.glassBorder ? `${App.settings.glassBorderWidth || 1}px solid rgba(255,255,255,0.15)` : 'none';
+            const glassBorder = char.glassBorder ? `${char.glassBorderWidth || 1}px solid rgba(255,255,255,0.15)` : 'none';
 
             switch(style) {
                 case 'glass':
@@ -2316,19 +2303,21 @@
         }
 
         function hexToRgba(hex, alpha) {
+            if (!hex || hex.length < 7) return `rgba(60,60,65,${alpha})`;
             const r = parseInt(hex.slice(1,3), 16);
             const g = parseInt(hex.slice(3,5), 16);
             const b = parseInt(hex.slice(5,7), 16);
             return `rgba(${r},${g},${b},${alpha})`;
         }
 
-        function applyBubbleStyles() {
+        function applyBubbleStyles(char) {
             const styleEl = document.getElementById('bubbleStyleSheet');
-            const style = App.settings.bubbleStyle;
+            if (!char) { styleEl.textContent = ''; return; }
+            const style = char.bubbleStyle || 'none';
             if (style === 'none') { styleEl.textContent = ''; return; }
 
-            const c = App.settings.bubbleColors;
-            const glassBorder = App.settings.glassBorder ? `${App.settings.glassBorderWidth || 1}px solid rgba(255,255,255,0.15)` : '1px solid rgba(255,255,255,0.06)';
+            const c = char.bubbleColors || DEFAULT_BUBBLE_COLORS;
+            const glassBorder = char.glassBorder ? `${char.glassBorderWidth || 1}px solid rgba(255,255,255,0.15)` : '1px solid rgba(255,255,255,0.06)';
             let css = '';
 
             switch(style) {
@@ -2351,12 +2340,37 @@
             styleEl.textContent = css;
         }
 
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // COLOR PICKER - Enhanced with proper drag support
+        // ═══════════════════════════════════════════════════════════════════════════════
         function initColorWheel() {
             const canvas = document.getElementById('colorWheelCanvas');
             if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const size = 260, center = size/2, outerR = 120, innerR = 85;
 
+            drawColorWheel();
+
+            // Mouse events
+            canvas.addEventListener('mousedown', startColorPick);
+            canvas.addEventListener('mousemove', dragColorPick);
+            canvas.addEventListener('mouseup', stopColorPick);
+            canvas.addEventListener('mouseleave', stopColorPick);
+
+            // Touch events
+            canvas.addEventListener('touchstart', startColorPickTouch, { passive: false });
+            canvas.addEventListener('touchmove', dragColorPickTouch, { passive: false });
+            canvas.addEventListener('touchend', stopColorPick);
+            canvas.addEventListener('touchcancel', stopColorPick);
+        }
+
+        function drawColorWheel() {
+            const canvas = document.getElementById('colorWheelCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const size = 260, center = size/2, outerR = 120, innerR = 80;
+
+            ctx.clearRect(0, 0, size, size);
+
+            // Draw hue ring
             for (let angle = 0; angle < 360; angle++) {
                 const startAngle = (angle - 1) * Math.PI / 180;
                 const endAngle = (angle + 1) * Math.PI / 180;
@@ -2368,28 +2382,54 @@
                 ctx.fill();
             }
 
-            const squareSize = innerR * 1.2;
+            // Draw saturation/brightness square
+            const squareSize = innerR * 1.1;
             const squareX = center - squareSize/2;
             const squareY = center - squareSize/2;
 
+            // White to selected hue
             const gradH = ctx.createLinearGradient(squareX, 0, squareX + squareSize, 0);
             gradH.addColorStop(0, '#fff');
-            gradH.addColorStop(1, 'hsl(0,100%,50%)');
+            gradH.addColorStop(1, `hsl(${App.colorPickerHue}, 100%, 50%)`);
             ctx.fillStyle = gradH;
             ctx.fillRect(squareX, squareY, squareSize, squareSize);
 
+            // Black overlay
             const gradV = ctx.createLinearGradient(0, squareY, 0, squareY + squareSize);
             gradV.addColorStop(0, 'rgba(0,0,0,0)');
             gradV.addColorStop(1, '#000');
             ctx.fillStyle = gradV;
             ctx.fillRect(squareX, squareY, squareSize, squareSize);
-
-            canvas.addEventListener('click', handleColorWheelClick);
-            canvas.addEventListener('touchstart', handleColorWheelTouch, {passive: false});
         }
 
-        function handleColorWheelClick(e) {
-            const canvas = e.target;
+        function startColorPick(e) {
+            App.colorPickerIsDragging = true;
+            pickColorAtEvent(e);
+        }
+
+        function dragColorPick(e) {
+            if (!App.colorPickerIsDragging) return;
+            pickColorAtEvent(e);
+        }
+
+        function stopColorPick() {
+            App.colorPickerIsDragging = false;
+        }
+
+        function startColorPickTouch(e) {
+            e.preventDefault();
+            App.colorPickerIsDragging = true;
+            pickColorAtTouchEvent(e);
+        }
+
+        function dragColorPickTouch(e) {
+            e.preventDefault();
+            if (!App.colorPickerIsDragging) return;
+            pickColorAtTouchEvent(e);
+        }
+
+        function pickColorAtEvent(e) {
+            const canvas = document.getElementById('colorWheelCanvas');
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
             const scaleY = canvas.height / rect.height;
@@ -2398,10 +2438,9 @@
             pickColorAt(x, y, canvas);
         }
 
-        function handleColorWheelTouch(e) {
-            e.preventDefault();
+        function pickColorAtTouchEvent(e) {
             const touch = e.touches[0];
-            const canvas = e.target;
+            const canvas = document.getElementById('colorWheelCanvas');
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
             const scaleY = canvas.height / rect.height;
@@ -2412,11 +2451,28 @@
 
         function pickColorAt(x, y, canvas) {
             const ctx = canvas.getContext('2d');
-            const pixel = ctx.getImageData(x, y, 1, 1).data;
-            const hex = '#' + [pixel[0], pixel[1], pixel[2]].map(v => v.toString(16).padStart(2,'0')).join('');
-            App.selectedColor = hex;
-            document.getElementById('colorHexInput').value = hex.toUpperCase();
-            document.getElementById('colorPickerPreview').style.background = hex;
+            const size = 260, center = size/2, outerR = 120, innerR = 80;
+
+            const dx = x - center;
+            const dy = y - center;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+
+            // Check if on hue ring
+            if (dist >= innerR && dist <= outerR) {
+                let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                if (angle < 0) angle += 360;
+                App.colorPickerHue = angle;
+                drawColorWheel();
+            }
+
+            // Pick actual color from canvas
+            const pixel = ctx.getImageData(Math.round(x), Math.round(y), 1, 1).data;
+            if (pixel[3] > 0) { // Check alpha
+                const hex = '#' + [pixel[0], pixel[1], pixel[2]].map(v => v.toString(16).padStart(2,'0')).join('');
+                App.selectedColor = hex;
+                document.getElementById('colorHexInput').value = hex.toUpperCase();
+                document.getElementById('colorPickerPreview').style.background = hex;
+            }
         }
 
         function updateColorFromHex() {
@@ -2429,23 +2485,49 @@
         }
 
         function openColorPicker(target) {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char || !char.bubbleColors) return;
+
             App.currentColorTarget = target;
-            const currentColor = App.settings.bubbleColors[target] || '#ffffff';
+            const currentColor = char.bubbleColors[target] || '#ffffff';
             App.selectedColor = currentColor;
             document.getElementById('colorHexInput').value = currentColor.toUpperCase();
             document.getElementById('colorPickerPreview').style.background = currentColor;
+
+            // Extract hue from current color
+            const r = parseInt(currentColor.slice(1,3), 16) / 255;
+            const g = parseInt(currentColor.slice(3,5), 16) / 255;
+            const b = parseInt(currentColor.slice(5,7), 16) / 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h = 0;
+            if (max !== min) {
+                const d = max - min;
+                if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+                else if (max === g) h = ((b - r) / d + 2) / 6;
+                else h = ((r - g) / d + 4) / 6;
+            }
+            App.colorPickerHue = h * 360;
+            drawColorWheel();
+
             showModal('colorPickerModal');
         }
 
         function applySelectedColor() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            if (!char.bubbleColors) char.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
+
             if (App.currentColorTarget && App.selectedColor) {
-                App.settings.bubbleColors[App.currentColorTarget] = App.selectedColor;
-                updateColorSwatches();
-                updateBubblePreview();
-                applyBubbleStyles();
+                char.bubbleColors[App.currentColorTarget] = App.selectedColor;
+                updateColorSwatches(char);
+                updateBubblePreview(char);
             }
             hideModal('colorPickerModal');
         }
+
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // REMAINING FUNCTIONS (unchanged from previous version)
+        // ═══════════════════════════════════════════════════════════════════════════════
 
         async function clearImageCache() {
             if (!confirm('Clear all image cache?')) return;
@@ -2726,7 +2808,7 @@
                 if (id === 'messagesPage') renderContacts();
                 if (id === 'worldbookPage') renderWorldbooks();
                 if (id === 'wallpaperPage') { updateWallpaperPreview(); updateIconPreviews(); highlightWallpaper(); applyStatusBarVisibility(); }
-                if (id === 'settingsPage') { updateStorageDisplay(); updateApiPresetSelect(); initBubbleStyleUI(); }
+                if (id === 'settingsPage') { updateStorageDisplay(); updateApiPresetSelect(); }
                 if (id === 'fontsPage') renderFontList();
             }
         }
@@ -2780,7 +2862,19 @@
 
         async function createCharacter() {
             const name = document.getElementById('newCharacterName').value.trim(); if (!name) { showToast('Please enter name', 'error'); return; }
-            const char = { id: Date.now().toString(), name, avatar: ['◆','◇','●','○','■','□'][Math.floor(Math.random()*6)], avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle', showBorder: false, borderColor: '#ffffff', borderWidth: 2, description: '', greeting: '', scenario: '', worldbookIds: [], userNick: '', systemPrompt: '', messages: [], chatWallpaper: null, customCss: '', activeCssPresetId: null, timestampPosition: 'default' };
+            const char = {
+                id: Date.now().toString(), name,
+                avatar: ['◆','◇','●','○','■','□'][Math.floor(Math.random()*6)],
+                avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle',
+                showBorder: false, borderColor: '#ffffff', borderWidth: 2,
+                description: '', greeting: '', scenario: '', worldbookIds: [],
+                userNick: '', systemPrompt: '', messages: [], chatWallpaper: null,
+                customCss: '', activeCssPresetId: null, timestampPosition: 'default',
+                bubbleStyle: 'none',
+                bubbleColors: { ...DEFAULT_BUBBLE_COLORS },
+                glassBorder: false,
+                glassBorderWidth: 1
+            };
             App.characters.push(char); await saveData(); hideModal('createCharacterModal'); document.getElementById('newCharacterName').value = ''; renderContacts(); showToast(`"${name}" created`, 'success');
         }
 
@@ -2805,7 +2899,7 @@
             document.getElementById('chatTitle').textContent = char.name;
             document.getElementById('selectModeBar').classList.remove('active');
             document.getElementById('chatMessages').classList.remove('select-mode');
-            applyChatWallpaper(char); applyCustomCss(char); renderMessages(); openPage('chatPage');
+            applyChatWallpaper(char); applyCustomCss(char); applyBubbleStyles(char); renderMessages(); openPage('chatPage');
             if (char.messages.length === 0 && char.greeting) addMessage(char.greeting, 'received');
         }
 
@@ -2821,11 +2915,17 @@
             if (char.activeCssPresetId) { const preset = App.globalCssPresets.find(p => p.id === char.activeCssPresetId); if (preset) css = preset.css; }
             if (char.customCss) css = char.customCss;
             styleEl.textContent = css;
+
+            // If custom CSS is active, clear bubble styles
+            if (css) {
+                document.getElementById('bubbleStyleSheet').textContent = '';
+            }
         }
 
         function closeChatPage() {
             exitSelectMode(); closePage('chatPage');
             document.getElementById('customCssStyles').textContent = '';
+            document.getElementById('bubbleStyleSheet').textContent = '';
             const chatPage = document.getElementById('chatPage');
             chatPage.classList.remove('has-custom-bg'); chatPage.style.backgroundImage = '';
             App.currentCharId = null; App.currentQuote = null;
@@ -2833,6 +2933,11 @@
 
         function openCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+
+            // Initialize bubble style settings
+            if (!char.bubbleColors) char.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
+            initBubbleStyleUI(char);
+
             updateChatWallpaperPreview(char);
             const charAvUpload = document.getElementById('charAvatarUpload'), userAvUpload = document.getElementById('userAvatarUpload');
             if (char.avatarImage) { charAvUpload.innerHTML = `<img src="${char.avatarImage}">`; charAvUpload.classList.add('has-image'); } else { charAvUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'; charAvUpload.classList.remove('has-image'); }
@@ -2934,8 +3039,8 @@
         }
 
         function showCssGuide() { showModal('cssGuideModal'); }
-        function previewCss() { document.getElementById('customCssStyles').textContent = document.getElementById('customCssEditor').value; showToast('CSS previewed', 'info'); }
-        function clearCustomCss() { document.getElementById('customCssEditor').value = ''; document.getElementById('cssPresetSelect').value = ''; document.getElementById('customCssStyles').textContent = ''; showToast('CSS cleared', 'info'); }
+        function previewCss() { document.getElementById('customCssStyles').textContent = document.getElementById('customCssEditor').value; document.getElementById('bubbleStyleSheet').textContent = ''; showToast('CSS previewed', 'info'); }
+        function clearCustomCss() { document.getElementById('customCssEditor').value = ''; document.getElementById('cssPresetSelect').value = ''; document.getElementById('customCssStyles').textContent = ''; const char = App.characters.find(c => c.id === App.currentCharId); if (char) applyBubbleStyles(char); showToast('CSS cleared', 'info'); }
 
         async function saveCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
@@ -2957,8 +3062,15 @@
             char.timestampPosition = document.getElementById('timestampPosition').value;
             char.customCss = document.getElementById('customCssEditor').value;
             char.activeCssPresetId = document.getElementById('cssPresetSelect').value || null;
+
+            // Save bubble style settings
+            char.glassBorder = document.getElementById('glassBorderToggle')?.classList.contains('active') || false;
+            char.glassBorderWidth = parseFloat(document.getElementById('glassBorderWidth')?.value) || 1;
+
             document.getElementById('chatTitle').textContent = char.name;
-            await saveData(); applyChatWallpaper(char); applyCustomCss(char); renderMessages(); closeCharacterSettings(); showToast('Settings saved', 'success');
+            await saveData(); applyChatWallpaper(char); applyCustomCss(char);
+            if (!char.customCss && !char.activeCssPresetId) applyBubbleStyles(char);
+            renderMessages(); closeCharacterSettings(); showToast('Settings saved', 'success');
         }
 
         function updateCharCounter() { const ta = document.getElementById('charGreeting'), counter = document.getElementById('greetingCharCounter'); counter.textContent = `${ta.value.length}/300`; counter.className = 'char-counter' + (ta.value.length >= 280 ? ' warning' : '') + (ta.value.length >= 300 ? ' error' : ''); }
@@ -2978,47 +3090,48 @@
                 const msgDate = new Date(msg.timestamp).toLocaleDateString();
                 if (msgDate !== lastDate) { html += `<div class="date-separator"><span class="date-separator-text">${formatDate(msg.timestamp)}</span></div>`; lastDate = msgDate; }
                 const type = msg.role === 'user' ? 'sent' : 'received', checked = App.selectedMsgs.has(msg.id) ? 'checked' : '';
-                let avatarHtml = '';
-                if (showAvatar) { const avatarContent = type === 'received' ? (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0])) : (char.userAvatar ? `<img src="${char.userAvatar}">` : '◇'); avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`; }
+                let avatarHtml = ''; if (type === 'received') {
+                    if (showAvatar) {
+                        const avatarContent = char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0]);
+                        avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`;
+                    }
+                } else {
+                    if (showAvatar && char.userAvatar) {
+                        avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}"><img src="${char.userAvatar}"></div>`;
+                    }
+                }
                 let quoteHtml = '';
-                if (msg.quoteContent) { quoteHtml = `<div class="message-quote">${escapeHtml(msg.quoteContent)}</div>`; }
+                if (msg.quote) quoteHtml = `<div class="message-quote">${escapeHtml(msg.quote)}</div>`;
                 let imageHtml = '';
-                if (msg.image) { imageHtml = `<img src="${msg.image}" class="message-image" onclick="viewImage('${msg.id}')">`; }
-                let displayContent = msg.content === '[图片]' && msg.image ? '' : msg.content;
-                html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}" ontouchstart="startLongPress('${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()" oncontextmenu="showContextMenuDirect(event,'${msg.id}')">
-                    <div class="message-checkbox ${checked}" onclick="toggleMsgSelect('${msg.id}')"></div>
-                    ${type === 'received' ? avatarHtml : ''}
-                    <div class="message ${type}">
-                        ${quoteHtml}
-                        ${escapeHtml(displayContent)}
-                        ${imageHtml}
-                        <div class="message-time ${timeClass}">${formatTime(msg.timestamp)}</div>
-                    </div>
-                    ${type === 'sent' ? avatarHtml : ''}
-                </div>`;
+                if (msg.image) imageHtml = `<img src="${msg.image}" class="message-image" onclick="openImageViewer('${msg.id}')">`;
+                html += `<div class="message-wrapper ${type}"><div class="message-checkbox ${checked}" data-id="${msg.id}" onclick="toggleMsgSelect('${msg.id}')"></div>${type === 'received' ? avatarHtml : ''}<div class="message ${type}" data-id="${msg.id}" ontouchstart="handleMsgTouchStart(event,'${msg.id}')" ontouchend="handleMsgTouchEnd(event)" oncontextmenu="showContextMenu(event,'${msg.id}')">${quoteHtml}<span class="message-text">${formatMsgContent(msg.content)}</span>${imageHtml}<div class="message-time ${timeClass}">${formatTime(msg.timestamp)}</div></div>${type === 'sent' ? avatarHtml : ''}</div>`;
             });
             container.innerHTML = html;
-            scrollToBottom();
+            container.scrollTop = container.scrollHeight;
         }
 
-        function startLongPress(msgId) { App.longPressTimer = setTimeout(() => { showContextMenu(msgId); }, 500); }
-        function endLongPress() { if (App.longPressTimer) { clearTimeout(App.longPressTimer); App.longPressTimer = null; } }
-        function showContextMenu(msgId) { App.contextMenuMsgId = msgId; document.getElementById('contextMenuOverlay').classList.add('active'); }
-        function showContextMenuDirect(e, msgId) { e.preventDefault(); showContextMenu(msgId); }
+        function formatMsgContent(content) { return escapeHtml(content).replace(/\n/g, '<br>'); }
+        function formatTime(ts) { return new Date(ts).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); }
+        function formatDate(ts) { const d = new Date(ts), today = new Date(); if (d.toDateString() === today.toDateString()) return 'Today'; const yest = new Date(today); yest.setDate(yest.getDate() - 1); if (d.toDateString() === yest.toDateString()) return 'Yesterday'; return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+        function escapeHtml(t) { if (!t) return ''; return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+
+        function handleMsgTouchStart(e, id) { App.longPressTimer = setTimeout(() => { showContextMenu(e, id); }, 500); }
+        function handleMsgTouchEnd(e) { if (App.longPressTimer) { clearTimeout(App.longPressTimer); App.longPressTimer = null; } }
+        function showContextMenu(e, id) { e.preventDefault(); App.contextMenuMsgId = id; document.getElementById('contextMenuOverlay').classList.add('active'); }
         function hideContextMenu() { document.getElementById('contextMenuOverlay').classList.remove('active'); App.contextMenuMsgId = null; }
 
         function copyMessageText() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             const msg = char.messages.find(m => m.id === App.contextMenuMsgId); if (!msg) return;
-            navigator.clipboard.writeText(msg.content).then(() => showToast('Copied', 'success')).catch(() => showToast('Copy failed', 'error'));
+            navigator.clipboard.writeText(msg.content).then(() => showToast('Copied', 'success')).catch(() => showToast('Failed to copy', 'error'));
             hideContextMenu();
         }
 
         function quoteMessage() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             const msg = char.messages.find(m => m.id === App.contextMenuMsgId); if (!msg) return;
-            App.currentQuote = { msgId: msg.id, content: msg.content.substring(0, 100) };
-            document.getElementById('quotePreviewContent').textContent = msg.content.substring(0, 50) + (msg.content.length > 50 ? '...' : '');
+            App.currentQuote = msg.content.substring(0, 100);
+            document.getElementById('quotePreviewContent').textContent = App.currentQuote;
             document.getElementById('quotePreviewBar').classList.add('active');
             hideContextMenu();
             document.getElementById('chatInput').focus();
@@ -3029,7 +3142,7 @@
         function editMessage() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             const msg = char.messages.find(m => m.id === App.contextMenuMsgId); if (!msg) return;
-            App.editingMsgId = App.contextMenuMsgId;
+            App.editingMsgId = msg.id;
             document.getElementById('editMessageContent').value = msg.content;
             hideContextMenu();
             showModal('editMessageModal');
@@ -3037,204 +3150,113 @@
 
         async function saveEditedMessage() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const msg = char.messages.find(m => m.id === App.editingMsgId);
-            if (!msg) { showToast('Message not found', 'error'); hideModal('editMessageModal'); return; }
+            const msg = char.messages.find(m => m.id === App.editingMsgId); if (!msg) return;
             msg.content = document.getElementById('editMessageContent').value;
-            await saveData(); hideModal('editMessageModal'); App.editingMsgId = null; renderMessages(); showToast('Saved', 'success');
+            await saveData(); renderMessages(); hideModal('editMessageModal'); App.editingMsgId = null; showToast('Message updated', 'success');
         }
 
-        function viewImage(msgId) {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const msg = char.messages.find(m => m.id === msgId); if (msg?.image) window.open(msg.image, '_blank');
+        function toggleSwitch(el) { el.classList.toggle('active'); const char = App.characters.find(c => c.id === App.currentCharId); if (el.id === 'glassBorderToggle' && char) { char.glassBorder = el.classList.contains('active'); document.getElementById('glassBorderWidthContainer').style.display = char.glassBorder ? 'block' : 'none'; updateBubblePreview(char); } }
+
+        function toggleExtensionPanel() { document.getElementById('extensionPanel').classList.toggle('active'); }
+
+        function enterSelectMode() { App.isSelectMode = true; App.selectedMsgs.clear(); document.getElementById('selectModeBar').classList.add('active'); document.getElementById('chatMessages').classList.add('select-mode'); document.getElementById('extensionPanel').classList.remove('active'); updateSelectedCount(); }
+        function exitSelectMode() { App.isSelectMode = false; App.selectedMsgs.clear(); document.getElementById('selectModeBar').classList.remove('active'); document.getElementById('chatMessages').classList.remove('select-mode'); }
+        function toggleMsgSelect(id) { if (!App.isSelectMode) return; if (App.selectedMsgs.has(id)) App.selectedMsgs.delete(id); else App.selectedMsgs.add(id); document.querySelector(`.message-checkbox[data-id="${id}"]`)?.classList.toggle('checked'); updateSelectedCount(); }
+        function updateSelectedCount() { document.getElementById('selectedCount').textContent = App.selectedMsgs.size; }
+
+        async function deleteSelectedMessages() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char || App.selectedMsgs.size === 0) return;
+            char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id));
+            await saveData(); exitSelectMode(); renderMessages(); showToast(`Deleted ${App.selectedMsgs.size} messages`, 'success');
         }
 
-        async function addMessage(content, type, imageData = null, quoteData = null) {
+        async function addMessage(content, role, image = null) {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const msg = {
-                id: Date.now().toString() + Math.random().toString(36).substr(2,9),
-                role: type === 'sent' ? 'user' : 'assistant',
-                content, timestamp: new Date().toISOString(),
-                image: imageData || null,
-                quoteId: quoteData?.msgId || null,
-                quoteContent: quoteData?.content || null
-            };
+            const msg = { id: Date.now().toString(), role, content, timestamp: Date.now(), image, quote: role === 'user' ? App.currentQuote : null };
             char.messages.push(msg); await saveData(); renderMessages();
+            if (role === 'user') { App.currentQuote = null; document.getElementById('quotePreviewBar').classList.remove('active'); }
         }
 
-        function sendMessage() {
-            const input = document.getElementById('chatInput'), content = input.value.trim(); if (!content && !App.currentQuote) return;
-            const quoteData = App.currentQuote ? { ...App.currentQuote } : null;
-            addMessage(content || 'Reply', 'sent', null, quoteData);
+        async function sendMessage() {
+            const input = document.getElementById('chatInput'), content = input.value.trim(); if (!content) return;
             input.value = ''; autoResizeTextarea(input);
-            cancelQuote();
+            await addMessage(content, 'user');
         }
 
-        function openImagePicker() { toggleExtensionPanel(); document.getElementById('chatImageInput').click(); }
-
-        async function handleChatImageUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            if (file.size > 2 * 1024 * 1024 * 1024) { showToast('Image too large (>2GB)', 'error'); return; }
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const compressed = await compressImage(ev.target.result, 800, 0.8);
-                await addMessage('[图片]', 'sent', compressed);
-            };
-            reader.readAsDataURL(file); e.target.value = '';
-        }
+        function autoResizeTextarea(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
 
         async function triggerAIReply() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) { showToast('Please configure API', 'error'); return; }
-            App.lastAIStart = char.messages.length;
-            document.getElementById('chatMessages').insertAdjacentHTML('beforeend', '<div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>');
-            scrollToBottom();
+            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) { showToast('Please configure API first', 'error'); return; }
+            showTypingIndicator();
             try {
-                const max = App.settings.maxContextMessages || 200;
-                const history = char.messages.slice(-max);
-                const messages = buildAPIMessages(char, history);
-                const url = App.settings.apiBaseUrl.replace(/\/+$/,'').replace(/\/v1$/,'');
-                const hasImage = history.some(m => m.image);
-                let body;
-                if (hasImage) {
-                    const mmMsgs = [messages[0]];
-                    let msgIdx = 1, historyIdx = 0;
-                    while (msgIdx < messages.length && historyIdx < history.length) {
-                        const apiMsg = messages[msgIdx];
-                        const role = apiMsg.role === 'user' ? 'user' : 'assistant';
-                        const samRoleMsgs = [];
-                        while (historyIdx < history.length && ((history[historyIdx].role === 'user' && role === 'user') || (history[historyIdx].role === 'assistant' && role === 'assistant'))) { samRoleMsgs.push(history[historyIdx]); historyIdx++; }
-                        const hasImageInGroup = samRoleMsgs.some(m => m.image);
-                        if (hasImageInGroup) {
-                            const contentParts = [{ type: 'text', text: apiMsg.content }];
-                            samRoleMsgs.forEach(m => { if (m.image) contentParts.push({ type: 'image_url', image_url: { url: m.image } }); });
-                            mmMsgs.push({ role: apiMsg.role, content: contentParts });
-                        } else { mmMsgs.push(apiMsg); }
-                        msgIdx++;
-                    }
-                    while (msgIdx < messages.length) { mmMsgs.push(messages[msgIdx]); msgIdx++; }
-                    body = JSON.stringify({ model: App.settings.modelName, messages: mmMsgs, temperature: App.settings.temperature, max_tokens: App.settings.maxTokens });
-                } else {
-                    body = JSON.stringify({ model: App.settings.modelName, messages, temperature: App.settings.temperature, max_tokens: App.settings.maxTokens });
-                }
-                const r = await fetch(`${url}/v1/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${App.settings.apiKey}`, 'Content-Type': 'application/json' }, body });
-                document.getElementById('typingIndicator')?.remove();
+                const msgs = buildMessages(char);
+                const r = await fetch(`${App.settings.apiBaseUrl.replace(/\/+$/,'').replace(/\/v1$/,'')}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${App.settings.apiKey}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: App.settings.modelName, messages: msgs, temperature: App.settings.temperature, max_tokens: App.settings.maxTokens })
+                });
+                hideTypingIndicator();
                 if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                const data = await r.json(), reply = data.choices[0].message.content;
-                const parsedParts = parseAIResponse(reply, history);
-                for (let i = 0; i < parsedParts.length; i++) {
-                    if (i > 0) await new Promise(r => setTimeout(r, 300 + Math.random()*400));
-                    const p = parsedParts[i];
-                    await addMessage(p.content, 'received', null, p.quote ? { msgId: null, content: p.quote } : null);
-                }
-            } catch(e) {
-                document.getElementById('typingIndicator')?.remove();
-                App.lastAIStart = -1;
-                showToast(`Failed: ${e.message}`, 'error');
-            }
+                const d = await r.json();
+                const reply = d.choices?.[0]?.message?.content || 'No response';
+                await addMessage(reply, 'assistant');
+            } catch(e) { hideTypingIndicator(); showToast(`Error: ${e.message}`, 'error'); }
         }
 
-        function parseAIResponse(text, history) {
-            if (!text) return [{ content: '...', quote: null }];
-            const parts = text.trim().split(/\s*\|\|\|\s*/).map(s => s.trim()).filter(s => s);
-            const results = [];
-            const quoteRegex = /^\[Q:#(\d+)\](.*)$/s;
-            for (const part of parts) {
-                let cleanPart = part, quoteContent = null;
-                const match = cleanPart.match(quoteRegex);
-                if (match) {
-                    const idx = parseInt(match[1]) - 1;
-                    cleanPart = match[2].trim();
-                    if (idx >= 0 && idx < history.length) quoteContent = history[idx].content.substring(0, 100);
-                }
-                cleanPart = cleanPart.replace(/^["「『"]+/, '').replace(/["」』"]+$/, '').trim();
-                if (cleanPart) results.push({ content: cleanPart, quote: quoteContent });
-            }
-            return results.length > 0 ? results : [{ content: text.trim(), quote: null }];
-        }
-
-        function buildAPIMessages(char, history) {
+        function buildMessages(char) {
             const msgs = [];
-            let sys = `# 短信模拟规则\n\n你正在扮演"${char.name}"，通过手机短信聊天。\n\n## 【重要】输出格式\n1. 每条短信用 ||| 分隔\n2. 根据真实短信风格，每条5-20字左右，可长可短，灵活应变\n3. 不要加角色名前缀\n4. 像真人发短信\n5. 【禁止】不要在消息前加编号如#1:等\n\n## 引用回复格式（可选）\n如果要引用历史消息回复，格式：[Q:#编号]回复内容\n例：[Q:#3]确实是这样|||后面的普通消息\n编号对应历史消息序号(从1开始)\n\n## 正确示例\n嗯|||确实\n[Q:#5]真的吗？|||哈哈\n\n## 错误（禁止）\n❌ #1: 内容（禁止加编号前缀）\n❌ 角色名: 内容\n❌ 一条消息500字太长\n\n## 角色\n${char.description || '朋友'}`;
-            if (char.scenario) sys += `\n\n## 情景\n${char.scenario}`;
-            if (char.userNick) sys += `\n\n## 用户名字\n${char.userNick}`;
-            if (char.systemPrompt) sys += `\n\n## 额外\n${char.systemPrompt}`;
-            if (char.worldbookIds?.length > 0) {
-                char.worldbookIds.forEach(wbId => {
-                    const wb = App.worldbooks.find(w => w.id === wbId);
-                    if (wb?.entries) {
-                        wb.entries.forEach(entry => {
-                            const shouldInject = entry.alwaysActive || (entry.keywords && history.some(m => entry.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))));
-                            if (shouldInject && entry.content) sys += `\n\n## 背景(${entry.name})\n${entry.content}`;
-                        });
-                    }
-                });
-            }
-            if (history.length > 0) {
-                sys += `\n\n## 历史消息编号参考（仅供引用时使用编号）\n`;
-                history.forEach((m, i) => {
-                    const role = m.role === 'user' ? '用户' : '你';
-                    const hasImg = m.image ? '[有图片]' : '';
-                    sys += `#${i+1} ${role}: ${m.content.substring(0, 30)}${m.content.length > 30 ? '...' : ''}${hasImg}\n`;
-                });
-            }
-            msgs.push({ role: 'system', content: sys });
-            let currentRole = null, buffer = [];
-            const flushBuffer = () => {
-                if (buffer.length > 0) {
-                    const role = buffer[0].role === 'user' ? 'user' : 'assistant';
-                    const content = buffer.map(m => {
-                        let text = m.content;
-                        if (m.quoteContent) text = `[引用:"${m.quoteContent.substring(0,30)}"]${text}`;
-                        if (m.image) text += '[图片]';
-                        return text;
-                    }).join('|||');
-                    msgs.push({ role, content });
-                    buffer = [];
-                }
-            };
-            history.forEach((m) => { if (currentRole !== m.role) { flushBuffer(); currentRole = m.role; } buffer.push(m); });
-            flushBuffer();
-            if (history.length > 10) msgs.push({ role: 'system', content: '【提醒】用|||分隔多条短信。如需引用可用[Q:#编号]。【禁止在消息内容前加#数字:前缀】' });
+            let sys = `You are ${char.name}. `;
+            if (char.description) sys += char.description + ' ';
+            if (char.scenario) sys += `Current scenario: ${char.scenario} `;
+            if (char.userNick) sys += `The user's name is ${char.userNick}. `;
+            if (char.systemPrompt) sys += char.systemPrompt;
+            (char.worldbookIds || []).forEach(wbId => { const wb = App.worldbooks.find(w => w.id === wbId); if (wb?.entries) wb.entries.forEach(e => { if (e.alwaysActive || (e.keywords && char.messages.some(m => e.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))))) sys += '\n' + e.content; }); });
+            msgs.push({ role: 'system', content: sys.trim() });
+            const recentMsgs = char.messages.slice(-App.settings.maxContextMessages);
+            recentMsgs.forEach(m => { let content = m.content; if (m.quote) content = `[Replying to: "${m.quote}"]\n${content}`; msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content }); });
             return msgs;
         }
 
+        function showTypingIndicator() { const container = document.getElementById('chatMessages'); const div = document.createElement('div'); div.id = 'typingIndicator'; div.className = 'message-wrapper received'; div.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>'; container.appendChild(div); container.scrollTop = container.scrollHeight; }
+        function hideTypingIndicator() { document.getElementById('typingIndicator')?.remove(); }
+
         async function regenerateLastReply() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; toggleExtensionPanel();
-            if (char.messages.length === 0) { showToast('No messages', 'warning'); return; }
-            if (App.lastAIStart >= 0 && App.lastAIStart < char.messages.length) {
-                let allAI = true;
-                for (let i = App.lastAIStart; i < char.messages.length; i++) { if (char.messages[i].role !== 'assistant') { allAI = false; break; } }
-                if (allAI) { const count = char.messages.length - App.lastAIStart; char.messages.splice(App.lastAIStart, count); await saveData(); renderMessages(); showToast(`Deleted ${count} messages`, 'info'); App.lastAIStart = -1; await triggerAIReply(); return; }
-            }
-            if (char.messages[char.messages.length-1].role !== 'assistant') { showToast('Last message is not AI', 'warning'); return; }
-            let first = char.messages.length - 1;
-            for (let i = char.messages.length - 1; i >= 0; i--) { if (char.messages[i].role === 'assistant') first = i; else break; }
-            const count = char.messages.length - first; char.messages.splice(first, count); await saveData(); renderMessages(); showToast(`Deleted ${count} messages`, 'info'); await triggerAIReply();
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const lastAI = [...char.messages].reverse().findIndex(m => m.role === 'assistant');
+            if (lastAI === -1) { showToast('No AI message to regenerate', 'warning'); return; }
+            char.messages.splice(char.messages.length - 1 - lastAI, 1);
+            await saveData(); renderMessages(); document.getElementById('extensionPanel').classList.remove('active'); triggerAIReply();
         }
 
-        function enterSelectMode() { toggleExtensionPanel(); App.isSelectMode = true; App.selectedMsgs.clear(); document.getElementById('chatMessages').classList.add('select-mode'); document.getElementById('selectModeBar').classList.add('active'); updateSelectedCount(); }
-        function exitSelectMode() { App.isSelectMode = false; App.selectedMsgs.clear(); document.getElementById('chatMessages').classList.remove('select-mode'); document.getElementById('selectModeBar').classList.remove('active'); document.querySelectorAll('.message-checkbox').forEach(el => el.classList.remove('checked')); }
-        function toggleMsgSelect(id) { if (!App.isSelectMode) return; if (App.selectedMsgs.has(id)) App.selectedMsgs.delete(id); else App.selectedMsgs.add(id); document.querySelector(`[data-msg-id="${id}"] .message-checkbox`)?.classList.toggle('checked', App.selectedMsgs.has(id)); updateSelectedCount(); }
-        function updateSelectedCount() { document.getElementById('selectedCount').textContent = App.selectedMsgs.size; }
-        async function deleteSelectedMessages() { const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; if (App.selectedMsgs.size === 0) { showToast('Please select', 'warning'); return; } const count = App.selectedMsgs.size; char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id)); await saveData(); exitSelectMode(); renderMessages(); showToast(`Deleted ${count} messages`, 'success'); App.lastAIStart = -1; }
-        function toggleExtensionPanel() { document.getElementById('extensionPanel').classList.toggle('active'); }
-        function autoResizeTextarea(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
-        function scrollToBottom() { const c = document.getElementById('chatMessages'); setTimeout(() => { c.scrollTop = c.scrollHeight; }, 50); }
+        function openImagePicker() { document.getElementById('extensionPanel').classList.remove('active'); document.getElementById('chatImageInput').click(); }
+
+        async function handleChatImageUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => { const compressed = await compressImage(ev.target.result, 400, 0.8); await addMessage('', 'user', compressed); };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        function openImageViewer(msgId) { const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; const msg = char.messages.find(m => m.id === msgId); if (!msg?.image) return; window.open(msg.image, '_blank'); }
+
+        async function confirmDelete() {
+            if (App.pendingDeleteType === 'character') { App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId); await saveData(); hideModal('confirmDeleteModal'); closeCharacterSettings(); closeChatPage(); renderContacts(); showToast('Character deleted', 'success'); }
+            else if (App.pendingDeleteType === 'worldbook') { App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId); await saveData(); hideModal('confirmDeleteModal'); closeWorldbookEdit(); renderWorldbooks(); showToast('Worldbook deleted', 'success'); }
+            App.pendingDeleteType = null; App.pendingDeleteId = null;
+        }
 
         async function createWorldbook() {
             const name = document.getElementById('newWorldbookName').value.trim(); if (!name) { showToast('Please enter name', 'error'); return; }
-            const wb = { id: Date.now().toString(), name, summary: '', entries: [{ name: 'Default Entry', keywords: '', content: '', alwaysActive: false }] };
-            App.worldbooks.push(wb); await saveData(); hideModal('createWorldbookModal'); document.getElementById('newWorldbookName').value = ''; renderWorldbooks(); showToast(`"${name}" created`, 'success'); openWorldbookEdit(wb.id);
+            const wb = { id: Date.now().toString(), name, summary: '', entries: [{ name: 'Entry 1', keywords: '', content: '', alwaysActive: false }] };
+            App.worldbooks.push(wb); await saveData(); hideModal('createWorldbookModal'); document.getElementById('newWorldbookName').value = ''; renderWorldbooks(); showToast(`"${name}" created`, 'success');
         }
 
         function renderWorldbooks() {
             const list = document.getElementById('worldbookList'), empty = document.getElementById('emptyWorldbookState');
             if (App.worldbooks.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
             list.style.display = 'block'; empty.style.display = 'none';
-            list.innerHTML = App.worldbooks.map(wb => {
-                const entryCount = wb.entries?.length || 0;
-                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entryCount} entries</span></div><div class="worldbook-item-preview">${escapeHtml(wb.summary || 'No description')}</div></div>`;
-            }).join('');
+            list.innerHTML = App.worldbooks.map(wb => { const entryCount = wb.entries?.length || 0; const preview = wb.summary || (wb.entries?.[0]?.content?.substring(0, 60) + '...') || 'No entries'; return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entryCount} entries</span></div><div class="worldbook-item-preview">${escapeHtml(preview)}</div></div>`; }).join('');
         }
 
         function openWorldbookEdit(id) {
@@ -3248,79 +3270,47 @@
 
         function renderWorldbookEntries(wb) {
             const container = document.getElementById('worldbookEntries');
-            if (!wb.entries || wb.entries.length === 0) { container.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px;padding:12px">No entries yet</div>'; return; }
-            container.innerHTML = wb.entries.map((entry, i) => `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(entry.name || `Entry ${i+1}`)}${entry.alwaysActive ? ' 🔒' : ''}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${i})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${i})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div><div class="worldbook-entry-keywords">${entry.keywords ? 'Keywords: ' + escapeHtml(entry.keywords) : 'No keywords'}</div><div class="worldbook-entry-preview">${escapeHtml(entry.content?.substring(0, 80) || 'No content')}...</div></div>`).join('');
+            if (!wb.entries || wb.entries.length === 0) { container.innerHTML = '<div style="padding:12px;color:var(--text-tertiary);text-align:center">No entries</div>'; return; }
+            container.innerHTML = wb.entries.map((e, i) => `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(e.name || `Entry ${i + 1}`)}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${i})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="worldbook-entry-btn" onclick="removeWorldbookEntry(${i})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div><div class="worldbook-entry-keywords">${e.alwaysActive ? '🔒 Always Active' : '🔑 ' + (e.keywords || 'No keywords')}</div><div class="worldbook-entry-preview">${escapeHtml(e.content?.substring(0, 80) || 'No content')}...</div></div>`).join('');
         }
 
-        function addWorldbookEntry() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            App.currentEntryIndex = -1;
-            document.getElementById('entryName').value = '';
-            document.getElementById('entryKeywords').value = '';
-            document.getElementById('entryContent').value = '';
-            document.getElementById('entryAlwaysActive').classList.remove('active');
-            showModal('entryEditModal');
-        }
+        function addWorldbookEntry() { const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return; if (!wb.entries) wb.entries = []; wb.entries.push({ name: `Entry ${wb.entries.length + 1}`, keywords: '', content: '', alwaysActive: false }); renderWorldbookEntries(wb); }
 
         function editWorldbookEntry(idx) {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb || !wb.entries[idx]) return;
             App.currentEntryIndex = idx;
-            const entry = wb.entries[idx];
-            document.getElementById('entryName').value = entry.name || '';
-            document.getElementById('entryKeywords').value = entry.keywords || '';
-            document.getElementById('entryContent').value = entry.content || '';
-            document.getElementById('entryAlwaysActive').classList.toggle('active', entry.alwaysActive);
+            const e = wb.entries[idx];
+            document.getElementById('entryName').value = e.name || '';
+            document.getElementById('entryKeywords').value = e.keywords || '';
+            document.getElementById('entryContent').value = e.content || '';
+            document.getElementById('entryAlwaysActive').classList.toggle('active', e.alwaysActive);
             showModal('entryEditModal');
         }
 
-        async function saveWorldbookEntry() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            const entry = { name: document.getElementById('entryName').value.trim() || 'Untitled', keywords: document.getElementById('entryKeywords').value, content: document.getElementById('entryContent').value, alwaysActive: document.getElementById('entryAlwaysActive').classList.contains('active') };
-            if (App.currentEntryIndex >= 0) wb.entries[App.currentEntryIndex] = entry;
-            else wb.entries.push(entry);
-            await saveData(); hideModal('entryEditModal'); renderWorldbookEntries(wb); showToast('Entry saved', 'success');
+        function saveWorldbookEntry() {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb || App.currentEntryIndex < 0) return;
+            wb.entries[App.currentEntryIndex] = { name: document.getElementById('entryName').value.trim() || `Entry ${App.currentEntryIndex + 1}`, keywords: document.getElementById('entryKeywords').value.trim(), content: document.getElementById('entryContent').value, alwaysActive: document.getElementById('entryAlwaysActive').classList.contains('active') };
+            hideModal('entryEditModal'); App.currentEntryIndex = -1; renderWorldbookEntries(wb);
         }
 
-        async function deleteWorldbookEntry(idx) {
-            if (!confirm('Delete this entry?')) return;
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            wb.entries.splice(idx, 1);
-            await saveData(); renderWorldbookEntries(wb); showToast('Deleted', 'success');
-        }
-
-        function closeWorldbookEdit() { closePage('worldbookEditPage'); App.currentWbId = null; }
+        function removeWorldbookEntry(idx) { const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return; wb.entries.splice(idx, 1); renderWorldbookEntries(wb); }
 
         async function saveWorldbook() {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
             wb.name = document.getElementById('worldbookName').value.trim() || wb.name;
             wb.summary = document.getElementById('worldbookSummary').value;
-            await saveData(); closeWorldbookEdit(); renderWorldbooks(); showToast('Saved', 'success');
+            await saveData(); closeWorldbookEdit(); renderWorldbooks(); showToast('Worldbook saved', 'success');
         }
 
-        function deleteCurrentWorldbook() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            App.pendingDeleteType = 'worldbook'; App.pendingDeleteId = wb.id;
-            document.getElementById('deleteModalTitle').textContent = `Delete "${wb.name}"?`;
-            showModal('confirmDeleteModal');
-        }
-
-        async function confirmDelete() {
-            if (App.pendingDeleteType === 'character') {
-                App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
-                await saveData(); hideModal('confirmDeleteModal'); closeCharacterSettings(); closeChatPage(); renderContacts(); showToast('Deleted', 'success');
-            } else if (App.pendingDeleteType === 'worldbook') {
-                App.characters.forEach(c => { if (c.worldbookIds) c.worldbookIds = c.worldbookIds.filter(id => id !== App.pendingDeleteId); });
-                App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
-                await saveData(); hideModal('confirmDeleteModal'); closeWorldbookEdit(); renderWorldbooks(); showToast('Deleted', 'success'); }
-            App.pendingDeleteType = null; App.pendingDeleteId = null;
-        }
+        function closeWorldbookEdit() { closePage('worldbookEditPage'); App.currentWbId = null; }
+        function deleteCurrentWorldbook() { const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return; App.pendingDeleteType = 'worldbook'; App.pendingDeleteId = wb.id; document.getElementById('deleteModalTitle').textContent = `Delete "${wb.name}"?`; showModal('confirmDeleteModal'); }
 
         async function exportAllData() {
-            const data = { version: 3, exportDate: new Date().toISOString(), characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, apiPresets: App.apiPresets, fonts: App.fonts.filter(f => !f.isDefault) };
+            const data = { version: 2, exportDate: new Date().toISOString(), characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, apiPresets: App.apiPresets, fonts: App.fonts.filter(f => !f.isDefault) };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = `noir-backup-${new Date().toISOString().slice(0,10)}.json`; a.click();
-            URL.revokeObjectURL(url); showToast('Export complete', 'success');
+            const a = document.createElement('a'); a.href = url; a.download = `noir-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+            URL.revokeObjectURL(url); showToast('Data exported', 'success');
         }
 
         async function importData(e) {
@@ -3335,28 +3325,22 @@
                     if (data.appIcons) App.appIcons = { ...App.appIcons, ...data.appIcons };
                     if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets;
                     if (data.apiPresets) App.apiPresets = data.apiPresets;
-                    if (data.fonts) { data.fonts.forEach(f => { if (!App.fonts.find(ff => ff.id === f.id)) App.fonts.push(f); }); }
-                    await saveData(); applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyFontScale(); applyBubbleStyles(); renderContacts(); renderWorldbooks(); showToast('Import successful', 'success');
-                } catch(err) { showToast(`Import failed: ${err.message}`, 'error'); }
+                    if (data.fonts) data.fonts.forEach(f => { if (!App.fonts.find(ef => ef.id === f.id)) App.fonts.push(f); });
+                    await saveData(); applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyFontScale(); updateConnectionUI(); renderContacts(); renderWorldbooks(); renderFontList(); updateApiPresetSelect(); await updateStorageDisplay();
+                    showToast('Data imported successfully', 'success');
+                } catch (err) { showToast('Invalid file format', 'error'); }
             };
             reader.readAsText(file); e.target.value = '';
         }
 
         async function clearAllData() {
             if (!confirm('Clear ALL data? This cannot be undone!')) return;
-            if (!confirm('Are you absolutely sure?')) return;
-            App.characters = []; App.worldbooks = []; App.globalCssPresets = []; App.apiPresets = [];
-            App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null, fontScale: 1, bubbleStyle: 'none', bubbleColors: { userBg1: '#3c3c41', userBg2: '#2d2d32', userText: '#ffffff', charBg1: '#2d2d32', charBg2: '#232328', charText: '#ffffff' }, glassBorder: false, glassBorderWidth: 1 };
+            App.characters = []; App.worldbooks = []; App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null, fontScale: 1 };
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null };
-            App.fonts = [...DEFAULT_FONTS];
-            await saveData(); applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyFontScale(); applyBubbleStyles(); applyStatusBarVisibility(); loadSettingsUI(); renderContacts(); renderWorldbooks(); renderFontList(); updateApiPresetSelect(); updateConnectionUI(); initBubbleStyleUI(); await updateStorageDisplay();
+            App.globalCssPresets = []; App.apiPresets = []; App.fonts = [...DEFAULT_FONTS];
+            await saveData(); applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyFontScale(); applyStatusBarVisibility(); loadSettingsUI(); renderContacts(); renderWorldbooks(); renderFontList(); updateApiPresetSelect(); updateIconPreviews(); highlightWallpaper(); updateWallpaperPreview(); await updateStorageDisplay();
             showToast('All data cleared', 'success');
         }
-
-        function escapeHtml(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-        function formatTime(ts) { if (!ts) return ''; return new Date(ts).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); }
-        function formatDate(ts) { if (!ts) return ''; const d = new Date(ts), today = new Date(), yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1); if (d.toDateString() === today.toDateString()) return 'Today'; if (d.toDateString() === yesterday.toDateString()) return 'Yesterday'; return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
-        function toggleSwitch(el) { el.classList.toggle('active'); if (el.id === 'glassBorderToggle') { App.settings.glassBorder = el.classList.contains('active'); document.getElementById('glassBorderWidthContainer').style.display = App.settings.glassBorder ? 'block' : 'none'; } }
     </script>
 </body>
 </html>
