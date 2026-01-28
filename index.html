@@ -1,8 +1,4 @@
 
-
-
-
-
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -18,430 +14,395 @@
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.06);
-            --glass-bg-dark: rgba(0, 0, 0, 0.5);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-bg-dark: rgba(0, 0, 0, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
             --blur-amount: 24px;
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.6);
-            --accent-color: #007AFF;
-            --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --danger-color: #FF3B30;
-            --success-color: #34C759;
-            --warning-color: #FF9500;
-            --message-sent: #007AFF;
-            --message-received: rgba(255, 255, 255, 0.12);
+            --text-primary: #f5f5f7;
+            --text-secondary: rgba(255, 255, 255, 0.55);
+            --text-tertiary: rgba(255, 255, 255, 0.35);
+            --accent-color: rgba(255, 255, 255, 0.9);
+            --accent-dim: rgba(255, 255, 255, 0.15);
+            --danger-color: #ff453a;
+            --success-color: #30d158;
+            --warning-color: #ff9f0a;
+            --message-sent: rgba(255, 255, 255, 0.12);
+            --message-received: rgba(255, 255, 255, 0.06);
             --transition-smooth: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
-            --metal-gradient: linear-gradient(180deg, rgba(30,30,35,0.95) 0%, rgba(20,20,25,0.98) 100%);
-            --metal-border: rgba(255, 255, 255, 0.06);
-            --metal-highlight: rgba(255, 255, 255, 0.08);
             --nav-height: 56px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html { height: 100%; height: -webkit-fill-available; }
-        body { height: 100%; min-height: 100vh; min-height: -webkit-fill-available; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background: #0a0a0f; overscroll-behavior: none; position: fixed; width: 100%; top: 0; left: 0; }
+        body { height: 100%; min-height: 100vh; min-height: -webkit-fill-available; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background: #0a0a0f; overscroll-behavior: none; position: fixed; width: 100%; top: 0; left: 0; color: var(--text-primary); letter-spacing: 0.3px; }
 
-        #wallpaperLayer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-color: #0a0a0f; }
+        #wallpaperLayer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background: linear-gradient(180deg, #0a0a0f 0%, #12121a 50%, #0a0a0f 100%); }
         .phone-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; margin: 0; overflow: hidden; z-index: 1; }
 
-        .status-bar { position: absolute; top: 0; left: 0; right: 0; height: calc(44px + var(--safe-top)); padding-top: var(--safe-top); display: flex; justify-content: space-between; align-items: center; padding-left: 24px; padding-right: 24px; z-index: 1000; }
+        .status-bar { position: absolute; top: 0; left: 0; right: 0; height: calc(44px + var(--safe-top)); padding-top: var(--safe-top); display: flex; justify-content: space-between; align-items: center; padding-left: 28px; padding-right: 28px; z-index: 1000; }
         .status-bar.hidden { display: none !important; }
-        .status-bar-time { font-size: 15px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.5px; }
-        .status-bar-icons { display: flex; gap: 5px; align-items: center; }
-        .status-bar-icons svg { width: 16px; height: 16px; fill: var(--text-primary); }
+        .status-bar-time { font-size: 15px; font-weight: 500; color: var(--text-primary); letter-spacing: 0.5px; }
+        .status-bar-icons { display: flex; gap: 6px; align-items: center; }
+        .status-bar-icons svg { width: 15px; height: 15px; fill: var(--text-primary); opacity: 0.8; }
 
-        .home-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding-top: calc(80px + var(--safe-top)); padding-bottom: calc(80px + var(--safe-bottom)); padding-left: 20px; padding-right: 20px; display: flex; flex-direction: column; gap: 24px; overflow-y: auto; z-index: 1; }
-        .home-screen.no-statusbar { padding-top: calc(40px + var(--safe-top)); }
+        .home-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding-top: calc(90px + var(--safe-top)); padding-bottom: calc(90px + var(--safe-bottom)); padding-left: 24px; padding-right: 24px; display: flex; flex-direction: column; gap: 28px; overflow-y: auto; z-index: 1; }
+        .home-screen.no-statusbar { padding-top: calc(50px + var(--safe-top)); }
 
-        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; justify-items: center; }
-        .app-icon-wrapper { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
-        .app-icon-wrapper:active { transform: scale(0.92); }
-        .app-icon { width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); transition: var(--transition-smooth); overflow: hidden; }
-        .app-icon.settings { background: linear-gradient(135deg, #8e8e93, #636366); }
-        .app-icon.messages { background: linear-gradient(135deg, #34c759, #30b350); }
-        .app-icon.worldbook { background: linear-gradient(135deg, #ff9500, #ff6b00); }
-        .app-icon.photos { background: linear-gradient(135deg, #ff2d55, #ff375f); }
+        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; justify-items: center; }
+        .app-icon-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: var(--transition-smooth); }
+        .app-icon-wrapper:active { transform: scale(0.9); opacity: 0.7; }
+        .app-icon { width: 58px; height: 58px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1); transition: var(--transition-smooth); overflow: hidden; }
+        .app-icon:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.15); }
         .app-icon img { width: 100%; height: 100%; object-fit: cover; }
-        .app-icon-label { font-size: 11px; color: var(--text-primary); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); text-align: center; }
+        .app-icon-label { font-size: 11px; color: var(--text-secondary); font-weight: 400; letter-spacing: 0.3px; }
 
-        .home-indicator { position: absolute; bottom: calc(8px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); width: 120px; height: 4px; background: rgba(255, 255, 255, 0.3); border-radius: 2px; z-index: 1001; }
+        .home-indicator { position: absolute; bottom: calc(8px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); width: 100px; height: 4px; background: rgba(255, 255, 255, 0.25); border-radius: 2px; z-index: 1001; }
 
-        .page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: var(--glass-bg-dark); backdrop-filter: blur(var(--blur-amount)); -webkit-backdrop-filter: blur(var(--blur-amount)); z-index: 100; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); display: flex; flex-direction: column; overflow: hidden; }
+        .page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: rgba(10, 10, 15, 0.92); backdrop-filter: blur(var(--blur-amount)); -webkit-backdrop-filter: blur(var(--blur-amount)); z-index: 100; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); display: flex; flex-direction: column; overflow: hidden; }
         .page.active { transform: translateX(0); }
         .page.slide-from-bottom { transform: translateY(100%); }
         .page.slide-from-bottom.active { transform: translateY(0); }
-        .page#chatPage { background: rgba(10, 10, 15, 0.85); }
+        .page#chatPage { background: rgba(10, 10, 15, 0.88); }
         .page#chatPage.has-custom-bg { background-size: cover !important; background-position: center !important; background-repeat: no-repeat !important; }
 
-        /* 普通页面顶栏 */
-        .nav-bar { display: flex; align-items: center; justify-content: space-between; padding-top: calc(8px + var(--safe-top)); padding-bottom: 8px; padding-left: 12px; padding-right: 12px; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-shrink: 0; min-height: calc(44px + var(--safe-top)); }
+        /* 高级暗黑顶栏 - 无边界雾气化 */
+        .nav-bar { display: flex; align-items: center; justify-content: space-between; padding-top: calc(12px + var(--safe-top)); padding-bottom: 16px; padding-left: 20px; padding-right: 20px; background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); flex-shrink: 0; min-height: calc(var(--nav-height) + var(--safe-top)); border: none; position: relative; }
+        .nav-bar::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 20px; background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, transparent 100%); pointer-events: none; }
 
-        /* 聊天页面高级顶栏 - 雾气化无边界设计 */
-        #chatPage .nav-bar {
-            background: linear-gradient(180deg, rgba(15, 15, 20, 0.95) 0%, rgba(15, 15, 20, 0.85) 60%, rgba(15, 15, 20, 0) 100%);
-            backdrop-filter: blur(30px) saturate(180%);
-            -webkit-backdrop-filter: blur(30px) saturate(180%);
-            border-bottom: none;
-            min-height: calc(var(--nav-height) + var(--safe-top));
-            padding-top: calc(12px + var(--safe-top));
-            padding-bottom: 16px;
-            padding-left: 16px;
-            padding-right: 16px;
-        }
+        /* 高级图标按钮 */
+        .nav-btn { display: flex; align-items: center; justify-content: center; gap: 4px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-primary); font-size: 14px; cursor: pointer; padding: 10px 14px; border-radius: 12px; min-width: 44px; transition: var(--transition-smooth); font-weight: 400; letter-spacing: 0.3px; }
+        .nav-btn:hover { background: rgba(255, 255, 255, 0.12); }
+        .nav-btn:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.15); }
+        .nav-btn svg { width: 18px; height: 18px; fill: currentColor; opacity: 0.9; }
+        .nav-btn.icon-only { padding: 10px; min-width: 44px; width: 44px; height: 44px; border-radius: 50%; }
 
-        .nav-btn { display: flex; align-items: center; gap: 4px; background: none; border: none; color: rgba(255, 255, 255, 0.85); font-size: 14px; cursor: pointer; padding: 6px; border-radius: 8px; min-width: 44px; transition: all 0.2s ease; }
-        .nav-btn:hover { background: rgba(255, 255, 255, 0.08); }
-        .nav-btn:active { background: rgba(255, 255, 255, 0.12); transform: scale(0.96); }
-        .nav-btn svg { width: 20px; height: 20px; fill: currentColor; opacity: 0.9; }
-        .nav-btn.right { justify-content: flex-end; }
-        .nav-title { font-size: 16px; font-weight: 600; color: var(--text-primary); text-align: center; flex: 1; letter-spacing: 0.3px; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        .nav-title { font-size: 16px; font-weight: 500; color: var(--text-primary); text-align: center; flex: 1; letter-spacing: 0.5px; }
 
-        /* 高级图标样式 */
-        #chatPage .nav-btn {
-            width: 40px;
-            height: 40px;
-            min-width: 40px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            justify-content: center;
-            padding: 0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        }
-        #chatPage .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.12);
-        }
-        #chatPage .nav-btn:active {
-            background: rgba(255, 255, 255, 0.15);
-            transform: scale(0.95);
-        }
-        #chatPage .nav-btn svg {
-            width: 18px;
-            height: 18px;
-            opacity: 0.85;
-        }
+        .page-content { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: calc(16px + var(--safe-bottom)); -webkit-overflow-scrolling: touch; }
 
-        .page-content { flex: 1; overflow-y: auto; padding: 12px; padding-bottom: calc(12px + var(--safe-bottom)); -webkit-overflow-scrolling: touch; }
-
-        .settings-group { background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: 14px; margin-bottom: 16px; overflow: hidden; border: 1px solid var(--glass-border); }
-        .settings-group-title { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; padding: 16px 12px 4px; }
-        .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); cursor: pointer; }
+        /* 设置组 - 暗黑INS风格 */
+        .settings-group { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(10px); border-radius: 16px; margin-bottom: 20px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.06); }
+        .settings-group-title { font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 1.5px; padding: 20px 16px 8px; font-weight: 500; }
+        .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); cursor: pointer; transition: var(--transition-smooth); }
         .settings-item:last-child { border-bottom: none; }
-        .settings-item-left { display: flex; align-items: center; gap: 10px; }
-        .settings-icon { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
-        .settings-icon.blue { background: var(--accent-color); }
-        .settings-icon.green { background: var(--success-color); }
-        .settings-icon.red { background: var(--danger-color); }
-        .settings-icon.orange { background: #FF9500; }
-        .settings-icon.purple { background: #AF52DE; }
-        .settings-icon.cyan { background: #5AC8FA; }
-        .settings-icon.gray { background: #8e8e93; }
-        .settings-icon.pink { background: #FF2D55; }
-        .settings-icon.teal { background: #30B0C7; }
-        .settings-item-label { color: var(--text-primary); font-size: 14px; }
-        .settings-item-desc { color: var(--text-secondary); font-size: 11px; margin-top: 1px; }
+        .settings-item:hover { background: rgba(255, 255, 255, 0.03); }
+        .settings-item:active { background: rgba(255, 255, 255, 0.05); }
+        .settings-item-left { display: flex; align-items: center; gap: 14px; }
+        .settings-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.06); }
+        .settings-item-label { color: var(--text-primary); font-size: 15px; font-weight: 400; }
+        .settings-item-desc { color: var(--text-tertiary); font-size: 12px; margin-top: 2px; }
 
-        .input-group { margin-bottom: 14px; }
-        .input-label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; }
-        .input-field { width: 100%; padding: 10px 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text-primary); font-size: 14px; outline: none; }
-        .input-field:focus { border-color: var(--accent-color); }
-        .input-field::placeholder { color: rgba(255, 255, 255, 0.3); }
-        textarea.input-field { min-height: 80px; resize: vertical; font-family: inherit; line-height: 1.4; }
-        textarea.css-editor { min-height: 150px; font-family: 'SF Mono', 'Menlo', 'Monaco', monospace; font-size: 12px; line-height: 1.5; background: rgba(0, 0, 0, 0.4); color: #00ff88; }
+        .input-group { margin-bottom: 16px; }
+        .input-label { display: block; font-size: 11px; color: var(--text-tertiary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
+        .input-field { width: 100%; padding: 14px 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; color: var(--text-primary); font-size: 15px; outline: none; transition: var(--transition-smooth); }
+        .input-field:focus { border-color: rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.06); }
+        .input-field::placeholder { color: var(--text-tertiary); }
+        textarea.input-field { min-height: 100px; resize: vertical; font-family: inherit; line-height: 1.5; }
+        textarea.css-editor { min-height: 160px; font-family: 'SF Mono', 'Menlo', 'Monaco', monospace; font-size: 13px; line-height: 1.6; background: rgba(0, 0, 0, 0.4); color: #4ade80; }
 
-        .btn { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 12px 18px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; }
+        .btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px; border: none; border-radius: 12px; font-size: 15px; font-weight: 500; cursor: pointer; width: 100%; transition: var(--transition-smooth); letter-spacing: 0.3px; }
         .btn:active { transform: scale(0.98); }
-        .btn:disabled { opacity: 0.5; }
-        .btn-primary { background: var(--accent-color); color: white; }
-        .btn-secondary { background: var(--glass-bg); color: var(--accent-color); border: 1px solid var(--glass-border); }
-        .btn-danger { background: var(--danger-color); color: white; }
-        .btn-success { background: var(--success-color); color: white; }
-        .btn-warning { background: var(--warning-color); color: white; }
-        .btn-small { padding: 8px 14px; font-size: 13px; }
-        .btn-stack { display: flex; flex-direction: column; gap: 6px; }
-        .btn-row { display: flex; gap: 6px; }
+        .btn:disabled { opacity: 0.4; }
+        .btn-primary { background: rgba(255, 255, 255, 0.12); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-primary:hover { background: rgba(255, 255, 255, 0.15); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.06); color: var(--text-secondary); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .btn-danger { background: rgba(255, 69, 58, 0.15); color: #ff6b6b; border: 1px solid rgba(255, 69, 58, 0.2); }
+        .btn-success { background: rgba(48, 209, 88, 0.15); color: #4ade80; border: 1px solid rgba(48, 209, 88, 0.2); }
+        .btn-warning { background: rgba(255, 159, 10, 0.15); color: #fbbf24; border: 1px solid rgba(255, 159, 10, 0.2); }
+        .btn-small { padding: 10px 16px; font-size: 13px; }
+        .btn-stack { display: flex; flex-direction: column; gap: 10px; }
+        .btn-row { display: flex; gap: 10px; }
         .btn-row .btn { flex: 1; }
 
-        .contact-list { display: flex; flex-direction: column; }
-        .contact-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--glass-bg); border-radius: 12px; margin-bottom: 6px; cursor: pointer; border: 1px solid var(--glass-border); }
-        .contact-avatar { width: 46px; height: 46px; border-radius: 50%; background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; flex-shrink: 0; overflow: hidden; }
+        /* 联系人列表 - 暗黑INS风格 */
+        .contact-list { display: flex; flex-direction: column; gap: 2px; }
+        .contact-item { display: flex; align-items: center; gap: 14px; padding: 16px; background: rgba(255, 255, 255, 0.03); border-radius: 16px; margin-bottom: 8px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.04); transition: var(--transition-smooth); }
+        .contact-item:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.08); }
+        .contact-item:active { background: rgba(255, 255, 255, 0.07); transform: scale(0.99); }
+        .contact-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--text-primary); flex-shrink: 0; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); }
         .contact-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .contact-info { flex: 1; min-width: 0; }
-        .contact-name { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
-        .contact-preview { font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .contact-time { font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
+        .contact-name { font-size: 16px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; letter-spacing: 0.3px; }
+        .contact-preview { font-size: 13px; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .contact-time { font-size: 12px; color: var(--text-tertiary); flex-shrink: 0; font-weight: 400; }
 
-        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center; }
-        .empty-state-icon { font-size: 48px; margin-bottom: 14px; opacity: 0.5; }
-        .empty-state-title { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
-        .empty-state-desc { font-size: 13px; color: var(--text-secondary); }
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 24px; text-align: center; }
+        .empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+        .empty-state-title { font-size: 18px; font-weight: 500; color: var(--text-primary); margin-bottom: 8px; letter-spacing: 0.3px; }
+        .empty-state-desc { font-size: 14px; color: var(--text-tertiary); }
 
         .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 3px; -webkit-overflow-scrolling: touch; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 4px; -webkit-overflow-scrolling: touch; }
 
-        .message-wrapper { display: flex; align-items: flex-end; gap: 5px; margin-bottom: 1px; }
+        .message-wrapper { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 2px; }
         .message-wrapper.sent { justify-content: flex-end; }
         .message-wrapper.received { justify-content: flex-start; }
 
-        .message-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; font-size: 11px; color: white; flex-shrink: 0; overflow: hidden; }
-        .message-avatar.square { border-radius: 5px; }
-        .message-avatar.rounded-square { border-radius: 7px; }
+        .message-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text-primary); flex-shrink: 0; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .message-avatar.square { border-radius: 6px; }
+        .message-avatar.rounded-square { border-radius: 8px; }
         .message-avatar.hidden { display: none; }
         .message-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-        .message { max-width: 75%; padding: 7px 11px; font-size: 14px; line-height: 1.35; word-wrap: break-word; animation: msgIn 0.2s ease-out; position: relative; }
-        @keyframes msgIn { from { opacity: 0; transform: translateY(6px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .message.sent { background: var(--message-sent); color: white; border-radius: 16px 16px 4px 16px; }
-        .message.received { background: var(--message-received); backdrop-filter: blur(8px); color: var(--text-primary); border-radius: 16px 16px 16px 4px; }
+        .message { max-width: 75%; padding: 10px 14px; font-size: 15px; line-height: 1.4; word-wrap: break-word; animation: msgIn 0.25s ease-out; position: relative; }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(8px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .message.sent { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); border-radius: 18px 18px 4px 18px; border: 1px solid rgba(255, 255, 255, 0.08); }
+        .message.received { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); color: var(--text-primary); border-radius: 18px 18px 18px 4px; border: 1px solid rgba(255, 255, 255, 0.06); }
 
-        .message-quote { background: rgba(0, 0, 0, 0.2); border-left: 2px solid rgba(255, 255, 255, 0.4); border-radius: 4px; padding: 4px 8px; margin-bottom: 6px; font-size: 12px; color: rgba(255, 255, 255, 0.7); max-height: 40px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-        .message.sent .message-quote { background: rgba(255, 255, 255, 0.15); border-left-color: rgba(255, 255, 255, 0.5); }
+        .message-quote { background: rgba(255, 255, 255, 0.08); border-left: 2px solid rgba(255, 255, 255, 0.3); border-radius: 4px; padding: 6px 10px; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary); max-height: 44px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .message.sent .message-quote { background: rgba(255, 255, 255, 0.1); border-left-color: rgba(255, 255, 255, 0.4); }
 
-        .message-image { max-width: 200px; max-height: 200px; border-radius: 8px; margin-top: 4px; cursor: pointer; display: block; }
+        .message-image { max-width: 220px; max-height: 220px; border-radius: 12px; margin-top: 6px; cursor: pointer; display: block; }
 
-        .message-time { font-size: 9px; color: rgba(255, 255, 255, 0.5); margin-top: 2px; }
+        .message-time { font-size: 10px; color: var(--text-tertiary); margin-top: 4px; }
         .message-time.time-hidden { display: none; }
-        .message-time.time-side { position: absolute; bottom: 4px; right: -40px; margin-top: 0; }
-        .message-wrapper.sent .message-time.time-side { right: auto; left: -40px; }
+        .message-time.time-side { position: absolute; bottom: 6px; right: -44px; margin-top: 0; }
+        .message-wrapper.sent .message-time.time-side { right: auto; left: -44px; }
 
-        .message-checkbox { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.4); background: transparent; display: none; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        .message-checkbox { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.25); background: transparent; display: none; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: var(--transition-smooth); }
         .message-checkbox.checked { background: var(--danger-color); border-color: var(--danger-color); }
-        .message-checkbox.checked::after { content: '✓'; color: white; font-size: 10px; }
+        .message-checkbox.checked::after { content: '✓'; color: white; font-size: 11px; }
         .chat-messages.select-mode .message-checkbox { display: flex; }
 
-        .typing-indicator { display: inline-flex; gap: 3px; padding: 9px 12px; background: var(--message-received); border-radius: 16px 16px 16px 4px; width: fit-content; }
-        .typing-indicator span { width: 5px; height: 5px; background: var(--text-secondary); border-radius: 50%; animation: typing 1.4s infinite ease-in-out; }
+        .typing-indicator { display: inline-flex; gap: 4px; padding: 12px 16px; background: rgba(255, 255, 255, 0.05); border-radius: 18px 18px 18px 4px; width: fit-content; border: 1px solid rgba(255, 255, 255, 0.06); }
+        .typing-indicator span { width: 6px; height: 6px; background: var(--text-tertiary); border-radius: 50%; animation: typing 1.4s infinite ease-in-out; }
         .typing-indicator span:nth-child(1) { animation-delay: 0s; }
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+        @keyframes typing { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
 
-        .chat-input-wrapper { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.08); }
+        .chat-input-wrapper { background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 70%, transparent 100%); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
 
-        .quote-preview-bar { display: none; padding: 8px 12px; background: rgba(0, 0, 0, 0.3); border-bottom: 1px solid rgba(255, 255, 255, 0.08); align-items: center; gap: 10px; }
+        .quote-preview-bar { display: none; padding: 10px 16px; background: rgba(0, 0, 0, 0.4); align-items: center; gap: 12px; }
         .quote-preview-bar.active { display: flex; }
-        .quote-preview-content { flex: 1; font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 2px solid var(--accent-color); padding-left: 8px; }
-        .quote-preview-close { width: 24px; height: 24px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: none; color: var(--text-primary); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .quote-preview-content { flex: 1; font-size: 13px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 2px solid rgba(255, 255, 255, 0.3); padding-left: 10px; }
+        .quote-preview-close { width: 28px; height: 28px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: none; color: var(--text-primary); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        .chat-input-area { display: flex; align-items: flex-end; gap: 5px; padding: 6px 10px; padding-bottom: calc(6px + var(--safe-bottom)); }
+        .chat-input-area { display: flex; align-items: flex-end; gap: 8px; padding: 10px 14px; padding-bottom: calc(10px + var(--safe-bottom)); }
 
-        .chat-btn { width: 34px; height: 34px; border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px); color: white; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
-        .chat-btn:active { transform: scale(0.92); background: rgba(255, 255, 255, 0.2); }
-        .chat-btn.send { background: var(--accent-color); }
-        .chat-btn.ai { background: linear-gradient(135deg, #a855f7, #ec4899); }
-        .chat-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .chat-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); color: var(--text-primary); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: var(--transition-smooth); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .chat-btn:active { transform: scale(0.9); background: rgba(255, 255, 255, 0.15); }
+        .chat-btn.send { background: rgba(255, 255, 255, 0.15); }
+        .chat-btn.ai { background: rgba(255, 255, 255, 0.08); }
+        .chat-btn svg { width: 18px; height: 18px; fill: currentColor; opacity: 0.85; }
 
-        .chat-input-field { flex: 1; min-height: 34px; max-height: 90px; padding: 7px 12px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 17px; color: var(--text-primary); font-size: 14px; resize: none; outline: none; font-family: inherit; }
-        .chat-input-field::placeholder { color: rgba(255, 255, 255, 0.4); }
+        .chat-input-field { flex: 1; min-height: 40px; max-height: 100px; padding: 10px 16px; background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; color: var(--text-primary); font-size: 15px; resize: none; outline: none; font-family: inherit; }
+        .chat-input-field::placeholder { color: var(--text-tertiary); }
+        .chat-input-field:focus { border-color: rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.08); }
 
-        .extension-panel { position: absolute; bottom: calc(60px + var(--safe-bottom)); left: 10px; right: 10px; background: var(--metal-gradient); border: 1px solid var(--metal-border); border-radius: 16px; padding: 0; z-index: 50; opacity: 0; visibility: hidden; transform: translateY(12px); transition: all 0.25s ease; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 var(--metal-highlight); }
+        .extension-panel { position: absolute; bottom: calc(70px + var(--safe-bottom)); left: 14px; right: 14px; background: rgba(20, 20, 25, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 0; z-index: 50; opacity: 0; visibility: hidden; transform: translateY(16px); transition: all 0.3s ease; overflow: hidden; box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5); backdrop-filter: blur(30px); }
         .extension-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
 
-        .ext-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--metal-border); background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%); }
-        .ext-panel-title { font-size: 13px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.5px; text-transform: uppercase; }
-        .ext-panel-close { width: 24px; height: 24px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: 1px solid var(--metal-border); color: var(--text-secondary); font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
-        .ext-panel-close:hover { background: rgba(255, 255, 255, 0.15); color: var(--text-primary); }
+        .ext-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+        .ext-panel-title { font-size: 13px; font-weight: 500; color: var(--text-secondary); letter-spacing: 1px; text-transform: uppercase; }
+        .ext-panel-close { width: 28px; height: 28px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: none; color: var(--text-secondary); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth); }
+        .ext-panel-close:hover { background: rgba(255, 255, 255, 0.12); color: var(--text-primary); }
 
-        .ext-btn { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px; background: transparent; border: none; border-bottom: 1px solid var(--metal-border); color: var(--text-primary); font-size: 14px; cursor: pointer; transition: all 0.2s ease; text-align: left; }
+        .ext-btn { display: flex; align-items: center; gap: 14px; width: 100%; padding: 16px 18px; background: transparent; border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: var(--text-primary); font-size: 15px; cursor: pointer; transition: var(--transition-smooth); text-align: left; }
         .ext-btn:last-child { border-bottom: none; }
-        .ext-btn:hover { background: rgba(255, 255, 255, 0.05); }
-        .ext-btn:active { background: rgba(255, 255, 255, 0.08); }
+        .ext-btn:hover { background: rgba(255, 255, 255, 0.04); }
+        .ext-btn:active { background: rgba(255, 255, 255, 0.06); }
 
-        .ext-btn-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--metal-gradient); border: 1px solid var(--metal-border); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 var(--metal-highlight); }
-        .ext-btn-icon svg { width: 18px; height: 18px; }
-        .ext-btn-icon.danger { background: linear-gradient(180deg, #3a2020 0%, #2a1515 100%); }
+        .ext-btn-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .ext-btn-icon svg { width: 20px; height: 20px; fill: var(--text-secondary); }
+        .ext-btn-icon.danger { background: rgba(255, 69, 58, 0.1); border-color: rgba(255, 69, 58, 0.15); }
         .ext-btn-icon.danger svg { fill: #ff6b6b; }
-        .ext-btn-icon.purple { background: linear-gradient(180deg, #2a2035 0%, #1a1525 100%); }
-        .ext-btn-icon.purple svg { fill: #b388ff; }
-        .ext-btn-icon.blue { background: linear-gradient(180deg, #1a2535 0%, #101a25 100%); }
-        .ext-btn-icon.blue svg { fill: #64b5f6; }
+        .ext-btn-icon.purple { background: rgba(175, 130, 255, 0.1); border-color: rgba(175, 130, 255, 0.15); }
+        .ext-btn-icon.purple svg { fill: #c4a7ff; }
+        .ext-btn-icon.blue { background: rgba(100, 180, 255, 0.1); border-color: rgba(100, 180, 255, 0.15); }
+        .ext-btn-icon.blue svg { fill: #8cc4ff; }
 
         .ext-btn-text { flex: 1; }
-        .ext-btn-title { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
-        .ext-btn-desc { font-size: 11px; color: var(--text-secondary); }
+        .ext-btn-title { font-size: 15px; font-weight: 400; color: var(--text-primary); margin-bottom: 3px; }
+        .ext-btn-desc { font-size: 12px; color: var(--text-tertiary); }
 
-        .context-menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); z-index: 2500; opacity: 0; visibility: hidden; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
+        .context-menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); z-index: 2500; opacity: 0; visibility: hidden; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; }
         .context-menu-overlay.active { opacity: 1; visibility: visible; }
 
-        .context-menu { background: var(--metal-gradient); border: 1px solid var(--metal-border); border-radius: 14px; width: 200px; overflow: hidden; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 var(--metal-highlight); transform: scale(0.9); transition: transform 0.2s ease; }
+        .context-menu { background: rgba(25, 25, 30, 0.98); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 18px; width: 220px; overflow: hidden; box-shadow: 0 16px 56px rgba(0, 0, 0, 0.5); transform: scale(0.9); transition: transform 0.25s ease; backdrop-filter: blur(40px); }
         .context-menu-overlay.active .context-menu { transform: scale(1); }
 
-        .context-menu-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--metal-border); cursor: pointer; transition: all 0.15s ease; }
+        .context-menu-item { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); cursor: pointer; transition: var(--transition-smooth); }
         .context-menu-item:last-child { border-bottom: none; }
         .context-menu-item:hover { background: rgba(255, 255, 255, 0.05); }
-        .context-menu-item:active { background: rgba(255, 255, 255, 0.1); }
+        .context-menu-item:active { background: rgba(255, 255, 255, 0.08); }
 
-        .context-menu-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--metal-border); }
-        .context-menu-icon svg { width: 16px; height: 16px; fill: var(--text-secondary); }
+        .context-menu-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .context-menu-icon svg { width: 18px; height: 18px; fill: var(--text-secondary); }
         .context-menu-item:hover .context-menu-icon svg { fill: var(--text-primary); }
 
-        .context-menu-label { font-size: 14px; color: var(--text-primary); }
+        .context-menu-label { font-size: 15px; color: var(--text-primary); font-weight: 400; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.25s ease; padding: 20px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease; padding: 24px; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
 
-        .modal { width: 100%; max-width: 340px; max-height: 80vh; overflow-y: auto; background: rgba(30, 30, 35, 0.95); backdrop-filter: blur(40px); border-radius: 16px; padding: 18px; border: 1px solid rgba(255, 255, 255, 0.1); transform: scale(0.92); transition: transform 0.25s ease; }
+        .modal { width: 100%; max-width: 360px; max-height: 85vh; overflow-y: auto; background: rgba(25, 25, 30, 0.98); backdrop-filter: blur(50px); border-radius: 24px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.1); transform: scale(0.9); transition: transform 0.3s ease; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5); }
         .modal-overlay.active .modal { transform: scale(1); }
-        .modal-title { font-size: 17px; font-weight: 700; color: var(--text-primary); text-align: center; margin-bottom: 14px; }
-        .modal-body { color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-bottom: 16px; }
-        .modal-input { width: 100%; padding: 10px 12px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 10px; color: var(--text-primary); font-size: 14px; outline: none; margin-bottom: 12px; }
-        .modal-btns { display: flex; gap: 8px; }
-        .modal-btn { flex: 1; padding: 10px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
-        .modal-btn.cancel { background: rgba(255, 255, 255, 0.12); color: var(--text-primary); }
-        .modal-btn.confirm { background: var(--accent-color); color: white; }
+        .modal-title { font-size: 20px; font-weight: 600; color: var(--text-primary); text-align: center; margin-bottom: 20px; letter-spacing: 0.3px; }
+        .modal-body { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+        .modal-input { width: 100%; padding: 14px 16px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; color: var(--text-primary); font-size: 15px; outline: none; margin-bottom: 16px; }
+        .modal-btns { display: flex; gap: 12px; }
+        .modal-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; font-size: 15px; font-weight: 500; cursor: pointer; transition: var(--transition-smooth); }
+        .modal-btn.cancel { background: rgba(255, 255, 255, 0.08); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .modal-btn.confirm { background: rgba(255, 255, 255, 0.15); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.2); }
 
-        .toast-container { position: fixed; top: calc(60px + var(--safe-top)); left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
-        .toast { padding: 10px 18px; background: rgba(30, 30, 35, 0.95); backdrop-filter: blur(20px); border-radius: 10px; color: var(--text-primary); font-size: 13px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.1); animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.7s forwards; }
+        .toast-container { position: fixed; top: calc(70px + var(--safe-top)); left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+        .toast { padding: 14px 24px; background: rgba(25, 25, 30, 0.98); backdrop-filter: blur(30px); border-radius: 14px; color: var(--text-primary); font-size: 14px; font-weight: 400; border: 1px solid rgba(255, 255, 255, 0.1); animation: toastIn 0.35s ease-out, toastOut 0.35s ease-in 2.65s forwards; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
         .toast.success { border-left: 3px solid var(--success-color); }
         .toast.error { border-left: 3px solid var(--danger-color); }
-        .toast.info { border-left: 3px solid var(--accent-color); }
+        .toast.info { border-left: 3px solid rgba(255, 255, 255, 0.4); }
         .toast.warning { border-left: 3px solid var(--warning-color); }
-        @keyframes toastIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
 
-        .search-field { width: 100%; padding: 9px 12px 9px 36px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text-primary); font-size: 14px; outline: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 10px center; }
+        .search-field { width: 100%; padding: 14px 16px 14px 44px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 14px; color: var(--text-primary); font-size: 15px; outline: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 14px center; transition: var(--transition-smooth); }
+        .search-field:focus { background-color: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.1); }
 
-        .toggle-switch { position: relative; width: 44px; height: 26px; background: rgba(120, 120, 128, 0.32); border-radius: 13px; cursor: pointer; }
-        .toggle-switch.active { background: var(--success-color); }
-        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; background: white; border-radius: 50%; transition: all 0.2s ease; }
-        .toggle-switch.active::after { left: 20px; }
+        .toggle-switch { position: relative; width: 48px; height: 28px; background: rgba(255, 255, 255, 0.1); border-radius: 14px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.1); transition: var(--transition-smooth); }
+        .toggle-switch.active { background: rgba(48, 209, 88, 0.3); border-color: rgba(48, 209, 88, 0.4); }
+        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; background: var(--text-primary); border-radius: 50%; transition: all 0.25s ease; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }
+        .toggle-switch.active::after { left: 22px; }
 
-        .select-field { width: 100%; padding: 10px 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text-primary); font-size: 14px; cursor: pointer; appearance: none; }
-        .select-field option { background: #1a1a2e; }
+        .select-field { width: 100%; padding: 14px 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; color: var(--text-primary); font-size: 15px; cursor: pointer; appearance: none; }
+        .select-field option { background: #1a1a20; }
 
         .file-input-hidden { display: none; }
-        .divider { height: 1px; background: rgba(255, 255, 255, 0.08); margin: 14px 0; }
+        .divider { height: 1px; background: rgba(255, 255, 255, 0.06); margin: 18px 0; }
 
-        .loading-spinner { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.2); border-top-color: var(--accent-color); border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .loading-spinner { width: 20px; height: 20px; border: 2px solid rgba(255, 255, 255, 0.15); border-top-color: var(--text-primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .slider-container { margin: 12px 0; }
-        .slider-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .slider-label { font-size: 13px; color: var(--text-primary); }
-        .slider-value { font-size: 13px; color: var(--accent-color); font-weight: 600; }
-        .slider-input { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.2); border-radius: 2px; appearance: none; }
-        .slider-input::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; background: white; border-radius: 50%; cursor: pointer; }
+        .slider-container { margin: 16px 0; }
+        .slider-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .slider-label { font-size: 14px; color: var(--text-primary); }
+        .slider-value { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+        .slider-input { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; appearance: none; }
+        .slider-input::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; background: var(--text-primary); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
 
-        .action-hint { display: flex; align-items: center; gap: 5px; padding: 7px 10px; background: rgba(0, 122, 255, 0.12); border-radius: 8px; margin-bottom: 12px; }
-        .action-hint-icon { font-size: 13px; }
-        .action-hint-text { font-size: 11px; color: var(--accent-color); }
-        .action-hint.success { background: rgba(52, 199, 89, 0.12); }
-        .action-hint.success .action-hint-text { color: var(--success-color); }
-        .action-hint.warning { background: rgba(255, 149, 0, 0.12); }
-        .action-hint.warning .action-hint-text { color: var(--warning-color); }
+        .action-hint { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255, 255, 255, 0.04); border-radius: 12px; margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.06); }
+        .action-hint-icon { font-size: 14px; }
+        .action-hint-text { font-size: 12px; color: var(--text-secondary); }
+        .action-hint.success { background: rgba(48, 209, 88, 0.08); border-color: rgba(48, 209, 88, 0.15); }
+        .action-hint.success .action-hint-text { color: #4ade80; }
+        .action-hint.warning { background: rgba(255, 159, 10, 0.08); border-color: rgba(255, 159, 10, 0.15); }
+        .action-hint.warning .action-hint-text { color: #fbbf24; }
 
-        .delete-zone { padding: 14px; border: 2px dashed var(--danger-color); border-radius: 12px; text-align: center; color: var(--danger-color); margin-top: 14px; cursor: pointer; font-size: 14px; }
+        .delete-zone { padding: 18px; border: 1px dashed rgba(255, 69, 58, 0.4); border-radius: 16px; text-align: center; color: #ff6b6b; margin-top: 20px; cursor: pointer; font-size: 15px; transition: var(--transition-smooth); background: rgba(255, 69, 58, 0.05); }
+        .delete-zone:hover { background: rgba(255, 69, 58, 0.1); border-color: rgba(255, 69, 58, 0.5); }
 
-        .log-container { background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 8px; margin-top: 8px; max-height: 140px; overflow-y: auto; font-family: monospace; font-size: 10px; }
-        .log-entry { padding: 2px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
-        .log-entry.success { color: var(--success-color); }
-        .log-entry.error { color: var(--danger-color); }
-        .log-entry.info { color: var(--accent-color); }
+        .log-container { background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 10px; margin-top: 10px; max-height: 150px; overflow-y: auto; font-family: monospace; font-size: 11px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .log-entry { padding: 3px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
+        .log-entry.success { color: #4ade80; }
+        .log-entry.error { color: #ff6b6b; }
+        .log-entry.info { color: var(--text-secondary); }
 
-        .model-list { max-height: 160px; overflow-y: auto; margin-top: 8px; }
-        .model-item { padding: 8px 12px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 5px; cursor: pointer; }
-        .model-item:hover { background: rgba(255, 255, 255, 0.1); }
-        .model-item.selected { background: var(--accent-color); }
-        .model-item-name { font-size: 12px; color: var(--text-primary); }
+        .model-list { max-height: 180px; overflow-y: auto; margin-top: 10px; }
+        .model-item { padding: 12px 14px; background: rgba(255, 255, 255, 0.04); border-radius: 10px; margin-bottom: 6px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.06); transition: var(--transition-smooth); }
+        .model-item:hover { background: rgba(255, 255, 255, 0.08); }
+        .model-item.selected { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.2); }
+        .model-item-name { font-size: 13px; color: var(--text-primary); }
 
-        .date-separator { display: flex; justify-content: center; padding: 8px 0; }
-        .date-separator-text { padding: 3px 9px; background: rgba(255, 255, 255, 0.06); border-radius: 8px; font-size: 10px; color: var(--text-secondary); }
+        .date-separator { display: flex; justify-content: center; padding: 12px 0; }
+        .date-separator-text { padding: 4px 12px; background: rgba(255, 255, 255, 0.04); border-radius: 10px; font-size: 11px; color: var(--text-tertiary); font-weight: 400; letter-spacing: 0.5px; }
 
-        .select-mode-bar { display: none; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(255, 59, 48, 0.12); }
+        .select-mode-bar { display: none; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(255, 69, 58, 0.1); border-bottom: 1px solid rgba(255, 69, 58, 0.15); }
         .select-mode-bar.active { display: flex; }
-        .select-mode-info { font-size: 13px; color: var(--text-primary); }
-        .select-mode-btns { display: flex; gap: 8px; }
-        .select-mode-btn { padding: 5px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
-        .select-mode-btn.cancel { background: rgba(255, 255, 255, 0.15); color: var(--text-primary); }
-        .select-mode-btn.delete { background: var(--danger-color); color: white; }
+        .select-mode-info { font-size: 14px; color: var(--text-primary); }
+        .select-mode-btns { display: flex; gap: 10px; }
+        .select-mode-btn { padding: 8px 16px; border: none; border-radius: 10px; font-size: 13px; font-weight: 500; cursor: pointer; transition: var(--transition-smooth); }
+        .select-mode-btn.cancel { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
+        .select-mode-btn.delete { background: rgba(255, 69, 58, 0.2); color: #ff6b6b; }
 
-        .avatar-upload-area { width: 80px; height: 80px; border-radius: 50%; background: var(--glass-bg); border: 2px dashed var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; margin: 0 auto 12px; font-size: 26px; color: var(--text-secondary); overflow: hidden; transition: all 0.2s ease; }
-        .avatar-upload-area:hover { border-color: var(--accent-color); }
-        .avatar-upload-area.has-image { border-style: solid; border-color: var(--accent-color); }
+        .avatar-upload-area { width: 88px; height: 88px; border-radius: 50%; background: rgba(255, 255, 255, 0.04); border: 1px dashed rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; cursor: pointer; margin: 0 auto 16px; font-size: 28px; color: var(--text-tertiary); overflow: hidden; transition: var(--transition-smooth); }
+        .avatar-upload-area:hover { border-color: rgba(255, 255, 255, 0.25); background: rgba(255, 255, 255, 0.06); }
+        .avatar-upload-area.has-image { border-style: solid; border-color: rgba(255, 255, 255, 0.2); }
         .avatar-upload-area img { width: 100%; height: 100%; object-fit: cover; }
 
-        .color-picker-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .color-picker-label { font-size: 12px; color: var(--text-primary); flex: 1; }
-        .color-picker-input { width: 40px; height: 28px; border: none; border-radius: 5px; cursor: pointer; background: transparent; }
+        .color-picker-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .color-picker-label { font-size: 13px; color: var(--text-primary); flex: 1; }
+        .color-picker-input { width: 44px; height: 32px; border: none; border-radius: 8px; cursor: pointer; background: transparent; }
 
-        .shape-options { display: flex; gap: 6px; flex-wrap: wrap; }
-        .shape-option { padding: 6px 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 6px; color: var(--text-primary); font-size: 12px; cursor: pointer; }
-        .shape-option.selected { background: var(--accent-color); border-color: var(--accent-color); }
+        .shape-options { display: flex; gap: 8px; flex-wrap: wrap; }
+        .shape-option { padding: 10px 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; color: var(--text-secondary); font-size: 13px; cursor: pointer; transition: var(--transition-smooth); }
+        .shape-option.selected { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.2); color: var(--text-primary); }
 
-        .worldbook-entries { margin-top: 10px; }
-        .worldbook-entry-item { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
-        .worldbook-entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .worldbook-entry-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-        .worldbook-entry-actions { display: flex; gap: 6px; }
-        .worldbook-entry-btn { width: 24px; height: 24px; border-radius: 6px; border: none; background: rgba(255, 255, 255, 0.1); color: var(--text-secondary); font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .worldbook-entry-btn:hover { background: rgba(255, 255, 255, 0.2); color: var(--text-primary); }
-        .worldbook-entry-keywords { font-size: 11px; color: var(--accent-color); margin-bottom: 4px; }
-        .worldbook-entry-preview { font-size: 11px; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .worldbook-entries { margin-top: 12px; }
+        .worldbook-entry-item { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+        .worldbook-entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .worldbook-entry-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+        .worldbook-entry-actions { display: flex; gap: 8px; }
+        .worldbook-entry-btn { width: 28px; height: 28px; border-radius: 8px; border: none; background: rgba(255, 255, 255, 0.08); color: var(--text-secondary); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth); }
+        .worldbook-entry-btn:hover { background: rgba(255, 255, 255, 0.12); color: var(--text-primary); }
+        .worldbook-entry-keywords { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+        .worldbook-entry-preview { font-size: 12px; color: var(--text-tertiary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        .worldbook-item { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; margin-bottom: 8px; cursor: pointer; }
-        .worldbook-item-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .worldbook-item-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
-        .worldbook-item-badge { padding: 2px 7px; background: var(--accent-color); border-radius: 10px; font-size: 10px; color: white; }
-        .worldbook-item-preview { font-size: 12px; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .worldbook-item { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 16px; margin-bottom: 10px; cursor: pointer; transition: var(--transition-smooth); }
+        .worldbook-item:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); }
+        .worldbook-item-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .worldbook-item-title { font-size: 16px; font-weight: 500; color: var(--text-primary); }
+        .worldbook-item-badge { padding: 4px 10px; background: rgba(255, 255, 255, 0.08); border-radius: 12px; font-size: 11px; color: var(--text-secondary); }
+        .worldbook-item-preview { font-size: 13px; color: var(--text-tertiary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        .char-counter { font-size: 10px; color: var(--text-secondary); text-align: right; margin-top: 2px; }
-        .char-counter.warning { color: #FF9500; }
-        .char-counter.error { color: var(--danger-color); }
+        .char-counter { font-size: 11px; color: var(--text-tertiary); text-align: right; margin-top: 4px; }
+        .char-counter.warning { color: #fbbf24; }
+        .char-counter.error { color: #ff6b6b; }
 
-        .wallpaper-preview { width: 100%; height: 120px; border-radius: 10px; margin-bottom: 12px; border: 2px solid var(--glass-border); overflow: hidden; }
+        .wallpaper-preview { width: 100%; height: 140px; border-radius: 14px; margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden; }
 
-        .icon-customize-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .icon-customize-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .icon-customize-preview { width: 50px; height: 50px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; border: 2px dashed var(--glass-border); overflow: hidden; transition: all 0.2s ease; }
-        .icon-customize-preview:hover { border-color: var(--accent-color); }
+        .icon-customize-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .icon-customize-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .icon-customize-preview { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; border: 1px dashed rgba(255, 255, 255, 0.15); overflow: hidden; transition: var(--transition-smooth); background: rgba(255, 255, 255, 0.04); }
+        .icon-customize-preview:hover { border-color: rgba(255, 255, 255, 0.25); background: rgba(255, 255, 255, 0.06); }
         .icon-customize-preview.has-image { border-style: solid; }
         .icon-customize-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .icon-customize-label { font-size: 10px; color: var(--text-secondary); }
+        .icon-customize-label { font-size: 11px; color: var(--text-tertiary); }
 
-        .storage-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; margin-bottom: 16px; }
-        .storage-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .storage-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-        .storage-size { font-size: 12px; color: var(--accent-color); }
-        .storage-bar { height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
-        .storage-bar-fill { height: 100%; background: var(--accent-color); border-radius: 3px; transition: width 0.3s ease; }
-        .storage-bar-fill.warning { background: var(--warning-color); }
-        .storage-bar-fill.danger { background: var(--danger-color); }
-        .storage-details { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); }
+        .storage-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 16px; margin-bottom: 20px; }
+        .storage-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .storage-title { font-size: 15px; font-weight: 500; color: var(--text-primary); }
+        .storage-size { font-size: 13px; color: var(--text-secondary); }
+        .storage-bar { height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+        .storage-bar-fill { height: 100%; background: rgba(255, 255, 255, 0.3); border-radius: 3px; transition: width 0.4s ease; }
+        .storage-bar-fill.warning { background: rgba(255, 159, 10, 0.5); }
+        .storage-bar-fill.danger { background: rgba(255, 69, 58, 0.5); }
+        .storage-details { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-tertiary); }
 
-        .preset-selector { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+        .preset-selector { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
         .preset-selector select { flex: 1; }
-        .preset-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .preset-btn:hover { background: rgba(255, 255, 255, 0.15); }
+        .preset-btn { width: 40px; height: 40px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.04); color: var(--text-primary); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth); }
+        .preset-btn:hover { background: rgba(255, 255, 255, 0.08); }
         .preset-btn:active { transform: scale(0.95); }
 
-        .guide-content { max-height: 50vh; overflow-y: auto; padding-right: 5px; }
-        .guide-section { margin-bottom: 14px; }
-        .guide-section-title { font-size: 13px; font-weight: 600; color: var(--accent-color); margin-bottom: 6px; }
-        .guide-code { background: rgba(0, 0, 0, 0.4); border-radius: 6px; padding: 8px; font-family: 'SF Mono', monospace; font-size: 11px; color: #00ff88; margin-bottom: 6px; overflow-x: auto; }
-        .guide-text { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+        .guide-content { max-height: 55vh; overflow-y: auto; padding-right: 6px; }
+        .guide-section { margin-bottom: 18px; }
+        .guide-section-title { font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; }
+        .guide-code { background: rgba(0, 0, 0, 0.4); border-radius: 10px; padding: 12px; font-family: 'SF Mono', monospace; font-size: 12px; color: #4ade80; margin-bottom: 8px; overflow-x: auto; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .guide-text { font-size: 13px; color: var(--text-tertiary); line-height: 1.6; }
 
-        .chat-wallpaper-preview { width: 100%; height: 80px; border-radius: 8px; margin-bottom: 10px; border: 2px solid var(--glass-border); background: var(--glass-bg); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 12px; overflow: hidden; }
+        .chat-wallpaper-preview { width: 100%; height: 90px; border-radius: 12px; margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); font-size: 13px; overflow: hidden; }
         .chat-wallpaper-preview.has-image { background-size: cover !important; background-position: center !important; }
         .chat-wallpaper-preview.has-image span { display: none; }
 
-        .worldbook-multi-select { max-height: 150px; overflow-y: auto; border: 1px solid var(--glass-border); border-radius: 10px; background: var(--glass-bg); }
-        .worldbook-multi-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer; }
+        .worldbook-multi-select { max-height: 160px; overflow-y: auto; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; background: rgba(255, 255, 255, 0.02); }
+        .worldbook-multi-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); cursor: pointer; transition: var(--transition-smooth); }
         .worldbook-multi-item:last-child { border-bottom: none; }
-        .worldbook-multi-item:hover { background: rgba(255, 255, 255, 0.05); }
-        .worldbook-multi-checkbox { width: 20px; height: 20px; border-radius: 5px; border: 2px solid var(--glass-border); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
-        .worldbook-multi-checkbox.checked { background: var(--accent-color); border-color: var(--accent-color); }
-        .worldbook-multi-checkbox.checked::after { content: '✓'; color: white; font-size: 12px; }
-        .worldbook-multi-name { font-size: 14px; color: var(--text-primary); }
+        .worldbook-multi-item:hover { background: rgba(255, 255, 255, 0.04); }
+        .worldbook-multi-checkbox { width: 22px; height: 22px; border-radius: 6px; border: 2px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth); }
+        .worldbook-multi-checkbox.checked { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.3); }
+        .worldbook-multi-checkbox.checked::after { content: '✓'; color: var(--text-primary); font-size: 13px; }
+        .worldbook-multi-name { font-size: 15px; color: var(--text-primary); }
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 2px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
 
         #customCssStyles { }
+
+        /* 短信列表页面标题样式 */
+        .messages-header { padding: 8px 0 20px; }
+        .messages-title { font-size: 28px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.5px; margin-bottom: 4px; }
+        .messages-subtitle { font-size: 13px; color: var(--text-tertiary); letter-spacing: 0.3px; }
     </style>
     <style id="customCssStyles"></style>
 </head>
@@ -460,19 +421,19 @@
         <div class="home-screen" id="homeScreen">
             <div class="app-grid" id="appGrid">
                 <div class="app-icon-wrapper" onclick="openPage('settingsPage')">
-                    <div class="app-icon settings" id="appIconSettings">⚙️</div>
+                    <div class="app-icon" id="appIconSettings">⚙</div>
                     <span class="app-icon-label">设置</span>
                 </div>
                 <div class="app-icon-wrapper" onclick="openPage('messagesPage')">
-                    <div class="app-icon messages" id="appIconMessages">💬</div>
+                    <div class="app-icon" id="appIconMessages">✉</div>
                     <span class="app-icon-label">短信</span>
                 </div>
                 <div class="app-icon-wrapper" onclick="openPage('worldbookPage')">
-                    <div class="app-icon worldbook" id="appIconWorldbook">📚</div>
+                    <div class="app-icon" id="appIconWorldbook">◈</div>
                     <span class="app-icon-label">世界书</span>
                 </div>
                 <div class="app-icon-wrapper" onclick="openPage('wallpaperPage')">
-                    <div class="app-icon photos" id="appIconPhotos">🖼️</div>
+                    <div class="app-icon" id="appIconPhotos">▣</div>
                     <span class="app-icon-label">壁纸</span>
                 </div>
             </div>
@@ -482,14 +443,16 @@
 
         <div class="page" id="settingsPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closePage('settingsPage')"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>返回</button>
+                <button class="nav-btn" onclick="closePage('settingsPage')">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                </button>
                 <span class="nav-title">设置</span>
-                <div class="nav-btn right" style="visibility:hidden">占</div>
+                <div class="nav-btn" style="visibility:hidden;opacity:0">占</div>
             </div>
             <div class="page-content">
                 <div class="storage-card">
                     <div class="storage-header">
-                        <span class="storage-title">💾 存储</span>
+                        <span class="storage-title">存储空间</span>
                         <span class="storage-size" id="storageSize">计算中...</span>
                     </div>
                     <div class="storage-bar"><div class="storage-bar-fill" id="storageBarFill" style="width: 0%"></div></div>
@@ -499,32 +462,32 @@
                     </div>
                 </div>
 
-                <p class="settings-group-title">API配置</p>
-                <div class="settings-group" style="padding:12px">
+                <p class="settings-group-title">API 配置</p>
+                <div class="settings-group" style="padding:16px">
                     <div class="action-hint" id="connectionStatusHint">
-                        <span class="action-hint-icon">⚠️</span>
-                        <span class="action-hint-text">未配置API</span>
+                        <span class="action-hint-icon">○</span>
+                        <span class="action-hint-text">未配置 API</span>
                     </div>
                     <div class="input-group">
-                        <label class="input-label">API地址</label>
+                        <label class="input-label">API 地址</label>
                         <input type="text" class="input-field" id="apiBaseUrl" placeholder="https://api.example.com">
                     </div>
                     <div class="input-group">
-                        <label class="input-label">API密钥</label>
+                        <label class="input-label">API 密钥</label>
                         <input type="password" class="input-field" id="apiKey" placeholder="sk-xxx">
                     </div>
-                    <button class="btn btn-warning" onclick="fetchModels()" id="fetchModelsBtn">📋 拉取模型</button>
+                    <button class="btn btn-warning" onclick="fetchModels()" id="fetchModelsBtn">拉取模型列表</button>
                     <div id="modelListContainer" style="display:none">
-                        <label class="input-label" style="margin-top:12px">可用模型</label>
+                        <label class="input-label" style="margin-top:16px">可用模型</label>
                         <div class="model-list" id="modelList"></div>
                     </div>
-                    <div class="input-group" style="margin-top:12px">
+                    <div class="input-group" style="margin-top:16px">
                         <label class="input-label">当前模型</label>
                         <input type="text" class="input-field" id="modelName" placeholder="模型名称">
                     </div>
-                    <div class="btn-stack" style="margin-top:12px">
-                        <button class="btn btn-secondary" onclick="testConnection()" id="testConnectionBtn">🔗 测试连接</button>
-                        <button class="btn btn-primary" onclick="saveApiSettings()">💾 保存设置</button>
+                    <div class="btn-stack" style="margin-top:16px">
+                        <button class="btn btn-secondary" onclick="testConnection()" id="testConnectionBtn">测试连接</button>
+                        <button class="btn btn-primary" onclick="saveApiSettings()">保存设置</button>
                     </div>
                     <div class="divider"></div>
                     <label class="input-label">调试日志</label>
@@ -532,7 +495,7 @@
                 </div>
 
                 <p class="settings-group-title">对话设置</p>
-                <div class="settings-group" style="padding:12px">
+                <div class="settings-group" style="padding:16px">
                     <div class="input-group">
                         <label class="input-label">最大记忆条数</label>
                         <input type="number" class="input-field" id="maxContextMessages" value="200">
@@ -540,7 +503,7 @@
                 </div>
 
                 <p class="settings-group-title">模型参数</p>
-                <div class="settings-group" style="padding:12px">
+                <div class="settings-group" style="padding:16px">
                     <div class="slider-container">
                         <div class="slider-header">
                             <span class="slider-label">Temperature</span>
@@ -557,24 +520,24 @@
                     </div>
                 </div>
 
-                <p class="settings-group-title">缓存与存储</p>
+                <p class="settings-group-title">缓存管理</p>
                 <div class="settings-group">
                     <div class="settings-item" onclick="clearImageCache()">
                         <div class="settings-item-left">
-                            <span class="settings-icon cyan">🧹</span>
+                            <span class="settings-icon">⊘</span>
                             <div><span class="settings-item-label">清除图片缓存</span><div class="settings-item-desc">头像、壁纸等</div></div>
                         </div>
                     </div>
                     <div class="settings-item" onclick="clearMessageCache()">
                         <div class="settings-item-left">
-                            <span class="settings-icon orange">💬</span>
+                            <span class="settings-icon">⊙</span>
                             <div><span class="settings-item-label">清除消息缓存</span><div class="settings-item-desc">保留角色设定</div></div>
                         </div>
                     </div>
                     <div class="settings-item" onclick="compactDatabase()">
                         <div class="settings-item-left">
-                            <span class="settings-icon purple">⚡</span>
-                            <div><span class="settings-item-label">优化存储</span><div class="settings-item-desc">压缩图片</div></div>
+                            <span class="settings-icon">◇</span>
+                            <div><span class="settings-item-label">优化存储</span><div class="settings-item-desc">压缩图片数据</div></div>
                         </div>
                     </div>
                 </div>
@@ -582,59 +545,64 @@
                 <p class="settings-group-title">数据管理</p>
                 <div class="settings-group">
                     <div class="settings-item" onclick="forceSaveAll()">
-                        <div class="settings-item-left"><span class="settings-icon green">💾</span><span class="settings-item-label">强制保存</span></div>
+                        <div class="settings-item-left"><span class="settings-icon">◉</span><span class="settings-item-label">强制保存</span></div>
                     </div>
                     <div class="settings-item" onclick="exportAllData()">
-                        <div class="settings-item-left"><span class="settings-icon blue">📤</span><span class="settings-item-label">导出数据</span></div>
+                        <div class="settings-item-left"><span class="settings-icon">↗</span><span class="settings-item-label">导出数据</span></div>
                     </div>
                     <div class="settings-item" onclick="document.getElementById('importFileInput').click()">
-                        <div class="settings-item-left"><span class="settings-icon orange">📥</span><span class="settings-item-label">导入数据</span></div>
+                        <div class="settings-item-left"><span class="settings-icon">↙</span><span class="settings-item-label">导入数据</span></div>
                     </div>
                     <input type="file" id="importFileInput" class="file-input-hidden" accept=".json" onchange="importData(event)">
                     <div class="settings-item" onclick="clearAllData()">
-                        <div class="settings-item-left"><span class="settings-icon red">🗑️</span><span class="settings-item-label">清除所有数据</span></div>
+                        <div class="settings-item-left"><span class="settings-icon">⊗</span><span class="settings-item-label">清除所有数据</span></div>
                     </div>
                 </div>
-                <div style="height:30px"></div>
+                <div style="height:40px"></div>
             </div>
         </div>
 
+        <!-- 短信列表 - 暗黑INS风格 -->
         <div class="page" id="messagesPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closePage('messagesPage')"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>返回</button>
-                <span class="nav-title">短信</span>
-                <button class="nav-btn right" onclick="showModal('createCharacterModal')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+                <button class="nav-btn" onclick="closePage('messagesPage')">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                </button>
+                <span class="nav-title"></span>
+                <button class="nav-btn icon-only" onclick="showModal('createCharacterModal')">
+                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                </button>
             </div>
-            <div style="padding:0 12px 10px">
-                <input type="text" class="search-field" id="contactSearch" placeholder="搜索角色..." oninput="filterContacts()">
-            </div>
-            <div class="page-content" id="contactListContainer" style="padding-top:0">
-                <div class="empty-state" id="emptyContactState">
-                    <div class="empty-state-icon">💬</div>
-                    <div class="empty-state-title">暂无角色</div>
-                    <div class="empty-state-desc">点击右上角+创建</div>
+            <div class="page-content" style="padding-top:0">
+                <div class="messages-header">
+                    <div class="messages-title">短信</div>
+                    <div class="messages-subtitle">与 AI 角色对话</div>
                 </div>
-                <div class="contact-list" id="contactList" style="display:none"></div>
+                <div style="margin-bottom:16px">
+                    <input type="text" class="search-field" id="contactSearch" placeholder="搜索角色..." oninput="filterContacts()">
+                </div>
+                <div id="contactListContainer">
+                    <div class="empty-state" id="emptyContactState">
+                        <div class="empty-state-icon">✉</div>
+                        <div class="empty-state-title">暂无角色</div>
+                        <div class="empty-state-desc">点击右上角 + 创建新角色</div>
+                    </div>
+                    <div class="contact-list" id="contactList" style="display:none"></div>
+                </div>
             </div>
         </div>
 
-        <!-- 聊天页面 - 按钮位置已交换：左上角退出，右上角设置 -->
+        <!-- 聊天页面 - 按钮位置已交换 -->
         <div class="page" id="chatPage">
             <div class="nav-bar">
-                <!-- 左上角：退出按钮 - 高级X图标 -->
-                <button class="nav-btn" onclick="closeChatPage()" title="返回">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
+                <!-- 左边：退出按钮 -->
+                <button class="nav-btn icon-only" onclick="closeChatPage()">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
                 </button>
                 <span class="nav-title" id="chatTitle">角色名</span>
-                <!-- 右上角：设置按钮 - 高级齿轮图标 -->
-                <button class="nav-btn right" onclick="openCharacterSettings()" title="设置">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                    </svg>
+                <!-- 右边：设置按钮 -->
+                <button class="nav-btn icon-only" onclick="openCharacterSettings()">
+                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
                 </button>
             </div>
             <div class="select-mode-bar" id="selectModeBar">
@@ -658,11 +626,11 @@
                     </button>
                     <button class="ext-btn" onclick="regenerateLastReply()">
                         <div class="ext-btn-icon purple"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></div>
-                        <div class="ext-btn-text"><div class="ext-btn-title">重新生成</div><div class="ext-btn-desc">重新生成AI回复</div></div>
+                        <div class="ext-btn-text"><div class="ext-btn-title">重新生成</div><div class="ext-btn-desc">重新生成 AI 回复</div></div>
                     </button>
                     <button class="ext-btn" onclick="openImagePicker()">
                         <div class="ext-btn-icon blue"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div>
-                        <div class="ext-btn-text"><div class="ext-btn-title">发送图片</div><div class="ext-btn-desc">发送图片给AI</div></div>
+                        <div class="ext-btn-text"><div class="ext-btn-title">发送图片</div><div class="ext-btn-desc">发送图片给 AI</div></div>
                     </button>
                 </div>
 
@@ -672,10 +640,16 @@
                         <button class="quote-preview-close" onclick="cancelQuote()">✕</button>
                     </div>
                     <div class="chat-input-area">
-                        <button class="chat-btn" onclick="toggleExtensionPanel()" title="更多"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></button>
+                        <button class="chat-btn" onclick="toggleExtensionPanel()" title="更多">
+                            <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                        </button>
                         <textarea class="chat-input-field" id="chatInput" placeholder="输入消息..." rows="1" oninput="autoResizeTextarea(this)"></textarea>
-                        <button class="chat-btn ai" onclick="triggerAIReply()" title="AI回复"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></button>
-                        <button class="chat-btn send" onclick="sendMessage()" title="发送"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+                        <button class="chat-btn ai" onclick="triggerAIReply()" title="AI回复">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        </button>
+                        <button class="chat-btn send" onclick="sendMessage()" title="发送">
+                            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -699,46 +673,47 @@
             </div>
         </div>
 
+        <!-- 角色设置页面 -->
         <div class="page slide-from-bottom" id="characterSettingsPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closeCharacterSettings()"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>取消</button>
+                <button class="nav-btn" onclick="closeCharacterSettings()">取消</button>
                 <span class="nav-title">角色设置</span>
-                <button class="nav-btn right" onclick="saveCharacterSettings()">保存</button>
+                <button class="nav-btn" onclick="saveCharacterSettings()">保存</button>
             </div>
             <div class="page-content">
                 <p class="settings-group-title">聊天管理</p>
                 <div class="settings-group">
                     <div class="settings-item" onclick="confirmClearAllMessages()">
                         <div class="settings-item-left">
-                            <span class="settings-icon red">🗑️</span>
+                            <span class="settings-icon">⊗</span>
                             <div><span class="settings-item-label">清除所有聊天记录</span><div class="settings-item-desc">删除与此角色的全部消息</div></div>
                         </div>
                     </div>
                 </div>
 
                 <p class="settings-group-title">聊天窗口壁纸</p>
-                <div class="settings-group" style="padding:12px">
+                <div class="settings-group" style="padding:16px">
                     <div class="chat-wallpaper-preview" id="chatWallpaperPreview"><span>无自定义壁纸</span></div>
                     <div class="btn-row">
-                        <button class="btn btn-secondary btn-small" onclick="document.getElementById('chatWallpaperInput').click()">📤 上传</button>
-                        <button class="btn btn-secondary btn-small" onclick="clearChatWallpaper()">🗑️ 清除</button>
+                        <button class="btn btn-secondary btn-small" onclick="document.getElementById('chatWallpaperInput').click()">上传</button>
+                        <button class="btn btn-secondary btn-small" onclick="clearChatWallpaper()">清除</button>
                     </div>
                     <input type="file" id="chatWallpaperInput" class="file-input-hidden" accept="image/*" onchange="handleChatWallpaperUpload(event)">
                 </div>
 
                 <p class="settings-group-title">头像</p>
-                <div class="settings-group" style="padding:12px">
+                <div class="settings-group" style="padding:16px">
                     <label class="input-label">角色头像</label>
-                    <div class="avatar-upload-area" id="charAvatarUpload" onclick="document.getElementById('charAvatarInput').click()">📷</div>
+                    <div class="avatar-upload-area" id="charAvatarUpload" onclick="document.getElementById('charAvatarInput').click()">◐</div>
                     <input type="file" id="charAvatarInput" class="file-input-hidden" accept="image/*" onchange="handleCharAvatarUpload(event)">
-                    <label class="input-label" style="margin-top:12px">用户头像</label>
-                    <div class="avatar-upload-area" id="userAvatarUpload" onclick="document.getElementById('userAvatarInput').click()">👤</div>
+                    <label class="input-label" style="margin-top:16px">用户头像</label>
+                    <div class="avatar-upload-area" id="userAvatarUpload" onclick="document.getElementById('userAvatarInput').click()">◑</div>
                     <input type="file" id="userAvatarInput" class="file-input-hidden" accept="image/*" onchange="handleUserAvatarUpload(event)">
                 </div>
 
                 <p class="settings-group-title">头像显示</p>
-                <div class="settings-group" style="padding:12px">
-                    <div class="settings-item" style="padding:0 0 10px 0">
+                <div class="settings-group" style="padding:16px">
+                    <div class="settings-item" style="padding:0 0 12px 0">
                         <span class="settings-item-label">显示头像</span>
                         <div class="toggle-switch" id="showAvatarToggle" onclick="toggleSwitch(this)"></div>
                     </div>
@@ -750,154 +725,151 @@
                             <div class="shape-option" data-shape="rounded-square" onclick="selectShape(this)">圆角</div>
                         </div>
                     </div>
-                    <div class="settings-item" style="padding:10px 0">
+                    <div class="settings-item" style="padding:12px 0">
                         <span class="settings-item-label">边框</span>
                         <div class="toggle-switch" id="showBorderToggle" onclick="toggleSwitch(this)"></div>
                     </div>
                     <div class="color-picker-row">
                         <span class="color-picker-label">边框颜色</span>
-                        <input type="color" class="color-picker-input" id="borderColorPicker" value="#007AFF">
+                        <input type="color" class="color-picker-input" id="borderColorPicker" value="#ffffff">
                     </div>
                 </div>
 
                 <p class="settings-group-title">基本信息</p>
-                <div class="settings-group" style="padding:12px">
+                <div class="settings-group" style="padding:16px">
                     <div class="input-group">
-                        <label class="input-label">角色名称</label>
+                        <label class="input-label">名称</label>
                         <input type="text" class="input-field" id="charName" placeholder="角色名称">
                     </div>
                     <div class="input-group">
-                        <label class="input-label">表情(无图时)</label>
-                        <input type="text" class="input-field" id="charAvatar" placeholder="😊">
+                        <label class="input-label">表情 (无图时显示)</label>
+                        <input type="text" class="input-field" id="charAvatar" placeholder="◐">
                     </div>
                 </div>
 
-                <p class="settings-group-title">角色设定</p>
-                <div class="settings-group" style="padding:12px">
-                    <textarea class="input-field" id="charDescription" rows="5" placeholder="角色的性格、背景、说话方式..."></textarea>
+                <p class="settings-group-title">设定</p>
+                <div class="settings-group" style="padding:16px">
+                    <textarea class="input-field" id="charDescription" rows="5" placeholder="角色的性格、背景、特点..."></textarea>
                 </div>
 
-                <p class="settings-group-title">开场白(300字)</p>
-                <div class="settings-group" style="padding:12px">
-                    <textarea class="input-field" id="charGreeting" rows="2" maxlength="300" placeholder="角色发送的第一条消息..." oninput="updateCharCounter()"></textarea>
+                <p class="settings-group-title">开场白 (300字)</p>
+                <div class="settings-group" style="padding:16px">
+                    <textarea class="input-field" id="charGreeting" rows="2" maxlength="300" placeholder="角色的第一条消息..." oninput="updateCharCounter()"></textarea>
                     <div class="char-counter" id="greetingCharCounter">0/300</div>
                 </div>
 
                 <p class="settings-group-title">情景</p>
-                <div class="settings-group" style="padding:12px">
-                    <textarea class="input-field" id="charScenario" rows="2" placeholder="故事发生的场景和背景..."></textarea>
+                <div class="settings-group" style="padding:16px">
+                    <textarea class="input-field" id="charScenario" rows="2" placeholder="对话发生的场景..."></textarea>
                 </div>
 
-                <p class="settings-group-title">绑定世界书（可多选）</p>
-                <div class="settings-group" style="padding:12px">
+                <p class="settings-group-title">绑定世界书</p>
+                <div class="settings-group" style="padding:16px">
                     <div class="worldbook-multi-select" id="worldbookMultiSelect"></div>
                 </div>
 
-                <!-- 【修改】用户设定 - 改为定义用户是谁 -->
                 <p class="settings-group-title">用户设定</p>
-                <div class="settings-group" style="padding:12px">
+                <div class="settings-group" style="padding:16px">
                     <div class="input-group">
                         <label class="input-label">用户名字</label>
-                        <input type="text" class="input-field" id="charUserName" placeholder="用户在故事中的名字">
+                        <input type="text" class="input-field" id="charUserNick" placeholder="用户在对话中的名字">
                     </div>
                     <div class="input-group">
-                        <label class="input-label">用户人设</label>
-                        <textarea class="input-field" id="charUserPersona" rows="3" placeholder="用户的身份、性格、背景设定..."></textarea>
+                        <label class="input-label">额外提示词</label>
+                        <textarea class="input-field" id="charSystemPrompt" rows="2" placeholder="额外的系统指令..."></textarea>
                     </div>
                 </div>
 
-                <p class="settings-group-title">高级</p>
-                <div class="settings-group" style="padding:12px">
-                    <div class="input-group">
-                        <label class="input-label">额外系统提示词</label>
-                        <textarea class="input-field" id="charSystemPrompt" rows="2" placeholder="额外的AI指令..."></textarea>
-                    </div>
-                </div>
-
-                <p class="settings-group-title">🎨 自定义CSS美化</p>
-                <div class="settings-group" style="padding:12px">
+                <p class="settings-group-title">自定义 CSS</p>
+                <div class="settings-group" style="padding:16px">
                     <div class="action-hint warning">
-                        <span class="action-hint-icon">⚠️</span>
-                        <span class="action-hint-text">自定义CSS会覆盖上方的头像设置</span>
+                        <span class="action-hint-icon">△</span>
+                        <span class="action-hint-text">自定义 CSS 会覆盖上方的头像设置</span>
                     </div>
                     <div class="input-group">
-                        <label class="input-label">CSS预设</label>
+                        <label class="input-label">CSS 预设</label>
                         <div class="preset-selector">
                             <select class="select-field" id="cssPresetSelect" onchange="loadCssPreset()"><option value="">-- 无预设 --</option></select>
-                            <button class="preset-btn" onclick="addNewCssPreset()" title="新建预设">＋</button>
-                            <button class="preset-btn" onclick="saveCssPreset()" title="保存预设">💾</button>
-                            <button class="preset-btn" onclick="showCssGuide()" title="CSS指南">❓</button>
+                            <button class="preset-btn" onclick="addNewCssPreset()" title="新建预设">+</button>
+                            <button class="preset-btn" onclick="saveCssPreset()" title="保存预设">◉</button>
+                            <button class="preset-btn" onclick="showCssGuide()" title="CSS指南">?</button>
                         </div>
                     </div>
                     <div class="input-group">
                         <label class="input-label">消息时间戳</label>
                         <select class="select-field" id="timestampPosition">
-                            <option value="default">默认(气泡内底部)</option>
+                            <option value="default">默认 (气泡内底部)</option>
                             <option value="hidden">隐藏</option>
                             <option value="side">气泡旁边</option>
                         </select>
                     </div>
                     <div class="input-group">
-                        <label class="input-label">自定义CSS代码</label>
-                        <textarea class="input-field css-editor" id="customCssEditor" rows="8" placeholder="/* 在此输入自定义CSS */"></textarea>
+                        <label class="input-label">自定义 CSS 代码</label>
+                        <textarea class="input-field css-editor" id="customCssEditor" rows="8" placeholder="/* 在此输入自定义 CSS */"></textarea>
                     </div>
                     <div class="btn-row">
-                        <button class="btn btn-secondary btn-small" onclick="previewCss()">👁️ 预览</button>
-                        <button class="btn btn-danger btn-small" onclick="clearCustomCss()">🗑️ 清除CSS</button>
+                        <button class="btn btn-secondary btn-small" onclick="previewCss()">预览</button>
+                        <button class="btn btn-danger btn-small" onclick="clearCustomCss()">清除</button>
                     </div>
                 </div>
 
-                <div class="delete-zone" onclick="deleteCurrentCharacter()">🗑️ 删除角色</div>
-                <div style="height:30px"></div>
+                <div class="delete-zone" onclick="deleteCurrentCharacter()">删除此角色</div>
+                <div style="height:40px"></div>
             </div>
         </div>
 
+        <!-- 世界书页面 -->
         <div class="page" id="worldbookPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closePage('worldbookPage')"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>返回</button>
+                <button class="nav-btn" onclick="closePage('worldbookPage')">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                </button>
                 <span class="nav-title">世界书</span>
-                <button class="nav-btn right" onclick="showModal('createWorldbookModal')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+                <button class="nav-btn icon-only" onclick="showModal('createWorldbookModal')">
+                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                </button>
             </div>
             <div class="page-content">
                 <div class="action-hint">
-                    <span class="action-hint-icon">📚</span>
+                    <span class="action-hint-icon">◈</span>
                     <span class="action-hint-text">每个世界书可包含多个条目</span>
                 </div>
                 <div class="empty-state" id="emptyWorldbookState">
-                    <div class="empty-state-icon">📚</div>
+                    <div class="empty-state-icon">◈</div>
                     <div class="empty-state-title">暂无世界书</div>
-                    <div class="empty-state-desc">点击+创建</div>
+                    <div class="empty-state-desc">点击右上角 + 创建</div>
                 </div>
                 <div id="worldbookList" style="display:none"></div>
             </div>
         </div>
 
+        <!-- 世界书编辑 -->
         <div class="page slide-from-bottom" id="worldbookEditPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closeWorldbookEdit()"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>取消</button>
+                <button class="nav-btn" onclick="closeWorldbookEdit()">取消</button>
                 <span class="nav-title">编辑世界书</span>
-                <button class="nav-btn right" onclick="saveWorldbook()">保存</button>
+                <button class="nav-btn" onclick="saveWorldbook()">保存</button>
             </div>
             <div class="page-content">
-                <div class="settings-group" style="padding:12px">
+                <div class="settings-group" style="padding:16px">
                     <div class="input-group">
                         <label class="input-label">世界书名称</label>
                         <input type="text" class="input-field" id="worldbookName" placeholder="名称">
                     </div>
                     <div class="input-group">
                         <label class="input-label">简介</label>
-                        <textarea class="input-field" id="worldbookSummary" rows="2" placeholder="简介..."></textarea>
+                        <textarea class="input-field" id="worldbookSummary" rows="2" placeholder="简要描述..."></textarea>
                     </div>
                 </div>
 
                 <p class="settings-group-title">条目列表</p>
-                <div class="settings-group" style="padding:12px">
+                <div class="settings-group" style="padding:16px">
                     <div class="worldbook-entries" id="worldbookEntries"></div>
                     <button class="btn btn-secondary" onclick="addWorldbookEntry()">+ 添加条目</button>
                 </div>
 
-                <div class="delete-zone" onclick="deleteCurrentWorldbook()">🗑️ 删除世界书</div>
-                <div style="height:30px"></div>
+                <div class="delete-zone" onclick="deleteCurrentWorldbook()">删除此世界书</div>
+                <div style="height:40px"></div>
             </div>
         </div>
 
@@ -906,17 +878,17 @@
                 <div class="modal-title">编辑条目</div>
                 <div class="input-group">
                     <label class="input-label">条目名称</label>
-                    <input type="text" class="modal-input" id="entryName" placeholder="名称" style="margin-bottom:8px">
+                    <input type="text" class="modal-input" id="entryName" placeholder="名称" style="margin-bottom:10px">
                 </div>
                 <div class="input-group">
-                    <label class="input-label">触发关键词(逗号分隔)</label>
-                    <input type="text" class="modal-input" id="entryKeywords" placeholder="关键词1,关键词2..." style="margin-bottom:8px">
+                    <label class="input-label">触发关键词 (逗号分隔)</label>
+                    <input type="text" class="modal-input" id="entryKeywords" placeholder="关键词1, 关键词2..." style="margin-bottom:10px">
                 </div>
                 <div class="input-group">
                     <label class="input-label">内容</label>
-                    <textarea class="input-field" id="entryContent" rows="5" placeholder="内容..."></textarea>
+                    <textarea class="input-field" id="entryContent" rows="5" placeholder="条目内容..."></textarea>
                 </div>
-                <div class="settings-item" style="padding:10px 0">
+                <div class="settings-item" style="padding:12px 0">
                     <span class="settings-item-label">始终激活</span>
                     <div class="toggle-switch" id="entryAlwaysActive" onclick="toggleSwitch(this)"></div>
                 </div>
@@ -927,18 +899,21 @@
             </div>
         </div>
 
+        <!-- 壁纸页面 -->
         <div class="page" id="wallpaperPage">
             <div class="nav-bar">
-                <button class="nav-btn" onclick="closePage('wallpaperPage')"><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>返回</button>
+                <button class="nav-btn" onclick="closePage('wallpaperPage')">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                </button>
                 <span class="nav-title">壁纸与图标</span>
-                <div class="nav-btn right" style="visibility:hidden">占</div>
+                <div class="nav-btn" style="visibility:hidden;opacity:0">占</div>
             </div>
             <div class="page-content">
                 <p class="settings-group-title">显示设置</p>
                 <div class="settings-group">
                     <div class="settings-item" onclick="toggleStatusBar()">
                         <div class="settings-item-left">
-                            <span class="settings-icon gray">📱</span>
+                            <span class="settings-icon">▣</span>
                             <div><span class="settings-item-label">隐藏模拟时间栏</span><div class="settings-item-desc">全屏时避免与系统栏重叠</div></div>
                         </div>
                         <div class="toggle-switch" id="hideStatusBarToggle"></div>
@@ -949,65 +924,66 @@
                 <div class="wallpaper-preview" id="wallpaperPreview"></div>
 
                 <p class="settings-group-title">预设壁纸</p>
-                <div class="settings-group" style="padding:12px">
-                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="wallpaperGrid">
-                        <div onclick="selectPresetWallpaper('gradient1')" style="height:60px;border-radius:8px;background:linear-gradient(135deg,#0a0a0f,#1a1a2e,#0f0f1a);cursor:pointer;border:2px solid transparent" data-wp="gradient1"></div>
-                        <div onclick="selectPresetWallpaper('gradient2')" style="height:60px;border-radius:8px;background:linear-gradient(135deg,#2d1b69,#11998e);cursor:pointer;border:2px solid transparent" data-wp="gradient2"></div>
-                        <div onclick="selectPresetWallpaper('gradient3')" style="height:60px;border-radius:8px;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);cursor:pointer;border:2px solid transparent" data-wp="gradient3"></div>
-                        <div onclick="selectPresetWallpaper('gradient4')" style="height:60px;border-radius:8px;background:linear-gradient(135deg,#141e30,#243b55);cursor:pointer;border:2px solid transparent" data-wp="gradient4"></div>
-                        <div onclick="selectPresetWallpaper('gradient5')" style="height:60px;border-radius:8px;background:linear-gradient(135deg,#232526,#414345);cursor:pointer;border:2px solid transparent" data-wp="gradient5"></div>
-                        <div onclick="selectPresetWallpaper('gradient6')" style="height:60px;border-radius:8px;background:linear-gradient(135deg,#1f1c2c,#928dab);cursor:pointer;border:2px solid transparent" data-wp="gradient6"></div>
+                <div class="settings-group" style="padding:16px">
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px" id="wallpaperGrid">
+                        <div onclick="selectPresetWallpaper('gradient1')" style="height:70px;border-radius:10px;background:linear-gradient(180deg,#0a0a0f,#12121a,#0a0a0f);cursor:pointer;border:1px solid transparent" data-wp="gradient1"></div>
+                        <div onclick="selectPresetWallpaper('gradient2')" style="height:70px;border-radius:10px;background:linear-gradient(135deg,#1a1520,#0a1515);cursor:pointer;border:1px solid transparent" data-wp="gradient2"></div>
+                        <div onclick="selectPresetWallpaper('gradient3')" style="height:70px;border-radius:10px;background:linear-gradient(135deg,#0a0a12,#15101a,#0a0a12);cursor:pointer;border:1px solid transparent" data-wp="gradient3"></div>
+                        <div onclick="selectPresetWallpaper('gradient4')" style="height:70px;border-radius:10px;background:linear-gradient(135deg,#0a0f15,#101520);cursor:pointer;border:1px solid transparent" data-wp="gradient4"></div>
+                        <div onclick="selectPresetWallpaper('gradient5')" style="height:70px;border-radius:10px;background:linear-gradient(135deg,#101012,#181818);cursor:pointer;border:1px solid transparent" data-wp="gradient5"></div>
+                        <div onclick="selectPresetWallpaper('gradient6')" style="height:70px;border-radius:10px;background:linear-gradient(135deg,#0f0a10,#1a1520);cursor:pointer;border:1px solid transparent" data-wp="gradient6"></div>
                     </div>
                 </div>
 
                 <p class="settings-group-title">自定义</p>
-                <div class="settings-group" style="padding:12px">
+                <div class="settings-group" style="padding:16px">
                     <div class="input-group">
-                        <label class="input-label">图片URL</label>
+                        <label class="input-label">图片 URL</label>
                         <input type="text" class="input-field" id="customWallpaperUrl" placeholder="https://...">
                     </div>
                     <button class="btn btn-secondary" onclick="previewUrlWallpaper()">预览</button>
                     <div class="divider"></div>
-                    <button class="btn btn-secondary" onclick="document.getElementById('wallpaperUpload').click()">📤 上传图片</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('wallpaperUpload').click()">上传图片</button>
                     <input type="file" id="wallpaperUpload" class="file-input-hidden" accept="image/*" onchange="handleWallpaperUpload(event)">
                 </div>
 
-                <button class="btn btn-success" onclick="saveWallpaper()" style="margin-bottom:16px">💾 保存壁纸</button>
+                <button class="btn btn-success" onclick="saveWallpaper()" style="margin-bottom:20px">保存壁纸</button>
 
                 <p class="settings-group-title">图标</p>
-                <div class="settings-group" style="padding:12px">
+                <div class="settings-group" style="padding:16px">
                     <div class="icon-customize-grid">
                         <div class="icon-customize-item">
-                            <div class="icon-customize-preview" id="iconPreviewSettings" onclick="document.getElementById('iconInputSettings').click()">⚙️</div>
+                            <div class="icon-customize-preview" id="iconPreviewSettings" onclick="document.getElementById('iconInputSettings').click()">⚙</div>
                             <span class="icon-customize-label">设置</span>
                             <input type="file" id="iconInputSettings" class="file-input-hidden" accept="image/*" onchange="handleIconUpload(event,'settings')">
                         </div>
                         <div class="icon-customize-item">
-                            <div class="icon-customize-preview" id="iconPreviewMessages" onclick="document.getElementById('iconInputMessages').click()">💬</div>
+                            <div class="icon-customize-preview" id="iconPreviewMessages" onclick="document.getElementById('iconInputMessages').click()">✉</div>
                             <span class="icon-customize-label">短信</span>
                             <input type="file" id="iconInputMessages" class="file-input-hidden" accept="image/*" onchange="handleIconUpload(event,'messages')">
                         </div>
                         <div class="icon-customize-item">
-                            <div class="icon-customize-preview" id="iconPreviewWorldbook" onclick="document.getElementById('iconInputWorldbook').click()">📚</div>
+                            <div class="icon-customize-preview" id="iconPreviewWorldbook" onclick="document.getElementById('iconInputWorldbook').click()">◈</div>
                             <span class="icon-customize-label">世界书</span>
                             <input type="file" id="iconInputWorldbook" class="file-input-hidden" accept="image/*" onchange="handleIconUpload(event,'worldbook')">
                         </div>
                         <div class="icon-customize-item">
-                            <div class="icon-customize-preview" id="iconPreviewPhotos" onclick="document.getElementById('iconInputPhotos').click()">🖼️</div>
+                            <div class="icon-customize-preview" id="iconPreviewPhotos" onclick="document.getElementById('iconInputPhotos').click()">▣</div>
                             <span class="icon-customize-label">壁纸</span>
                             <input type="file" id="iconInputPhotos" class="file-input-hidden" accept="image/*" onchange="handleIconUpload(event,'photos')">
                         </div>
                     </div>
                     <div class="divider"></div>
-                    <button class="btn btn-primary" onclick="saveIcons()">💾 保存图标</button>
-                    <div style="height:6px"></div>
-                    <button class="btn btn-secondary" onclick="resetIcons()">🔄 重置</button>
+                    <button class="btn btn-primary" onclick="saveIcons()">保存图标</button>
+                    <div style="height:8px"></div>
+                    <button class="btn btn-secondary" onclick="resetIcons()">重置图标</button>
                 </div>
-                <div style="height:30px"></div>
+                <div style="height:40px"></div>
             </div>
         </div>
     </div>
 
+    <!-- 模态框 -->
     <div class="modal-overlay" id="createCharacterModal">
         <div class="modal">
             <div class="modal-title">创建角色</div>
@@ -1033,28 +1009,28 @@
     <div class="modal-overlay" id="confirmDeleteModal">
         <div class="modal">
             <div class="modal-title" id="deleteModalTitle">确认删除？</div>
-            <p style="color:var(--text-secondary);text-align:center;margin-bottom:14px;font-size:13px" id="deleteModalDesc">无法撤销</p>
+            <p style="color:var(--text-tertiary);text-align:center;margin-bottom:18px;font-size:14px" id="deleteModalDesc">此操作无法撤销</p>
             <div class="modal-btns">
                 <button class="modal-btn cancel" onclick="hideModal('confirmDeleteModal')">取消</button>
-                <button class="modal-btn confirm" style="background:var(--danger-color)" onclick="confirmDelete()">删除</button>
+                <button class="modal-btn confirm" style="background:rgba(255,69,58,0.2);color:#ff6b6b;border-color:rgba(255,69,58,0.3)" onclick="confirmDelete()">删除</button>
             </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="clearMessagesModal">
         <div class="modal">
-            <div class="modal-title">⚠️ 清除所有聊天记录</div>
-            <p style="color:var(--text-secondary);text-align:center;margin-bottom:14px;font-size:13px">确定要删除与此角色的所有聊天记录吗？<br>此操作无法撤销！</p>
+            <div class="modal-title">清除所有聊天记录</div>
+            <p style="color:var(--text-tertiary);text-align:center;margin-bottom:18px;font-size:14px">确定要删除与此角色的所有聊天记录吗？<br>此操作无法撤销</p>
             <div class="modal-btns">
                 <button class="modal-btn cancel" onclick="hideModal('clearMessagesModal')">取消</button>
-                <button class="modal-btn confirm" style="background:var(--danger-color)" onclick="executeClearAllMessages()">确认删除</button>
+                <button class="modal-btn confirm" style="background:rgba(255,69,58,0.2);color:#ff6b6b;border-color:rgba(255,69,58,0.3)" onclick="executeClearAllMessages()">确认删除</button>
             </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="cssPresetNameModal">
         <div class="modal">
-            <div class="modal-title">新建CSS预设</div>
+            <div class="modal-title">新建 CSS 预设</div>
             <input type="text" class="modal-input" id="newCssPresetName" placeholder="预设名称...">
             <div class="modal-btns">
                 <button class="modal-btn cancel" onclick="hideModal('cssPresetNameModal')">取消</button>
@@ -1064,43 +1040,43 @@
     </div>
 
     <div class="modal-overlay" id="cssGuideModal">
-        <div class="modal" style="max-width:380px">
-            <div class="modal-title">📖 CSS自定义指南</div>
+        <div class="modal" style="max-width:400px">
+            <div class="modal-title">CSS 自定义指南</div>
             <div class="guide-content">
                 <div class="guide-section">
-                    <div class="guide-section-title">💬 消息气泡</div>
+                    <div class="guide-section-title">消息气泡</div>
                     <div class="guide-code">.message.sent { }<br>.message.received { }</div>
                 </div>
                 <div class="guide-section">
-                    <div class="guide-section-title">💬 引用气泡</div>
+                    <div class="guide-section-title">引用气泡</div>
                     <div class="guide-code">.message-quote { }</div>
                 </div>
                 <div class="guide-section">
-                    <div class="guide-section-title">👤 头像</div>
+                    <div class="guide-section-title">头像</div>
                     <div class="guide-code">.message-avatar { }</div>
                 </div>
                 <div class="guide-section">
-                    <div class="guide-section-title">⏰ 时间戳</div>
+                    <div class="guide-section-title">时间戳</div>
                     <div class="guide-code">.message-time { }</div>
                 </div>
                 <div class="guide-section">
-                    <div class="guide-section-title">📝 输入区域</div>
+                    <div class="guide-section-title">输入区域</div>
                     <div class="guide-code">.chat-input-area { }<br>.chat-input-field { }</div>
                 </div>
                 <div class="guide-section">
-                    <div class="guide-section-title">🔝 顶栏</div>
+                    <div class="guide-section-title">顶栏</div>
                     <div class="guide-code">#chatPage .nav-bar { }</div>
                 </div>
                 <div class="guide-section">
-                    <div class="guide-section-title">🖼️ 图片消息</div>
+                    <div class="guide-section-title">图片消息</div>
                     <div class="guide-code">.message-image { }</div>
                 </div>
                 <div class="guide-section">
-                    <div class="guide-section-title">💡 示例</div>
-                    <div class="guide-code">.message.sent {<br>  background: linear-gradient(135deg, #ff6b9d, #c44569);<br>  border-radius: 20px;<br>}</div>
+                    <div class="guide-section-title">示例</div>
+                    <div class="guide-code">.message.sent {<br>  background: rgba(255,255,255,0.15);<br>  border-radius: 20px;<br>}</div>
                 </div>
             </div>
-            <div class="modal-btns" style="margin-top:14px">
+            <div class="modal-btns" style="margin-top:18px">
                 <button class="modal-btn confirm" onclick="hideModal('cssGuideModal')">知道了</button>
             </div>
         </div>
@@ -1110,7 +1086,7 @@
         <div class="modal">
             <div class="modal-title">编辑消息</div>
             <textarea class="input-field" id="editMessageContent" rows="4" placeholder="编辑内容..."></textarea>
-            <div class="modal-btns" style="margin-top:12px">
+            <div class="modal-btns" style="margin-top:16px">
                 <button class="modal-btn cancel" onclick="hideModal('editMessageModal')">取消</button>
                 <button class="modal-btn confirm" onclick="saveEditedMessage()">保存</button>
             </div>
@@ -1121,7 +1097,7 @@
 
     <script>
         const DB_NAME = 'SMSAppDB';
-        const DB_VERSION = 4;
+        const DB_VERSION = 3;
         let db = null;
 
         function openDB() {
@@ -1178,7 +1154,7 @@
             connectionStatus: 'disconnected', isSelectMode: false, selectedMsgs: new Set(),
             lastAIStart: -1, tempWallpaper: null, tempIcons: {},
             appIcons: { settings: null, messages: null, worldbook: null, photos: null },
-            defaultEmojis: { settings: '⚙️', messages: '💬', worldbook: '📚', photos: '🖼️' },
+            defaultEmojis: { settings: '⚙', messages: '✉', worldbook: '◈', photos: '▣' },
             settings: { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false },
             globalCssPresets: [],
             dataLoaded: false,
@@ -1189,12 +1165,12 @@
         };
 
         const GRADIENTS = {
-            gradient1: 'linear-gradient(135deg, #0a0a0f, #1a1a2e, #0f0f1a)',
-            gradient2: 'linear-gradient(135deg, #2d1b69, #11998e)',
-            gradient3: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)',
-            gradient4: 'linear-gradient(135deg, #141e30, #243b55)',
-            gradient5: 'linear-gradient(135deg, #232526, #414345)',
-            gradient6: 'linear-gradient(135deg, #1f1c2c, #928dab)'
+            gradient1: 'linear-gradient(180deg, #0a0a0f 0%, #12121a 50%, #0a0a0f 100%)',
+            gradient2: 'linear-gradient(135deg, #1a1520, #0a1515)',
+            gradient3: 'linear-gradient(135deg, #0a0a12, #15101a, #0a0a12)',
+            gradient4: 'linear-gradient(135deg, #0a0f15, #101520)',
+            gradient5: 'linear-gradient(135deg, #101012, #181818)',
+            gradient6: 'linear-gradient(135deg, #0f0a10, #1a1520)'
         };
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1223,7 +1199,7 @@
             const barFill = document.getElementById('storageBarFill');
             barFill.style.width = `${Math.min(usage.percent, 100)}%`;
             barFill.className = 'storage-bar-fill' + (usage.percent > 80 ? ' danger' : usage.percent > 60 ? ' warning' : '');
-}
+        }
 
         function updateTime() { document.getElementById('statusBarTime').textContent = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); }
 
@@ -1265,14 +1241,7 @@
                 if (icons) App.appIcons = { ...App.appIcons, ...icons };
                 if (presets) App.globalCssPresets = presets;
                 App.worldbooks.forEach(wb => { if (!wb.entries) wb.entries = [{ name: '默认条目', keywords: wb.keywords || '', content: wb.content || '', alwaysActive: wb.alwaysActive || false }]; });
-                App.characters.forEach(c => {
-                    if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId];
-                    if (!c.worldbookIds) c.worldbookIds = [];
-                    // 迁移旧版用户称呼到新版用户设定
-                    if (c.userNick && !c.userName) { c.userName = c.userNick; }
-                    if (!c.userName) c.userName = '';
-                    if (!c.userPersona) c.userPersona = '';
-                });
+                App.characters.forEach(c => { if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId]; if (!c.worldbookIds) c.worldbookIds = []; });
                 loadSettingsUI();
                 if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
                 App.dataLoaded = true;
@@ -1375,7 +1344,7 @@
 
         function highlightWallpaper() {
             const current = App.tempWallpaper || App.settings.wallpaper;
-            document.querySelectorAll('#wallpaperGrid > div').forEach(el => { el.style.borderColor = el.dataset.wp === current ? 'var(--accent-color)' : 'transparent'; });
+            document.querySelectorAll('#wallpaperGrid > div').forEach(el => { el.style.borderColor = el.dataset.wp === current ? 'rgba(255,255,255,0.4)' : 'transparent'; });
         }
 
         function updateIconPreviews() {
@@ -1429,7 +1398,7 @@
         function showToast(msg, type='info') { const c = document.getElementById('toastContainer'); const t = document.createElement('div'); t.className = `toast ${type}`; t.textContent = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000); }
 
         function addLog(msg, type='info') { const c = document.getElementById('debugLog'); const e = document.createElement('div'); e.className = `log-entry ${type}`; e.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`; c.appendChild(e); c.scrollTop = c.scrollHeight; }
-        function updateConnectionUI() { const h = document.getElementById('connectionStatusHint'); if (App.connectionStatus === 'connected') { h.className = 'action-hint success'; h.innerHTML = `<span class="action-hint-icon">✅</span><span class="action-hint-text">已连接 - ${App.settings.modelName}</span>`; } else { h.className = 'action-hint'; h.innerHTML = `<span class="action-hint-icon">⚠️</span><span class="action-hint-text">未连接</span>`; } }
+        function updateConnectionUI() { const h = document.getElementById('connectionStatusHint'); if (App.connectionStatus === 'connected') { h.className = 'action-hint success'; h.innerHTML = `<span class="action-hint-icon">●</span><span class="action-hint-text">已连接 - ${App.settings.modelName}</span>`; } else { h.className = 'action-hint'; h.innerHTML = `<span class="action-hint-icon">○</span><span class="action-hint-text">未配置 API</span>`; } }
 
         async function fetchModels() {
             const url = document.getElementById('apiBaseUrl').value.trim(), key = document.getElementById('apiKey').value.trim();
@@ -1442,9 +1411,9 @@
                 App.models = models;
                 document.getElementById('modelListContainer').style.display = 'block';
                 document.getElementById('modelList').innerHTML = models.map(m => { const id = m.id || m.name || m; return `<div class="model-item" onclick="selectModel('${id}')"><span class="model-item-name">${id}</span></div>`; }).join('');
-                addLog(`找到${models.length}个`, 'success');
+                addLog(`找到 ${models.length} 个模型`, 'success');
             } catch(e) { addLog(`失败: ${e.message}`, 'error'); showToast(`失败: ${e.message}`, 'error'); }
-            finally { btn.disabled = false; btn.innerHTML = '📋 拉取模型'; }
+            finally { btn.disabled = false; btn.innerHTML = '拉取模型列表'; }
         }
 
         function selectModel(id) { App.settings.modelName = id; document.getElementById('modelName').value = id; document.querySelectorAll('.model-item').forEach(el => { el.classList.toggle('selected', el.querySelector('.model-item-name').textContent === id); }); showToast(`已选: ${id}`, 'success'); }
@@ -1455,10 +1424,10 @@
             const btn = document.getElementById('testConnectionBtn'); btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span>';
             try {
                 const r = await fetch(`${url.replace(/\/+$/,'').replace(/\/v1$/,'')}/v1/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model, messages: [{ role: 'user', content: 'Hi' }], max_tokens: 5 }) });
-                if (r.ok) { App.connectionStatus = 'connected'; App.settings.apiBaseUrl = url; App.settings.apiKey = key; App.settings.modelName = model; await saveData(); showToast('成功！', 'success'); addLog('连接成功', 'success'); }
+                if (r.ok) { App.connectionStatus = 'connected'; App.settings.apiBaseUrl = url; App.settings.apiKey = key; App.settings.modelName = model; await saveData(); showToast('连接成功', 'success'); addLog('连接成功', 'success'); }
                 else throw new Error(`HTTP ${r.status}`);
             } catch(e) { App.connectionStatus = 'disconnected'; showToast(`失败: ${e.message}`, 'error'); }
-            finally { updateConnectionUI(); btn.disabled = false; btn.innerHTML = '🔗 测试连接'; }
+            finally { updateConnectionUI(); btn.disabled = false; btn.innerHTML = '测试连接'; }
         }
 
         async function saveApiSettings() {
@@ -1475,14 +1444,14 @@
             const name = document.getElementById('newCharacterName').value.trim(); if (!name) { showToast('请输入', 'error'); return; }
             const char = {
                 id: Date.now().toString(), name,
-                avatar: ['😊','😎','🥰','🦊','🐱','🐰'][Math.floor(Math.random()*6)],
+                avatar: ['◐','◑','◒','◓','⬡','⬢'][Math.floor(Math.random()*6)],
                 avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle',
-                showBorder: false, borderColor: '#007AFF', borderWidth: 2,
+                showBorder: false, borderColor: '#ffffff', borderWidth: 2,
                 description: '', greeting: '', scenario: '', worldbookIds: [],
-                userName: '', userPersona: '', systemPrompt: '', messages: [],
+                userNick: '', systemPrompt: '', messages: [],
                 chatWallpaper: null, customCss: '', activeCssPresetId: null, timestampPosition: 'default'
             };
-            App.characters.push(char); await saveData(); hideModal('createCharacterModal'); document.getElementById('newCharacterName').value = ''; renderContacts(); showToast(`"${name}"已创建`, 'success');
+            App.characters.push(char); await saveData(); hideModal('createCharacterModal'); document.getElementById('newCharacterName').value = ''; renderContacts(); showToast(`"${name}" 已创建`, 'success');
         }
 
         function renderContacts() {
@@ -1490,7 +1459,7 @@
             if (App.characters.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
             list.style.display = 'flex'; empty.style.display = 'none';
             list.innerHTML = App.characters.map(c => {
-                const lastMsg = c.messages.length > 0 ? c.messages[c.messages.length-1].content.substring(0,25)+'...' : '开始对话';
+                const lastMsg = c.messages.length > 0 ? c.messages[c.messages.length-1].content.substring(0,30)+'...' : '开始对话';
                 const lastTime = c.messages.length > 0 ? formatTime(c.messages[c.messages.length-1].timestamp) : '';
                 const avatarHtml = c.avatarImage ? `<img src="${c.avatarImage}">` : (c.avatar || c.name[0]);
                 return `<div class="contact-item" onclick="openChat('${c.id}')"><div class="contact-avatar">${avatarHtml}</div><div class="contact-info"><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-preview">${escapeHtml(lastMsg)}</div></div><div class="contact-time">${lastTime}</div></div>`;
@@ -1539,22 +1508,20 @@
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             updateChatWallpaperPreview(char);
             const charAvUpload = document.getElementById('charAvatarUpload'), userAvUpload = document.getElementById('userAvatarUpload');
-            if (char.avatarImage) { charAvUpload.innerHTML = `<img src="${char.avatarImage}">`; charAvUpload.classList.add('has-image'); } else { charAvUpload.innerHTML = '📷'; charAvUpload.classList.remove('has-image'); }
+            if (char.avatarImage) { charAvUpload.innerHTML = `<img src="${char.avatarImage}">`; charAvUpload.classList.add('has-image'); } else { charAvUpload.innerHTML = '◐'; charAvUpload.classList.remove('has-image'); }
             charAvUpload.dataset.image = char.avatarImage || '';
-            if (char.userAvatar) { userAvUpload.innerHTML = `<img src="${char.userAvatar}">`; userAvUpload.classList.add('has-image'); } else { userAvUpload.innerHTML = '👤'; userAvUpload.classList.remove('has-image'); }
+            if (char.userAvatar) { userAvUpload.innerHTML = `<img src="${char.userAvatar}">`; userAvUpload.classList.add('has-image'); } else { userAvUpload.innerHTML = '◑'; userAvUpload.classList.remove('has-image'); }
             userAvUpload.dataset.image = char.userAvatar || '';
             document.getElementById('showAvatarToggle').classList.toggle('active', char.showAvatar !== false);
             document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => { el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle')); });
             document.getElementById('showBorderToggle').classList.toggle('active', char.showBorder === true);
-            document.getElementById('borderColorPicker').value = char.borderColor || '#007AFF';
+            document.getElementById('borderColorPicker').value = char.borderColor || '#ffffff';
             document.getElementById('charName').value = char.name;
             document.getElementById('charAvatar').value = char.avatar || '';
             document.getElementById('charDescription').value = char.description || '';
             document.getElementById('charGreeting').value = char.greeting || '';
             document.getElementById('charScenario').value = char.scenario || '';
-            // 【修改】用户设定字段
-            document.getElementById('charUserName').value = char.userName || '';
-            document.getElementById('charUserPersona').value = char.userPersona || '';
+            document.getElementById('charUserNick').value = char.userNick || '';
             document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
             document.getElementById('timestampPosition').value = char.timestampPosition || 'default';
             document.getElementById('customCssEditor').value = char.customCss || '';
@@ -1578,7 +1545,7 @@
 
         function updateWorldbookMultiSelect(char) {
             const container = document.getElementById('worldbookMultiSelect');
-            if (App.worldbooks.length === 0) { container.innerHTML = '<div style="padding:10px;color:var(--text-secondary);font-size:13px">暂无世界书</div>'; return; }
+            if (App.worldbooks.length === 0) { container.innerHTML = '<div style="padding:14px;color:var(--text-tertiary);font-size:14px">暂无世界书</div>'; return; }
             container.innerHTML = App.worldbooks.map(wb => {
                 const checked = (char.worldbookIds || []).includes(wb.id);
                 return `<div class="worldbook-multi-item" onclick="toggleWorldbookBinding('${wb.id}')"><div class="worldbook-multi-checkbox ${checked ? 'checked' : ''}"></div><span class="worldbook-multi-name">${escapeHtml(wb.name)}</span></div>`;
@@ -1630,18 +1597,18 @@
             App.globalCssPresets.push(preset); await saveData(); hideModal('cssPresetNameModal');
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (char) { updateCssPresetSelect(char); document.getElementById('cssPresetSelect').value = preset.id; }
-            showToast(`预设"${name}"已创建`, 'success');
+            showToast(`预设 "${name}" 已创建`, 'success');
         }
 
         async function saveCssPreset() {
             const presetId = document.getElementById('cssPresetSelect').value; if (!presetId) { showToast('请先选择或创建预设', 'warning'); return; }
             const preset = App.globalCssPresets.find(p => p.id === presetId); if (!preset) return;
-            preset.css = document.getElementById('customCssEditor').value; await saveData(); showToast(`预设"${preset.name}"已更新`, 'success');
+            preset.css = document.getElementById('customCssEditor').value; await saveData(); showToast(`预设 "${preset.name}" 已更新`, 'success');
         }
 
         function showCssGuide() { showModal('cssGuideModal'); }
-        function previewCss() { document.getElementById('customCssStyles').textContent = document.getElementById('customCssEditor').value; showToast('CSS已预览', 'info'); }
-        function clearCustomCss() { document.getElementById('customCssEditor').value = ''; document.getElementById('cssPresetSelect').value = ''; document.getElementById('customCssStyles').textContent = ''; showToast('CSS已清除', 'info'); }
+        function previewCss() { document.getElementById('customCssStyles').textContent = document.getElementById('customCssEditor').value; showToast('CSS 已预览', 'info'); }
+        function clearCustomCss() { document.getElementById('customCssEditor').value = ''; document.getElementById('cssPresetSelect').value = ''; document.getElementById('customCssStyles').textContent = ''; showToast('CSS 已清除', 'info'); }
 
         async function saveCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
@@ -1658,9 +1625,7 @@
             char.description = document.getElementById('charDescription').value;
             char.greeting = greeting;
             char.scenario = document.getElementById('charScenario').value;
-            // 【修改】保存用户设定
-            char.userName = document.getElementById('charUserName').value.trim();
-            char.userPersona = document.getElementById('charUserPersona').value;
+            char.userNick = document.getElementById('charUserNick').value.trim();
             char.systemPrompt = document.getElementById('charSystemPrompt').value;
             char.timestampPosition = document.getElementById('timestampPosition').value;
             char.customCss = document.getElementById('customCssEditor').value;
@@ -1670,13 +1635,13 @@
         }
 
         function updateCharCounter() { const ta = document.getElementById('charGreeting'), counter = document.getElementById('greetingCharCounter'); counter.textContent = `${ta.value.length}/300`; counter.className = 'char-counter' + (ta.value.length >= 280 ? ' warning' : '') + (ta.value.length >= 300 ? ' error' : ''); }
-        function deleteCurrentCharacter() { const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; App.pendingDeleteType = 'character'; App.pendingDeleteId = char.id; document.getElementById('deleteModalTitle').textContent = `删除"${char.name}"？`; showModal('confirmDeleteModal'); }
+        function deleteCurrentCharacter() { const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; App.pendingDeleteType = 'character'; App.pendingDeleteId = char.id; document.getElementById('deleteModalTitle').textContent = `删除 "${char.name}"？`; showModal('confirmDeleteModal'); }
 
         function renderMessages() {
             const container = document.getElementById('chatMessages');
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             if (char.messages.length === 0) { container.innerHTML = '<div class="date-separator"><span class="date-separator-text">今天</span></div>'; return; }
-            const showAvatar = char.showAvatar !== false, avatarShape = char.avatarShape || 'circle', showBorder = char.showBorder === true, borderColor = char.borderColor || '#007AFF', borderWidth = char.borderWidth || 2;
+            const showAvatar = char.showAvatar !== false, avatarShape = char.avatarShape || 'circle', showBorder = char.showBorder === true, borderColor = char.borderColor || '#ffffff', borderWidth = char.borderWidth || 2;
             let shapeClass = avatarShape === 'square' ? 'square' : avatarShape === 'rounded-square' ? 'rounded-square' : '';
             const borderStyle = showBorder ? `border:${borderWidth}px solid ${borderColor};` : '';
             const timestampPos = char.timestampPosition || 'default';
@@ -1687,7 +1652,7 @@
                 if (msgDate !== lastDate) { html += `<div class="date-separator"><span class="date-separator-text">${formatDate(msg.timestamp)}</span></div>`; lastDate = msgDate; }
                 const type = msg.role === 'user' ? 'sent' : 'received', checked = App.selectedMsgs.has(msg.id) ? 'checked' : '';
                 let avatarHtml = '';
-                if (showAvatar) { const avatarContent = type === 'received' ? (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0])) : (char.userAvatar ? `<img src="${char.userAvatar}">` : '👤'); avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`; }
+                if (showAvatar) { const avatarContent = type === 'received' ? (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0])) : (char.userAvatar ? `<img src="${char.userAvatar}">` : '◑'); avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`; }
                 let quoteHtml = '';
                 if (msg.quoteContent) { quoteHtml = `<div class="message-quote">${escapeHtml(msg.quoteContent)}</div>`; }
                 let imageHtml = '';
@@ -1746,9 +1711,17 @@
         async function saveEditedMessage() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             const msg = char.messages.find(m => m.id === App.editingMsgId);
-            if (!msg) { showToast('找不到消息', 'error'); hideModal('editMessageModal'); return; }
+            if (!msg) {
+                showToast('找不到消息', 'error');
+                hideModal('editMessageModal');
+                return;
+            }
             msg.content = document.getElementById('editMessageContent').value;
-            await saveData(); hideModal('editMessageModal'); App.editingMsgId = null; renderMessages(); showToast('已保存', 'success');
+            await saveData();
+            hideModal('editMessageModal');
+            App.editingMsgId = null;
+            renderMessages();
+            showToast('已保存', 'success');
         }
 
         function viewImage(msgId) {
@@ -1909,15 +1882,15 @@
             return results.length > 0 ? results : [{ content: text.trim(), quote: null }];
         }
 
-        // 【修改】构建API消息时使用新的用户设定字段
         function buildAPIMessages(char, history) {
             const msgs = [];
-            let sys = `# 短信模拟规则\n\n你正在扮演"${char.name}"，通过手机短信聊天。\n\n## 【重要】输出格式\n1. 每条短信用 ||| 分隔\n2. 根据真实短信风格，每条5-20字左右，可长可短，灵活应变\n3. 不要加角色名前缀\n4. 像真人发短信\n5. 【禁止】不要在消息前加编号如#1:等\n\n## 引用回复格式（可选）\n如果要引用历史消息回复，格式：[Q:#编号]回复内容\n例：[Q:#3]确实是这样|||后面的普通消息\n编号对应历史消息序号(从1开始)\n\n## 正确示例\n嗯|||确实\n[Q:#5]真的吗？|||哈哈\n\n## 错误（禁止）\n❌ #1: 内容（禁止加编号前缀）\n❌ 角色名: 内容\n❌ 一条消息500字太长\n\n## 角色设定\n${char.description || '朋友'}`;
+            // 【修改】用户名字设定 - 改为定义用户的名字
+            const userName = char.userNick || '用户';
+            let sys = `# 短信模拟规则\n\n你正在扮演"${char.name}"，通过手机短信聊天。\n\n## 【重要】输出格式\n1. 每条短信用 ||| 分隔\n2. 根据真实短信风格，每条5-20字左右，可长可短，灵活应变\n3. 不要加角色名前缀\n4. 像真人发短信\n5. 【禁止】不要在消息前加编号如#1:等\n\n## 引用回复格式（可选）\n如果要引用历史消息回复，格式：[Q:#编号]回复内容\n例：[Q:#3]确实是这样|||后面的普通消息\n编号对应历史消息序号(从1开始)\n\n## 正确示例\n嗯|||确实\n[Q:#5]真的吗？|||哈哈\n\n## 错误（禁止）\n❌ #1: 内容（禁止加编号前缀）\n❌ 角色名: 内容\n❌ 一条消息500字太长\n\n## 角色\n${char.description || '朋友'}`;
             if (char.scenario) sys += `\n\n## 情景\n${char.scenario}`;
-            // 【修改】使用新的用户设定
-            if (char.userName) sys += `\n\n## 用户名字\n用户的名字是：${char.userName}`;
-            if (char.userPersona) sys += `\n\n## 用户人设\n${char.userPersona}`;
-            if (char.systemPrompt) sys += `\n\n## 额外指令\n${char.systemPrompt}`;
+            // 【修改】用户名字 - 作为用户的身份名字
+            if (char.userNick) sys += `\n\n## 用户名字\n用户的名字是"${userName}"，在对话中可以用这个名字称呼用户`;
+            if (char.systemPrompt) sys += `\n\n## 额外\n${char.systemPrompt}`;
             if (char.worldbookIds?.length > 0) {
                 char.worldbookIds.forEach(wbId => {
                     const wb = App.worldbooks.find(w => w.id === wbId);
@@ -1932,7 +1905,7 @@
             if (history.length > 0) {
                 sys += `\n\n## 历史消息编号参考（仅供引用时使用编号）\n`;
                 history.forEach((m, i) => {
-                    const role = m.role === 'user' ? '用户' : '你';
+                    const role = m.role === 'user' ? userName : '你';
                     const hasImg = m.image ? '[有图片]' : '';
                     sys += `#${i+1} ${role}: ${m.content.substring(0, 30)}${m.content.length > 30 ? '...' : ''}${hasImg}\n`;
                 });
@@ -1971,27 +1944,27 @@
             if (App.lastAIStart >= 0 && App.lastAIStart < char.messages.length) {
                 let allAI = true;
                 for (let i = App.lastAIStart; i < char.messages.length; i++) { if (char.messages[i].role !== 'assistant') { allAI = false; break; } }
-                if (allAI) { const count = char.messages.length - App.lastAIStart; char.messages.splice(App.lastAIStart, count); await saveData(); renderMessages(); showToast(`已删${count}条`, 'info'); App.lastAIStart = -1; await triggerAIReply(); return; }
+                if (allAI) { const count = char.messages.length - App.lastAIStart; char.messages.splice(App.lastAIStart, count); await saveData(); renderMessages(); showToast(`已删 ${count} 条`, 'info'); App.lastAIStart = -1; await triggerAIReply(); return; }
             }
             if (char.messages[char.messages.length-1].role !== 'assistant') { showToast('最后非AI', 'warning'); return; }
             let first = char.messages.length - 1;
             for (let i = char.messages.length - 1; i >= 0; i--) { if (char.messages[i].role === 'assistant') first = i; else break; }
-            const count = char.messages.length - first; char.messages.splice(first, count); await saveData(); renderMessages(); showToast(`已删${count}条`, 'info'); await triggerAIReply();
+            const count = char.messages.length - first; char.messages.splice(first, count); await saveData(); renderMessages(); showToast(`已删 ${count} 条`, 'info'); await triggerAIReply();
         }
 
         function enterSelectMode() { toggleExtensionPanel(); App.isSelectMode = true; App.selectedMsgs.clear(); document.getElementById('chatMessages').classList.add('select-mode'); document.getElementById('selectModeBar').classList.add('active'); updateSelectedCount(); }
         function exitSelectMode() { App.isSelectMode = false; App.selectedMsgs.clear(); document.getElementById('chatMessages').classList.remove('select-mode'); document.getElementById('selectModeBar').classList.remove('active'); document.querySelectorAll('.message-checkbox').forEach(el => el.classList.remove('checked')); }
         function toggleMsgSelect(id) { if (!App.isSelectMode) return; if (App.selectedMsgs.has(id)) App.selectedMsgs.delete(id); else App.selectedMsgs.add(id); document.querySelector(`[data-msg-id="${id}"] .message-checkbox`)?.classList.toggle('checked', App.selectedMsgs.has(id)); updateSelectedCount(); }
         function updateSelectedCount() { document.getElementById('selectedCount').textContent = App.selectedMsgs.size; }
-        async function deleteSelectedMessages() { const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; if (App.selectedMsgs.size === 0) { showToast('请选择', 'warning'); return; } const count = App.selectedMsgs.size; char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id)); await saveData(); exitSelectMode(); renderMessages(); showToast(`已删${count}条`, 'success'); App.lastAIStart = -1; }
+        async function deleteSelectedMessages() { const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; if (App.selectedMsgs.size === 0) { showToast('请选择', 'warning'); return; } const count = App.selectedMsgs.size; char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id)); await saveData(); exitSelectMode(); renderMessages(); showToast(`已删 ${count} 条`, 'success'); App.lastAIStart = -1; }
         function toggleExtensionPanel() { document.getElementById('extensionPanel').classList.toggle('active'); }
-        function autoResizeTextarea(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 90) + 'px'; }
+        function autoResizeTextarea(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
         function scrollToBottom() { const c = document.getElementById('chatMessages'); c.scrollTop = c.scrollHeight; }
 
         async function createWorldbook() {
             const name = document.getElementById('newWorldbookName').value.trim(); if (!name) { showToast('请输入', 'error'); return; }
             const wb = { id: Date.now().toString(), name, summary: '', entries: [{ name: '默认条目', keywords: '', content: '', alwaysActive: false }] };
-            App.worldbooks.push(wb); await saveData(); hideModal('createWorldbookModal'); document.getElementById('newWorldbookName').value = ''; renderWorldbooks(); showToast(`"${name}"已创建`, 'success'); openWorldbookEdit(wb.id);
+            App.worldbooks.push(wb); await saveData(); hideModal('createWorldbookModal'); document.getElementById('newWorldbookName').value = ''; renderWorldbooks(); showToast(`"${name}" 已创建`, 'success'); openWorldbookEdit(wb.id);
         }
 
         function renderWorldbooks() {
@@ -2000,7 +1973,7 @@
             list.style.display = 'block'; empty.style.display = 'none';
             list.innerHTML = App.worldbooks.map(wb => {
                 const entryCount = wb.entries?.length || 0;
-                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entryCount}条目</span></div><div class="worldbook-item-preview">${escapeHtml(wb.summary || '无简介')}</div></div>`;
+                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entryCount} 条目</span></div><div class="worldbook-item-preview">${escapeHtml(wb.summary || '无简介')}</div></div>`;
             }).join('');
         }
 
@@ -2015,8 +1988,8 @@
 
         function renderWorldbookEntries(wb) {
             const container = document.getElementById('worldbookEntries');
-            if (!wb.entries || wb.entries.length === 0) { container.innerHTML = '<div style="color:var(--text-secondary);font-size:13px;padding:10px">暂无条目</div>'; return; }
-            container.innerHTML = wb.entries.map((entry, i) => `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(entry.name || `条目${i+1}`)}${entry.alwaysActive ? ' 🔒' : ''}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${i})">✏️</button><button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${i})">🗑️</button></div></div><div class="worldbook-entry-keywords">${entry.keywords ? '关键词: ' + escapeHtml(entry.keywords) : '无关键词'}</div><div class="worldbook-entry-preview">${escapeHtml(entry.content?.substring(0, 80) || '无内容')}...</div></div>`).join('');
+            if (!wb.entries || wb.entries.length === 0) { container.innerHTML = '<div style="color:var(--text-tertiary);font-size:14px;padding:14px">暂无条目</div>'; return; }
+            container.innerHTML = wb.entries.map((entry, i) => `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(entry.name || `条目 ${i+1}`)}${entry.alwaysActive ? ' ●' : ''}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${i})">✎</button><button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${i})">✕</button></div></div><div class="worldbook-entry-keywords">${entry.keywords ? '关键词: ' + escapeHtml(entry.keywords) : '无关键词'}</div><div class="worldbook-entry-preview">${escapeHtml(entry.content?.substring(0, 80) || '无内容')}...</div></div>`).join('');
         }
 
         function addWorldbookEntry() {
@@ -2067,7 +2040,7 @@
         function deleteCurrentWorldbook() {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
             App.pendingDeleteType = 'worldbook'; App.pendingDeleteId = wb.id;
-            document.getElementById('deleteModalTitle').textContent = `删除"${wb.name}"？`;
+            document.getElementById('deleteModalTitle').textContent = `删除 "${wb.name}"？`;
             showModal('confirmDeleteModal');
         }
 
@@ -2101,13 +2074,7 @@
                     if (data.appIcons) App.appIcons = {...App.appIcons, ...data.appIcons};
                     if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets;
                     App.worldbooks.forEach(wb => { if (!wb.entries) wb.entries = [{ name: '默认条目', keywords: wb.keywords || '', content: wb.content || '', alwaysActive: wb.alwaysActive || false }]; });
-                    App.characters.forEach(c => {
-                        if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId];
-                        if (!c.worldbookIds) c.worldbookIds = [];
-                        if (c.userNick && !c.userName) { c.userName = c.userNick; }
-                        if (!c.userName) c.userName = '';
-                        if (!c.userPersona) c.userPersona = '';
-                    });
+                    App.characters.forEach(c => { if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId]; if (!c.worldbookIds) c.worldbookIds = []; });
                     if (await saveData()) { loadSettingsUI(); applyWallpaper(); applyAppIcons(); applyStatusBarVisibility(); await updateStorageDisplay(); showToast('导入成功', 'success'); }
                 } catch(err) { showToast('导入失败: ' + err.message, 'error'); }
             };
@@ -2115,7 +2082,7 @@
         }
 
         async function clearAllData() {
-            if (confirm('确定清除所有？')) {
+            if (confirm('确定清除所有数据？')) {
                 try { await clearIDBStore('appData'); await clearIDBStore('images'); location.reload(); }
                 catch (e) { indexedDB.deleteDatabase(DB_NAME); location.reload(); }
             }
