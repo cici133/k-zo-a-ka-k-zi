@@ -12,6 +12,7 @@
     <meta name="theme-color" content="#0a0a0a">
     <title>NOIR · Premium SMS</title>
     <style id="globalFontStyle"></style>
+    <style id="globalSizeStyle"></style>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap');
 
@@ -44,6 +45,9 @@
             --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
             --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             --transition-fast: all 0.2s ease;
+            --base-font-size: 14px;
+            --base-padding: 12px;
+            --base-radius: 18px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -54,6 +58,7 @@
             background: var(--bg-primary); color: var(--text-primary);
             overscroll-behavior: none; position: fixed; width: 100%; top: 0; left: 0;
             letter-spacing: 0.02em; line-height: 1.5;
+            font-size: var(--base-font-size);
         }
 
         #wallpaperLayer {
@@ -416,8 +421,8 @@
         .message-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
         .message {
-            max-width: 72%; padding: 12px 16px;
-            font-size: 14px; line-height: 1.5;
+            max-width: 72%; padding: var(--base-padding) calc(var(--base-padding) + 4px);
+            font-size: var(--base-font-size); line-height: 1.5;
             word-wrap: break-word;
             animation: msgIn 0.25s ease-out;
             position: relative;
@@ -428,19 +433,23 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
+        /* 默认气泡样式 - 毛玻璃 */
         .message.sent {
-            background: linear-gradient(135deg, rgba(201, 169, 98, 0.25), rgba(160, 128, 64, 0.2));
-            border: 1px solid rgba(201, 169, 98, 0.3);
+            background: rgba(60, 60, 65, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: var(--text-primary);
-            border-radius: 18px 18px 4px 18px;
+            border-radius: var(--base-radius) var(--base-radius) 4px var(--base-radius);
         }
 
         .message.received {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            backdrop-filter: blur(10px);
+            background: rgba(40, 40, 45, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             color: var(--text-primary);
-            border-radius: 18px 18px 18px 4px;
+            border-radius: var(--base-radius) var(--base-radius) var(--base-radius) 4px;
         }
 
         .message-quote {
@@ -546,17 +555,24 @@
         .chat-btn:active { transform: scale(0.94); }
         .chat-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.5; fill: none; }
 
+        /* 修改发送和AI按钮为深灰色毛玻璃风格 */
         .chat-btn.send {
-            background: linear-gradient(135deg, var(--accent-gold), #a08040);
-            border: none;
+            background: rgba(45, 45, 50, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .chat-btn.send svg { stroke: #0a0a0a; }
+        .chat-btn.send:hover { background: rgba(55, 55, 60, 0.9); }
+        .chat-btn.send svg { stroke: var(--text-primary); }
 
         .chat-btn.ai {
-            background: linear-gradient(135deg, var(--accent-rose), #8a4a5d);
-            border: none;
+            background: rgba(40, 40, 45, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .chat-btn.ai svg { stroke: white; }
+        .chat-btn.ai:hover { background: rgba(50, 50, 55, 0.9); }
+        .chat-btn.ai svg { stroke: var(--text-secondary); }
 
         .chat-input-field {
             flex: 1; min-height: 40px; max-height: 100px;
@@ -567,7 +583,7 @@
             font-size: 14px; resize: none; outline: none;
             font-family: inherit; line-height: 1.4;
         }
-        .chat-input-field:focus { border-color: var(--accent-gold); }
+        .chat-input-field:focus { border-color: rgba(255, 255, 255, 0.2); }
         .chat-input-field::placeholder { color: var(--text-muted); }
 
         .extension-panel {
@@ -677,7 +693,7 @@
         .modal-overlay.active { opacity: 1; visibility: visible; }
 
         .modal {
-            width: 100%; max-width: 360px; max-height: 80vh;
+            width: 100%; max-width: 360px; max-height: 85vh;
             overflow-y: auto;
             background: var(--bg-secondary);
             backdrop-filter: blur(var(--blur-heavy));
@@ -941,6 +957,131 @@
             color: var(--accent-gold);
         }
 
+        /* 气泡样式选择器 */
+        .bubble-style-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 8px; margin-bottom: 16px;
+        }
+        .bubble-style-option {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 6px; padding: 12px 8px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px; cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        .bubble-style-option:hover { background: var(--bg-glass-hover); }
+        .bubble-style-option.selected {
+            background: var(--accent-gold-dim);
+            border-color: var(--accent-gold);
+        }
+        .bubble-style-preview {
+            width: 36px; height: 24px; border-radius: 6px;
+        }
+        .bubble-style-preview.glass {
+            background: rgba(60, 60, 65, 0.6);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .bubble-style-preview.solid {
+            background: #3a3a40;
+        }
+        .bubble-style-preview.metallic {
+            background: linear-gradient(145deg, #4a4a50, #2a2a30);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.2);
+        }
+        .bubble-style-preview.neon {
+            background: rgba(40, 40, 45, 0.8);
+            box-shadow: 0 0 8px rgba(100, 200, 255, 0.4);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+        }
+        .bubble-style-preview.minimal {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .bubble-style-name { font-size: 9px; color: var(--text-tertiary); text-align: center; }
+
+        /* 高级颜色选择器 */
+        .color-wheel-container {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 12px; padding: 16px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px; margin-bottom: 16px;
+        }
+        .color-wheel {
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            background: conic-gradient(
+                red, yellow, lime, aqua, blue, magenta, red
+            );
+            position: relative; cursor: crosshair;
+        }
+        .color-wheel::before {
+            content: ''; position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%; height: 70%;
+            border-radius: 50%;
+            background: radial-gradient(white 0%, transparent 70%);
+        }
+        .color-wheel::after {
+            content: ''; position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%; height: 70%;
+            border-radius: 50%;
+            background: radial-gradient(transparent 0%, black 100%);
+            opacity: 0.5;
+        }
+        .color-wheel-pointer {
+            position: absolute; width: 16px; height: 16px;
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        .color-input-row {
+            display: flex; align-items: center; gap: 10px; width: 100%;
+        }
+        .color-hex-input {
+            flex: 1; padding: 10px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px; color: var(--text-primary);
+            font-size: 13px; font-family: 'SF Mono', monospace;
+            text-transform: uppercase;
+        }
+        .color-hex-input:focus { border-color: var(--accent-gold); outline: none; }
+        .color-preview-swatch {
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            border: 2px solid var(--border-accent);
+        }
+
+        /* 气泡预览区 */
+        .bubble-preview-area {
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        .bubble-preview-title {
+            font-size: 10px; color: var(--text-tertiary);
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 12px; text-align: center;
+        }
+        .bubble-preview-messages {
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .preview-bubble {
+            max-width: 70%; padding: 10px 14px;
+            border-radius: 14px; font-size: 13px;
+        }
+        .preview-bubble.sent { align-self: flex-end; border-radius: 14px 14px 4px 14px; }
+        .preview-bubble.received { align-self: flex-start; border-radius: 14px 14px 14px 4px; }
+
         .worldbook-entries { margin-top: 12px; }
         .worldbook-entry-item {
             background: var(--bg-glass);
@@ -1141,8 +1282,10 @@
         ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
         #customCssStyles { }
+        #bubbleStyles { }
     </style>
     <style id="customCssStyles"></style>
+    <style id="bubbleStyles"></style>
 </head>
 <body>
     <div id="wallpaperLayer"></div>
@@ -1223,6 +1366,22 @@
                     <div class="storage-details">
                         <span id="storageUsed">Used: 0 MB</span>
                         <span id="storageTotal">Unlimited</span>
+                    </div>
+                </div>
+
+                <p class="settings-group-title">Display</p>
+                <div class="settings-group" style="padding:16px">
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Global Font Size</span>
+                            <span class="slider-value" id="fontSizeValue">Standard</span>
+                        </div>
+                        <input type="range" class="slider-input" id="globalFontSize" min="0" max="2" step="1" value="1" oninput="updateGlobalFontSize(this.value)">
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-tertiary);margin-top:4px">
+                        <span>Compact</span>
+                        <span>Standard</span>
+                        <span>Large</span>
                     </div>
                 </div>
 
@@ -1452,6 +1611,93 @@
                     </div>
                 </div>
 
+                <p class="settings-group-title">Bubble Style</p>
+                <div class="settings-group" style="padding:16px">
+                    <label class="input-label">Style</label>
+                    <div class="bubble-style-grid" id="bubbleStyleGrid">
+                        <div class="bubble-style-option selected" data-style="glass" onclick="selectBubbleStyle(this)">
+                            <div class="bubble-style-preview glass"></div>
+                            <span class="bubble-style-name">Glass</span>
+                        </div>
+                        <div class="bubble-style-option" data-style="solid" onclick="selectBubbleStyle(this)">
+                            <div class="bubble-style-preview solid"></div>
+                            <span class="bubble-style-name">Solid</span>
+                        </div>
+                        <div class="bubble-style-option" data-style="metallic" onclick="selectBubbleStyle(this)">
+                            <div class="bubble-style-preview metallic"></div>
+                            <span class="bubble-style-name">Metal</span>
+                        </div>
+                        <div class="bubble-style-option" data-style="neon" onclick="selectBubbleStyle(this)">
+                            <div class="bubble-style-preview neon"></div>
+                            <span class="bubble-style-name">Neon</span>
+                        </div>
+                        <div class="bubble-style-option" data-style="minimal" onclick="selectBubbleStyle(this)">
+                            <div class="bubble-style-preview minimal"></div>
+                            <span class="bubble-style-name">Minimal</span>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <label class="input-label">User Bubble Color</label>
+                    <div class="color-input-row" style="margin-bottom:12px">
+                        <input type="text" class="color-hex-input" id="userBubbleColorHex" value="#3c3c41" placeholder="#RRGGBB" oninput="syncColorFromHex('userBubble')">
+                        <input type="color" class="color-picker-input" id="userBubbleColorPicker" value="#3c3c41" onchange="syncColorFromPicker('userBubble')">
+                        <div class="color-preview-swatch" id="userBubbleColorSwatch" style="background:#3c3c41"></div>
+                    </div>
+
+                    <div id="userBubbleColor2Row" style="display:none">
+                        <label class="input-label">User Bubble Color 2 (Metal Gradient)</label>
+                        <div class="color-input-row" style="margin-bottom:12px">
+                            <input type="text" class="color-hex-input" id="userBubbleColor2Hex" value="#2a2a2f" placeholder="#RRGGBB" oninput="syncColorFromHex('userBubble2')">
+                            <input type="color" class="color-picker-input" id="userBubbleColor2Picker" value="#2a2a2f" onchange="syncColorFromPicker('userBubble2')">
+                            <div class="color-preview-swatch" id="userBubbleColor2Swatch" style="background:#2a2a2f"></div>
+                        </div>
+                    </div>
+
+                    <label class="input-label">User Text Color</label>
+                    <div class="color-input-row" style="margin-bottom:16px">
+                        <input type="text" class="color-hex-input" id="userTextColorHex" value="#ffffff" placeholder="#RRGGBB" oninput="syncColorFromHex('userText')">
+                        <input type="color" class="color-picker-input" id="userTextColorPicker" value="#ffffff" onchange="syncColorFromPicker('userText')">
+                        <div class="color-preview-swatch" id="userTextColorSwatch" style="background:#ffffff"></div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <label class="input-label">Char Bubble Color</label>
+                    <div class="color-input-row" style="margin-bottom:12px">
+                        <input type="text" class="color-hex-input" id="charBubbleColorHex" value="#28282d" placeholder="#RRGGBB" oninput="syncColorFromHex('charBubble')">
+                        <input type="color" class="color-picker-input" id="charBubbleColorPicker" value="#28282d" onchange="syncColorFromPicker('charBubble')">
+                        <div class="color-preview-swatch" id="charBubbleColorSwatch" style="background:#28282d"></div>
+                    </div>
+
+                    <div id="charBubbleColor2Row" style="display:none">
+                        <label class="input-label">Char Bubble Color 2 (Metal Gradient)</label>
+                        <div class="color-input-row" style="margin-bottom:12px">
+                            <input type="text" class="color-hex-input" id="charBubbleColor2Hex" value="#1a1a1f" placeholder="#RRGGBB" oninput="syncColorFromHex('charBubble2')">
+                            <input type="color" class="color-picker-input" id="charBubbleColor2Picker" value="#1a1a1f" onchange="syncColorFromPicker('charBubble2')">
+                            <div class="color-preview-swatch" id="charBubbleColor2Swatch" style="background:#1a1a1f"></div>
+                        </div>
+                    </div>
+
+                    <label class="input-label">Char Text Color</label>
+                    <div class="color-input-row" style="margin-bottom:16px">
+                        <input type="text" class="color-hex-input" id="charTextColorHex" value="#ffffff" placeholder="#RRGGBB" oninput="syncColorFromHex('charText')">
+                        <input type="color" class="color-picker-input" id="charTextColorPicker" value="#ffffff" onchange="syncColorFromPicker('charText')">
+                        <div class="color-preview-swatch" id="charTextColorSwatch" style="background:#ffffff"></div>
+                    </div>
+
+                    <div class="bubble-preview-area">
+                        <div class="bubble-preview-title">Preview</div>
+                        <div class="bubble-preview-messages">
+                            <div class="preview-bubble received" id="previewBubbleReceived">Hello there!</div>
+                            <div class="preview-bubble sent" id="previewBubbleSent">Hi, how are you?</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary btn-small" onclick="updateBubblePreview()">Refresh Preview</button>
+                </div>
+
                 <p class="settings-group-title">Chat Wallpaper</p>
                 <div class="settings-group" style="padding:16px">
                     <div class="chat-wallpaper-preview" id="chatWallpaperPreview"><span>No custom wallpaper</span></div>
@@ -1509,7 +1755,7 @@
 
                 <p class="settings-group-title">Custom CSS Styling</p>
                 <div class="settings-group" style="padding:16px">
-                    <div class="action-hint warning"><span class="action-hint-icon">⚠</span><span class="action-hint-text">Custom CSS overrides avatar settings above</span></div>
+                    <div class="action-hint warning"><span class="action-hint-icon">⚠</span><span class="action-hint-text">Custom CSS overrides bubble style settings above</span></div>
                     <div class="input-group">
                         <label class="input-label">CSS Preset</label>
                         <div class="preset-selector">
@@ -1785,7 +2031,7 @@
 
     <script>
         const DB_NAME = 'NoirAppDB';
-        const DB_VERSION = 4;
+        const DB_VERSION = 5;
         let db = null;
 
         function openDB() {
@@ -1845,7 +2091,7 @@
             settings: {
                 apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048,
                 maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false,
-                selectedFontId: null
+                selectedFontId: null, globalFontSize: 1
             },
             globalCssPresets: [],
             apiPresets: [],
@@ -1877,6 +2123,12 @@
             { id: 'cormorant', name: 'Cormorant Garamond', url: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap', isGoogleFont: true, isDefault: true }
         ];
 
+        const FONT_SIZES = [
+            { fontSize: '12px', padding: '10px', radius: '14px', label: 'Compact' },
+            { fontSize: '14px', padding: '12px', radius: '18px', label: 'Standard' },
+            { fontSize: '16px', padding: '14px', radius: '20px', label: 'Large' }
+        ];
+
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 await openDB();
@@ -1887,6 +2139,7 @@
                 applyAppIcons();
                 applyStatusBarVisibility();
                 applyGlobalFont();
+                applyGlobalFontSize();
                 updateConnectionUI();
                 highlightWallpaper();
                 updateWallpaperPreview();
@@ -1894,6 +2147,7 @@
                 updateStorageDisplay();
                 renderFontList();
                 updateApiPresetSelect();
+                updateFontSizeSlider();
             } catch (e) { console.error('Init failed:', e); showToast('Initialization failed', 'error'); }
         });
 
@@ -1918,6 +2172,28 @@
             const toggle = document.getElementById('hideStatusBarToggle');
             if (App.settings.hideStatusBar) { statusBar.classList.add('hidden'); homeScreen.classList.add('no-statusbar'); toggle?.classList.add('active'); }
             else { statusBar.classList.remove('hidden'); homeScreen.classList.remove('no-statusbar'); toggle?.classList.remove('active'); }
+        }
+
+        // 全局字体大小
+        function updateGlobalFontSize(value) {
+            const idx = parseInt(value);
+            App.settings.globalFontSize = idx;
+            document.getElementById('fontSizeValue').textContent = FONT_SIZES[idx].label;
+            applyGlobalFontSize();
+            saveData();
+        }
+
+        function updateFontSizeSlider() {
+            const idx = App.settings.globalFontSize || 1;
+            document.getElementById('globalFontSize').value = idx;
+            document.getElementById('fontSizeValue').textContent = FONT_SIZES[idx].label;
+        }
+
+        function applyGlobalFontSize() {
+            const idx = App.settings.globalFontSize || 1;
+            const size = FONT_SIZES[idx];
+            const styleEl = document.getElementById('globalSizeStyle');
+            styleEl.textContent = `:root { --base-font-size: ${size.fontSize}; --base-padding: ${size.padding}; --base-radius: ${size.radius}; }`;
         }
 
         async function saveData() {
@@ -1957,7 +2233,18 @@
                 DEFAULT_FONTS.forEach(df => { if (!App.fonts.find(f => f.id === df.id)) App.fonts.push(df); });
 
                 App.worldbooks.forEach(wb => { if (!wb.entries) wb.entries = [{ name: 'Default Entry', keywords: wb.keywords || '', content: wb.content || '', alwaysActive: wb.alwaysActive || false }]; });
-                App.characters.forEach(c => { if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId]; if (!c.worldbookIds) c.worldbookIds = []; });
+                App.characters.forEach(c => {
+                    if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId];
+                    if (!c.worldbookIds) c.worldbookIds = [];
+                    // 初始化气泡样式
+                    if (!c.bubbleStyle) c.bubbleStyle = 'glass';
+                    if (!c.userBubbleColor) c.userBubbleColor = '#3c3c41';
+                    if (!c.userBubbleColor2) c.userBubbleColor2 = '#2a2a2f';
+                    if (!c.userTextColor) c.userTextColor = '#ffffff';
+                    if (!c.charBubbleColor) c.charBubbleColor = '#28282d';
+                    if (!c.charBubbleColor2) c.charBubbleColor2 = '#1a1a1f';
+                    if (!c.charTextColor) c.charTextColor = '#ffffff';
+                });
 
                 loadSettingsUI();
                 if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
@@ -2018,6 +2305,187 @@
             document.getElementById('tempValue').textContent = App.settings.temperature;
             document.getElementById('maxTokens').value = App.settings.maxTokens;
             document.getElementById('maxTokensValue').textContent = App.settings.maxTokens;
+        }
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // BUBBLE STYLE SYSTEM
+        // ════════════════════════════════════════════════════════════════════════════════
+        function selectBubbleStyle(el) {
+            document.querySelectorAll('.bubble-style-option').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            const style = el.dataset.style;
+            // 显示/隐藏第二颜色选项（仅metallic需要）
+            const showColor2 = style === 'metallic';
+            document.getElementById('userBubbleColor2Row').style.display = showColor2 ? 'block' : 'none';
+            document.getElementById('charBubbleColor2Row').style.display = showColor2 ? 'block' : 'none';
+            updateBubblePreview();
+        }
+
+        function syncColorFromHex(type) {
+            const hexInput = document.getElementById(`${type}ColorHex`);
+            const picker = document.getElementById(`${type}ColorPicker`);
+            const swatch = document.getElementById(`${type}ColorSwatch`);
+            let val = hexInput.value.trim();
+            if (!val.startsWith('#')) val = '#' + val;
+            if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+                picker.value = val;
+                swatch.style.background = val;
+            }
+            updateBubblePreview();
+        }
+
+        function syncColorFromPicker(type) {
+            const picker = document.getElementById(`${type}ColorPicker`);
+            const hexInput = document.getElementById(`${type}ColorHex`);
+            const swatch = document.getElementById(`${type}ColorSwatch`);
+            hexInput.value = picker.value.toUpperCase();
+            swatch.style.background = picker.value;
+            updateBubblePreview();
+        }
+
+        function updateBubblePreview() {
+            const styleEl = document.querySelector('.bubble-style-option.selected');
+            const style = styleEl ? styleEl.dataset.style : 'glass';
+
+            const userColor1 = document.getElementById('userBubbleColorHex').value || '#3c3c41';
+            const userColor2 = document.getElementById('userBubbleColor2Hex').value || '#2a2a2f';
+            const userTextColor = document.getElementById('userTextColorHex').value || '#ffffff';
+            const charColor1 = document.getElementById('charBubbleColorHex').value || '#28282d';
+            const charColor2 = document.getElementById('charBubbleColor2Hex').value || '#1a1a1f';
+            const charTextColor = document.getElementById('charTextColorHex').value || '#ffffff';
+
+            const previewSent = document.getElementById('previewBubbleSent');
+            const previewReceived = document.getElementById('previewBubbleReceived');
+
+            // 根据样式生成CSS
+            let sentStyle = '', receivedStyle = '';
+
+            switch (style) {
+                case 'glass':
+                    sentStyle = `background:${hexToRgba(userColor1, 0.6)};backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);color:${userTextColor}`;
+                    receivedStyle = `background:${hexToRgba(charColor1, 0.7)};backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);color:${charTextColor}`;
+                    break;
+                case 'solid':
+                    sentStyle = `background:${userColor1};border:none;color:${userTextColor}`;
+                    receivedStyle = `background:${charColor1};border:none;color:${charTextColor}`;
+                    break;
+                case 'metallic':
+                    sentStyle = `background:linear-gradient(145deg,${userColor1},${userColor2});box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),inset 0 -1px 0 rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.05);color:${userTextColor}`;
+                    receivedStyle = `background:linear-gradient(145deg,${charColor1},${charColor2});box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),inset 0 -1px 0 rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.05);color:${charTextColor}`;
+                    break;
+                case 'neon':
+                    sentStyle = `background:${hexToRgba(userColor1, 0.8)};box-shadow:0 0 12px ${hexToRgba(userColor1, 0.5)},0 0 24px ${hexToRgba(userColor1, 0.2)};border:1px solid ${hexToRgba(userColor1, 0.6)};color:${userTextColor}`;
+                    receivedStyle = `background:${hexToRgba(charColor1, 0.8)};box-shadow:0 0 12px ${hexToRgba(charColor1, 0.5)},0 0 24px ${hexToRgba(charColor1, 0.2)};border:1px solid ${hexToRgba(charColor1, 0.6)};color:${charTextColor}`;
+                    break;
+                case 'minimal':
+                    sentStyle = `background:transparent;border:1px solid ${hexToRgba(userColor1, 0.4)};color:${userTextColor}`;
+                    receivedStyle = `background:transparent;border:1px solid ${hexToRgba(charColor1, 0.4)};color:${charTextColor}`;
+                    break;
+            }
+
+            previewSent.style.cssText = sentStyle;
+            previewReceived.style.cssText = receivedStyle;
+        }
+
+        function hexToRgba(hex, alpha) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            if (result) {
+                const r = parseInt(result[1], 16);
+                const g = parseInt(result[2], 16);
+                const b = parseInt(result[3], 16);
+                return `rgba(${r},${g},${b},${alpha})`;
+            }
+            return hex;
+        }
+
+        function applyBubbleStyles(char) {
+            const styleEl = document.getElementById('bubbleStyles');
+
+            // 如果有自定义CSS，不应用气泡样式
+            if (char.customCss || char.activeCssPresetId) {
+                styleEl.textContent = '';
+                return;
+            }
+
+            const style = char.bubbleStyle || 'glass';
+            const userColor1 = char.userBubbleColor || '#3c3c41';
+            const userColor2 = char.userBubbleColor2 || '#2a2a2f';
+            const userTextColor = char.userTextColor || '#ffffff';
+            const charColor1 = char.charBubbleColor || '#28282d';
+            const charColor2 = char.charBubbleColor2 || '#1a1a1f';
+            const charTextColor = char.charTextColor || '#ffffff';
+
+            let css = '';
+
+            switch (style) {
+                case 'glass':
+                    css = `.message.sent{background:${hexToRgba(userColor1,0.6)};backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08);color:${userTextColor}}.message.received{background:${hexToRgba(charColor1,0.7)};backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);color:${charTextColor}}`;
+                    break;
+                case 'solid':
+                    css = `.message.sent{background:${userColor1};border:none;color:${userTextColor}}.message.received{background:${charColor1};border:none;color:${charTextColor}}`;
+                    break;
+                case 'metallic':
+                    css = `.message.sent{background:linear-gradient(145deg,${userColor1},${userColor2});box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),inset 0 -1px 0 rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.05);color:${userTextColor}}.message.received{background:linear-gradient(145deg,${charColor1},${charColor2});box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),inset 0 -1px 0 rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.05);color:${charTextColor}}`;
+                    break;
+                case 'neon':
+                    css = `.message.sent{background:${hexToRgba(userColor1,0.8)};box-shadow:0 0 12px ${hexToRgba(userColor1,0.5)},0 0 24px ${hexToRgba(userColor1,0.2)};border:1px solid ${hexToRgba(userColor1,0.6)};color:${userTextColor}}.message.received{background:${hexToRgba(charColor1,0.8)};box-shadow:0 0 12px ${hexToRgba(charColor1,0.5)},0 0 24px ${hexToRgba(charColor1,0.2)};border:1px solid ${hexToRgba(charColor1,0.6)};color:${charTextColor}}`;
+                    break;
+                case 'minimal':
+                    css = `.message.sent{background:transparent;border:1px solid ${hexToRgba(userColor1,0.4)};color:${userTextColor}}.message.received{background:transparent;border:1px solid ${hexToRgba(charColor1,0.4)};color:${charTextColor}}`;
+                    break;
+            }
+
+            styleEl.textContent = css;
+        }
+
+        function loadBubbleStyleUI(char) {
+            // 设置样式选择
+            document.querySelectorAll('.bubble-style-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.style === (char.bubbleStyle || 'glass'));
+            });
+
+            // 设置颜色
+            document.getElementById('userBubbleColorHex').value = char.userBubbleColor || '#3c3c41';
+            document.getElementById('userBubbleColorPicker').value = char.userBubbleColor || '#3c3c41';
+            document.getElementById('userBubbleColorSwatch').style.background = char.userBubbleColor || '#3c3c41';
+
+            document.getElementById('userBubbleColor2Hex').value = char.userBubbleColor2 || '#2a2a2f';
+            document.getElementById('userBubbleColor2Picker').value = char.userBubbleColor2 || '#2a2a2f';
+            document.getElementById('userBubbleColor2Swatch').style.background = char.userBubbleColor2 || '#2a2a2f';
+
+            document.getElementById('userTextColorHex').value = char.userTextColor || '#ffffff';
+            document.getElementById('userTextColorPicker').value = char.userTextColor || '#ffffff';
+            document.getElementById('userTextColorSwatch').style.background = char.userTextColor || '#ffffff';
+
+            document.getElementById('charBubbleColorHex').value = char.charBubbleColor || '#28282d';
+            document.getElementById('charBubbleColorPicker').value = char.charBubbleColor || '#28282d';
+            document.getElementById('charBubbleColorSwatch').style.background = char.charBubbleColor || '#28282d';
+
+            document.getElementById('charBubbleColor2Hex').value = char.charBubbleColor2 || '#1a1a1f';
+            document.getElementById('charBubbleColor2Picker').value = char.charBubbleColor2 || '#1a1a1f';
+            document.getElementById('charBubbleColor2Swatch').style.background = char.charBubbleColor2 || '#1a1a1f';
+
+            document.getElementById('charTextColorHex').value = char.charTextColor || '#ffffff';
+            document.getElementById('charTextColorPicker').value = char.charTextColor || '#ffffff';
+            document.getElementById('charTextColorSwatch').style.background = char.charTextColor || '#ffffff';
+
+            // 显示/隐藏第二颜色
+            const showColor2 = (char.bubbleStyle || 'glass') === 'metallic';
+            document.getElementById('userBubbleColor2Row').style.display = showColor2 ? 'block' : 'none';
+            document.getElementById('charBubbleColor2Row').style.display = showColor2 ? 'block' : 'none';
+
+            updateBubblePreview();
+        }
+
+        function saveBubbleStyleFromUI(char) {
+            const styleEl = document.querySelector('.bubble-style-option.selected');
+            char.bubbleStyle = styleEl ? styleEl.dataset.style : 'glass';
+            char.userBubbleColor = document.getElementById('userBubbleColorHex').value || '#3c3c41';
+            char.userBubbleColor2 = document.getElementById('userBubbleColor2Hex').value || '#2a2a2f';
+            char.userTextColor = document.getElementById('userTextColorHex').value || '#ffffff';
+            char.charBubbleColor = document.getElementById('charBubbleColorHex').value || '#28282d';
+            char.charBubbleColor2 = document.getElementById('charBubbleColor2Hex').value || '#1a1a1f';
+            char.charTextColor = document.getElementById('charTextColorHex').value || '#ffffff';
         }
 
         // ════════════════════════════════════════════════════════════════════════════════
@@ -2263,7 +2731,7 @@
                 if (id === 'messagesPage') renderContacts();
                 if (id === 'worldbookPage') renderWorldbooks();
                 if (id === 'wallpaperPage') { updateWallpaperPreview(); updateIconPreviews(); highlightWallpaper(); applyStatusBarVisibility(); }
-                if (id === 'settingsPage') { updateStorageDisplay(); updateApiPresetSelect(); }
+                if (id === 'settingsPage') { updateStorageDisplay(); updateApiPresetSelect(); updateFontSizeSlider(); }
                 if (id === 'fontsPage') renderFontList();
             }
         }
@@ -2323,7 +2791,18 @@
         // ════════════════════════════════════════════════════════════════════════════════
         async function createCharacter() {
             const name = document.getElementById('newCharacterName').value.trim(); if (!name) { showToast('Please enter name', 'error'); return; }
-            const char = { id: Date.now().toString(), name, avatar: ['◆','◇','●','○','■','□'][Math.floor(Math.random()*6)], avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle', showBorder: false, borderColor: '#c9a962', borderWidth: 2, description: '', greeting: '', scenario: '', worldbookIds: [], userNick: '', systemPrompt: '', messages: [], chatWallpaper: null, customCss: '', activeCssPresetId: null, timestampPosition: 'default' };
+            const char = {
+                id: Date.now().toString(), name, avatar: ['◆','◇','●','○','■','□'][Math.floor(Math.random()*6)],
+                avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle',
+                showBorder: false, borderColor: '#c9a962', borderWidth: 2,
+                description: '', greeting: '', scenario: '', worldbookIds: [],
+                userNick: '', systemPrompt: '', messages: [],
+                chatWallpaper: null, customCss: '', activeCssPresetId: null, timestampPosition: 'default',
+                // 气泡样式
+                bubbleStyle: 'glass',
+                userBubbleColor: '#3c3c41', userBubbleColor2: '#2a2a2f', userTextColor: '#ffffff',
+                charBubbleColor: '#28282d', charBubbleColor2: '#1a1a1f', charTextColor: '#ffffff'
+            };
             App.characters.push(char); await saveData(); hideModal('createCharacterModal'); document.getElementById('newCharacterName').value = ''; renderContacts(); showToast(`"${name}" created`, 'success');
         }
 
@@ -2348,7 +2827,11 @@
             document.getElementById('chatTitle').textContent = char.name;
             document.getElementById('selectModeBar').classList.remove('active');
             document.getElementById('chatMessages').classList.remove('select-mode');
-            applyChatWallpaper(char); applyCustomCss(char); renderMessages(); openPage('chatPage');
+            applyChatWallpaper(char);
+            applyCustomCss(char);
+            applyBubbleStyles(char);
+            renderMessages();
+            openPage('chatPage');
             if (char.messages.length === 0 && char.greeting) addMessage(char.greeting, 'received');
         }
 
@@ -2369,6 +2852,7 @@
         function closeChatPage() {
             exitSelectMode(); closePage('chatPage');
             document.getElementById('customCssStyles').textContent = '';
+            document.getElementById('bubbleStyles').textContent = '';
             const chatPage = document.getElementById('chatPage');
             chatPage.classList.remove('has-custom-bg'); chatPage.style.backgroundImage = '';
             App.currentCharId = null; App.currentQuote = null;
@@ -2377,6 +2861,7 @@
         function openCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             updateChatWallpaperPreview(char);
+            loadBubbleStyleUI(char);
             const charAvUpload = document.getElementById('charAvatarUpload'), userAvUpload = document.getElementById('userAvatarUpload');
             if (char.avatarImage) { charAvUpload.innerHTML = `<img src="${char.avatarImage}">`; charAvUpload.classList.add('has-image'); } else { charAvUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'; charAvUpload.classList.remove('has-image'); }
             charAvUpload.dataset.image = char.avatarImage || '';
@@ -2477,358 +2962,333 @@
         }
 
         function showCssGuide() { showModal('cssGuideModal'); }
-        function previewCss() { document.getElementById('customCssStyles').textContent = document.getElementById('customCssEditor').value; showToast('CSS previewed', 'info'); }
-        function clearCustomCss() { document.getElementById('customCssEditor').value = ''; document.getElementById('cssPresetSelect').value = ''; document.getElementById('customCssStyles').textContent = ''; showToast('CSS cleared', 'info'); }
+
+        function previewCss() { const css = document.getElementById('customCssEditor').value; document.getElementById('customCssStyles').textContent = css; showToast('Preview applied', 'info'); }
+        function clearCustomCss() { document.getElementById('customCssEditor').value = ''; document.getElementById('cssPresetSelect').value = ''; showToast('CSS cleared', 'info'); }
 
         async function saveCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const greeting = document.getElementById('charGreeting').value; if (greeting.length > 300) { showToast('First message too long', 'error'); return; }
-            char.avatarImage = document.getElementById('charAvatarUpload').dataset.image || null;
-            char.userAvatar = document.getElementById('userAvatarUpload').dataset.image || null;
-            char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
-            const shapeEl = document.querySelector('#avatarShapeOptions .shape-option.selected');
-            char.avatarShape = shapeEl ? shapeEl.dataset.shape : 'circle';
-            char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
-            char.borderColor = document.getElementById('borderColorPicker').value;
-            char.name = document.getElementById('charName').value.trim() || char.name;
-            char.avatar = document.getElementById('charAvatar').value.trim() || char.avatar;
+            char.name = document.getElementById('charName').value.trim() || 'Unnamed';
+            char.avatar = document.getElementById('charAvatar').value.trim();
             char.description = document.getElementById('charDescription').value;
-            char.greeting = greeting;
+            char.greeting = document.getElementById('charGreeting').value;
             char.scenario = document.getElementById('charScenario').value;
             char.userNick = document.getElementById('charUserNick').value.trim();
             char.systemPrompt = document.getElementById('charSystemPrompt').value;
+            char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
+            char.avatarShape = document.querySelector('#avatarShapeOptions .shape-option.selected')?.dataset.shape || 'circle';
+            char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
+            char.borderColor = document.getElementById('borderColorPicker').value;
             char.timestampPosition = document.getElementById('timestampPosition').value;
             char.customCss = document.getElementById('customCssEditor').value;
             char.activeCssPresetId = document.getElementById('cssPresetSelect').value || null;
-            document.getElementById('chatTitle').textContent = char.name;
-            await saveData(); applyChatWallpaper(char); applyCustomCss(char); renderMessages(); closeCharacterSettings(); showToast('Settings saved', 'success');
+            const charAvUpload = document.getElementById('charAvatarUpload');
+            const userAvUpload = document.getElementById('userAvatarUpload');
+            if (charAvUpload.dataset.image) char.avatarImage = charAvUpload.dataset.image;
+            if (userAvUpload.dataset.image) char.userAvatar = userAvUpload.dataset.image;
+            saveBubbleStyleFromUI(char);
+            if (await saveData()) {
+                document.getElementById('chatTitle').textContent = char.name;
+                applyChatWallpaper(char);
+                applyCustomCss(char);
+                applyBubbleStyles(char);
+                renderMessages();
+                await updateStorageDisplay();
+                showToast('Saved successfully', 'success');
+            }
+            closeCharacterSettings();
         }
 
-        function updateCharCounter() { const ta = document.getElementById('charGreeting'), counter = document.getElementById('greetingCharCounter'); counter.textContent = `${ta.value.length}/300`; counter.className = 'char-counter' + (ta.value.length >= 280 ? ' warning' : '') + (ta.value.length >= 300 ? ' error' : ''); }
-        function deleteCurrentCharacter() { const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; App.pendingDeleteType = 'character'; App.pendingDeleteId = char.id; document.getElementById('deleteModalTitle').textContent = `Delete "${char.name}"?`; showModal('confirmDeleteModal'); }
+        function updateCharCounter() { const len = document.getElementById('charGreeting').value.length; const counter = document.getElementById('greetingCharCounter'); counter.textContent = `${len}/300`; counter.className = 'char-counter' + (len > 280 ? ' error' : len > 240 ? ' warning' : ''); }
+        function toggleSwitch(el) { el.classList.toggle('active'); }
+
+        function deleteCurrentCharacter() { App.pendingDeleteType = 'character'; App.pendingDeleteId = App.currentCharId; document.getElementById('deleteModalTitle').textContent = 'Delete Character?'; document.getElementById('deleteModalDesc').textContent = 'All messages will be lost.'; showModal('confirmDeleteModal'); }
+
+        async function confirmDelete() {
+            if (App.pendingDeleteType === 'character') { App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId); closeChatPage(); closeCharacterSettings(); renderContacts(); }
+            else if (App.pendingDeleteType === 'worldbook') { App.worldbooks = App.worldbooks.filter(wb => wb.id !== App.pendingDeleteId); closeWorldbookEdit(); renderWorldbooks(); }
+            App.pendingDeleteType = null; App.pendingDeleteId = null;
+            await saveData(); hideModal('confirmDeleteModal'); showToast('Deleted', 'success');
+        }
 
         // ════════════════════════════════════════════════════════════════════════════════
-        // MESSAGE RENDERING
+        // MESSAGING
         // ════════════════════════════════════════════════════════════════════════════════
         function renderMessages() {
-            const container = document.getElementById('chatMessages');
             const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            if (char.messages.length === 0) { container.innerHTML = '<div class="date-separator"><span class="date-separator-text">Today</span></div>'; return; }
-            const showAvatar = char.showAvatar !== false, avatarShape = char.avatarShape || 'circle', showBorder = char.showBorder === true, borderColor = char.borderColor || '#c9a962', borderWidth = char.borderWidth || 2;
-            let shapeClass = avatarShape === 'square' ? 'square' : avatarShape === 'rounded-square' ? 'rounded-square' : '';
-            const borderStyle = showBorder ? `border:${borderWidth}px solid ${borderColor};` : '';
+            const container = document.getElementById('chatMessages');
             const timestampPos = char.timestampPosition || 'default';
-            let timeClass = timestampPos === 'hidden' ? 'time-hidden' : timestampPos === 'side' ? 'time-side' : '';
-            let html = '', lastDate = null;
-            char.messages.forEach(msg => {
+            const showAvatar = char.showAvatar !== false;
+            const avatarShape = char.avatarShape || 'circle';
+            const showBorder = char.showBorder === true;
+            const borderColor = char.borderColor || '#c9a962';
+
+            let html = '';
+            let lastDate = null;
+
+            char.messages.forEach((msg, idx) => {
                 const msgDate = new Date(msg.timestamp).toLocaleDateString();
-                if (msgDate !== lastDate) { html += `<div class="date-separator"><span class="date-separator-text">${formatDate(msg.timestamp)}</span></div>`; lastDate = msgDate; }
-                const type = msg.role === 'user' ? 'sent' : 'received', checked = App.selectedMsgs.has(msg.id) ? 'checked' : '';
-                let avatarHtml = '';
-                if (showAvatar) { const avatarContent = type === 'received' ? (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0])) : (char.userAvatar ? `<img src="${char.userAvatar}">` : '◇'); avatarHtml = `<div class="message-avatar ${shapeClass}" style="${borderStyle}">${avatarContent}</div>`; }
+                if (msgDate !== lastDate) { html += `<div class="date-separator"><span class="date-separator-text">${msgDate}</span></div>`; lastDate = msgDate; }
+
+                const isUser = msg.sender === 'sent';
+                const avatarImg = isUser ? (char.userAvatar || '') : (char.avatarImage || '');
+                const avatarFallback = isUser ? '👤' : (char.avatar || char.name[0]);
+                const avatarHtml = avatarImg ? `<img src="${avatarImg}">` : avatarFallback;
+
+                let avatarClass = 'message-avatar';
+                if (!showAvatar) avatarClass += ' hidden';
+                if (avatarShape === 'square') avatarClass += ' square';
+                else if (avatarShape === 'rounded-square') avatarClass += ' rounded-square';
+
+                let avatarStyle = '';
+                if (showBorder && showAvatar) avatarStyle = `border:2px solid ${borderColor};`;
+
+                let timeClass = 'message-time';
+                if (timestampPos === 'hidden') timeClass += ' time-hidden';
+                else if (timestampPos === 'side') timeClass += ' time-side';
+
                 let quoteHtml = '';
-                if (msg.quoteContent) { quoteHtml = `<div class="message-quote">${escapeHtml(msg.quoteContent)}</div>`; }
+                if (msg.quoteId) {
+                    const quotedMsg = char.messages.find(m => m.id === msg.quoteId);
+                    if (quotedMsg) quoteHtml = `<div class="message-quote">${escapeHtml(quotedMsg.content.substring(0, 80))}${quotedMsg.content.length > 80 ? '...' : ''}</div>`;
+                }
+
                 let imageHtml = '';
-                if (msg.image) { imageHtml = `<img src="${msg.image}" class="message-image" onclick="viewImage('${msg.id}')">`; }
-                let displayContent = msg.content === '[图片]' && msg.image ? '' : msg.content;
-                html += `<div class="message-wrapper ${type}" data-msg-id="${msg.id}" ontouchstart="startLongPress('${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()" oncontextmenu="showContextMenuDirect(event,'${msg.id}')">
-                    <div class="message-checkbox ${checked}" onclick="toggleMsgSelect('${msg.id}')"></div>
-                    ${type === 'received' ? avatarHtml : ''}
-                    <div class="message ${type}">
-                        ${quoteHtml}
-                        ${escapeHtml(displayContent)}
-                        ${imageHtml}
-                        <div class="message-time ${timeClass}">${formatTime(msg.timestamp)}</div>
-                    </div>
-                    ${type === 'sent' ? avatarHtml : ''}
-                </div>`;
+                if (msg.image) imageHtml = `<img src="${msg.image}" class="message-image" onclick="window.open('${msg.image}','_blank')">`;
+
+                const checkboxClass = 'message-checkbox' + (App.selectedMsgs.has(msg.id) ? ' checked' : '');
+
+                html += `<div class="message-wrapper ${msg.sender}" data-msg-id="${msg.id}">`;
+                if (!isUser) html += `<div class="${avatarClass}" style="${avatarStyle}">${avatarHtml}</div>`;
+                html += `<div class="${checkboxClass}" onclick="toggleMessageSelect('${msg.id}')"></div>`;
+                html += `<div class="message ${msg.sender}" oncontextmenu="showContextMenu(event,'${msg.id}')" ontouchstart="startLongPress('${msg.id}')" ontouchend="cancelLongPress()" ontouchmove="cancelLongPress()">`;
+                html += quoteHtml;
+                html += `<div class="message-text">${formatMessageContent(msg.content)}</div>`;
+                html += imageHtml;
+                html += `<div class="${timeClass}">${formatTime(msg.timestamp)}</div>`;
+                html += `</div>`;
+                if (isUser) html += `<div class="${avatarClass}" style="${avatarStyle}">${avatarHtml}</div>`;
+                html += `</div>`;
             });
+
             container.innerHTML = html;
-            scrollToBottom();
+            container.scrollTop = container.scrollHeight;
         }
 
-        function startLongPress(msgId) { App.longPressTimer = setTimeout(() => { showContextMenu(msgId); }, 500); }
-        function endLongPress() { if (App.longPressTimer) { clearTimeout(App.longPressTimer); App.longPressTimer = null; } }
-        function showContextMenu(msgId) { App.contextMenuMsgId = msgId; document.getElementById('contextMenuOverlay').classList.add('active'); }
-        function showContextMenuDirect(e, msgId) { e.preventDefault(); showContextMenu(msgId); }
+        function formatMessageContent(content) {
+            if (!content) return '';
+            let html = escapeHtml(content);
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            html = html.replace(/\n/g, '<br>');
+            return html;
+        }
+
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+        function formatTime(ts) { if (!ts) return ''; return new Date(ts).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); }
+
+        function autoResizeTextarea(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
+
+        async function addMessage(content, sender, image = null, quoteId = null) {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const msg = { id: Date.now().toString(), content, sender, timestamp: Date.now(), image, quoteId };
+            char.messages.push(msg);
+            await saveData();
+            renderMessages();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            let content = input.value.trim();
+            if (!content) return;
+
+            const quoteId = App.currentQuote ? App.currentQuote.id : null;
+            cancelQuote();
+
+            // 处理 ||| 分隔
+            const parts = content.split('|||').map(p => p.trim()).filter(p => p);
+            if (parts.length > 1) {
+                for (let i = 0; i < parts.length; i++) {
+                    const isUser = i % 2 === 0;
+                    await addMessage(parts[i], isUser ? 'sent' : 'received', null, i === 0 ? quoteId : null);
+                }
+            } else {
+                await addMessage(content, 'sent', null, quoteId);
+            }
+
+            input.value = '';
+            input.style.height = 'auto';
+            toggleExtensionPanel(true);
+        }
+
+        async function triggerAIReply() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
+                showToast('Please configure API first', 'error'); return;
+            }
+
+            const container = document.getElementById('chatMessages');
+            const typingEl = document.createElement('div');
+            typingEl.className = 'message-wrapper received';
+            typingEl.id = 'typingIndicator';
+            typingEl.innerHTML = `<div class="message-avatar">${char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0])}</div><div class="typing-indicator"><span></span><span></span><span></span></div>`;
+            container.appendChild(typingEl);
+            container.scrollTop = container.scrollHeight;
+
+            try {
+                const messages = buildAPIMessages(char);
+                const response = await fetch(`${App.settings.apiBaseUrl.replace(/\/+$/,'').replace(/\/v1$/,'')}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${App.settings.apiKey}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: App.settings.modelName, messages, temperature: App.settings.temperature, max_tokens: App.settings.maxTokens })
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                const reply = data.choices?.[0]?.message?.content || 'No response';
+
+                document.getElementById('typingIndicator')?.remove();
+                await addMessage(reply, 'received');
+
+            } catch (e) {
+                document.getElementById('typingIndicator')?.remove();
+                showToast(`Error: ${e.message}`, 'error');
+            }
+        }
+
+        function buildAPIMessages(char) {
+            const msgs = [];
+            let systemContent = '';
+            if (char.description) systemContent += `Character: ${char.description}\n`;
+            if (char.scenario) systemContent += `Scenario: ${char.scenario}\n`;
+            if (char.userNick) systemContent += `User's name: ${char.userNick}\n`;
+            if (char.systemPrompt) systemContent += `${char.systemPrompt}\n`;
+
+            // Worldbook entries
+            const worldbookContent = getWorldbookContent(char);
+            if (worldbookContent) systemContent += `\n${worldbookContent}`;
+
+            if (systemContent) msgs.push({ role: 'system', content: systemContent.trim() });
+
+            const maxMsgs = App.settings.maxContextMessages || 200;
+            const recentMsgs = char.messages.slice(-maxMsgs);
+            recentMsgs.forEach(m => {
+                let content = m.content;
+                if (m.quoteId) {
+                    const quoted = char.messages.find(q => q.id === m.quoteId);
+                    if (quoted) content = `[Q:#${char.messages.indexOf(quoted)+1}] ${content}`;
+                }
+                msgs.push({ role: m.sender === 'sent' ? 'user' : 'assistant', content });
+            });
+
+            return msgs;
+        }
+
+        function getWorldbookContent(char) {
+            if (!char.worldbookIds || char.worldbookIds.length === 0) return '';
+            let content = '';
+            const allMsgText = char.messages.map(m => m.content).join(' ').toLowerCase();
+
+            char.worldbookIds.forEach(wbId => {
+                const wb = App.worldbooks.find(w => w.id === wbId);
+                if (!wb || !wb.entries) return;
+                wb.entries.forEach(entry => {
+                    if (entry.alwaysActive) { content += `\n[Lore: ${entry.name}]\n${entry.content}\n`; return; }
+                    const keywords = entry.keywords.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
+                    for (const kw of keywords) {
+                        if (allMsgText.includes(kw)) { content += `\n[Lore: ${entry.name}]\n${entry.content}\n`; break; }
+                    }
+                });
+            });
+            return content;
+        }
+
+        function toggleExtensionPanel(forceClose = false) {
+            const panel = document.getElementById('extensionPanel');
+            if (forceClose === true) panel.classList.remove('active');
+            else panel.classList.toggle('active');
+        }
+
+        async function regenerateLastReply() {
+            toggleExtensionPanel(true);
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char || char.messages.length === 0) return;
+            for (let i = char.messages.length - 1; i >= 0; i--) {
+                if (char.messages[i].sender === 'received') { char.messages.splice(i, 1); break; }
+            }
+            await saveData(); renderMessages(); await triggerAIReply();
+        }
+
+        function openImagePicker() { toggleExtensionPanel(true); document.getElementById('chatImageInput').click(); }
+
+        async function handleChatImageUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const compressed = await compressImage(ev.target.result, 400, 0.8);
+                await addMessage('[Image]', 'sent', compressed);
+            };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        // Select mode
+        function enterSelectMode() { toggleExtensionPanel(true); App.isSelectMode = true; document.getElementById('selectModeBar').classList.add('active'); document.getElementById('chatMessages').classList.add('select-mode'); }
+        function exitSelectMode() { App.isSelectMode = false; App.selectedMsgs.clear(); document.getElementById('selectModeBar').classList.remove('active'); document.getElementById('chatMessages').classList.remove('select-mode'); document.getElementById('selectedCount').textContent = '0'; renderMessages(); }
+        function toggleMessageSelect(msgId) { if (!App.isSelectMode) return; if (App.selectedMsgs.has(msgId)) App.selectedMsgs.delete(msgId); else App.selectedMsgs.add(msgId); document.getElementById('selectedCount').textContent = App.selectedMsgs.size; const wrapper = document.querySelector(`[data-msg-id="${msgId}"] .message-checkbox`); wrapper?.classList.toggle('checked', App.selectedMsgs.has(msgId)); }
+
+        async function deleteSelectedMessages() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id));
+            await saveData(); exitSelectMode(); renderMessages(); showToast(`${App.selectedMsgs.size} messages deleted`, 'success');
+        }
+
+        // Context menu & quote
+        function startLongPress(msgId) { App.longPressTimer = setTimeout(() => showContextMenu(null, msgId), 500); }
+        function cancelLongPress() { if (App.longPressTimer) { clearTimeout(App.longPressTimer); App.longPressTimer = null; } }
+
+        function showContextMenu(e, msgId) {
+            if (e) e.preventDefault();
+            cancelLongPress();
+            if (App.isSelectMode) return;
+            App.contextMenuMsgId = msgId;
+            document.getElementById('contextMenuOverlay').classList.add('active');
+        }
+
         function hideContextMenu() { document.getElementById('contextMenuOverlay').classList.remove('active'); App.contextMenuMsgId = null; }
 
         function copyMessageText() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const msg = char.messages.find(m => m.id === App.contextMenuMsgId); if (!msg) return;
-            navigator.clipboard.writeText(msg.content).then(() => showToast('Copied', 'success')).catch(() => showToast('Copy failed', 'error'));
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg) { navigator.clipboard.writeText(msg.content); showToast('Copied', 'success'); }
             hideContextMenu();
         }
 
         function quoteMessage() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const msg = char.messages.find(m => m.id === App.contextMenuMsgId); if (!msg) return;
-            App.currentQuote = { msgId: msg.id, content: msg.content.substring(0, 100) };
-            document.getElementById('quotePreviewContent').textContent = msg.content.substring(0, 50) + (msg.content.length > 50 ? '...' : '');
-            document.getElementById('quotePreviewBar').classList.add('active');
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg) {
+                App.currentQuote = msg;
+                document.getElementById('quotePreviewContent').textContent = msg.content.substring(0, 50) + (msg.content.length > 50 ? '...' : '');
+                document.getElementById('quotePreviewBar').classList.add('active');
+            }
             hideContextMenu();
-            document.getElementById('chatInput').focus();
         }
 
         function cancelQuote() { App.currentQuote = null; document.getElementById('quotePreviewBar').classList.remove('active'); }
 
         function editMessage() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const msg = char.messages.find(m => m.id === App.contextMenuMsgId); if (!msg) return;
-            App.editingMsgId = App.contextMenuMsgId;
-            document.getElementById('editMessageContent').value = msg.content;
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg) { App.editingMsgId = msg.id; document.getElementById('editMessageContent').value = msg.content; showModal('editMessageModal'); }
             hideContextMenu();
-            showModal('editMessageModal');
         }
 
         async function saveEditedMessage() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const msg = char.messages.find(m => m.id === App.editingMsgId);
-            if (!msg) { showToast('Message not found', 'error'); hideModal('editMessageModal'); return; }
-            msg.content = document.getElementById('editMessageContent').value;
-            await saveData(); hideModal('editMessageModal'); App.editingMsgId = null; renderMessages(); showToast('Saved', 'success');
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            const msg = char?.messages.find(m => m.id === App.editingMsgId);
+            if (msg) { msg.content = document.getElementById('editMessageContent').value; await saveData(); renderMessages(); showToast('Message updated', 'success'); }
+            App.editingMsgId = null; hideModal('editMessageModal');
         }
-
-        function viewImage(msgId) {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const msg = char.messages.find(m => m.id === msgId); if (msg?.image) window.open(msg.image, '_blank');
-        }
-
-        async function addMessage(content, type, imageData = null, quoteData = null) {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const msg = {
-                id: Date.now().toString() + Math.random().toString(36).substr(2,9),
-                role: type === 'sent' ? 'user' : 'assistant',
-                content, timestamp: new Date().toISOString(),
-                image: imageData || null,
-                quoteId: quoteData?.msgId || null,
-                quoteContent: quoteData?.content || null
-            };
-            char.messages.push(msg); await saveData(); renderMessages();
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('chatInput'), content = input.value.trim(); if (!content && !App.currentQuote) return;
-            const quoteData = App.currentQuote ? { ...App.currentQuote } : null;
-            addMessage(content || 'Reply', 'sent', null, quoteData);
-            input.value = ''; autoResizeTextarea(input);
-            cancelQuote();
-        }
-
-        function openImagePicker() { toggleExtensionPanel(); document.getElementById('chatImageInput').click(); }
-
-        async function handleChatImageUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            if (file.size > 2 * 1024 * 1024 * 1024) { showToast('Image too large (>2GB)', 'error'); return; }
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const compressed = await compressImage(ev.target.result, 800, 0.8);
-                await addMessage('[图片]', 'sent', compressed);
-            };
-            reader.readAsDataURL(file); e.target.value = '';
-        }
-
-        // ════════════════════════════════════════════════════════════════════════════════
-        // AI INTEGRATION - 【核心修复：恢复完整的buildAPIMessages和parseAIResponse】
-        // ════════════════════════════════════════════════════════════════════════════════
-        async function triggerAIReply() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) { showToast('Please configure API', 'error'); return; }
-            App.lastAIStart = char.messages.length;
-            document.getElementById('chatMessages').insertAdjacentHTML('beforeend', '<div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>');
-            scrollToBottom();
-            try {
-                const max = App.settings.maxContextMessages || 200;
-                const history = char.messages.slice(-max);
-                const messages = buildAPIMessages(char, history);
-                const url = App.settings.apiBaseUrl.replace(/\/+$/,'').replace(/\/v1$/,'');
-
-                const hasImage = history.some(m => m.image);
-                let body;
-
-                if (hasImage) {
-                    const mmMsgs = [messages[0]];
-                    let msgIdx = 1;
-                    let historyIdx = 0;
-
-                    while (msgIdx < messages.length && historyIdx < history.length) {
-                        const apiMsg = messages[msgIdx];
-                        const role = apiMsg.role === 'user' ? 'user' : 'assistant';
-
-                        const samRoleMsgs = [];
-                        while (historyIdx < history.length &&
-                               ((history[historyIdx].role === 'user' && role === 'user') ||
-                                (history[historyIdx].role === 'assistant' && role === 'assistant'))) {
-                            samRoleMsgs.push(history[historyIdx]);
-                            historyIdx++;
-                        }
-
-                        const hasImageInGroup = samRoleMsgs.some(m => m.image);
-
-                        if (hasImageInGroup) {
-                            const contentParts = [];
-                            contentParts.push({ type: 'text', text: apiMsg.content });
-                            samRoleMsgs.forEach(m => {
-                                if (m.image) {
-                                    contentParts.push({ type: 'image_url', image_url: { url: m.image } });
-                                }
-                            });
-                            mmMsgs.push({ role: apiMsg.role, content: contentParts });
-                        } else {
-                            mmMsgs.push(apiMsg);
-                        }
-                        msgIdx++;
-                    }
-
-                    while (msgIdx < messages.length) {
-                        mmMsgs.push(messages[msgIdx]);
-                        msgIdx++;
-                    }
-
-                    body = JSON.stringify({
-                        model: App.settings.modelName,
-                        messages: mmMsgs,
-                        temperature: App.settings.temperature,
-                        max_tokens: App.settings.maxTokens
-                    });
-                } else {
-                    body = JSON.stringify({
-                        model: App.settings.modelName,
-                        messages,
-                        temperature: App.settings.temperature,
-                        max_tokens: App.settings.maxTokens
-                    });
-                }
-
-                const r = await fetch(`${url}/v1/chat/completions`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${App.settings.apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body
-                });
-
-                document.getElementById('typingIndicator')?.remove();
-                if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                const data = await r.json(), reply = data.choices[0].message.content;
-
-                // 【核心修复】使用parseAIResponse解析 ||| 分隔和 [Q:#编号] 引用
-                const parsedParts = parseAIResponse(reply, history);
-                for (let i = 0; i < parsedParts.length; i++) {
-                    if (i > 0) await new Promise(r => setTimeout(r, 300 + Math.random()*400));
-                    const p = parsedParts[i];
-                    await addMessage(p.content, 'received', null, p.quote ? { msgId: null, content: p.quote } : null);
-                }
-            } catch(e) {
-                document.getElementById('typingIndicator')?.remove();
-                App.lastAIStart = -1;
-                showToast(`Failed: ${e.message}`, 'error');
-            }
-        }
-
-        // 【核心修复】恢复parseAIResponse函数 - 解析 ||| 分隔和 [Q:#编号] 引用
-        function parseAIResponse(text, history) {
-            if (!text) return [{ content: '...', quote: null }];
-            const parts = text.trim().split(/\s*\|\|\|\s*/).map(s => s.trim()).filter(s => s);
-            const results = [];
-            const quoteRegex = /^\[Q:#(\d+)\](.*)$/s;
-            for (const part of parts) {
-                let cleanPart = part;
-                let quoteContent = null;
-                const match = cleanPart.match(quoteRegex);
-                if (match) {
-                    const idx = parseInt(match[1]) - 1;
-                    cleanPart = match[2].trim();
-                    if (idx >= 0 && idx < history.length) {
-                        quoteContent = history[idx].content.substring(0, 100);
-                    }
-                }
-                cleanPart = cleanPart.replace(/^["「『"]+/, '').replace(/["」』"]+$/, '').trim();
-                if (cleanPart) {
-                    results.push({ content: cleanPart, quote: quoteContent });
-                }
-            }
-            return results.length > 0 ? results : [{ content: text.trim(), quote: null }];
-        }
-
-        // 【核心修复】恢复完整的buildAPIMessages函数 - 包含 ||| 分隔提示和历史消息编号
-        function buildAPIMessages(char, history) {
-            const msgs = [];
-            let sys = `# 短信模拟规则\n\n你正在扮演"${char.name}"，通过手机短信聊天。\n\n## 【重要】输出格式\n1. 每条短信用 ||| 分隔\n2. 根据真实短信风格，每条5-20字左右，可长可短，灵活应变\n3. 不要加角色名前缀\n4. 像真人发短信\n5. 【禁止】不要在消息前加编号如#1:等\n\n## 引用回复格式（可选）\n如果要引用历史消息回复，格式：[Q:#编号]回复内容\n例：[Q:#3]确实是这样|||后面的普通消息\n编号对应历史消息序号(从1开始)\n\n## 正确示例\n嗯|||确实\n[Q:#5]真的吗？|||哈哈\n\n## 错误（禁止）\n❌ #1: 内容（禁止加编号前缀）\n❌ 角色名: 内容\n❌ 一条消息500字太长\n\n## 角色\n${char.description || '朋友'}`;
-            if (char.scenario) sys += `\n\n## 情景\n${char.scenario}`;
-            if (char.userNick) sys += `\n\n## 用户名字\n${char.userNick}`;
-            if (char.systemPrompt) sys += `\n\n## 额外\n${char.systemPrompt}`;
-            if (char.worldbookIds?.length > 0) {
-                char.worldbookIds.forEach(wbId => {
-                    const wb = App.worldbooks.find(w => w.id === wbId);
-                    if (wb?.entries) {
-                        wb.entries.forEach(entry => {
-                            const shouldInject = entry.alwaysActive || (entry.keywords && history.some(m => entry.keywords.split(',').some(k => m.content.toLowerCase().includes(k.trim().toLowerCase()))));
-                            if (shouldInject && entry.content) sys += `\n\n## 背景(${entry.name})\n${entry.content}`;
-                        });
-                    }
-                });
-            }
-            if (history.length > 0) {
-                sys += `\n\n## 历史消息编号参考（仅供引用时使用编号）\n`;
-                history.forEach((m, i) => {
-                    const role = m.role === 'user' ? '用户' : '你';
-                    const hasImg = m.image ? '[有图片]' : '';
-                    sys += `#${i+1} ${role}: ${m.content.substring(0, 30)}${m.content.length > 30 ? '...' : ''}${hasImg}\n`;
-                });
-            }
-            msgs.push({ role: 'system', content: sys });
-
-            let currentRole = null;
-            let buffer = [];
-            const flushBuffer = () => {
-                if (buffer.length > 0) {
-                    const role = buffer[0].role === 'user' ? 'user' : 'assistant';
-                    const content = buffer.map(m => {
-                        let text = m.content;
-                        if (m.quoteContent) text = `[引用:"${m.quoteContent.substring(0,30)}"]${text}`;
-                        if (m.image) text += '[图片]';
-                        return text;
-                    }).join('|||');
-                    msgs.push({ role, content });
-                    buffer = [];
-                }
-            };
-            history.forEach((m) => {
-                if (currentRole !== m.role) { flushBuffer(); currentRole = m.role; }
-                buffer.push(m);
-            });
-            flushBuffer();
-            if (history.length > 10) {
-                msgs.push({ role: 'system', content: '【提醒】用|||分隔多条短信。如需引用可用[Q:#编号]。【禁止在消息内容前加#数字:前缀】' });
-            }
-            return msgs;
-        }
-
-        // 【核心修复】恢复完整的regenerateLastReply函数
-        async function regenerateLastReply() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; toggleExtensionPanel();
-            if (char.messages.length === 0) { showToast('No messages', 'warning'); return; }
-            if (App.lastAIStart >= 0 && App.lastAIStart < char.messages.length) {
-                let allAI = true;
-                for (let i = App.lastAIStart; i < char.messages.length; i++) { if (char.messages[i].role !== 'assistant') { allAI = false; break; } }
-                if (allAI) { const count = char.messages.length - App.lastAIStart; char.messages.splice(App.lastAIStart, count); await saveData(); renderMessages(); showToast(`Deleted ${count} messages`, 'info'); App.lastAIStart = -1; await triggerAIReply(); return; }
-            }
-            if (char.messages[char.messages.length-1].role !== 'assistant') { showToast('Last message is not AI', 'warning'); return; }
-            let first = char.messages.length - 1;
-            for (let i = char.messages.length - 1; i >= 0; i--) { if (char.messages[i].role === 'assistant') first = i; else break; }
-            const count = char.messages.length - first; char.messages.splice(first, count); await saveData(); renderMessages(); showToast(`Deleted ${count} messages`, 'info'); await triggerAIReply();
-        }
-
-        function enterSelectMode() { toggleExtensionPanel(); App.isSelectMode = true; App.selectedMsgs.clear(); document.getElementById('chatMessages').classList.add('select-mode'); document.getElementById('selectModeBar').classList.add('active'); updateSelectedCount(); }
-        function exitSelectMode() { App.isSelectMode = false; App.selectedMsgs.clear(); document.getElementById('chatMessages').classList.remove('select-mode'); document.getElementById('selectModeBar').classList.remove('active'); document.querySelectorAll('.message-checkbox').forEach(el => el.classList.remove('checked')); }
-        function toggleMsgSelect(id) { if (!App.isSelectMode) return; if (App.selectedMsgs.has(id)) App.selectedMsgs.delete(id); else App.selectedMsgs.add(id); document.querySelector(`[data-msg-id="${id}"] .message-checkbox`)?.classList.toggle('checked', App.selectedMsgs.has(id)); updateSelectedCount(); }
-        function updateSelectedCount() { document.getElementById('selectedCount').textContent = App.selectedMsgs.size; }
-        async function deleteSelectedMessages() { const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return; if (App.selectedMsgs.size === 0) { showToast('Please select', 'warning'); return; } const count = App.selectedMsgs.size; char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id)); await saveData(); exitSelectMode(); renderMessages(); showToast(`Deleted ${count} messages`, 'success'); App.lastAIStart = -1; }
-        function toggleExtensionPanel() { document.getElementById('extensionPanel').classList.toggle('active'); }
-        function autoResizeTextarea(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
-        function scrollToBottom() { const c = document.getElementById('chatMessages'); setTimeout(() => { c.scrollTop = c.scrollHeight; }, 50); }
 
         // ════════════════════════════════════════════════════════════════════════════════
         // WORLDBOOK
@@ -2836,7 +3296,7 @@
         async function createWorldbook() {
             const name = document.getElementById('newWorldbookName').value.trim(); if (!name) { showToast('Please enter name', 'error'); return; }
             const wb = { id: Date.now().toString(), name, summary: '', entries: [{ name: 'Default Entry', keywords: '', content: '', alwaysActive: false }] };
-            App.worldbooks.push(wb); await saveData(); hideModal('createWorldbookModal'); document.getElementById('newWorldbookName').value = ''; renderWorldbooks(); showToast(`"${name}" created`, 'success'); openWorldbookEdit(wb.id);
+            App.worldbooks.push(wb); await saveData(); hideModal('createWorldbookModal'); document.getElementById('newWorldbookName').value = ''; renderWorldbooks(); showToast(`"${name}" created`, 'success');
         }
 
         function renderWorldbooks() {
@@ -2845,13 +3305,13 @@
             list.style.display = 'block'; empty.style.display = 'none';
             list.innerHTML = App.worldbooks.map(wb => {
                 const entryCount = wb.entries?.length || 0;
-                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entryCount} entries</span></div><div class="worldbook-item-preview">${escapeHtml(wb.summary || 'No description')}</div></div>`;
+                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entryCount} entries</span></div><div class="worldbook-item-preview">${escapeHtml(wb.summary || 'No summary')}</div></div>`;
             }).join('');
         }
 
-        function openWorldbookEdit(id) {
-            const wb = App.worldbooks.find(w => w.id === id); if (!wb) return;
-            App.currentWbId = id;
+        function openWorldbookEdit(wbId) {
+            const wb = App.worldbooks.find(w => w.id === wbId); if (!wb) return;
+            App.currentWbId = wbId;
             document.getElementById('worldbookName').value = wb.name;
             document.getElementById('worldbookSummary').value = wb.summary || '';
             renderWorldbookEntries(wb);
@@ -2860,19 +3320,11 @@
 
         function renderWorldbookEntries(wb) {
             const container = document.getElementById('worldbookEntries');
-            if (!wb.entries || wb.entries.length === 0) { container.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px;padding:12px">No entries yet</div>'; return; }
-            container.innerHTML = wb.entries.map((entry, i) => `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(entry.name || `Entry ${i+1}`)}${entry.alwaysActive ? ' 🔒' : ''}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${i})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${i})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div><div class="worldbook-entry-keywords">${entry.keywords ? 'Keywords: ' + escapeHtml(entry.keywords) : 'No keywords'}</div><div class="worldbook-entry-preview">${escapeHtml(entry.content?.substring(0, 80) || 'No content')}...</div></div>`).join('');
+            if (!wb.entries || wb.entries.length === 0) { container.innerHTML = '<div style="text-align:center;color:var(--text-tertiary);padding:20px">No entries</div>'; return; }
+            container.innerHTML = wb.entries.map((entry, idx) => `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(entry.name || 'Unnamed')}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div><div class="worldbook-entry-keywords">Keywords: ${escapeHtml(entry.keywords || 'None')}</div><div class="worldbook-entry-preview">${escapeHtml(entry.content?.substring(0, 100) || 'Empty')}...</div></div>`).join('');
         }
 
-        function addWorldbookEntry() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            App.currentEntryIndex = -1;
-            document.getElementById('entryName').value = '';
-            document.getElementById('entryKeywords').value = '';
-            document.getElementById('entryContent').value = '';
-            document.getElementById('entryAlwaysActive').classList.remove('active');
-            showModal('entryEditModal');
-        }
+        function addWorldbookEntry() { const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return; wb.entries.push({ name: 'New Entry', keywords: '', content: '', alwaysActive: false }); renderWorldbookEntries(wb); }
 
         function editWorldbookEntry(idx) {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb || !wb.entries[idx]) return;
@@ -2881,61 +3333,40 @@
             document.getElementById('entryName').value = entry.name || '';
             document.getElementById('entryKeywords').value = entry.keywords || '';
             document.getElementById('entryContent').value = entry.content || '';
-            document.getElementById('entryAlwaysActive').classList.toggle('active', entry.alwaysActive);
+            document.getElementById('entryAlwaysActive').classList.toggle('active', entry.alwaysActive === true);
             showModal('entryEditModal');
         }
 
         async function saveWorldbookEntry() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            const entry = { name: document.getElementById('entryName').value.trim() || 'Untitled', keywords: document.getElementById('entryKeywords').value, content: document.getElementById('entryContent').value, alwaysActive: document.getElementById('entryAlwaysActive').classList.contains('active') };
-            if (App.currentEntryIndex >= 0) { wb.entries[App.currentEntryIndex] = entry; }
-            else { wb.entries.push(entry); }
-            await saveData(); hideModal('entryEditModal'); renderWorldbookEntries(wb); showToast('Entry saved', 'success');
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb || App.currentEntryIndex < 0) return;
+            wb.entries[App.currentEntryIndex] = { name: document.getElementById('entryName').value.trim() || 'Unnamed', keywords: document.getElementById('entryKeywords').value.trim(), content: document.getElementById('entryContent').value, alwaysActive: document.getElementById('entryAlwaysActive').classList.contains('active') };
+            await saveData(); hideModal('entryEditModal'); App.currentEntryIndex = -1; renderWorldbookEntries(wb); showToast('Entry saved', 'success');
         }
 
         async function deleteWorldbookEntry(idx) {
-            if (!confirm('Delete this entry?')) return;
             const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            wb.entries.splice(idx, 1);
-            await saveData(); renderWorldbookEntries(wb); showToast('Deleted', 'success');
+            wb.entries.splice(idx, 1); await saveData(); renderWorldbookEntries(wb); showToast('Entry deleted', 'success');
         }
-
-        function closeWorldbookEdit() { closePage('worldbookEditPage'); App.currentWbId = null; }
 
         async function saveWorldbook() {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            wb.name = document.getElementById('worldbookName').value.trim() || wb.name;
+            wb.name = document.getElementById('worldbookName').value.trim() || 'Unnamed';
             wb.summary = document.getElementById('worldbookSummary').value;
             await saveData(); closeWorldbookEdit(); renderWorldbooks(); showToast('Saved', 'success');
         }
 
-        function deleteCurrentWorldbook() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            App.pendingDeleteType = 'worldbook'; App.pendingDeleteId = wb.id;
-            document.getElementById('deleteModalTitle').textContent = `Delete "${wb.name}"?`;
-            showModal('confirmDeleteModal');
-        }
-
-        async function confirmDelete() {
-            if (App.pendingDeleteType === 'character') {
-                App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
-                await saveData(); hideModal('confirmDeleteModal'); closeCharacterSettings(); closeChatPage(); renderContacts(); showToast('Deleted', 'success');
-            } else if (App.pendingDeleteType === 'worldbook') {
-                App.characters.forEach(c => { if (c.worldbookIds) c.worldbookIds = c.worldbookIds.filter(id => id !== App.pendingDeleteId); });
-                App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
-                await saveData(); hideModal('confirmDeleteModal'); closeWorldbookEdit(); renderWorldbooks(); showToast('Deleted', 'success'); }
-            App.pendingDeleteType = null; App.pendingDeleteId = null;
-        }
+        function closeWorldbookEdit() { closePage('worldbookEditPage'); App.currentWbId = null; }
+        function deleteCurrentWorldbook() { App.pendingDeleteType = 'worldbook'; App.pendingDeleteId = App.currentWbId; document.getElementById('deleteModalTitle').textContent = 'Delete Worldbook?'; document.getElementById('deleteModalDesc').textContent = 'All entries will be lost.'; showModal('confirmDeleteModal'); }
 
         // ════════════════════════════════════════════════════════════════════════════════
-        // DATA IMPORT/EXPORT
+        // DATA MANAGEMENT
         // ════════════════════════════════════════════════════════════════════════════════
-        async function exportAllData() {
-            const data = { version: 2, exportDate: new Date().toISOString(), characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, apiPresets: App.apiPresets, fonts: App.fonts.filter(f => !f.isDefault) };
+        function exportAllData() {
+            const data = { version: 2, characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, apiPresets: App.apiPresets, fonts: App.fonts.filter(f => !f.isDefault) };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = `noir-backup-${new Date().toISOString().slice(0,10)}.json`; a.click();
-            URL.revokeObjectURL(url); showToast('Export complete', 'success');
+            const a = document.createElement('a'); a.href = url; a.download = `noir_backup_${Date.now()}.json`; a.click();
+            URL.revokeObjectURL(url); showToast('Data exported', 'success');
         }
 
         async function importData(e) {
@@ -2950,31 +3381,24 @@
                     if (data.appIcons) App.appIcons = { ...App.appIcons, ...data.appIcons };
                     if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets;
                     if (data.apiPresets) App.apiPresets = data.apiPresets;
-                    if (data.fonts) { data.fonts.forEach(f => { if (!App.fonts.find(ff => ff.id === f.id)) App.fonts.push(f); }); }
-                    await saveData(); applyWallpaper(); applyAppIcons(); applyGlobalFont(); renderContacts(); renderWorldbooks(); showToast('Import successful', 'success');
-                } catch(err) { showToast(`Import failed: ${err.message}`, 'error'); }
+                    if (data.fonts) { data.fonts.forEach(f => { if (!App.fonts.find(ef => ef.id === f.id)) App.fonts.push(f); }); }
+                    await saveData();
+                    applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyGlobalFontSize();
+                    showToast('Data imported successfully', 'success');
+                } catch (err) { showToast('Invalid file format', 'error'); }
             };
             reader.readAsText(file); e.target.value = '';
         }
 
         async function clearAllData() {
             if (!confirm('Clear ALL data? This cannot be undone!')) return;
-            if (!confirm('Are you absolutely sure?')) return;
             App.characters = []; App.worldbooks = []; App.globalCssPresets = []; App.apiPresets = [];
-            App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null };
+            App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null, globalFontSize: 1 };
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null };
-            App.fonts = [...DEFAULT_FONTS];
-            await saveData(); applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyStatusBarVisibility(); loadSettingsUI(); renderContacts(); renderWorldbooks(); renderFontList(); updateApiPresetSelect(); updateConnectionUI(); await updateStorageDisplay();
+            await saveData();
+            applyWallpaper(); applyAppIcons(); applyStatusBarVisibility(); applyGlobalFont(); applyGlobalFontSize(); updateConnectionUI();
             showToast('All data cleared', 'success');
         }
-
-        // ════════════════════════════════════════════════════════════════════════════════
-        // UTILITIES
-        // ════════════════════════════════════════════════════════════════════════════════
-        function escapeHtml(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-        function formatTime(ts) { if (!ts) return ''; return new Date(ts).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); }
-        function formatDate(ts) { if (!ts) return ''; const d = new Date(ts), today = new Date(), yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1); if (d.toDateString() === today.toDateString()) return 'Today'; if (d.toDateString() === yesterday.toDateString()) return 'Yesterday'; return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
-        function toggleSwitch(el) { el.classList.toggle('active'); }
     </script>
 </body>
 </html>
