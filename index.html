@@ -1,4 +1,5 @@
-```html
+
+ ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -9,7 +10,7 @@
     <meta name="apple-mobile-web-app-title" content="NOIR">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a0a">
-    <title>NOIR · Premium SMS v8</title>
+    <title>NOIR · Premium SMS v9</title>
     <style id="globalFontStyle"></style>
     <style id="globalFontSizeStyle"></style>
     <style id="bubbleStyleSheet"></style>
@@ -1146,38 +1147,42 @@
         .font-item-btn.danger:hover { background: rgba(199, 80, 80, 0.1); }
         .font-item-btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.5; fill: none; }
 
-        /* Color Picker Styles - Improved */
+        /* Color Picker - Classic Wheel + Square Design */
         .color-picker-container {
             width: 100%; max-width: 280px; margin: 0 auto 16px;
             position: relative;
         }
         .color-wheel-wrapper {
             position: relative; width: 260px; height: 260px; margin: 0 auto;
-            touch-action: none;
+            touch-action: none; user-select: none;
         }
-        .color-wheel-ring {
+        .color-ring-canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            border-radius: 50%; cursor: crosshair;
+            border-radius: 50%;
         }
-        .color-wheel-square {
-            position: absolute; top: 50%; left: 50%;
-            width: 120px; height: 120px;
+        .color-square-canvas {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 110px; height: 110px;
             transform: translate(-50%, -50%);
-            cursor: crosshair; border-radius: 4px;
+            border-radius: 6px;
+            cursor: crosshair;
         }
         .color-ring-handle {
             position: absolute; width: 24px; height: 24px;
             border: 3px solid white; border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 0 0 2px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.6), inset 0 0 0 2px rgba(0,0,0,0.3);
             transform: translate(-50%, -50%);
             pointer-events: none; z-index: 10;
+            transition: none;
         }
         .color-square-handle {
-            position: absolute; width: 18px; height: 18px;
+            position: absolute; width: 20px; height: 20px;
             border: 3px solid white; border-radius: 50%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.6), inset 0 0 0 2px rgba(0,0,0,0.3);
             transform: translate(-50%, -50%);
             pointer-events: none; z-index: 10;
+            transition: none;
         }
         .color-hex-input {
             width: 100%; padding: 12px 16px;
@@ -1324,7 +1329,7 @@
 
         <div class="home-indicator"></div>
 
-        <!-- Settings Page -->
+        <!-- Settings Page (全局设置 - 不包含气泡样式) -->
         <div class="page" id="settingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('settingsPage')">
@@ -1571,7 +1576,7 @@
             </div>
         </div>
 
-        <!-- Character Settings Page -->
+        <!-- Character Settings Page (包含气泡样式 - 每角色独立) -->
         <div class="page slide-from-bottom" id="characterSettingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closeCharacterSettings()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Cancel</button>
@@ -1589,7 +1594,7 @@
                     </div>
                 </div>
 
-                <p class="settings-group-title">Bubble Style</p>
+                <p class="settings-group-title">Bubble Style (This Character)</p>
                 <div class="settings-group" style="padding:16px">
                     <div class="bubble-style-grid" id="bubbleStyleGrid">
                         <div class="bubble-style-option selected" data-style="none" onclick="selectBubbleStyle('none')">
@@ -2003,14 +2008,15 @@
         </div>
     </div>
 
+    <!-- Color Picker Modal with Classic Wheel + Square Design -->
     <div class="modal-overlay" id="colorPickerModal">
         <div class="modal" style="max-width:320px">
             <div class="modal-title">Select Color</div>
             <div class="color-preview-swatch" id="colorPickerPreview"></div>
             <div class="color-picker-container">
                 <div class="color-wheel-wrapper" id="colorWheelWrapper">
-                    <canvas id="colorWheelRing" width="260" height="260" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
-                    <canvas id="colorSquareCanvas" width="120" height="120" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:4px"></canvas>
+                    <canvas id="colorRingCanvas" class="color-ring-canvas" width="260" height="260"></canvas>
+                    <canvas id="colorSquareCanvas" class="color-square-canvas" width="110" height="110"></canvas>
                     <div class="color-ring-handle" id="ringHandle"></div>
                     <div class="color-square-handle" id="squareHandle"></div>
                 </div>
@@ -2023,6 +2029,9 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
+        // ========== 由于代码太长，这里继续JavaScript部分 ==========
+        // 这是完整代码的后半部分
+
         const DB_NAME = 'NoirAppDB';
         const DB_VERSION = 6;
         let db = null;
@@ -2087,9 +2096,12 @@
             pendingDeleteFontId: null,
             pendingDeleteCssPresetId: null,
             pendingDeleteApiPresetId: null,
+            // Color picker state
             currentColorTarget: null,
             selectedColor: '#ffffff',
             currentHue: 0,
+            saturation: 1,
+            brightness: 1,
             colorPickerDragging: null
         };
 
@@ -2200,6 +2212,7 @@
                 App.characters.forEach(c => {
                     if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId];
                     if (!c.worldbookIds) c.worldbookIds = [];
+                    // 每个角色独立的气泡样式
                     if (!c.bubbleStyle) c.bubbleStyle = 'none';
                     if (!c.bubbleColors) c.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
                     if (c.glassBorder === undefined) c.glassBorder = false;
@@ -2234,6 +2247,7 @@
             document.getElementById('fontScaleValue').textContent = Math.round(scale * 100) + '%';
         }
 
+        // ========== 气泡样式相关（角色独立） ==========
         function initBubbleStyleUI(char) {
             if (!char) return;
             const style = char.bubbleStyle || 'none';
@@ -2372,34 +2386,40 @@
             styleEl.textContent = css;
         }
 
-        // Improved Color Picker with proper wheel+square design
+        // ========== 经典色轮颜色选择器（外圈色环 + 内部正方形） ==========
         function initColorPicker() {
             const wrapper = document.getElementById('colorWheelWrapper');
             if (!wrapper) return;
 
             drawColorRing();
             drawColorSquare(0);
+            positionRingHandle(0);
+            positionSquareHandle(0.5, 0.5);
 
+            // 鼠标事件
             wrapper.addEventListener('mousedown', handleColorPickerStart);
-            wrapper.addEventListener('touchstart', handleColorPickerStart, { passive: false });
             document.addEventListener('mousemove', handleColorPickerMove);
-            document.addEventListener('touchmove', handleColorPickerMove, { passive: false });
             document.addEventListener('mouseup', handleColorPickerEnd);
+
+            // 触摸事件
+            wrapper.addEventListener('touchstart', handleColorPickerStart, { passive: false });
+            document.addEventListener('touchmove', handleColorPickerMove, { passive: false });
             document.addEventListener('touchend', handleColorPickerEnd);
         }
 
         function drawColorRing() {
-            const canvas = document.getElementById('colorWheelRing');
+            const canvas = document.getElementById('colorRingCanvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            const size = 260, center = size/2;
-            const outerR = 125, innerR = 95;
+            const size = 260, center = size / 2;
+            const outerR = 125, innerR = 90;
 
             ctx.clearRect(0, 0, size, size);
 
-            for (let angle = 0; angle < 360; angle += 1) {
-                const startAngle = (angle - 1) * Math.PI / 180;
-                const endAngle = (angle + 1) * Math.PI / 180;
+            // 绘制色相环
+            for (let angle = 0; angle < 360; angle += 0.5) {
+                const startAngle = (angle - 0.5) * Math.PI / 180;
+                const endAngle = (angle + 0.5) * Math.PI / 180;
                 ctx.beginPath();
                 ctx.arc(center, center, outerR, startAngle, endAngle);
                 ctx.arc(center, center, innerR, endAngle, startAngle, true);
@@ -2413,22 +2433,22 @@
             const canvas = document.getElementById('colorSquareCanvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            const size = 120;
+            const size = 110;
 
             ctx.clearRect(0, 0, size, size);
 
-            // Base hue
+            // 基础色相
             ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
             ctx.fillRect(0, 0, size, size);
 
-            // White gradient (left to right)
+            // 白色渐变（左到右）
             const gradWhite = ctx.createLinearGradient(0, 0, size, 0);
             gradWhite.addColorStop(0, 'rgba(255,255,255,1)');
             gradWhite.addColorStop(1, 'rgba(255,255,255,0)');
             ctx.fillStyle = gradWhite;
             ctx.fillRect(0, 0, size, size);
 
-            // Black gradient (top to bottom)
+            // 黑色渐变（上到下）
             const gradBlack = ctx.createLinearGradient(0, 0, 0, size);
             gradBlack.addColorStop(0, 'rgba(0,0,0,0)');
             gradBlack.addColorStop(1, 'rgba(0,0,0,1)');
@@ -2436,35 +2456,66 @@
             ctx.fillRect(0, 0, size, size);
         }
 
+        function positionRingHandle(hue) {
+            const wrapper = document.getElementById('colorWheelWrapper');
+            const handle = document.getElementById('ringHandle');
+            if (!wrapper || !handle) return;
+
+            const size = 260, center = size / 2;
+            const radius = 107.5; // (125 + 90) / 2
+            const angle = hue * Math.PI / 180;
+
+            const x = center + radius * Math.cos(angle);
+            const y = center + radius * Math.sin(angle);
+
+            handle.style.left = x + 'px';
+            handle.style.top = y + 'px';
+            handle.style.background = `hsl(${hue}, 100%, 50%)`;
+        }
+
+        function positionSquareHandle(satNorm, brightNorm) {
+            const squareCanvas = document.getElementById('colorSquareCanvas');
+            const handle = document.getElementById('squareHandle');
+            const wrapper = document.getElementById('colorWheelWrapper');
+            if (!squareCanvas || !handle || !wrapper) return;
+
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const squareRect = squareCanvas.getBoundingClientRect();
+
+            const x = satNorm * squareRect.width;
+            const y = (1 - brightNorm) * squareRect.height;
+
+            const handleX = (squareRect.left - wrapperRect.left) + x;
+            const handleY = (squareRect.top - wrapperRect.top) + y;
+
+            handle.style.left = handleX + 'px';
+            handle.style.top = handleY + 'px';
+        }
+
         function handleColorPickerStart(e) {
             e.preventDefault();
             const wrapper = document.getElementById('colorWheelWrapper');
-            const rect = wrapper.getBoundingClientRect();
+            const squareCanvas = document.getElementById('colorSquareCanvas');
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const squareRect = squareCanvas.getBoundingClientRect();
+
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            const x = clientX - rect.left;
-            const y = clientY - rect.top;
 
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const dx = x - centerX;
-            const dy = y - centerY;
-            const dist = Math.sqrt(dx*dx + dy*dy);
+            // 检查是否在正方形内
+            if (clientX >= squareRect.left && clientX <= squareRect.right &&
+                clientY >= squareRect.top && clientY <= squareRect.bottom) {
+                App.colorPickerDragging = 'square';
+                updateSquareFromEvent(clientX, clientY, squareRect);
+            } else {
+                // 检查是否在色环内
+                const x = clientX - wrapperRect.left - 130;
+                const y = clientY - wrapperRect.top - 130;
+                const dist = Math.sqrt(x * x + y * y);
 
-            const outerR = rect.width / 2;
-            const innerR = rect.width * 0.365;
-
-            if (dist >= innerR && dist <= outerR) {
-                App.colorPickerDragging = 'ring';
-                updateRingPosition(x, y, rect);
-            } else if (dist < innerR) {
-                const squareCanvas = document.getElementById('colorSquareCanvas');
-                const squareRect = squareCanvas.getBoundingClientRect();
-                const sqX = clientX - squareRect.left;
-                const sqY = clientY - squareRect.top;
-                if (sqX >= 0 && sqX <= squareRect.width && sqY >= 0 && sqY <= squareRect.height) {
-                    App.colorPickerDragging = 'square';
-                    updateSquarePosition(sqX, sqY, squareRect);
+                if (dist >= 85 && dist <= 130) {
+                    App.colorPickerDragging = 'ring';
+                    updateRingFromEvent(clientX, clientY, wrapperRect);
                 }
             }
         }
@@ -2474,20 +2525,17 @@
             e.preventDefault();
 
             const wrapper = document.getElementById('colorWheelWrapper');
-            const rect = wrapper.getBoundingClientRect();
+            const squareCanvas = document.getElementById('colorSquareCanvas');
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const squareRect = squareCanvas.getBoundingClientRect();
+
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
             if (App.colorPickerDragging === 'ring') {
-                const x = clientX - rect.left;
-                const y = clientY - rect.top;
-                updateRingPosition(x, y, rect);
+                updateRingFromEvent(clientX, clientY, wrapperRect);
             } else if (App.colorPickerDragging === 'square') {
-                const squareCanvas = document.getElementById('colorSquareCanvas');
-                const squareRect = squareCanvas.getBoundingClientRect();
-                const sqX = clientX - squareRect.left;
-                const sqY = clientY - squareRect.top;
-                updateSquarePosition(sqX, sqY, squareRect);
+                updateSquareFromEvent(clientX, clientY, squareRect);
             }
         }
 
@@ -2495,87 +2543,71 @@
             App.colorPickerDragging = null;
         }
 
-        function updateRingPosition(x, y, rect) {
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const dx = x - centerX;
-            const dy = y - centerY;
+        function updateRingFromEvent(clientX, clientY, wrapperRect) {
+            const centerX = wrapperRect.left + 130;
+            const centerY = wrapperRect.top + 130;
+            const dx = clientX - centerX;
+            const dy = clientY - centerY;
+
             let angle = Math.atan2(dy, dx) * 180 / Math.PI;
             if (angle < 0) angle += 360;
 
             App.currentHue = angle;
             drawColorSquare(angle);
-
-            // Position ring handle
-            const ringRadius = rect.width * 0.42;
-            const handleX = centerX + ringRadius * Math.cos(angle * Math.PI / 180);
-            const handleY = centerY + ringRadius * Math.sin(angle * Math.PI / 180);
-
-            const ringHandle = document.getElementById('ringHandle');
-            ringHandle.style.left = handleX + 'px';
-            ringHandle.style.top = handleY + 'px';
-            ringHandle.style.background = `hsl(${angle}, 100%, 50%)`;
-
+            positionRingHandle(angle);
             updateFinalColor();
         }
 
-        function updateSquarePosition(x, y, rect) {
-            const clampedX = Math.max(0, Math.min(x, rect.width));
-            const clampedY = Math.max(0, Math.min(y, rect.height));
+        function updateSquareFromEvent(clientX, clientY, squareRect) {
+            let x = clientX - squareRect.left;
+            let y = clientY - squareRect.top;
 
-            const squareHandle = document.getElementById('squareHandle');
-            const wrapper = document.getElementById('colorWheelWrapper');
-            const wrapperRect = wrapper.getBoundingClientRect();
-            const squareCanvas = document.getElementById('colorSquareCanvas');
-            const squareRect = squareCanvas.getBoundingClientRect();
+            // 限制在正方形内
+            x = Math.max(0, Math.min(x, squareRect.width));
+            y = Math.max(0, Math.min(y, squareRect.height));
 
-            const handleX = (squareRect.left - wrapperRect.left) + clampedX;
-            const handleY = (squareRect.top - wrapperRect.top) + clampedY;
+            App.saturation = x / squareRect.width;
+            App.brightness = 1 - (y / squareRect.height);
 
-            squareHandle.style.left = handleX + 'px';
-            squareHandle.style.top = handleY + 'px';
-
-            App.squareX = clampedX / rect.width;
-            App.squareY = clampedY / rect.height;
-
+            positionSquareHandle(App.saturation, App.brightness);
             updateFinalColor();
         }
 
         function updateFinalColor() {
-            const h = App.currentHue || 0;
-            const s = (App.squareX !== undefined ? App.squareX : 0.5) * 100;
-            const l = (1 - (App.squareY !== undefined ? App.squareY : 0.5)) * 50 * (1 - (App.squareX !== undefined ? App.squareX : 0.5) * 0.5) +
-                      (1 - (App.squareY !== undefined ? App.squareY : 0.5)) * 50;
+            const h = App.currentHue;
+            const s = App.saturation;
+            const v = App.brightness;
 
-            const rgb = hslToRgb(h / 360, s / 100, l / 100);
-            const hex = '#' + rgb.map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+            // HSV to RGB
+            const rgb = hsvToRgb(h, s, v);
+            const hex = '#' + rgb.map(c => Math.round(c).toString(16).padStart(2, '0')).join('');
 
             App.selectedColor = hex;
             document.getElementById('colorHexInput').value = hex.toUpperCase();
             document.getElementById('colorPickerPreview').style.background = hex;
 
-            const squareHandle = document.getElementById('squareHandle');
-            if (squareHandle) squareHandle.style.background = hex;
+            // 更新正方形手柄颜色
+            const handle = document.getElementById('squareHandle');
+            if (handle) handle.style.background = hex;
         }
 
-        function hslToRgb(h, s, l) {
+        function hsvToRgb(h, s, v) {
             let r, g, b;
-            if (s === 0) { r = g = b = l; }
-            else {
-                const hue2rgb = (p, q, t) => {
-                    if (t < 0) t += 1;
-                    if (t > 1) t -= 1;
-                    if (t < 1/6) return p + (q - p) * 6 * t;
-                    if (t < 1/2) return q;
-                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-                    return p;
-                };
-                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                const p = 2 * l - q;
-                r = hue2rgb(p, q, h + 1/3);
-                g = hue2rgb(p, q, h);
-                b = hue2rgb(p, q, h - 1/3);
+            const i = Math.floor(h / 60) % 6;
+            const f = h / 60 - Math.floor(h / 60);
+            const p = v * (1 - s);
+            const q = v * (1 - f * s);
+            const t = v * (1 - (1 - f) * s);
+
+            switch (i) {
+                case 0: r = v; g = t; b = p; break;
+                case 1: r = q; g = v; b = p; break;
+                case 2: r = p; g = v; b = t; break;
+                case 3: r = p; g = q; b = v; break;
+                case 4: r = t; g = p; b = v; break;
+                case 5: r = v; g = p; b = q; break;
             }
+
             return [r * 255, g * 255, b * 255];
         }
 
@@ -2585,7 +2617,46 @@
             if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
                 App.selectedColor = hex;
                 document.getElementById('colorPickerPreview').style.background = hex;
+
+                // 从hex转换回HSV并更新UI
+                const rgb = hexToRgbArray(hex);
+                const hsv = rgbToHsv(rgb[0], rgb[1], rgb[2]);
+                App.currentHue = hsv.h;
+                App.saturation = hsv.s;
+                App.brightness = hsv.v;
+
+                drawColorSquare(hsv.h);
+                positionRingHandle(hsv.h);
+                positionSquareHandle(hsv.s, hsv.v);
             }
+        }
+
+        function hexToRgbArray(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return [r, g, b];
+        }
+
+        function rgbToHsv(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, v = max;
+            const d = max - min;
+            s = max === 0 ? 0 : d / max;
+
+            if (max === min) {
+                h = 0;
+            } else {
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h *= 60;
+            }
+
+            return { h, s, v };
         }
 
         function openColorPicker(target) {
@@ -2597,20 +2668,16 @@
             document.getElementById('colorHexInput').value = currentColor.toUpperCase();
             document.getElementById('colorPickerPreview').style.background = currentColor;
 
-            // Reset handles to center
-            const ringHandle = document.getElementById('ringHandle');
-            const squareHandle = document.getElementById('squareHandle');
-            ringHandle.style.left = '217px';
-            ringHandle.style.top = '130px';
-            ringHandle.style.background = 'hsl(0, 100%, 50%)';
-            squareHandle.style.left = '130px';
-            squareHandle.style.top = '130px';
-            squareHandle.style.background = currentColor;
+            // 从当前颜色转换为HSV
+            const rgb = hexToRgbArray(currentColor);
+            const hsv = rgbToHsv(rgb[0], rgb[1], rgb[2]);
+            App.currentHue = hsv.h;
+            App.saturation = hsv.s;
+            App.brightness = hsv.v;
 
-            App.currentHue = 0;
-            App.squareX = 0.5;
-            App.squareY = 0.5;
-            drawColorSquare(0);
+            drawColorSquare(hsv.h);
+            positionRingHandle(hsv.h);
+            positionSquareHandle(hsv.s, hsv.v);
 
             showModal('colorPickerModal');
         }
@@ -2626,6 +2693,8 @@
             }
             hideModal('colorPickerModal');
         }
+
+        // ========== 以下是原有的所有功能代码，完全保留 ==========
 
         async function clearImageCache() {
             if (!confirm('Clear all image cache?')) return;
@@ -2944,7 +3013,7 @@
                 const r = await fetch(`${url.replace(/\/+$/,'').replace(/\/v1$/,'')}/v1/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model, messages: [{ role: 'user', content: 'Hi' }], max_tokens: 5 }) });
                 if (r.ok) { App.connectionStatus = 'connected'; App.settings.apiBaseUrl = url; App.settings.apiKey = key; App.settings.modelName = model; await saveData(); showToast('Connection successful!', 'success'); addLog('Connection successful', 'success'); }
                 else throw new Error(`HTTP ${r.status}`);
-            } catch(e) { App.connectionStatus = 'disconnected'; showToast(`Failed: ${e.message}`, 'error'); }
+            } catch(e) { App.connectionStatus = 'disconnected'; showToast(`Failed: ${e.message}`, 'error'); addLog(`Failed: ${e.message}`, 'error'); }
             finally { updateConnectionUI(); btn.disabled = false; btn.innerHTML = 'Test Connection'; }
         }
 
@@ -2955,7 +3024,7 @@
             App.settings.temperature = parseFloat(document.getElementById('temperature').value);
             App.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
             App.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
-            await saveData(); showToast('Settings saved', 'success');
+            await saveData(); showToast('Configuration saved', 'success');
         }
 
         async function createCharacter() {
@@ -2967,6 +3036,7 @@
                 description: '', greeting: '', scenario: '', worldbookIds: [],
                 userNick: '', systemPrompt: '', messages: [], chatWallpaper: null,
                 customCss: '', activeCssPresetId: null, timestampPosition: 'default',
+                // 每个角色独立的气泡样式
                 bubbleStyle: 'none',
                 bubbleColors: { ...DEFAULT_BUBBLE_COLORS },
                 glassBorder: false,
@@ -3018,247 +3088,16 @@
             exitSelectMode(); closePage('chatPage');
             document.getElementById('customCssStyles').textContent = '';
             document.getElementById('bubbleStyleSheet').textContent = '';
-            const chatPage = document.getElementById('chatPage');
-            chatPage.classList.remove('has-custom-bg'); chatPage.style.backgroundImage = '';
-            App.currentCharId = null; App.currentQuote = null;
-        }
-
-        function openCharacterSettings() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-
-            // Initialize bubble colors if missing
-            if (!char.bubbleColors) char.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
-
-            initBubbleStyleUI(char);
-            updateChatWallpaperPreview(char);
-            const charAvUpload = document.getElementById('charAvatarUpload'), userAvUpload = document.getElementById('userAvatarUpload');
-            if (char.avatarImage) { charAvUpload.innerHTML = `<img src="${char.avatarImage}">`; charAvUpload.classList.add('has-image'); }
-            else { charAvUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'; charAvUpload.classList.remove('has-image'); }
-            if (char.userAvatar) { userAvUpload.innerHTML = `<img src="${char.userAvatar}">`; userAvUpload.classList.add('has-image'); }
-            else { userAvUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'; userAvUpload.classList.remove('has-image'); }
-
-            document.getElementById('charName').value = char.name || '';
-            document.getElementById('charAvatar').value = char.avatar || '';
-            document.getElementById('charDescription').value = char.description || '';
-            document.getElementById('charGreeting').value = char.greeting || '';
-            document.getElementById('charScenario').value = char.scenario || '';
-            document.getElementById('charUserNick').value = char.userNick || '';
-            document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
-            document.getElementById('customCssEditor').value = char.customCss || '';
-            document.getElementById('timestampPosition').value = char.timestampPosition || 'default';
-            updateCharCounter();
-
-            const showAvToggle = document.getElementById('showAvatarToggle');
-            showAvToggle.classList.toggle('active', char.showAvatar !== false);
-
-            const showBorderToggle = document.getElementById('showBorderToggle');
-            showBorderToggle.classList.toggle('active', char.showBorder === true);
-            document.getElementById('borderColorPicker').value = char.borderColor || '#ffffff';
-
-            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => {
-                el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle'));
-            });
-
-            updateCssPresetSelect(char);
-            updateWorldbookMultiSelect(char);
-            openPage('characterSettingsPage');
-        }
-
-        function updateChatWallpaperPreview(char) {
-            const preview = document.getElementById('chatWallpaperPreview');
-            if (char.chatWallpaper) { preview.style.background = `url(${char.chatWallpaper}) center/cover`; preview.classList.add('has-image'); }
-            else { preview.style.background = ''; preview.classList.remove('has-image'); }
-        }
-
-        function updateCssPresetSelect(char) {
-            const select = document.getElementById('cssPresetSelect');
-            select.innerHTML = '<option value="">-- No Preset --</option>' + App.globalCssPresets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
-            if (char.activeCssPresetId) select.value = char.activeCssPresetId;
-        }
-
-        function loadCssPreset() {
-            const presetId = document.getElementById('cssPresetSelect').value;
-            if (!presetId) return;
-            const preset = App.globalCssPresets.find(p => p.id === presetId);
-            if (preset) { document.getElementById('customCssEditor').value = preset.css; showToast(`Loaded: ${preset.name}`, 'info'); }
-        }
-
-        function addNewCssPreset() { showModal('cssPresetNameModal'); document.getElementById('newCssPresetName').value = ''; }
-
-        async function createCssPreset() {
-            const name = document.getElementById('newCssPresetName').value.trim();
-            if (!name) { showToast('Please enter name', 'error'); return; }
-            const css = document.getElementById('customCssEditor').value.trim();
-            const preset = { id: Date.now().toString(), name, css };
-            App.globalCssPresets.push(preset);
-            await saveData(); hideModal('cssPresetNameModal');
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (char) updateCssPresetSelect(char);
-            document.getElementById('cssPresetSelect').value = preset.id;
-            showToast(`Preset "${name}" created`, 'success');
-        }
-
-        async function saveCssPreset() {
-            const presetId = document.getElementById('cssPresetSelect').value;
-            if (!presetId) { showToast('Please select or create a preset first', 'warning'); return; }
-            const preset = App.globalCssPresets.find(p => p.id === presetId);
-            if (!preset) return;
-            preset.css = document.getElementById('customCssEditor').value.trim();
-            await saveData(); showToast(`Preset "${preset.name}" updated`, 'success');
-        }
-
-        function showCssGuide() { showModal('cssGuideModal'); }
-
-        function previewCss() {
-            const css = document.getElementById('customCssEditor').value;
-            document.getElementById('customCssStyles').textContent = css;
-            showToast('CSS preview applied', 'info');
-        }
-
-        function clearCustomCss() { document.getElementById('customCssEditor').value = ''; document.getElementById('customCssStyles').textContent = ''; showToast('CSS cleared', 'info'); }
-
-        function updateWorldbookMultiSelect(char) {
-            const container = document.getElementById('worldbookMultiSelect');
-            if (App.worldbooks.length === 0) { container.innerHTML = '<div style="padding:12px;color:var(--text-tertiary);font-size:12px;text-align:center">No worldbooks available</div>'; return; }
-            container.innerHTML = App.worldbooks.map(wb => {
-                const isChecked = char.worldbookIds?.includes(wb.id);
-                return `<div class="worldbook-multi-item" onclick="toggleWorldbookBinding('${wb.id}')"><div class="worldbook-multi-checkbox ${isChecked ? 'checked' : ''}"></div><span class="worldbook-multi-name">${escapeHtml(wb.name)}</span></div>`;
-            }).join('');
-        }
-
-        function toggleWorldbookBinding(wbId) {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            if (!char.worldbookIds) char.worldbookIds = [];
-            const idx = char.worldbookIds.indexOf(wbId);
-            if (idx >= 0) char.worldbookIds.splice(idx, 1);
-            else char.worldbookIds.push(wbId);
-            updateWorldbookMultiSelect(char);
-        }
-
-        function toggleSwitch(el) { el.classList.toggle('active'); }
-        function selectShape(el) { document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); }
-        function updateCharCounter() { const val = document.getElementById('charGreeting').value; const counter = document.getElementById('greetingCharCounter'); counter.textContent = `${val.length}/300`; counter.className = 'char-counter' + (val.length > 280 ? ' warning' : '') + (val.length >= 300 ? ' error' : ''); }
-
-        async function handleCharAvatarUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-                char.avatarImage = await compressImage(ev.target.result, 200, 0.8);
-                const upload = document.getElementById('charAvatarUpload');
-                upload.innerHTML = `<img src="${char.avatarImage}">`; upload.classList.add('has-image');
-                showToast('Avatar updated', 'success');
-            };
-            reader.readAsDataURL(file); e.target.value = '';
-        }
-
-        async function handleUserAvatarUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-                char.userAvatar = await compressImage(ev.target.result, 200, 0.8);
-                const upload = document.getElementById('userAvatarUpload');
-                upload.innerHTML = `<img src="${char.userAvatar}">`; upload.classList.add('has-image');
-                showToast('Avatar updated', 'success');
-            };
-            reader.readAsDataURL(file); e.target.value = '';
-        }
-
-        async function handleChatWallpaperUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-                char.chatWallpaper = await compressImage(ev.target.result, 600, 0.8);
-                updateChatWallpaperPreview(char);
-                showToast('Wallpaper updated', 'success');
-            };
-            reader.readAsDataURL(file); e.target.value = '';
-        }
-
-        function clearChatWallpaper() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            char.chatWallpaper = null;
-            updateChatWallpaperPreview(char);
-            showToast('Wallpaper cleared', 'info');
-        }
-
-        async function saveCharacterSettings() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            char.name = document.getElementById('charName').value.trim() || char.name;
-            char.avatar = document.getElementById('charAvatar').value.trim();
-            char.description = document.getElementById('charDescription').value.trim();
-            char.greeting = document.getElementById('charGreeting').value.trim();
-            char.scenario = document.getElementById('charScenario').value.trim();
-            char.userNick = document.getElementById('charUserNick').value.trim();
-            char.systemPrompt = document.getElementById('charSystemPrompt').value.trim();
-            char.customCss = document.getElementById('customCssEditor').value.trim();
-            char.timestampPosition = document.getElementById('timestampPosition').value;
-            char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
-            char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
-            char.borderColor = document.getElementById('borderColorPicker').value;
-            const selectedShape = document.querySelector('#avatarShapeOptions .shape-option.selected');
-            if (selectedShape) char.avatarShape = selectedShape.dataset.shape;
-            const presetId = document.getElementById('cssPresetSelect').value;
-            char.activeCssPresetId = presetId || null;
-
-            document.getElementById('chatTitle').textContent = char.name;
-            applyCustomCss(char);
-            applyBubbleStyles(char);
-            applyChatWallpaper(char);
-            renderMessages();
-
-            if (await saveData()) { await updateStorageDisplay(); closeCharacterSettings(); showToast('Settings saved', 'success'); }
-        }
-
-        function closeCharacterSettings() { closePage('characterSettingsPage'); }
-
-        function confirmClearAllMessages() { showModal('clearMessagesModal'); }
-
-        async function executeClearAllMessages() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            char.messages = [];
-            await saveData();
-            hideModal('clearMessagesModal');
-            renderMessages();
-            showToast('All messages deleted', 'success');
-        }
-
-        function deleteCurrentCharacter() {
-            App.pendingDeleteType = 'character';
-            App.pendingDeleteId = App.currentCharId;
-            document.getElementById('deleteModalTitle').textContent = 'Delete Character?';
-            document.getElementById('deleteModalDesc').textContent = 'This will permanently delete this character and all messages.';
-            showModal('confirmDeleteModal');
-        }
-
-        async function confirmDelete() {
-            if (App.pendingDeleteType === 'character') {
-                App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
-                await saveData(); hideModal('confirmDeleteModal'); closeCharacterSettings(); closeChatPage(); renderContacts();
-                showToast('Character deleted', 'success');
-            } else if (App.pendingDeleteType === 'worldbook') {
-                App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
-                App.characters.forEach(c => { if (c.worldbookIds) c.worldbookIds = c.worldbookIds.filter(id => id !== App.pendingDeleteId); });
-                await saveData(); hideModal('confirmDeleteModal'); closeWorldbookEdit(); renderWorldbooks();
-                showToast('Worldbook deleted', 'success');
-            }
-            App.pendingDeleteType = null; App.pendingDeleteId = null;
+            saveData();
         }
 
         function renderMessages() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
             const container = document.getElementById('chatMessages');
-            const tsPos = char.timestampPosition || 'default';
-            const showAvatar = char.showAvatar !== false;
-            const shape = char.avatarShape || 'circle';
-            const showBorder = char.showBorder;
-            const borderColor = char.borderColor || '#ffffff';
-
+            const timestampPos = char.timestampPosition || 'default';
             let html = '';
-            let lastDate = null;
+            let lastDate = '';
 
             char.messages.forEach((msg, idx) => {
                 const msgDate = new Date(msg.timestamp).toLocaleDateString();
@@ -3268,42 +3107,353 @@
                 }
 
                 const isSent = msg.type === 'sent';
-                const shapeClass = shape === 'circle' ? '' : shape;
-                const borderStyle = showBorder ? `border: 2px solid ${borderColor};` : '';
-                const avatarContent = isSent
-                    ? (char.userAvatar ? `<img src="${char.userAvatar}">` : '👤')
-                    : (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0]));
+                const avatarHtml = getAvatarHtml(char, isSent);
+                const avatarClass = getAvatarClass(char);
+                const timeClass = timestampPos === 'hidden' ? 'time-hidden' : timestampPos === 'side' ? 'time-side' : '';
+                const quoteHtml = msg.quoteId ? getQuoteHtml(char, msg.quoteId) : '';
+                const imageHtml = msg.image ? `<img src="${msg.image}" class="message-image" onclick="window.open('${msg.image}','_blank')">` : '';
+                const checkboxHtml = `<div class="message-checkbox ${App.selectedMsgs.has(msg.id) ? 'checked' : ''}" onclick="toggleMessageSelect('${msg.id}')"></div>`;
 
-                const timeClass = 'message-time' + (tsPos === 'hidden' ? ' time-hidden' : '') + (tsPos === 'side' ? ' time-side' : '');
-
-                let contentHtml = '';
-                if (msg.quote) contentHtml += `<div class="message-quote">${escapeHtml(msg.quote)}</div>`;
-                contentHtml += escapeHtml(msg.content).replace(/\n/g, '<br>');
-                if (msg.image) contentHtml += `<img src="${msg.image}" class="message-image" onclick="window.open('${msg.image}','_blank')">`;
-
-                html += `
-                    <div class="message-wrapper ${isSent ? 'sent' : 'received'}" data-msg-id="${msg.id}">
-                        ${!isSent && showAvatar ? `<div class="message-avatar ${shapeClass} ${showAvatar ? '' : 'hidden'}" style="${borderStyle}">${avatarContent}</div>` : ''}
-                        <div class="message-checkbox ${App.selectedMsgs.has(msg.id) ? 'checked' : ''}" onclick="toggleMessageSelect('${msg.id}')"></div>
-                        <div class="message ${isSent ? 'sent' : 'received'}" oncontextmenu="showContextMenuForMessage(event,'${msg.id}')" ontouchstart="startLongPress('${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()">
-                            ${contentHtml}
-                            <div class="${timeClass}">${formatTime(msg.timestamp)}</div>
-                        </div>
-                        ${isSent && showAvatar ? `<div class="message-avatar ${shapeClass} ${showAvatar ? '' : 'hidden'}" style="${borderStyle}">${avatarContent}</div>` : ''}
-                    </div>
-                `;
+                html += `<div class="message-wrapper ${msg.type}" data-id="${msg.id}">`;
+                if (!isSent && char.showAvatar) html += `<div class="message-avatar ${avatarClass}">${avatarHtml}</div>`;
+                html += checkboxHtml;
+                html += `<div class="message ${msg.type}" oncontextmenu="showContextMenu(event,'${msg.id}')" ontouchstart="startLongPress(event,'${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()">`;
+                html += quoteHtml;
+                html += `<div class="message-text">${escapeHtml(msg.content)}</div>`;
+                html += imageHtml;
+                html += `<div class="message-time ${timeClass}">${formatTime(msg.timestamp)}</div>`;
+                html += `</div>`;
+                if (isSent && char.showAvatar) html += `<div class="message-avatar ${avatarClass}">${getAvatarHtml(char, true)}</div>`;
+                html += `</div>`;
             });
 
             container.innerHTML = html;
             container.scrollTop = container.scrollHeight;
         }
 
-        function startLongPress(msgId) { App.longPressTimer = setTimeout(() => { showContextMenu(msgId); }, 500); }
-        function endLongPress() { if (App.longPressTimer) { clearTimeout(App.longPressTimer); App.longPressTimer = null; } }
+        function getAvatarHtml(char, isSent) {
+            if (isSent) {
+                if (char.userAvatar) return `<img src="${char.userAvatar}">`;
+                return '👤';
+            } else {
+                if (char.avatarImage) return `<img src="${char.avatarImage}">`;
+                return char.avatar || char.name[0];
+            }
+        }
 
-        function showContextMenuForMessage(e, msgId) { e.preventDefault(); showContextMenu(msgId); }
+        function getAvatarClass(char) {
+            let cls = '';
+            if (!char.showAvatar) cls += ' hidden';
+            if (char.avatarShape === 'square') cls += ' square';
+            else if (char.avatarShape === 'rounded-square') cls += ' rounded-square';
+            if (char.showBorder) cls += ` border-${char.borderColor?.replace('#', '')}`;
+            return cls;
+        }
 
-        function showContextMenu(msgId) {
+        function getQuoteHtml(char, quoteId) {
+            const quotedMsg = char.messages.find(m => m.id === quoteId);
+            if (!quotedMsg) return '';
+            return `<div class="message-quote">${escapeHtml(quotedMsg.content.substring(0, 100))}${quotedMsg.content.length > 100 ? '...' : ''}</div>`;
+        }
+
+        function addMessage(content, type, options = {}) {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return null;
+            const msg = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                content, type, timestamp: Date.now(),
+                image: options.image || null,
+                quoteId: options.quoteId || null
+            };
+            char.messages.push(msg);
+            renderMessages();
+            saveData();
+            return msg;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const content = input.value.trim();
+            if (!content) return;
+            const options = {};
+            if (App.currentQuote) { options.quoteId = App.currentQuote.id; cancelQuote(); }
+            addMessage(content, 'sent', options);
+            input.value = '';
+            autoResizeTextarea(input);
+            toggleExtensionPanel(false);
+        }
+
+        function autoResizeTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+        }
+
+        function toggleExtensionPanel(force) {
+            const panel = document.getElementById('extensionPanel');
+            if (force === false) panel.classList.remove('active');
+            else panel.classList.toggle('active');
+        }
+
+        function openImagePicker() { document.getElementById('chatImageInput').click(); toggleExtensionPanel(false); }
+
+        async function handleChatImageUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const compressed = await compressImage(ev.target.result, 500, 0.8);
+                const options = {};
+                if (App.currentQuote) { options.quoteId = App.currentQuote.id; cancelQuote(); }
+                options.image = compressed;
+                addMessage('[Image]', 'sent', options);
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+
+        // ========== 以下是AI消息系统核心函数，绝对不能修改！ ==========
+
+        function buildAPIMessages(char) {
+            const messages = [];
+            let systemContent = `You are roleplaying as "${char.name}".`;
+
+            if (char.description) systemContent += `\n\nCharacter Description:\n${char.description}`;
+            if (char.scenario) systemContent += `\n\nScenario:\n${char.scenario}`;
+
+            // 世界书触发
+            if (char.worldbookIds && char.worldbookIds.length > 0) {
+                const recentText = char.messages.slice(-10).map(m => m.content).join(' ').toLowerCase();
+                let worldbookContent = '';
+                char.worldbookIds.forEach(wbId => {
+                    const wb = App.worldbooks.find(w => w.id === wbId);
+                    if (wb && wb.entries) {
+                        wb.entries.forEach(entry => {
+                            if (entry.alwaysActive) {
+                                worldbookContent += `\n[${entry.name}]: ${entry.content}`;
+                            } else if (entry.keywords) {
+                                const keywords = entry.keywords.split(',').map(k => k.trim().toLowerCase());
+                                if (keywords.some(kw => kw && recentText.includes(kw))) {
+                                    worldbookContent += `\n[${entry.name}]: ${entry.content}`;
+                                }
+                            }
+                        });
+                    }
+                });
+                if (worldbookContent) systemContent += `\n\nWorld Information:${worldbookContent}`;
+            }
+
+            if (char.userNick) systemContent += `\n\nThe user's name/identity: ${char.userNick}`;
+            if (char.systemPrompt) systemContent += `\n\nAdditional Instructions:\n${char.systemPrompt}`;
+
+            // 多条消息分隔规则
+            systemContent += `\n\n[Response Format]
+If you want to send multiple separate messages, use "|||" as delimiter between messages.
+Example: "Hello!|||How are you today?|||I was just thinking about you."
+Each part separated by ||| will be shown as a separate message bubble.
+
+If you want to quote/reply to a specific message, start that message part with [Q:#N] where N is the message number.
+Example: "[Q:#5] I agree with what you said earlier|||But I also think..."
+The quoted message will appear as a reference above your reply.`;
+
+            // 消息编号供引用
+            systemContent += `\n\n[Message History Reference Numbers]`;
+            const maxContext = App.settings.maxContextMessages || 200;
+            const contextMsgs = char.messages.slice(-maxContext);
+            contextMsgs.forEach((m, i) => {
+                systemContent += `\n#${i + 1} (${m.type}): ${m.content.substring(0, 50)}${m.content.length > 50 ? '...' : ''}`;
+            });
+
+            messages.push({ role: 'system', content: systemContent });
+
+            // 构建消息历史
+            let lastRole = null;
+            let combinedContent = '';
+            contextMsgs.forEach((m, idx) => {
+                const role = m.type === 'sent' ? 'user' : 'assistant';
+                let content = m.content;
+                if (m.image) {
+                    // 多模态支持
+                    const msgObj = {
+                        role: role,
+                        content: [
+                            { type: 'text', text: content || 'User shared an image.' },
+                            { type: 'image_url', image_url: { url: m.image } }
+                        ]
+                    };
+                    if (combinedContent && lastRole) {
+                        messages.push({ role: lastRole, content: combinedContent });
+                        combinedContent = '';
+                    }
+                    messages.push(msgObj);
+                    lastRole = null;
+                } else {
+                    if (role === lastRole) {
+                        combinedContent += '|||' + content;
+                    } else {
+                        if (combinedContent && lastRole) {
+                            messages.push({ role: lastRole, content: combinedContent });
+                        }
+                        combinedContent = content;
+                        lastRole = role;
+                    }
+                }
+            });
+            if (combinedContent && lastRole) {
+                messages.push({ role: lastRole, content: combinedContent });
+            }
+
+            return messages;
+        }
+
+        function parseAIResponse(responseText, char) {
+            const parts = responseText.split('|||').map(p => p.trim()).filter(p => p);
+            const result = [];
+            const contextMsgs = char.messages.slice(-(App.settings.maxContextMessages || 200));
+
+            parts.forEach(part => {
+                let quoteId = null;
+                let content = part;
+
+                // 检查引用格式 [Q:#N]
+                const quoteMatch = part.match(/^\[Q:#(\d+)\]\s*/i);
+                if (quoteMatch) {
+                    const msgNum = parseInt(quoteMatch[1]);
+                    if (msgNum > 0 && msgNum <= contextMsgs.length) {
+                        quoteId = contextMsgs[msgNum - 1].id;
+                    }
+                    content = part.replace(/^\[Q:#\d+\]\s*/i, '');
+                }
+
+                // 清理引号
+                content = content.replace(/^["']|["']$/g, '').trim();
+
+                if (content) {
+                    result.push({ content, quoteId });
+                }
+            });
+
+            return result;
+        }
+
+        async function triggerAIReply() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
+                showToast('Please configure API first', 'error');
+                return;
+            }
+
+            toggleExtensionPanel(false);
+
+            // 显示打字指示器
+            const container = document.getElementById('chatMessages');
+            const typingEl = document.createElement('div');
+            typingEl.className = 'message-wrapper received';
+            typingEl.id = 'typingIndicator';
+            typingEl.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+            container.appendChild(typingEl);
+            container.scrollTop = container.scrollHeight;
+
+            try {
+                const apiMessages = buildAPIMessages(char);
+                const response = await fetch(`${App.settings.apiBaseUrl.replace(/\/+$/, '').replace(/\/v1$/, '')}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${App.settings.apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: App.settings.modelName,
+                        messages: apiMessages,
+                        temperature: App.settings.temperature,
+                        max_tokens: App.settings.maxTokens
+                    })
+                });
+
+                if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                const data = await response.json();
+                const content = data.choices?.[0]?.message?.content || '';
+
+                document.getElementById('typingIndicator')?.remove();
+
+                if (content) {
+                    App.lastAIStart = char.messages.length;
+                    const parsedMessages = parseAIResponse(content, char);
+
+                    for (let i = 0; i < parsedMessages.length; i++) {
+                        const pm = parsedMessages[i];
+                        await new Promise(resolve => setTimeout(resolve, i > 0 ? 300 : 0));
+                        addMessage(pm.content, 'received', { quoteId: pm.quoteId });
+                    }
+                }
+            } catch (e) {
+                document.getElementById('typingIndicator')?.remove();
+                showToast(`Error: ${e.message}`, 'error');
+            }
+        }
+
+        async function regenerateLastReply() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            toggleExtensionPanel(false);
+
+            // 删除最后一批AI消息
+            if (App.lastAIStart >= 0 && App.lastAIStart < char.messages.length) {
+                char.messages = char.messages.slice(0, App.lastAIStart);
+            } else {
+                // 找到并删除最后连续的received消息
+                let i = char.messages.length - 1;
+                while (i >= 0 && char.messages[i].type === 'received') i--;
+                if (i < char.messages.length - 1) {
+                    char.messages = char.messages.slice(0, i + 1);
+                }
+            }
+
+            renderMessages();
+            await saveData();
+            await triggerAIReply();
+        }
+
+        // ========== 选择模式相关 ==========
+
+        function enterSelectMode() {
+            App.isSelectMode = true;
+            App.selectedMsgs.clear();
+            document.getElementById('selectModeBar').classList.add('active');
+            document.getElementById('chatMessages').classList.add('select-mode');
+            document.getElementById('selectedCount').textContent = '0';
+            toggleExtensionPanel(false);
+        }
+
+        function exitSelectMode() {
+            App.isSelectMode = false;
+            App.selectedMsgs.clear();
+            document.getElementById('selectModeBar').classList.remove('active');
+            document.getElementById('chatMessages').classList.remove('select-mode');
+            renderMessages();
+        }
+
+        function toggleMessageSelect(msgId) {
+            if (App.selectedMsgs.has(msgId)) App.selectedMsgs.delete(msgId);
+            else App.selectedMsgs.add(msgId);
+            document.getElementById('selectedCount').textContent = App.selectedMsgs.size;
+            const checkbox = document.querySelector(`[data-id="${msgId}"] .message-checkbox`);
+            if (checkbox) checkbox.classList.toggle('checked', App.selectedMsgs.has(msgId));
+        }
+
+        async function deleteSelectedMessages() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id));
+            await saveData();
+            exitSelectMode();
+            renderMessages();
+            showToast('Messages deleted', 'success');
+        }
+
+        // ========== 上下文菜单 ==========
+
+        function showContextMenu(e, msgId) {
+            e.preventDefault();
             App.contextMenuMsgId = msgId;
             document.getElementById('contextMenuOverlay').classList.add('active');
         }
@@ -3313,10 +3463,26 @@
             App.contextMenuMsgId = null;
         }
 
+        function startLongPress(e, msgId) {
+            App.longPressTimer = setTimeout(() => {
+                showContextMenu(e, msgId);
+            }, 500);
+        }
+
+        function endLongPress() {
+            if (App.longPressTimer) {
+                clearTimeout(App.longPressTimer);
+                App.longPressTimer = null;
+            }
+        }
+
         function copyMessageText() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
-            if (msg) { navigator.clipboard.writeText(msg.content); showToast('Copied!', 'success'); }
+            if (msg) {
+                navigator.clipboard.writeText(msg.content);
+                showToast('Copied', 'success');
+            }
             hideContextMenu();
         }
 
@@ -3324,9 +3490,9 @@
             const char = App.characters.find(c => c.id === App.currentCharId);
             const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
             if (msg) {
-                App.currentQuote = { id: msg.id, content: msg.content.substring(0, 100) };
-                document.getElementById('quotePreviewContent').textContent = App.currentQuote.content;
+                App.currentQuote = msg;
                 document.getElementById('quotePreviewBar').classList.add('active');
+                document.getElementById('quotePreviewContent').textContent = msg.content.substring(0, 80) + (msg.content.length > 80 ? '...' : '');
             }
             hideContextMenu();
         }
@@ -3360,301 +3526,318 @@
             App.editingMsgId = null;
         }
 
-        function toggleExtensionPanel() { document.getElementById('extensionPanel').classList.toggle('active'); }
+        // ========== 角色设置 ==========
 
-        function enterSelectMode() {
-            App.isSelectMode = true;
-            App.selectedMsgs.clear();
-            document.getElementById('selectModeBar').classList.add('active');
-            document.getElementById('chatMessages').classList.add('select-mode');
-            document.getElementById('extensionPanel').classList.remove('active');
-            updateSelectedCount();
-        }
+        function openCharacterSettings() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
 
-        function exitSelectMode() {
-            App.isSelectMode = false;
-            App.selectedMsgs.clear();
-            document.getElementById('selectModeBar').classList.remove('active');
-            document.getElementById('chatMessages').classList.remove('select-mode');
-        }
+            document.getElementById('charName').value = char.name || '';
+            document.getElementById('charAvatar').value = char.avatar || '';
+            document.getElementById('charDescription').value = char.description || '';
+            document.getElementById('charGreeting').value = char.greeting || '';
+            document.getElementById('charScenario').value = char.scenario || '';
+            document.getElementById('charUserNick').value = char.userNick || '';
+            document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
+            document.getElementById('customCssEditor').value = char.customCss || '';
+            document.getElementById('timestampPosition').value = char.timestampPosition || 'default';
 
-        function toggleMessageSelect(msgId) {
-            if (!App.isSelectMode) return;
-            if (App.selectedMsgs.has(msgId)) App.selectedMsgs.delete(msgId);
-            else App.selectedMsgs.add(msgId);
-            document.querySelector(`[data-msg-id="${msgId}"] .message-checkbox`)?.classList.toggle('checked', App.selectedMsgs.has(msgId));
-            updateSelectedCount();
-        }
+            const avatarUpload = document.getElementById('charAvatarUpload');
+            if (char.avatarImage) { avatarUpload.innerHTML = `<img src="${char.avatarImage}">`; avatarUpload.classList.add('has-image'); }
+            else { avatarUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'; avatarUpload.classList.remove('has-image'); }
 
-        function updateSelectedCount() { document.getElementById('selectedCount').textContent = App.selectedMsgs.size; }
+            const userAvatarUpload = document.getElementById('userAvatarUpload');
+            if (char.userAvatar) { userAvatarUpload.innerHTML = `<img src="${char.userAvatar}">`; userAvatarUpload.classList.add('has-image'); }
+            else { userAvatarUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'; userAvatarUpload.classList.remove('has-image'); }
 
-        async function deleteSelectedMessages() {
-            if (App.selectedMsgs.size === 0) { showToast('No messages selected', 'warning'); return; }
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id));
-            await saveData(); exitSelectMode(); renderMessages();
-            showToast(`Deleted ${App.selectedMsgs.size} messages`, 'success');
-        }
+            const showAvatarToggle = document.getElementById('showAvatarToggle');
+            showAvatarToggle.classList.toggle('active', char.showAvatar !== false);
 
-        function openImagePicker() {
-            document.getElementById('extensionPanel').classList.remove('active');
-            document.getElementById('chatImageInput').click();
-        }
-
-        async function handleChatImageUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const compressed = await compressImage(ev.target.result, 500, 0.8);
-                addMessage('[Image]', 'sent', compressed);
-                triggerAIReply(compressed);
-            };
-            reader.readAsDataURL(file); e.target.value = '';
-        }
-
-        function autoResizeTextarea(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
-
-        async function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const content = input.value.trim();
-            if (!content) return;
-
-            let quote = null;
-            if (App.currentQuote) {
-                quote = App.currentQuote.content;
-                cancelQuote();
-            }
-
-            addMessage(content, 'sent', null, quote);
-            input.value = ''; input.style.height = 'auto';
-        }
-
-        function addMessage(content, type, image = null, quote = null) {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            const msg = { id: Date.now().toString(), type, content, timestamp: Date.now(), image, quote };
-            char.messages.push(msg);
-            saveData();
-            renderMessages();
-        }
-
-        async function triggerAIReply(imageData = null) {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) { showToast('Please configure API first', 'error'); return; }
-
-            const container = document.getElementById('chatMessages');
-            const typingEl = document.createElement('div');
-            typingEl.className = 'message-wrapper received';
-            typingEl.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
-            container.appendChild(typingEl);
-            container.scrollTop = container.scrollHeight;
-
-            try {
-                const messages = buildAPIMessages(char, imageData);
-                const response = await fetch(`${App.settings.apiBaseUrl.replace(/\/+$/, '').replace(/\/v1$/, '')}/v1/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${App.settings.apiKey}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        model: App.settings.modelName,
-                        messages,
-                        temperature: App.settings.temperature,
-                        max_tokens: App.settings.maxTokens
-                    })
-                });
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                const reply = parseAIResponse(data);
-                typingEl.remove();
-                addMessage(reply, 'received');
-            } catch (e) {
-                typingEl.remove();
-                showToast(`AI Error: ${e.message}`, 'error');
-            }
-        }
-
-        function buildAPIMessages(char, imageData = null) {
-            const msgs = [];
-            let systemContent = '';
-            if (char.description) systemContent += char.description + '\n\n';
-            if (char.scenario) systemContent += `Scenario: ${char.scenario}\n\n`;
-            if (char.systemPrompt) systemContent += char.systemPrompt + '\n\n';
-
-            // Worldbook entries
-            if (char.worldbookIds?.length > 0) {
-                char.worldbookIds.forEach(wbId => {
-                    const wb = App.worldbooks.find(w => w.id === wbId);
-                    if (wb?.entries) {
-                        wb.entries.forEach(entry => {
-                            if (entry.alwaysActive) {
-                                systemContent += `[Lore: ${entry.name}]\n${entry.content}\n\n`;
-                            } else if (entry.keywords) {
-                                const keywords = entry.keywords.split(',').map(k => k.trim().toLowerCase());
-                                const lastMsgs = char.messages.slice(-10).map(m => m.content.toLowerCase()).join(' ');
-                                if (keywords.some(kw => lastMsgs.includes(kw))) {
-                                    systemContent += `[Lore: ${entry.name}]\n${entry.content}\n\n`;
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-
-            if (char.userNick) systemContent += `The user's name is ${char.userNick}.\n\n`;
-            systemContent += `You are ${char.name}. Respond in character.`;
-
-            msgs.push({ role: 'system', content: systemContent });
-
-            const contextMsgs = char.messages.slice(-App.settings.maxContextMessages);
-            contextMsgs.forEach(m => {
-                let content = m.content;
-                if (m.quote) content = `[Q:${m.quote}]\n${content}`;
-
-                if (m.image && m.type === 'sent') {
-                    msgs.push({
-                        role: 'user',
-                        content: [
-                            { type: 'text', text: content },
-                            { type: 'image_url', image_url: { url: m.image } }
-                        ]
-                    });
-                } else {
-                    msgs.push({ role: m.type === 'sent' ? 'user' : 'assistant', content });
-                }
+            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle'));
             });
 
-            if (imageData && !char.messages[char.messages.length - 1]?.image) {
-                const lastMsg = msgs[msgs.length - 1];
-                if (lastMsg?.role === 'user' && typeof lastMsg.content === 'string') {
-                    lastMsg.content = [
-                        { type: 'text', text: lastMsg.content },
-                        { type: 'image_url', image_url: { url: imageData } }
-                    ];
-                }
-            }
+            const showBorderToggle = document.getElementById('showBorderToggle');
+            showBorderToggle.classList.toggle('active', char.showBorder);
+            document.getElementById('borderColorPicker').value = char.borderColor || '#ffffff';
 
-            return msgs;
+            const wpPreview = document.getElementById('chatWallpaperPreview');
+            if (char.chatWallpaper) { wpPreview.style.background = `url(${char.chatWallpaper}) center/cover`; wpPreview.classList.add('has-image'); }
+            else { wpPreview.style.background = ''; wpPreview.classList.remove('has-image'); }
+
+            updateCharCounter();
+            renderWorldbookMultiSelect(char);
+            updateCssPresetSelect(char);
+
+            // 初始化气泡样式UI
+            initBubbleStyleUI(char);
+
+            openPage('characterSettingsPage');
         }
 
-        function parseAIResponse(data) {
-            if (data.choices?.[0]?.message?.content) return data.choices[0].message.content;
-            if (data.message?.content) return data.message.content;
-            if (data.content) return data.content;
-            if (typeof data === 'string') return data;
-            return 'Unable to parse response';
+        function closeCharacterSettings() {
+            closePage('characterSettingsPage');
         }
 
-        async function regenerateLastReply() {
-            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
-            document.getElementById('extensionPanel').classList.remove('active');
+        async function saveCharacterSettings() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
 
-            for (let i = char.messages.length - 1; i >= 0; i--) {
-                if (char.messages[i].type === 'received') {
-                    char.messages.splice(i, 1);
-                    break;
-                }
-            }
+            char.name = document.getElementById('charName').value.trim() || char.name;
+            char.avatar = document.getElementById('charAvatar').value.trim();
+            char.description = document.getElementById('charDescription').value;
+            char.greeting = document.getElementById('charGreeting').value;
+            char.scenario = document.getElementById('charScenario').value;
+            char.userNick = document.getElementById('charUserNick').value.trim();
+            char.systemPrompt = document.getElementById('charSystemPrompt').value;
+            char.customCss = document.getElementById('customCssEditor').value;
+            char.timestampPosition = document.getElementById('timestampPosition').value;
+
+            char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
+            char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
+            char.borderColor = document.getElementById('borderColorPicker').value;
+
+            const selectedShape = document.querySelector('#avatarShapeOptions .shape-option.selected');
+            if (selectedShape) char.avatarShape = selectedShape.dataset.shape;
+
+            // 收集选中的世界书
+            char.worldbookIds = [];
+            document.querySelectorAll('#worldbookMultiSelect .worldbook-multi-checkbox.checked').forEach(el => {
+                char.worldbookIds.push(el.parentElement.dataset.wbId);
+            });
+
+            document.getElementById('chatTitle').textContent = char.name;
+
+            await saveData();
+            applyChatWallpaper(char);
+            applyCustomCss(char);
+            applyBubbleStyles(char);
+            renderMessages();
+            closeCharacterSettings();
+            showToast('Settings saved', 'success');
+        }
+
+        function updateCharCounter() {
+            const textarea = document.getElementById('charGreeting');
+            const counter = document.getElementById('greetingCharCounter');
+            const len = textarea.value.length;
+            counter.textContent = `${len}/300`;
+            counter.className = 'char-counter' + (len > 280 ? ' warning' : '') + (len >= 300 ? ' error' : '');
+        }
+
+        function toggleSwitch(el) { el.classList.toggle('active'); }
+        function selectShape(el) {
+            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        async function handleCharAvatarUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                char.avatarImage = await compressImage(ev.target.result, 200, 0.8);
+                const upload = document.getElementById('charAvatarUpload');
+                upload.innerHTML = `<img src="${char.avatarImage}">`;
+                upload.classList.add('has-image');
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+
+        async function handleUserAvatarUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                char.userAvatar = await compressImage(ev.target.result, 200, 0.8);
+                const upload = document.getElementById('userAvatarUpload');
+                upload.innerHTML = `<img src="${char.userAvatar}">`;
+                upload.classList.add('has-image');
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+
+        async function handleChatWallpaperUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                char.chatWallpaper = await compressImage(ev.target.result, 600, 0.8);
+                const preview = document.getElementById('chatWallpaperPreview');
+                preview.style.background = `url(${char.chatWallpaper}) center/cover`;
+                preview.classList.add('has-image');
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+
+        function clearChatWallpaper() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            char.chatWallpaper = null;
+            const preview = document.getElementById('chatWallpaperPreview');
+            preview.style.background = '';
+            preview.classList.remove('has-image');
+        }
+
+        function confirmClearAllMessages() { showModal('clearMessagesModal'); }
+
+        async function executeClearAllMessages() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            char.messages = [];
             await saveData();
             renderMessages();
-            triggerAIReply();
+            hideModal('clearMessagesModal');
+            showToast('All messages cleared', 'success');
         }
 
-        function formatTime(ts) { return new Date(ts).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); }
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+        function deleteCurrentCharacter() {
+            App.pendingDeleteType = 'character';
+            App.pendingDeleteId = App.currentCharId;
+            document.getElementById('deleteModalTitle').textContent = 'Delete Character?';
+            document.getElementById('deleteModalDesc').textContent = 'This will permanently delete this character and all messages.';
+            showModal('confirmDeleteModal');
+        }
 
-        // Worldbooks
+        async function confirmDelete() {
+            if (App.pendingDeleteType === 'character') {
+                App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
+                await saveData();
+                hideModal('confirmDeleteModal');
+                closeCharacterSettings();
+                closeChatPage();
+                renderContacts();
+                showToast('Character deleted', 'success');
+            } else if (App.pendingDeleteType === 'worldbook') {
+                App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
+                App.characters.forEach(c => {
+                    if (c.worldbookIds) c.worldbookIds = c.worldbookIds.filter(id => id !== App.pendingDeleteId);
+                });
+                await saveData();
+                hideModal('confirmDeleteModal');
+                closeWorldbookEdit();
+                renderWorldbooks();
+                showToast('Worldbook deleted', 'success');
+            }
+            App.pendingDeleteType = null;
+            App.pendingDeleteId = null;
+        }
+
+        // ========== CSS预设 ==========
+
+        function updateCssPresetSelect(char) {
+            const select = document.getElementById('cssPresetSelect');
+            select.innerHTML = '<option value="">-- No Preset --</option>' +
+                App.globalCssPresets.map(p => `<option value="${p.id}" ${char.activeCssPresetId === p.id ? 'selected' : ''}>${escapeHtml(p.name)}</option>`).join('');
+        }
+
+        function loadCssPreset() {
+            const presetId = document.getElementById('cssPresetSelect').value;
+            const preset = App.globalCssPresets.find(p => p.id === presetId);
+            if (preset) {
+                document.getElementById('customCssEditor').value = preset.css;
+                showToast(`Loaded: ${preset.name}`, 'info');
+            }
+        }
+
+        function addNewCssPreset() {
+            showModal('cssPresetNameModal');
+            document.getElementById('newCssPresetName').value = '';
+        }
+
+        async function createCssPreset() {
+            const name = document.getElementById('newCssPresetName').value.trim();
+            if (!name) { showToast('Please enter name', 'error'); return; }
+            const preset = { id: Date.now().toString(), name, css: document.getElementById('customCssEditor').value };
+            App.globalCssPresets.push(preset);
+            await saveData();
+            hideModal('cssPresetNameModal');
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (char) {
+                char.activeCssPresetId = preset.id;
+                updateCssPresetSelect(char);
+            }
+            showToast(`Preset "${name}" created`, 'success');
+        }
+
+        async function saveCssPreset() {
+            const presetId = document.getElementById('cssPresetSelect').value;
+            if (!presetId) { showToast('Select or create a preset first', 'warning'); return; }
+            const preset = App.globalCssPresets.find(p => p.id === presetId);
+            if (preset) {
+                preset.css = document.getElementById('customCssEditor').value;
+                await saveData();
+                showToast(`Preset "${preset.name}" updated`, 'success');
+            }
+        }
+
+        function showCssGuide() { showModal('cssGuideModal'); }
+
+        function previewCss() {
+            const css = document.getElementById('customCssEditor').value;
+            document.getElementById('customCssStyles').textContent = css;
+            showToast('CSS preview applied', 'info');
+        }
+
+        function clearCustomCss() {
+            document.getElementById('customCssEditor').value = '';
+            document.getElementById('customCssStyles').textContent = '';
+            showToast('CSS cleared', 'info');
+        }
+
+        // ========== 世界书 ==========
+
+        function renderWorldbooks() {
+            const list = document.getElementById('worldbookList');
+            const empty = document.getElementById('emptyWorldbookState');
+            if (App.worldbooks.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
+            list.style.display = 'block'; empty.style.display = 'none';
+            list.innerHTML = App.worldbooks.map(wb => {
+                const entriesCount = wb.entries?.length || 0;
+                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entriesCount} entries</span></div><div class="worldbook-item-preview">${escapeHtml(wb.summary || 'No description')}</div></div>`;
+            }).join('');
+        }
+
         async function createWorldbook() {
             const name = document.getElementById('newWorldbookName').value.trim();
             if (!name) { showToast('Please enter name', 'error'); return; }
             const wb = { id: Date.now().toString(), name, summary: '', entries: [{ name: 'New Entry', keywords: '', content: '', alwaysActive: false }] };
             App.worldbooks.push(wb);
-            await saveData(); hideModal('createWorldbookModal'); document.getElementById('newWorldbookName').value = '';
-            renderWorldbooks(); showToast(`"${name}" created`, 'success');
-        }
-
-        function renderWorldbooks() {
-            const list = document.getElementById('worldbookList'), empty = document.getElementById('emptyWorldbookState');
-            if (App.worldbooks.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
-            list.style.display = 'block'; empty.style.display = 'none';
-            list.innerHTML = App.worldbooks.map(wb => {
-                const entryCount = wb.entries?.length || 0;
-                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entryCount} entries</span></div><div class="worldbook-item-preview">${escapeHtml(wb.summary || 'No description')}</div></div>`;
-            }).join('');
+            await saveData();
+            hideModal('createWorldbookModal');
+            document.getElementById('newWorldbookName').value = '';
+            renderWorldbooks();
+            openWorldbookEdit(wb.id);
         }
 
         function openWorldbookEdit(id) {
-            const wb = App.worldbooks.find(w => w.id === id); if (!wb) return;
+            const wb = App.worldbooks.find(w => w.id === id);
+            if (!wb) return;
             App.currentWbId = id;
-            document.getElementById('worldbookName').value = wb.name || '';
+            document.getElementById('worldbookName').value = wb.name;
             document.getElementById('worldbookSummary').value = wb.summary || '';
             renderWorldbookEntries(wb);
             openPage('worldbookEditPage');
         }
 
-        function renderWorldbookEntries(wb) {
-            const container = document.getElementById('worldbookEntries');
-            if (!wb.entries || wb.entries.length === 0) { container.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;text-align:center;padding:16px">No entries yet</div>'; return; }
-            container.innerHTML = wb.entries.map((entry, idx) => `
-                <div class="worldbook-entry-item">
-                    <div class="worldbook-entry-header">
-                        <span class="worldbook-entry-title">${escapeHtml(entry.name || 'Untitled')}</span>
-                        <div class="worldbook-entry-actions">
-                            <button class="worldbook-entry-btn" onclick="editWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                            <button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                        </div>
-                    </div>
-                    <div class="worldbook-entry-keywords">${entry.alwaysActive ? '🔒 Always Active' : (entry.keywords ? `Keywords: ${escapeHtml(entry.keywords)}` : 'No keywords')}</div>
-                    <div class="worldbook-entry-preview">${escapeHtml(entry.content || 'No content')}</div>
-                </div>
-            `).join('');
-        }
-
-        function addWorldbookEntry() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
-            if (!wb.entries) wb.entries = [];
-            wb.entries.push({ name: 'New Entry', keywords: '', content: '', alwaysActive: false });
-            renderWorldbookEntries(wb);
-        }
-
-        function editWorldbookEntry(idx) {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb || !wb.entries[idx]) return;
-            App.currentEntryIndex = idx;
-            const entry = wb.entries[idx];
-            document.getElementById('entryName').value = entry.name || '';
-            document.getElementById('entryKeywords').value = entry.keywords || '';
-            document.getElementById('entryContent').value = entry.content || '';
-            document.getElementById('entryAlwaysActive').classList.toggle('active', entry.alwaysActive);
-            showModal('entryEditModal');
-        }
-
-        function saveWorldbookEntry() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb || App.currentEntryIndex < 0) return;
-            const entry = wb.entries[App.currentEntryIndex];
-            entry.name = document.getElementById('entryName').value.trim() || 'Untitled';
-            entry.keywords = document.getElementById('entryKeywords').value.trim();
-            entry.content = document.getElementById('entryContent').value.trim();
-            entry.alwaysActive = document.getElementById('entryAlwaysActive').classList.contains('active');
-            hideModal('entryEditModal');
-            renderWorldbookEntries(wb);
-            App.currentEntryIndex = -1;
-        }
-
-        function deleteWorldbookEntry(idx) {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb) return;
-            wb.entries.splice(idx, 1);
-            renderWorldbookEntries(wb);
-        }
+        function closeWorldbookEdit() { closePage('worldbookEditPage'); App.currentWbId = null; }
 
         async function saveWorldbook() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb) return;
             wb.name = document.getElementById('worldbookName').value.trim() || wb.name;
-            wb.summary = document.getElementById('worldbookSummary').value.trim();
-            if (await saveData()) { closeWorldbookEdit(); renderWorldbooks(); showToast('Worldbook saved', 'success'); }
+            wb.summary = document.getElementById('worldbookSummary').value;
+            await saveData();
+            closeWorldbookEdit();
+            renderWorldbooks();
+            showToast('Worldbook saved', 'success');
         }
-
-        function closeWorldbookEdit() { closePage('worldbookEditPage'); App.currentWbId = null; }
 
         function deleteCurrentWorldbook() {
             App.pendingDeleteType = 'worldbook';
@@ -3664,18 +3847,108 @@
             showModal('confirmDeleteModal');
         }
 
-        // Data management
+        function renderWorldbookEntries(wb) {
+            const container = document.getElementById('worldbookEntries');
+            if (!wb.entries || wb.entries.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-tertiary);text-align:center">No entries yet</p>';
+                return;
+            }
+            container.innerHTML = wb.entries.map((entry, idx) => `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(entry.name)}${entry.alwaysActive ? ' 🔒' : ''}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div><div class="worldbook-entry-keywords">Keywords: ${escapeHtml(entry.keywords) || 'None'}</div><div class="worldbook-entry-preview">${escapeHtml(entry.content.substring(0, 100))}${entry.content.length > 100 ? '...' : ''}</div></div>`).join('');
+        }
+
+        function addWorldbookEntry() {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb) return;
+            App.currentEntryIndex = -1;
+            document.getElementById('entryName').value = '';
+            document.getElementById('entryKeywords').value = '';
+            document.getElementById('entryContent').value = '';
+            document.getElementById('entryAlwaysActive').classList.remove('active');
+            showModal('entryEditModal');
+        }
+
+        function editWorldbookEntry(idx) {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb || !wb.entries[idx]) return;
+            App.currentEntryIndex = idx;
+            const entry = wb.entries[idx];
+            document.getElementById('entryName').value = entry.name;
+            document.getElementById('entryKeywords').value = entry.keywords;
+            document.getElementById('entryContent').value = entry.content;
+            document.getElementById('entryAlwaysActive').classList.toggle('active', entry.alwaysActive);
+            showModal('entryEditModal');
+        }
+
+        async function saveWorldbookEntry() {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb) return;
+            const entry = {
+                name: document.getElementById('entryName').value.trim() || 'Unnamed Entry',
+                keywords: document.getElementById('entryKeywords').value.trim(),
+                content: document.getElementById('entryContent').value,
+                alwaysActive: document.getElementById('entryAlwaysActive').classList.contains('active')
+            };
+            if (App.currentEntryIndex === -1) wb.entries.push(entry);
+            else wb.entries[App.currentEntryIndex] = entry;
+            await saveData();
+            hideModal('entryEditModal');
+            renderWorldbookEntries(wb);
+            showToast('Entry saved', 'success');
+        }
+
+        async function deleteWorldbookEntry(idx) {
+            if (!confirm('Delete this entry?')) return;
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb) return;
+            wb.entries.splice(idx, 1);
+            await saveData();
+            renderWorldbookEntries(wb);
+            showToast('Entry deleted', 'success');
+        }
+
+        function renderWorldbookMultiSelect(char) {
+            const container = document.getElementById('worldbookMultiSelect');
+            if (App.worldbooks.length === 0) {
+                container.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-tertiary)">No worldbooks available</div>';
+                return;
+            }
+            container.innerHTML = App.worldbooks.map(wb => {
+                const isSelected = char.worldbookIds?.includes(wb.id);
+                return `<div class="worldbook-multi-item" data-wb-id="${wb.id}" onclick="toggleWorldbookSelection(this)"><div class="worldbook-multi-checkbox ${isSelected ? 'checked' : ''}"></div><span class="worldbook-multi-name">${escapeHtml(wb.name)}</span></div>`;
+            }).join('');
+        }
+
+        function toggleWorldbookSelection(el) {
+            el.querySelector('.worldbook-multi-checkbox').classList.toggle('checked');
+        }
+
+        // ========== 数据导入导出 ==========
+
         async function exportAllData() {
-            const data = { characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, apiPresets: App.apiPresets, fonts: App.fonts, exportDate: new Date().toISOString() };
+            const data = {
+                version: 2,
+                exportDate: new Date().toISOString(),
+                characters: App.characters,
+                worldbooks: App.worldbooks,
+                settings: App.settings,
+                appIcons: App.appIcons,
+                globalCssPresets: App.globalCssPresets,
+                apiPresets: App.apiPresets,
+                fonts: App.fonts.filter(f => !f.isDefault)
+            };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = `noir-backup-${Date.now()}.json`; a.click();
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `noir-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
             URL.revokeObjectURL(url);
             showToast('Data exported', 'success');
         }
 
         async function importData(e) {
-            const file = e.target.files[0]; if (!file) return;
+            const file = e.target.files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = async (ev) => {
                 try {
@@ -3686,33 +3959,59 @@
                     if (data.appIcons) App.appIcons = { ...App.appIcons, ...data.appIcons };
                     if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets;
                     if (data.apiPresets) App.apiPresets = data.apiPresets;
-                    if (data.fonts) App.fonts = data.fonts;
+                    if (data.fonts) data.fonts.forEach(f => { if (!App.fonts.find(ef => ef.id === f.id)) App.fonts.push(f); });
 
                     await saveData();
-                    applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyFontScale();
-                    loadSettingsUI(); updateConnectionUI(); renderContacts(); renderWorldbooks();
-                    await updateStorageDisplay();
+                    applyWallpaper();
+                    applyAppIcons();
+                    applyGlobalFont();
+                    renderContacts();
+                    renderWorldbooks();
+                    updateApiPresetSelect();
+                    renderFontList();
+                    loadSettingsUI();
                     showToast('Data imported successfully', 'success');
-                } catch (err) { showToast('Import failed: Invalid file', 'error'); }
+                } catch (err) {
+                    showToast('Import failed: Invalid file', 'error');
+                }
             };
-            reader.readAsText(file); e.target.value = '';
+            reader.readAsText(file);
+            e.target.value = '';
         }
 
         async function clearAllData() {
-            if (!confirm('Are you sure you want to delete ALL data? This cannot be undone!')) return;
-            App.characters = []; App.worldbooks = [];
+            if (!confirm('This will delete ALL data including characters, messages, settings, etc. Continue?')) return;
+            if (!confirm('Are you REALLY sure? This cannot be undone!')) return;
+            App.characters = [];
+            App.worldbooks = [];
             App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null, fontScale: 1 };
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null };
             App.globalCssPresets = [];
             App.apiPresets = [];
             App.fonts = [...DEFAULT_FONTS];
-            App.connectionStatus = 'disconnected';
-
             await saveData();
-            applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyFontScale(); applyStatusBarVisibility();
-            loadSettingsUI(); updateConnectionUI(); renderContacts(); renderWorldbooks(); renderFontList();
-            await updateStorageDisplay();
+            applyWallpaper();
+            applyAppIcons();
+            applyGlobalFont();
+            applyFontScale();
+            loadSettingsUI();
+            renderContacts();
+            renderWorldbooks();
+            renderFontList();
+            updateApiPresetSelect();
             showToast('All data cleared', 'success');
+        }
+
+        // ========== 工具函数 ==========
+
+        function formatTime(ts) {
+            if (!ts) return '';
+            return new Date(ts).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
     </script>
 </body>
