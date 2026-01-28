@@ -10,9 +10,8 @@
     <meta name="apple-mobile-web-app-title" content="NOIR">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a0a">
-    <title>NOIR · Premium SMS v7.0</title>
+    <title>NOIR · Premium SMS</title>
     <style id="globalFontStyle"></style>
-    <style id="globalFontSizeStyle"></style>
     <style id="bubbleStyleSheet"></style>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap');
@@ -407,7 +406,7 @@
         .message-wrapper.received { justify-content: flex-start; }
 
         .message-avatar {
-            width: 32px; height: 32px; border-radius: 10px;
+            width: calc(32px * var(--font-scale)); height: calc(32px * var(--font-scale)); border-radius: 10px;
             background: var(--bg-tertiary);
             display: flex; align-items: center; justify-content: center;
             font-size: calc(12px * var(--font-scale)); color: var(--text-secondary);
@@ -433,8 +432,8 @@
         }
 
         .message.sent {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
+            background: linear-gradient(135deg, rgba(201, 169, 98, 0.25), rgba(160, 128, 64, 0.2));
+            border: 1px solid rgba(201, 169, 98, 0.3);
             color: var(--text-primary);
             border-radius: 18px 18px 4px 18px;
         }
@@ -551,19 +550,19 @@
         .chat-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.5; fill: none; }
 
         .chat-btn.send {
-            background: rgba(40, 40, 45, 0.9);
-            border: 1px solid rgba(60, 60, 65, 0.8);
+            background: rgba(30, 30, 30, 0.9);
+            border: 1px solid rgba(60, 60, 60, 0.5);
             backdrop-filter: blur(10px);
         }
-        .chat-btn.send:hover { background: rgba(50, 50, 55, 0.95); }
+        .chat-btn.send:hover { background: rgba(40, 40, 40, 0.95); }
         .chat-btn.send svg { stroke: var(--text-secondary); }
 
         .chat-btn.ai {
-            background: rgba(35, 35, 40, 0.9);
-            border: 1px solid rgba(55, 55, 60, 0.8);
+            background: rgba(25, 25, 25, 0.9);
+            border: 1px solid rgba(55, 55, 55, 0.5);
             backdrop-filter: blur(10px);
         }
-        .chat-btn.ai:hover { background: rgba(45, 45, 50, 0.95); }
+        .chat-btn.ai:hover { background: rgba(35, 35, 35, 0.95); }
         .chat-btn.ai svg { stroke: var(--text-secondary); }
 
         .chat-input-field {
@@ -685,7 +684,7 @@
         .modal-overlay.active { opacity: 1; visibility: visible; }
 
         .modal {
-            width: 100%; max-width: 360px; max-height: 85vh;
+            width: 100%; max-width: 360px; max-height: 80vh;
             overflow-y: auto;
             background: var(--bg-secondary);
             backdrop-filter: blur(var(--blur-heavy));
@@ -1143,184 +1142,113 @@
         .font-item-btn.danger:hover { background: rgba(199, 80, 80, 0.1); }
         .font-item-btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.5; fill: none; }
 
-        /* ═══════════════════════════════════════════════════════════════════════════════════
-           COLOR WHEEL PICKER - 圆环+正方形样式
-           ═══════════════════════════════════════════════════════════════════════════════════ */
+        /* Color Wheel Picker */
         .color-wheel-container {
-            position: relative;
-            width: 220px; height: 220px;
-            margin: 16px auto;
+            position: relative; width: 220px; height: 220px;
+            margin: 10px auto;
         }
-
         .color-wheel-ring {
-            position: absolute;
-            width: 220px; height: 220px;
-            border-radius: 50%;
-            background: conic-gradient(
-                hsl(0, 100%, 50%),
-                hsl(30, 100%, 50%),
-                hsl(60, 100%, 50%),
-                hsl(90, 100%, 50%),
-                hsl(120, 100%, 50%),
-                hsl(150, 100%, 50%),
-                hsl(180, 100%, 50%),
-                hsl(210, 100%, 50%),
-                hsl(240, 100%, 50%),
-                hsl(270, 100%, 50%),
-                hsl(300, 100%, 50%),
-                hsl(330, 100%, 50%),
-                hsl(360, 100%, 50%)
-            );
-            cursor: pointer;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 50%; cursor: crosshair;
         }
-
-        .color-wheel-ring::before {
-            content: '';
-            position: absolute;
-            top: 28px; left: 28px;
-            right: 28px; bottom: 28px;
-            border-radius: 50%;
-            background: var(--bg-secondary);
-        }
-
-        .color-wheel-ring-handle {
-            position: absolute;
-            width: 20px; height: 20px;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 10;
-        }
-
         .color-wheel-square {
-            position: absolute;
-            top: 50%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             width: 100px; height: 100px;
             transform: translate(-50%, -50%) rotate(45deg);
-            cursor: pointer;
-            overflow: hidden;
+            cursor: crosshair;
         }
-
-        .color-wheel-square-inner {
-            width: 142%; height: 142%;
-            position: absolute;
-            top: -21%; left: -21%;
-            transform: rotate(-45deg);
-            background: linear-gradient(to right, #fff 0%, hsl(0, 100%, 50%) 100%);
-        }
-
-        .color-wheel-square-inner::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to bottom, transparent 0%, #000 100%);
-        }
-
-        .color-wheel-square-handle {
-            position: absolute;
-            width: 16px; height: 16px;
-            border-radius: 50%;
-            border: 2px solid white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        .color-wheel-ring-cursor {
+            position: absolute; width: 20px; height: 20px;
+            border: 3px solid white; border-radius: 50%;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
             transform: translate(-50%, -50%);
             pointer-events: none;
-            z-index: 10;
         }
-
+        .color-wheel-square-cursor {
+            position: absolute; width: 16px; height: 16px;
+            border: 2px solid white; border-radius: 50%;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
         .color-hex-input {
-            display: flex; align-items: center; gap: 10px;
-            margin-top: 16px;
-        }
-        .color-hex-input input {
-            flex: 1; padding: 10px 12px;
+            width: 100%; margin-top: 12px;
+            padding: 10px 14px;
             background: var(--bg-glass);
             border: 1px solid var(--border-subtle);
             border-radius: 8px; color: var(--text-primary);
-            font-size: calc(14px * var(--font-scale));
+            font-size: calc(13px * var(--font-scale));
             font-family: 'SF Mono', monospace;
-            text-transform: uppercase;
+            text-align: center;
         }
         .color-preview-box {
-            width: 40px; height: 40px;
-            border-radius: 8px;
-            border: 2px solid var(--border-accent);
+            width: 100%; height: 40px; border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid var(--border-subtle);
         }
 
-        /* ═══════════════════════════════════════════════════════════════════════════════════
-           BUBBLE STYLE OPTIONS
-           ═══════════════════════════════════════════════════════════════════════════════════ */
-        .bubble-style-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 10px; margin: 12px 0;
-        }
-        .bubble-style-item {
-            padding: 12px 8px;
+        /* Bubble Style Options */
+        .bubble-style-options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .bubble-style-option {
+            padding: 10px 16px;
             background: var(--bg-glass);
             border: 1px solid var(--border-subtle);
-            border-radius: 10px;
-            text-align: center; cursor: pointer;
+            border-radius: 10px; color: var(--text-primary);
+            font-size: calc(12px * var(--font-scale)); cursor: pointer;
             transition: var(--transition-fast);
         }
-        .bubble-style-item:hover { background: var(--bg-glass-hover); }
-        .bubble-style-item.selected { border-color: var(--accent-gold); background: var(--accent-gold-dim); }
-        .bubble-style-icon { font-size: calc(20px * var(--font-scale)); margin-bottom: 6px; }
-        .bubble-style-name { font-size: calc(11px * var(--font-scale)); color: var(--text-primary); }
+        .bubble-style-option.selected {
+            background: var(--accent-gold-dim);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
 
+        /* Bubble Preview */
         .bubble-preview-container {
             background: var(--bg-glass);
             border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 16px; margin: 16px 0;
+            border-radius: 12px; padding: 16px;
+            margin-bottom: 16px;
         }
-        .bubble-preview-title {
-            font-size: calc(11px * var(--font-scale));
+        .bubble-preview-label {
+            font-size: calc(10px * var(--font-scale));
             color: var(--text-tertiary);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
-        .bubble-preview-messages {
-            display: flex; flex-direction: column; gap: 8px;
-        }
-        .bubble-preview-msg {
+        .bubble-preview-row { display: flex; flex-direction: column; gap: 8px; }
+        .bubble-preview-sent, .bubble-preview-received {
             padding: 10px 14px;
             border-radius: 14px;
             font-size: calc(13px * var(--font-scale));
-            max-width: 80%;
+            max-width: 70%;
         }
-        .bubble-preview-msg.sent { align-self: flex-end; }
-        .bubble-preview-msg.received { align-self: flex-start; }
+        .bubble-preview-sent { align-self: flex-end; }
+        .bubble-preview-received { align-self: flex-start; }
 
-        .color-section {
-            background: var(--bg-glass);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 16px; margin: 12px 0;
-        }
-        .color-section-title {
-            font-size: calc(12px * var(--font-scale));
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            font-weight: 500;
-        }
-        .color-btn-row {
-            display: flex; gap: 10px; align-items: center;
-        }
+        /* Color Swatch Button */
         .color-swatch-btn {
-            width: 36px; height: 36px;
-            border-radius: 8px;
+            width: 44px; height: 44px;
+            border-radius: 10px; cursor: pointer;
             border: 2px solid var(--border-accent);
-            cursor: pointer;
             transition: var(--transition-fast);
+            position: relative;
         }
-        .color-swatch-btn:hover { transform: scale(1.1); }
-        .color-swatch-label {
-            font-size: calc(12px * var(--font-scale));
-            color: var(--text-secondary);
-            flex: 1;
+        .color-swatch-btn:hover { border-color: var(--accent-gold); transform: scale(1.05); }
+        .color-swatch-btn::after {
+            content: ''; position: absolute;
+            top: 2px; left: 2px; right: 2px; bottom: 2px;
+            border-radius: 6px;
         }
+
+        .color-config-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .color-config-row:last-child { border-bottom: none; }
+        .color-config-label { flex: 1; font-size: calc(13px * var(--font-scale)); color: var(--text-primary); }
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -1390,9 +1318,7 @@
 
         <div class="home-indicator"></div>
 
-        <!-- ═══════════════════════════════════════════════════════════════════════════════════
-             SETTINGS PAGE - 主设置页面
-             ═══════════════════════════════════════════════════════════════════════════════════ -->
+        <!-- Settings Page -->
         <div class="page" id="settingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('settingsPage')">
@@ -1415,19 +1341,83 @@
                     </div>
                 </div>
 
-                <p class="settings-group-title">Display Settings</p>
+                <p class="settings-group-title">Global Font Size</p>
                 <div class="settings-group" style="padding:16px">
                     <div class="slider-container">
                         <div class="slider-header">
-                            <span class="slider-label">Font Size</span>
-                            <span class="slider-value" id="fontSizeValue">Standard</span>
+                            <span class="slider-label">Layout Scale</span>
+                            <span class="slider-value" id="fontScaleValue">100%</span>
                         </div>
-                        <input type="range" class="slider-input" id="globalFontSize" min="0.8" max="1.3" step="0.05" value="1" oninput="updateFontSizePreview()">
+                        <input type="range" class="slider-input" id="fontScaleSlider" min="0.8" max="1.3" step="0.05" value="1" oninput="updateFontScalePreview()">
                     </div>
-                    <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-tertiary); margin-top:4px;">
+                    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-tertiary);margin-top:4px">
                         <span>Compact</span>
                         <span>Standard</span>
                         <span>Large</span>
+                    </div>
+                </div>
+
+                <p class="settings-group-title">Bubble Style</p>
+                <div class="settings-group" style="padding:16px">
+                    <div class="bubble-style-options" id="bubbleStyleOptions">
+                        <div class="bubble-style-option selected" data-style="none" onclick="selectBubbleStyle('none')">None</div>
+                        <div class="bubble-style-option" data-style="glass" onclick="selectBubbleStyle('glass')">Glass</div>
+                        <div class="bubble-style-option" data-style="metal" onclick="selectBubbleStyle('metal')">Metal</div>
+                        <div class="bubble-style-option" data-style="solid" onclick="selectBubbleStyle('solid')">Solid</div>
+                        <div class="bubble-style-option" data-style="neon" onclick="selectBubbleStyle('neon')">Neon</div>
+                        <div class="bubble-style-option" data-style="gradient" onclick="selectBubbleStyle('gradient')">Gradient</div>
+                    </div>
+
+                    <div id="bubbleStyleConfig" style="display:none">
+                        <div class="bubble-preview-container">
+                            <div class="bubble-preview-label">Preview</div>
+                            <div class="bubble-preview-row">
+                                <div class="bubble-preview-received" id="bubblePreviewReceived">Hello there!</div>
+                                <div class="bubble-preview-sent" id="bubblePreviewSent">Hi! How are you?</div>
+                            </div>
+                        </div>
+
+                        <div id="glassConfig" style="display:none">
+                            <div class="settings-item" style="padding:12px 0">
+                                <span class="settings-item-label">Border</span>
+                                <div class="toggle-switch" id="glassBorderToggle" onclick="toggleSwitch(this);updateBubblePreview()"></div>
+                            </div>
+                            <div class="slider-container" id="glassBorderWidthContainer" style="display:none">
+                                <div class="slider-header">
+                                    <span class="slider-label">Border Width</span>
+                                    <span class="slider-value" id="glassBorderWidthValue">0.5px</span>
+                                </div>
+                                <input type="range" class="slider-input" id="glassBorderWidth" min="0.3" max="3" step="0.1" value="0.5" oninput="document.getElementById('glassBorderWidthValue').textContent=this.value+'px';updateBubblePreview()">
+                            </div>
+                        </div>
+
+                        <p class="input-label" style="margin-top:16px">User Bubble Colors</p>
+                        <div class="color-config-row">
+                            <span class="color-config-label">Primary Color</span>
+                            <div class="color-swatch-btn" id="userColor1Swatch" onclick="openColorPicker('userColor1')" style="background:#3a3a3a"></div>
+                        </div>
+                        <div class="color-config-row" id="userColor2Row">
+                            <span class="color-config-label">Secondary Color</span>
+                            <div class="color-swatch-btn" id="userColor2Swatch" onclick="openColorPicker('userColor2')" style="background:#2a2a2a"></div>
+                        </div>
+                        <div class="color-config-row">
+                            <span class="color-config-label">Text Color</span>
+                            <div class="color-swatch-btn" id="userTextColorSwatch" onclick="openColorPicker('userTextColor')" style="background:#ffffff"></div>
+                        </div>
+
+                        <p class="input-label" style="margin-top:16px">Character Bubble Colors</p>
+                        <div class="color-config-row">
+                            <span class="color-config-label">Primary Color</span>
+                            <div class="color-swatch-btn" id="charColor1Swatch" onclick="openColorPicker('charColor1')" style="background:#1e1e1e"></div>
+                        </div>
+                        <div class="color-config-row" id="charColor2Row">
+                            <span class="color-config-label">Secondary Color</span>
+                            <div class="color-swatch-btn" id="charColor2Swatch" onclick="openColorPicker('charColor2')" style="background:#151515"></div>
+                        </div>
+                        <div class="color-config-row">
+                            <span class="color-config-label">Text Color</span>
+                            <div class="color-swatch-btn" id="charTextColorSwatch" onclick="openColorPicker('charTextColor')" style="background:#e0e0e0"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -1550,9 +1540,7 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════════════════════════
-             MESSAGES PAGE
-             ═══════════════════════════════════════════════════════════════════════════════════ -->
+        <!-- Messages Page -->
         <div class="page" id="messagesPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('messagesPage')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
@@ -1572,9 +1560,7 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════════════════════════
-             CHAT PAGE
-             ═══════════════════════════════════════════════════════════════════════════════════ -->
+        <!-- Chat Page -->
         <div class="page" id="chatPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closeChatPage()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
@@ -1643,9 +1629,7 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════════════════════════
-             CHARACTER SETTINGS PAGE - 包含气泡样式系统
-             ═══════════════════════════════════════════════════════════════════════════════════ -->
+        <!-- Character Settings Page -->
         <div class="page slide-from-bottom" id="characterSettingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closeCharacterSettings()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Cancel</button>
@@ -1659,104 +1643,6 @@
                         <div class="settings-item-left">
                             <span class="settings-icon danger"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>
                             <div><span class="settings-item-label">Clear All Messages</span><div class="settings-item-desc">Delete all chat history</div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <p class="settings-group-title">Bubble Style</p>
-                <div class="settings-group" style="padding:16px">
-                    <div class="action-hint">
-                        <span class="action-hint-icon">✦</span>
-                        <span class="action-hint-text">Select "None" to use custom CSS instead</span>
-                    </div>
-
-                    <div class="bubble-style-grid" id="bubbleStyleGrid">
-                        <div class="bubble-style-item selected" data-style="none" onclick="selectBubbleStyle('none')">
-                            <div class="bubble-style-icon">○</div>
-                            <div class="bubble-style-name">None</div>
-                        </div>
-                        <div class="bubble-style-item" data-style="glass" onclick="selectBubbleStyle('glass')">
-                            <div class="bubble-style-icon">◈</div>
-                            <div class="bubble-style-name">Glass</div>
-                        </div>
-                        <div class="bubble-style-item" data-style="metal" onclick="selectBubbleStyle('metal')">
-                            <div class="bubble-style-icon">◆</div>
-                            <div class="bubble-style-name">Metal</div>
-                        </div>
-                        <div class="bubble-style-item" data-style="solid" onclick="selectBubbleStyle('solid')">
-                            <div class="bubble-style-icon">■</div>
-                            <div class="bubble-style-name">Solid</div>
-                        </div>
-                        <div class="bubble-style-item" data-style="neon" onclick="selectBubbleStyle('neon')">
-                            <div class="bubble-style-icon">◎</div>
-                            <div class="bubble-style-name">Neon</div>
-                        </div>
-                        <div class="bubble-style-item" data-style="gradient" onclick="selectBubbleStyle('gradient')">
-                            <div class="bubble-style-icon">▣</div>
-                            <div class="bubble-style-name">Aurora</div>
-                        </div>
-                    </div>
-
-                    <div id="bubbleStyleOptions" style="display:none">
-                        <!-- Glass Options -->
-                        <div id="glassOptions" class="bubble-options" style="display:none">
-                            <div class="divider"></div>
-                            <div class="settings-item" style="padding:12px 0">
-                                <span class="settings-item-label">Show Border</span>
-                                <div class="toggle-switch" id="glassBorderToggle" onclick="toggleSwitch(this); updateBubblePreview()"></div>
-                            </div>
-                            <div class="slider-container" id="glassBorderWidthContainer" style="display:none">
-                                <div class="slider-header">
-                                    <span class="slider-label">Border Width</span>
-                                    <span class="slider-value" id="glassBorderWidthValue">1px</span>
-                                </div>
-                                <input type="range" class="slider-input" id="glassBorderWidth" min="0.5" max="3" step="0.5" value="1" oninput="document.getElementById('glassBorderWidthValue').textContent=this.value+'px'; updateBubblePreview()">
-                            </div>
-                        </div>
-
-                        <!-- Color Settings -->
-                        <div id="colorSettings" class="bubble-options">
-                            <div class="divider"></div>
-
-                            <div class="color-section">
-                                <div class="color-section-title">User Bubble Colors</div>
-                                <div class="color-btn-row">
-                                    <span class="color-swatch-label">Primary</span>
-                                    <div class="color-swatch-btn" id="userColor1Swatch" style="background:#2a2a30" onclick="openColorPicker('userColor1')"></div>
-                                </div>
-                                <div class="color-btn-row" style="margin-top:8px" id="userColor2Row">
-                                    <span class="color-swatch-label">Secondary</span>
-                                    <div class="color-swatch-btn" id="userColor2Swatch" style="background:#1a1a20" onclick="openColorPicker('userColor2')"></div>
-                                </div>
-                                <div class="color-btn-row" style="margin-top:8px">
-                                    <span class="color-swatch-label">Text</span>
-                                    <div class="color-swatch-btn" id="userTextColorSwatch" style="background:#ffffff" onclick="openColorPicker('userTextColor')"></div>
-                                </div>
-                            </div>
-
-                            <div class="color-section">
-                                <div class="color-section-title">Character Bubble Colors</div>
-                                <div class="color-btn-row">
-                                    <span class="color-swatch-label">Primary</span>
-                                    <div class="color-swatch-btn" id="charColor1Swatch" style="background:#1e1e24" onclick="openColorPicker('charColor1')"></div>
-                                </div>
-                                <div class="color-btn-row" style="margin-top:8px" id="charColor2Row">
-                                    <span class="color-swatch-label">Secondary</span>
-                                    <div class="color-swatch-btn" id="charColor2Swatch" style="background:#141418" onclick="openColorPicker('charColor2')"></div>
-                                </div>
-                                <div class="color-btn-row" style="margin-top:8px">
-                                    <span class="color-swatch-label">Text</span>
-                                    <div class="color-swatch-btn" id="charTextColorSwatch" style="background:#e0e0e0" onclick="openColorPicker('charTextColor')"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bubble-preview-container">
-                        <div class="bubble-preview-title">Preview</div>
-                        <div class="bubble-preview-messages">
-                            <div class="bubble-preview-msg received" id="previewMsgReceived">Hello there!</div>
-                            <div class="bubble-preview-msg sent" id="previewMsgSent">Hey, how are you?</div>
                         </div>
                     </div>
                 </div>
@@ -1818,7 +1704,7 @@
 
                 <p class="settings-group-title">Custom CSS Styling</p>
                 <div class="settings-group" style="padding:16px">
-                    <div class="action-hint warning"><span class="action-hint-icon">⚠</span><span class="action-hint-text">Custom CSS overrides bubble style settings above</span></div>
+                    <div class="action-hint warning"><span class="action-hint-icon">⚠</span><span class="action-hint-text">Custom CSS overrides bubble style settings</span></div>
                     <div class="input-group">
                         <label class="input-label">CSS Preset</label>
                         <div class="preset-selector">
@@ -1839,9 +1725,7 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════════════════════════
-             WORLDBOOK PAGE
-             ═══════════════════════════════════════════════════════════════════════════════════ -->
+        <!-- Worldbook Page -->
         <div class="page" id="worldbookPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('worldbookPage')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
@@ -1888,9 +1772,7 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════════════════════════
-             WALLPAPER PAGE
-             ═══════════════════════════════════════════════════════════════════════════════════ -->
+        <!-- Wallpaper Page -->
         <div class="page" id="wallpaperPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('wallpaperPage')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
@@ -1973,9 +1855,7 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════════════════════════
-             FONTS PAGE
-             ═══════════════════════════════════════════════════════════════════════════════════ -->
+        <!-- Fonts Page -->
         <div class="page" id="fontsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('fontsPage')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
@@ -1990,9 +1870,7 @@
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════════════════
-         MODALS
-         ═══════════════════════════════════════════════════════════════════════════════════ -->
+    <!-- Modals -->
     <div class="modal-overlay" id="createCharacterModal">
         <div class="modal">
             <div class="modal-title">New Character</div>
@@ -2098,30 +1976,21 @@
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════════════════
-         COLOR PICKER MODAL - 圆环+正方形样式
-         ═══════════════════════════════════════════════════════════════════════════════════ -->
+    <!-- Color Picker Modal -->
     <div class="modal-overlay" id="colorPickerModal">
         <div class="modal" style="max-width:280px">
-            <div class="modal-title" id="colorPickerTitle">Select Color</div>
-
+            <div class="modal-title">Select Color</div>
             <div class="color-wheel-container" id="colorWheelContainer">
-                <div class="color-wheel-ring" id="colorWheelRing"></div>
-                <div class="color-wheel-ring-handle" id="colorWheelRingHandle"></div>
-                <div class="color-wheel-square" id="colorWheelSquare">
-                    <div class="color-wheel-square-inner" id="colorWheelSquareInner"></div>
-                </div>
-                <div class="color-wheel-square-handle" id="colorWheelSquareHandle"></div>
+                <canvas id="colorWheelRing" width="220" height="220" class="color-wheel-ring"></canvas>
+                <canvas id="colorWheelSquare" width="100" height="100" class="color-wheel-square"></canvas>
+                <div class="color-wheel-ring-cursor" id="ringCursor"></div>
+                <div class="color-wheel-square-cursor" id="squareCursor"></div>
             </div>
-
-            <div class="color-hex-input">
-                <input type="text" id="colorHexInput" placeholder="#FFFFFF" maxlength="7">
-                <div class="color-preview-box" id="colorPreviewBox"></div>
-            </div>
-
-            <div class="modal-btns" style="margin-top:20px">
+            <input type="text" class="color-hex-input" id="colorHexInput" placeholder="#000000" maxlength="7" oninput="updateColorFromHex()">
+            <div class="color-preview-box" id="colorPreviewBox"></div>
+            <div class="modal-btns" style="margin-top:16px">
                 <button class="modal-btn cancel" onclick="hideModal('colorPickerModal')">Cancel</button>
-                <button class="modal-btn confirm" onclick="confirmColorSelection()">Apply</button>
+                <button class="modal-btn confirm" onclick="confirmColorPick()">Apply</button>
             </div>
         </div>
     </div>
@@ -2129,9 +1998,6 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // DATABASE & CORE
-        // ═══════════════════════════════════════════════════════════════════════════════════
         const DB_NAME = 'NoirAppDB';
         const DB_VERSION = 5;
         let db = null;
@@ -2184,9 +2050,6 @@
             return { used: 0, quota: 0, percent: 0 };
         }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // APP STATE
-        // ═══════════════════════════════════════════════════════════════════════════════════
         const App = {
             characters: [], worldbooks: [], currentCharId: null, currentWbId: null,
             currentEntryIndex: -1, pendingDeleteType: null, pendingDeleteId: null, models: [],
@@ -2196,7 +2059,11 @@
             settings: {
                 apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048,
                 maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false,
-                selectedFontId: null, fontScale: 1
+                selectedFontId: null, fontScale: 1,
+                bubbleStyle: 'none',
+                bubbleGlassBorder: false, bubbleGlassBorderWidth: 0.5,
+                userColor1: '#3a3a3a', userColor2: '#2a2a2a', userTextColor: '#ffffff',
+                charColor1: '#1e1e1e', charColor2: '#151515', charTextColor: '#e0e0e0'
             },
             globalCssPresets: [],
             apiPresets: [],
@@ -2209,19 +2076,10 @@
             pendingDeleteFontId: null,
             pendingDeleteCssPresetId: null,
             pendingDeleteApiPresetId: null,
-            // Color picker state
             colorPickerTarget: null,
-            colorPickerHue: 0,
-            colorPickerSaturation: 50,
-            colorPickerLightness: 50,
-            currentBubbleColors: {
-                userColor1: '#2a2a30',
-                userColor2: '#1a1a20',
-                userTextColor: '#ffffff',
-                charColor1: '#1e1e24',
-                charColor2: '#141418',
-                charTextColor: '#e0e0e0'
-            }
+            currentHue: 0,
+            currentSaturation: 50,
+            currentLightness: 50
         };
 
         const GRADIENTS = {
@@ -2241,9 +2099,6 @@
             { id: 'cormorant', name: 'Cormorant Garamond', url: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap', isGoogleFont: true, isDefault: true }
         ];
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // INITIALIZATION
-        // ═══════════════════════════════════════════════════════════════════════════════════
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 await openDB();
@@ -2254,7 +2109,8 @@
                 applyAppIcons();
                 applyStatusBarVisibility();
                 applyGlobalFont();
-                applyGlobalFontSize();
+                applyFontScale();
+                applyBubbleStyle();
                 updateConnectionUI();
                 highlightWallpaper();
                 updateWallpaperPreview();
@@ -2262,7 +2118,8 @@
                 updateStorageDisplay();
                 renderFontList();
                 updateApiPresetSelect();
-                initColorPicker();
+                initBubbleStyleUI();
+                initColorWheel();
             } catch (e) { console.error('Init failed:', e); showToast('Initialization failed', 'error'); }
         });
 
@@ -2289,9 +2146,6 @@
             else { statusBar.classList.remove('hidden'); homeScreen.classList.remove('no-statusbar'); toggle?.classList.remove('active'); }
         }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // DATA PERSISTENCE
-        // ═══════════════════════════════════════════════════════════════════════════════════
         async function saveData() {
             try {
                 await Promise.all([
@@ -2329,15 +2183,7 @@
                 DEFAULT_FONTS.forEach(df => { if (!App.fonts.find(f => f.id === df.id)) App.fonts.push(df); });
 
                 App.worldbooks.forEach(wb => { if (!wb.entries) wb.entries = [{ name: 'Default Entry', keywords: wb.keywords || '', content: wb.content || '', alwaysActive: wb.alwaysActive || false }]; });
-                App.characters.forEach(c => {
-                    if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId];
-                    if (!c.worldbookIds) c.worldbookIds = [];
-                    // Initialize bubble style settings
-                    if (!c.bubbleStyle) c.bubbleStyle = 'none';
-                    if (!c.bubbleColors) c.bubbleColors = { ...App.currentBubbleColors };
-                    if (c.glassBorder === undefined) c.glassBorder = false;
-                    if (c.glassBorderWidth === undefined) c.glassBorderWidth = 1;
-                });
+                App.characters.forEach(c => { if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId]; if (!c.worldbookIds) c.worldbookIds = []; });
 
                 loadSettingsUI();
                 if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
@@ -2349,13 +2195,388 @@
         async function forceSaveAll() { if (await saveData()) { await updateStorageDisplay(); showToast('Saved successfully', 'success'); } }
 
         async function saveMainSettings() {
-            App.settings.fontScale = parseFloat(document.getElementById('globalFontSize').value);
-            App.settings.temperature = parseFloat(document.getElementById('temperature').value);
-            App.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
-            App.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
+            App.settings.fontScale = parseFloat(document.getElementById('fontScaleSlider').value);
+            App.settings.bubbleGlassBorder = document.getElementById('glassBorderToggle')?.classList.contains('active') || false;
+            App.settings.bubbleGlassBorderWidth = parseFloat(document.getElementById('glassBorderWidth')?.value || 0.5);
             await saveData();
-            applyGlobalFontSize();
+            applyFontScale();
+            applyBubbleStyle();
             showToast('Settings saved', 'success');
+        }
+
+        function applyFontScale() {
+            document.documentElement.style.setProperty('--font-scale', App.settings.fontScale || 1);
+        }
+
+        function updateFontScalePreview() {
+            const val = document.getElementById('fontScaleSlider').value;
+            document.getElementById('fontScaleValue').textContent = Math.round(val * 100) + '%';
+        }
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // BUBBLE STYLE SYSTEM
+        // ════════════════════════════════════════════════════════════════════════════════
+        function initBubbleStyleUI() {
+            document.getElementById('fontScaleSlider').value = App.settings.fontScale || 1;
+            updateFontScalePreview();
+
+            document.querySelectorAll('.bubble-style-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.style === App.settings.bubbleStyle);
+            });
+
+            updateBubbleConfigVisibility();
+            updateColorSwatches();
+            updateBubblePreview();
+        }
+
+        function selectBubbleStyle(style) {
+            App.settings.bubbleStyle = style;
+            document.querySelectorAll('.bubble-style-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.style === style);
+            });
+            updateBubbleConfigVisibility();
+            updateBubblePreview();
+        }
+
+        function updateBubbleConfigVisibility() {
+            const style = App.settings.bubbleStyle;
+            const configEl = document.getElementById('bubbleStyleConfig');
+            const glassConfig = document.getElementById('glassConfig');
+            const glassBorderContainer = document.getElementById('glassBorderWidthContainer');
+            const userColor2Row = document.getElementById('userColor2Row');
+            const charColor2Row = document.getElementById('charColor2Row');
+
+            if (style === 'none') {
+                configEl.style.display = 'none';
+            } else {
+                configEl.style.display = 'block';
+                glassConfig.style.display = style === 'glass' ? 'block' : 'none';
+
+                if (style === 'glass') {
+                    document.getElementById('glassBorderToggle').classList.toggle('active', App.settings.bubbleGlassBorder);
+                    glassBorderContainer.style.display = App.settings.bubbleGlassBorder ? 'block' : 'none';
+                    document.getElementById('glassBorderWidth').value = App.settings.bubbleGlassBorderWidth;
+                    document.getElementById('glassBorderWidthValue').textContent = App.settings.bubbleGlassBorderWidth + 'px';
+                }
+
+                const needsSecondColor = ['metal', 'gradient', 'neon', 'glass'].includes(style);
+                userColor2Row.style.display = needsSecondColor ? 'flex' : 'none';
+                charColor2Row.style.display = needsSecondColor ? 'flex' : 'none';
+            }
+        }
+
+        function updateColorSwatches() {
+            document.getElementById('userColor1Swatch').style.background = App.settings.userColor1;
+            document.getElementById('userColor2Swatch').style.background = App.settings.userColor2;
+            document.getElementById('userTextColorSwatch').style.background = App.settings.userTextColor;
+            document.getElementById('charColor1Swatch').style.background = App.settings.charColor1;
+            document.getElementById('charColor2Swatch').style.background = App.settings.charColor2;
+            document.getElementById('charTextColorSwatch').style.background = App.settings.charTextColor;
+        }
+
+        function updateBubblePreview() {
+            const style = App.settings.bubbleStyle;
+            const sentEl = document.getElementById('bubblePreviewSent');
+            const receivedEl = document.getElementById('bubblePreviewReceived');
+
+            if (!sentEl || !receivedEl) return;
+
+            let sentStyle = '', receivedStyle = '';
+
+            switch(style) {
+                case 'glass':
+                    const border = App.settings.bubbleGlassBorder ? `border: ${App.settings.bubbleGlassBorderWidth}px solid rgba(255,255,255,0.2);` : '';
+                    sentStyle = `background: ${App.settings.userColor1}80; backdrop-filter: blur(10px); ${border} color: ${App.settings.userTextColor};`;
+                    receivedStyle = `background: ${App.settings.charColor1}80; backdrop-filter: blur(10px); ${border} color: ${App.settings.charTextColor};`;
+                    break;
+                case 'metal':
+                    sentStyle = `background: linear-gradient(180deg, ${App.settings.userColor1} 0%, ${App.settings.userColor2} 100%); border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15); color: ${App.settings.userTextColor};`;
+                    receivedStyle = `background: linear-gradient(180deg, ${App.settings.charColor1} 0%, ${App.settings.charColor2} 100%); border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15); color: ${App.settings.charTextColor};`;
+                    break;
+                case 'solid':
+                    sentStyle = `background: ${App.settings.userColor1}; color: ${App.settings.userTextColor};`;
+                    receivedStyle = `background: ${App.settings.charColor1}; color: ${App.settings.charTextColor};`;
+                    break;
+                case 'neon':
+                    sentStyle = `background: ${App.settings.userColor1}40; border: 1px solid ${App.settings.userColor2}; box-shadow: 0 0 10px ${App.settings.userColor2}50, inset 0 0 10px ${App.settings.userColor2}20; color: ${App.settings.userTextColor};`;
+                    receivedStyle = `background: ${App.settings.charColor1}40; border: 1px solid ${App.settings.charColor2}; box-shadow: 0 0 10px ${App.settings.charColor2}50, inset 0 0 10px ${App.settings.charColor2}20; color: ${App.settings.charTextColor};`;
+                    break;
+                case 'gradient':
+                    sentStyle = `background: linear-gradient(135deg, ${App.settings.userColor1}, ${App.settings.userColor2}); color: ${App.settings.userTextColor};`;
+                    receivedStyle = `background: linear-gradient(135deg, ${App.settings.charColor1}, ${App.settings.charColor2}); color: ${App.settings.charTextColor};`;
+                    break;
+                default:
+                    sentStyle = 'background: rgba(60,60,60,0.8); color: #fff;';
+                    receivedStyle = 'background: rgba(40,40,40,0.8); color: #e0e0e0;';
+            }
+
+            sentEl.style.cssText = sentStyle + 'border-radius: 14px;';
+            receivedEl.style.cssText = receivedStyle + 'border-radius: 14px;';
+        }
+
+        function applyBubbleStyle() {
+            const styleEl = document.getElementById('bubbleStyleSheet');
+            const style = App.settings.bubbleStyle;
+
+            if (style === 'none') {
+                styleEl.textContent = '';
+                return;
+            }
+
+            let css = '';
+
+            switch(style) {
+                case 'glass':
+                    const border = App.settings.bubbleGlassBorder ? `border: ${App.settings.bubbleGlassBorderWidth}px solid rgba(255,255,255,0.15) !important;` : 'border: none !important;';
+                    css = `
+                        .message.sent { background: ${App.settings.userColor1}80 !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; ${border} color: ${App.settings.userTextColor} !important; }
+                        .message.received { background: ${App.settings.charColor1}80 !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; ${border} color: ${App.settings.charTextColor} !important; }
+                    `;
+                    break;
+                case 'metal':
+                    css = `
+                        .message.sent { background: linear-gradient(180deg, ${App.settings.userColor1} 0%, ${App.settings.userColor2} 100%) !important; border: 1px solid rgba(255,255,255,0.08) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 2px 4px rgba(0,0,0,0.3) !important; color: ${App.settings.userTextColor} !important; }
+                        .message.received { background: linear-gradient(180deg, ${App.settings.charColor1} 0%, ${App.settings.charColor2} 100%) !important; border: 1px solid rgba(255,255,255,0.08) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 2px 4px rgba(0,0,0,0.3) !important; color: ${App.settings.charTextColor} !important; }
+                    `;
+                    break;
+                case 'solid':
+                    css = `
+                        .message.sent { background: ${App.settings.userColor1} !important; border: none !important; color: ${App.settings.userTextColor} !important; }
+                        .message.received { background: ${App.settings.charColor1} !important; border: none !important; color: ${App.settings.charTextColor} !important; }
+                    `;
+                    break;
+                case 'neon':
+                    css = `
+                        .message.sent { background: ${App.settings.userColor1}30 !important; border: 1px solid ${App.settings.userColor2} !important; box-shadow: 0 0 15px ${App.settings.userColor2}40, inset 0 0 15px ${App.settings.userColor2}15 !important; color: ${App.settings.userTextColor} !important; }
+                        .message.received { background: ${App.settings.charColor1}30 !important; border: 1px solid ${App.settings.charColor2} !important; box-shadow: 0 0 15px ${App.settings.charColor2}40, inset 0 0 15px ${App.settings.charColor2}15 !important; color: ${App.settings.charTextColor} !important; }
+                    `;
+                    break;
+                case 'gradient':
+                    css = `
+                        .message.sent { background: linear-gradient(135deg, ${App.settings.userColor1}, ${App.settings.userColor2}) !important; border: none !important; color: ${App.settings.userTextColor} !important; }
+                        .message.received { background: linear-gradient(135deg, ${App.settings.charColor1}, ${App.settings.charColor2}) !important; border: none !important; color: ${App.settings.charTextColor} !important; }
+                    `;
+                    break;
+            }
+
+            styleEl.textContent = css;
+        }
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // COLOR WHEEL PICKER
+        // ════════════════════════════════════════════════════════════════════════════════
+        function initColorWheel() {
+            const ringCanvas = document.getElementById('colorWheelRing');
+            const squareCanvas = document.getElementById('colorWheelSquare');
+
+            if (!ringCanvas || !squareCanvas) return;
+
+            drawColorRing(ringCanvas);
+            drawColorSquare(squareCanvas, App.currentHue);
+
+            ringCanvas.addEventListener('click', handleRingClick);
+            ringCanvas.addEventListener('touchstart', handleRingTouch, { passive: false });
+
+            squareCanvas.addEventListener('click', handleSquareClick);
+            squareCanvas.addEventListener('touchstart', handleSquareTouch, { passive: false });
+        }
+
+        function drawColorRing(canvas) {
+            const ctx = canvas.getContext('2d');
+            const cx = 110, cy = 110, outerR = 105, innerR = 75;
+
+            ctx.clearRect(0, 0, 220, 220);
+
+            for (let angle = 0; angle < 360; angle++) {
+                const startAngle = (angle - 1) * Math.PI / 180;
+                const endAngle = (angle + 1) * Math.PI / 180;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, outerR, startAngle, endAngle);
+                ctx.arc(cx, cy, innerR, endAngle, startAngle, true);
+                ctx.closePath();
+                ctx.fillStyle = `hsl(${angle}, 100%, 50%)`;
+                ctx.fill();
+            }
+        }
+
+        function drawColorSquare(canvas, hue) {
+            const ctx = canvas.getContext('2d');
+            const size = 100;
+
+            ctx.clearRect(0, 0, size, size);
+
+            for (let x = 0; x < size; x++) {
+                for (let y = 0; y < size; y++) {
+                    const s = x / size * 100;
+                    const l = 100 - (y / size * 100);
+                    ctx.fillStyle = `hsl(${hue}, ${s}%, ${l * 0.5 + 25}%)`;
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+        }
+
+        function handleRingClick(e) {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left - 110;
+            const y = e.clientY - rect.top - 110;
+            const angle = Math.atan2(y, x) * 180 / Math.PI;
+            App.currentHue = (angle + 360) % 360;
+
+            updateRingCursor();
+            drawColorSquare(document.getElementById('colorWheelSquare'), App.currentHue);
+            updatePickerColor();
+        }
+
+        function handleRingTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = e.target.getBoundingClientRect();
+            const x = touch.clientX - rect.left - 110;
+            const y = touch.clientY - rect.top - 110;
+            const angle = Math.atan2(y, x) * 180 / Math.PI;
+            App.currentHue = (angle + 360) % 360;
+
+            updateRingCursor();
+            drawColorSquare(document.getElementById('colorWheelSquare'), App.currentHue);
+            updatePickerColor();
+        }
+
+        function handleSquareClick(e) {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            App.currentSaturation = (x / 100) * 100;
+            App.currentLightness = 100 - (y / 100) * 100;
+
+            updateSquareCursor();
+            updatePickerColor();
+        }
+
+        function handleSquareTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = e.target.getBoundingClientRect();
+            const x = Math.max(0, Math.min(100, touch.clientX - rect.left));
+            const y = Math.max(0, Math.min(100, touch.clientY - rect.top));
+            App.currentSaturation = (x / 100) * 100;
+            App.currentLightness = 100 - (y / 100) * 100;
+
+            updateSquareCursor();
+            updatePickerColor();
+        }
+
+        function updateRingCursor() {
+            const cursor = document.getElementById('ringCursor');
+            const angle = App.currentHue * Math.PI / 180;
+            const r = 90;
+            cursor.style.left = (110 + r * Math.cos(angle)) + 'px';
+            cursor.style.top = (110 + r * Math.sin(angle)) + 'px';
+            cursor.style.background = `hsl(${App.currentHue}, 100%, 50%)`;
+        }
+
+        function updateSquareCursor() {
+            const cursor = document.getElementById('squareCursor');
+            const square = document.getElementById('colorWheelSquare');
+            const rect = square.getBoundingClientRect();
+            const container = document.getElementById('colorWheelContainer').getBoundingClientRect();
+
+            const x = (App.currentSaturation / 100) * 100;
+            const y = (1 - App.currentLightness / 100) * 100;
+
+            const rotatedX = 110 + (x - 50) * 0.707 - (y - 50) * 0.707;
+            const rotatedY = 110 + (x - 50) * 0.707 + (y - 50) * 0.707;
+
+            cursor.style.left = rotatedX + 'px';
+            cursor.style.top = rotatedY + 'px';
+        }
+
+        function updatePickerColor() {
+            const l = App.currentLightness * 0.5 + 25;
+            const color = hslToHex(App.currentHue, App.currentSaturation, l);
+            document.getElementById('colorHexInput').value = color;
+            document.getElementById('colorPreviewBox').style.background = color;
+        }
+
+        function updateColorFromHex() {
+            let hex = document.getElementById('colorHexInput').value.trim();
+            if (!hex.startsWith('#')) hex = '#' + hex;
+            if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+                document.getElementById('colorPreviewBox').style.background = hex;
+                const hsl = hexToHsl(hex);
+                App.currentHue = hsl.h;
+                App.currentSaturation = hsl.s;
+                App.currentLightness = hsl.l;
+                updateRingCursor();
+                drawColorSquare(document.getElementById('colorWheelSquare'), App.currentHue);
+                updateSquareCursor();
+            }
+        }
+
+        function hslToHex(h, s, l) {
+            s /= 100; l /= 100;
+            const c = (1 - Math.abs(2 * l - 1)) * s;
+            const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+            const m = l - c / 2;
+            let r = 0, g = 0, b = 0;
+            if (h < 60) { r = c; g = x; }
+            else if (h < 120) { r = x; g = c; }
+            else if (h < 180) { g = c; b = x; }
+            else if (h < 240) { g = x; b = c; }
+            else if (h < 300) { r = x; b = c; }
+            else { r = c; b = x; }
+            r = Math.round((r + m) * 255);
+            g = Math.round((g + m) * 255);
+            b = Math.round((b + m) * 255);
+            return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+        }
+
+        function hexToHsl(hex) {
+            let r = parseInt(hex.slice(1, 3), 16) / 255;
+            let g = parseInt(hex.slice(3, 5), 16) / 255;
+            let b = parseInt(hex.slice(5, 7), 16) / 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h = 0, s = 0, l = (max + min) / 2;
+            if (max !== min) {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) * 60; break;
+                    case g: h = ((b - r) / d + 2) * 60; break;
+                    case b: h = ((r - g) / d + 4) * 60; break;
+                }
+            }
+            return { h, s: s * 100, l: l * 100 };
+        }
+
+        function openColorPicker(target) {
+            App.colorPickerTarget = target;
+            const currentColor = App.settings[target] || '#3a3a3a';
+            const hsl = hexToHsl(currentColor);
+            App.currentHue = hsl.h;
+            App.currentSaturation = hsl.s;
+            App.currentLightness = hsl.l;
+
+            document.getElementById('colorHexInput').value = currentColor;
+            document.getElementById('colorPreviewBox').style.background = currentColor;
+
+            showModal('colorPickerModal');
+
+            setTimeout(() => {
+                initColorWheel();
+                updateRingCursor();
+                updateSquareCursor();
+            }, 100);
+        }
+
+        function confirmColorPick() {
+            const color = document.getElementById('colorHexInput').value;
+            if (App.colorPickerTarget && /^#[0-9A-Fa-f]{6}$/.test(color)) {
+                App.settings[App.colorPickerTarget] = color;
+                updateColorSwatches();
+                updateBubblePreview();
+            }
+            hideModal('colorPickerModal');
         }
 
         async function clearImageCache() {
@@ -2408,29 +2629,13 @@
             document.getElementById('tempValue').textContent = App.settings.temperature;
             document.getElementById('maxTokens').value = App.settings.maxTokens;
             document.getElementById('maxTokensValue').textContent = App.settings.maxTokens;
-            document.getElementById('globalFontSize').value = App.settings.fontScale || 1;
-            updateFontSizePreview();
+            document.getElementById('fontScaleSlider').value = App.settings.fontScale || 1;
+            updateFontScalePreview();
         }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // FONT SIZE MANAGEMENT
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        function updateFontSizePreview() {
-            const value = parseFloat(document.getElementById('globalFontSize').value);
-            let label = 'Standard';
-            if (value <= 0.85) label = 'Compact';
-            else if (value >= 1.15) label = 'Large';
-            document.getElementById('fontSizeValue').textContent = label;
-        }
-
-        function applyGlobalFontSize() {
-            const scale = App.settings.fontScale || 1;
-            document.documentElement.style.setProperty('--font-scale', scale);
-        }
-
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         // FONT MANAGEMENT
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         function applyGlobalFont() {
             const styleEl = document.getElementById('globalFontStyle');
             const selectedId = App.settings.selectedFontId;
@@ -2483,9 +2688,9 @@
             App.pendingDeleteFontId = null; await saveData(); hideModal('deleteFontModal'); renderFontList(); showToast('Font deleted', 'success');
         }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         // API PRESETS
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         function updateApiPresetSelect() {
             const select = document.getElementById('apiPresetSelect');
             if (!select) return;
@@ -2537,9 +2742,9 @@
             App.pendingDeleteApiPresetId = null; await saveData(); hideModal('deleteApiPresetModal'); updateApiPresetSelect(); showToast('Preset deleted', 'success');
         }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         // CSS PRESETS
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         function deleteCssPreset() {
             const presetId = document.getElementById('cssPresetSelect').value;
             if (!presetId) { showToast('Please select a preset to delete', 'warning'); return; }
@@ -2556,345 +2761,9 @@
             showToast('CSS Preset deleted', 'success');
         }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // COLOR PICKER - 圆环+正方形样式
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        function initColorPicker() {
-            const ring = document.getElementById('colorWheelRing');
-            const square = document.getElementById('colorWheelSquare');
-
-            if (ring) {
-                ring.addEventListener('mousedown', startRingDrag);
-                ring.addEventListener('touchstart', startRingDrag, { passive: false });
-            }
-            if (square) {
-                square.addEventListener('mousedown', startSquareDrag);
-                square.addEventListener('touchstart', startSquareDrag, { passive: false });
-            }
-
-            const hexInput = document.getElementById('colorHexInput');
-            if (hexInput) {
-                hexInput.addEventListener('input', (e) => {
-                    let val = e.target.value;
-                    if (!val.startsWith('#')) val = '#' + val;
-                    if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-                        updateColorFromHex(val);
-                    }
-                });
-            }
-        }
-
-        function openColorPicker(target) {
-            App.colorPickerTarget = target;
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-
-            const colors = char.bubbleColors || App.currentBubbleColors;
-            const currentColor = colors[target] || '#ffffff';
-
-            document.getElementById('colorPickerTitle').textContent = getColorPickerTitle(target);
-            updateColorFromHex(currentColor);
-            showModal('colorPickerModal');
-        }
-
-        function getColorPickerTitle(target) {
-            const titles = {
-                userColor1: 'User Bubble - Primary',
-                userColor2: 'User Bubble - Secondary',
-                userTextColor: 'User Bubble - Text',
-                charColor1: 'Character Bubble - Primary',
-                charColor2: 'Character Bubble - Secondary',
-                charTextColor: 'Character Bubble - Text'
-            };
-            return titles[target] || 'Select Color';
-        }
-
-        function updateColorFromHex(hex) {
-            const rgb = hexToRgb(hex);
-            if (!rgb) return;
-            const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-            App.colorPickerHue = hsl.h;
-            App.colorPickerSaturation = hsl.s;
-            App.colorPickerLightness = hsl.l;
-            updateColorPickerUI();
-            document.getElementById('colorHexInput').value = hex.toUpperCase();
-            document.getElementById('colorPreviewBox').style.background = hex;
-        }
-
-        function updateColorPickerUI() {
-            const ringHandle = document.getElementById('colorWheelRingHandle');
-            const squareHandle = document.getElementById('colorWheelSquareHandle');
-            const squareInner = document.getElementById('colorWheelSquareInner');
-
-            // Position ring handle
-            const ringRadius = 96;
-            const hueAngle = App.colorPickerHue * Math.PI / 180;
-            const ringX = 110 + ringRadius * Math.cos(hueAngle - Math.PI / 2);
-            const ringY = 110 + ringRadius * Math.sin(hueAngle - Math.PI / 2);
-            ringHandle.style.left = ringX + 'px';
-            ringHandle.style.top = ringY + 'px';
-            ringHandle.style.background = `hsl(${App.colorPickerHue}, 100%, 50%)`;
-
-            // Update square gradient
-            squareInner.style.background = `linear-gradient(to right, #fff 0%, hsl(${App.colorPickerHue}, 100%, 50%) 100%)`;
-
-            // Position square handle (simplified)
-            const squareSize = 100;
-            const squareX = 110 + (App.colorPickerSaturation / 100 - 0.5) * squareSize * 0.7;
-            const squareY = 110 + (0.5 - App.colorPickerLightness / 100) * squareSize * 0.7;
-            squareHandle.style.left = squareX + 'px';
-            squareHandle.style.top = squareY + 'px';
-
-            // Update preview
-            const hex = hslToHex(App.colorPickerHue, App.colorPickerSaturation, App.colorPickerLightness);
-            squareHandle.style.background = hex;
-            document.getElementById('colorPreviewBox').style.background = hex;
-            document.getElementById('colorHexInput').value = hex.toUpperCase();
-        }
-
-        function startRingDrag(e) {
-            e.preventDefault();
-            handleRingMove(e);
-            document.addEventListener('mousemove', handleRingMove);
-            document.addEventListener('mouseup', stopDrag);
-            document.addEventListener('touchmove', handleRingMove, { passive: false });
-            document.addEventListener('touchend', stopDrag);
-        }
-
-        function handleRingMove(e) {
-            const container = document.getElementById('colorWheelContainer');
-            const rect = container.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            const x = clientX - rect.left - 110;
-            const y = clientY - rect.top - 110;
-            let angle = Math.atan2(y, x) + Math.PI / 2;
-            if (angle < 0) angle += Math.PI * 2;
-            App.colorPickerHue = Math.round(angle * 180 / Math.PI);
-            updateColorPickerUI();
-        }
-
-        function startSquareDrag(e) {
-            e.preventDefault();
-            handleSquareMove(e);
-            document.addEventListener('mousemove', handleSquareMove);
-            document.addEventListener('mouseup', stopDrag);
-            document.addEventListener('touchmove', handleSquareMove, { passive: false });
-            document.addEventListener('touchend', stopDrag);
-        }
-
-        function handleSquareMove(e) {
-            const container = document.getElementById('colorWheelContainer');
-            const rect = container.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            let x = (clientX - rect.left - 110) / 35 + 0.5;
-            let y = 0.5 - (clientY - rect.top - 110) / 35;
-            x = Math.max(0, Math.min(1, x));
-            y = Math.max(0, Math.min(1, y));
-            App.colorPickerSaturation = Math.round(x * 100);
-            App.colorPickerLightness = Math.round(y * 100);
-            updateColorPickerUI();
-        }
-
-        function stopDrag() {
-            document.removeEventListener('mousemove', handleRingMove);
-            document.removeEventListener('mousemove', handleSquareMove);
-            document.removeEventListener('mouseup', stopDrag);
-            document.removeEventListener('touchmove', handleRingMove);
-            document.removeEventListener('touchmove', handleSquareMove);
-            document.removeEventListener('touchend', stopDrag);
-        }
-
-        function confirmColorSelection() {
-            const hex = document.getElementById('colorHexInput').value;
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char || !App.colorPickerTarget) return;
-
-            if (!char.bubbleColors) char.bubbleColors = { ...App.currentBubbleColors };
-            char.bubbleColors[App.colorPickerTarget] = hex;
-
-            // Update swatch
-            const swatch = document.getElementById(App.colorPickerTarget + 'Swatch');
-            if (swatch) swatch.style.background = hex;
-
-            updateBubblePreview();
-            hideModal('colorPickerModal');
-        }
-
-        // Color conversion utilities
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
-        }
-
-        function rgbToHsl(r, g, b) {
-            r /= 255; g /= 255; b /= 255;
-            const max = Math.max(r, g, b), min = Math.min(r, g, b);
-            let h, s, l = (max + min) / 2;
-            if (max === min) { h = s = 0; }
-            else {
-                const d = max - min;
-                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                switch (max) {
-                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-                    case g: h = ((b - r) / d + 2) / 6; break;
-                    case b: h = ((r - g) / d + 4) / 6; break;
-                }
-            }
-            return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
-        }
-
-        function hslToHex(h, s, l) {
-            s /= 100; l /= 100;
-            const a = s * Math.min(l, 1 - l);
-            const f = n => {
-                const k = (n + h / 30) % 12;
-                const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-                return Math.round(255 * color).toString(16).padStart(2, '0');
-            };
-            return `#${f(0)}${f(8)}${f(4)}`;
-        }
-
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // BUBBLE STYLE SYSTEM
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        function selectBubbleStyle(style) {
-            document.querySelectorAll('.bubble-style-item').forEach(item => {
-                item.classList.toggle('selected', item.dataset.style === style);
-            });
-
-            const optionsContainer = document.getElementById('bubbleStyleOptions');
-            const glassOptions = document.getElementById('glassOptions');
-            const colorSettings = document.getElementById('colorSettings');
-            const userColor2Row = document.getElementById('userColor2Row');
-            const charColor2Row = document.getElementById('charColor2Row');
-
-            if (style === 'none') {
-                optionsContainer.style.display = 'none';
-            } else {
-                optionsContainer.style.display = 'block';
-                colorSettings.style.display = 'block';
-
-                // Show/hide glass-specific options
-                glassOptions.style.display = style === 'glass' ? 'block' : 'none';
-
-                // Show secondary color for styles with depth
-                const hasDualColor = ['metal', 'neon', 'gradient'].includes(style);
-                userColor2Row.style.display = hasDualColor ? 'flex' : 'none';
-                charColor2Row.style.display = hasDualColor ? 'flex' : 'none';
-            }
-
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (char) char.bubbleStyle = style;
-
-            updateBubblePreview();
-        }
-
-        function updateBubblePreview() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-
-            const style = char.bubbleStyle || 'none';
-            const colors = char.bubbleColors || App.currentBubbleColors;
-            const sentBubble = document.getElementById('previewMsgSent');
-            const receivedBubble = document.getElementById('previewMsgReceived');
-
-            if (style === 'none') {
-                sentBubble.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); border-radius: 14px; padding: 10px 14px; max-width: 80%; align-self: flex-end;';
-                receivedBubble.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-primary); border-radius: 14px; padding: 10px 14px; max-width: 80%; align-self: flex-start;';
-                return;
-            }
-
-            let sentStyle = '', receivedStyle = '';
-            const glassBorder = char.glassBorder ? `border: ${char.glassBorderWidth || 1}px solid rgba(255,255,255,0.15);` : 'border: none;';
-
-            switch (style) {
-                case 'glass':
-                    sentStyle = `background: ${colors.userColor1}80; backdrop-filter: blur(12px); ${glassBorder} color: ${colors.userTextColor};`;
-                    receivedStyle = `background: ${colors.charColor1}80; backdrop-filter: blur(12px); ${glassBorder} color: ${colors.charTextColor};`;
-                    break;
-                case 'metal':
-                    sentStyle = `background: linear-gradient(145deg, ${colors.userColor1}, ${colors.userColor2}); border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.3); color: ${colors.userTextColor};`;
-                    receivedStyle = `background: linear-gradient(145deg, ${colors.charColor1}, ${colors.charColor2}); border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.3); color: ${colors.charTextColor};`;
-                    break;
-                case 'solid':
-                    sentStyle = `background: ${colors.userColor1}; border: none; color: ${colors.userTextColor};`;
-                    receivedStyle = `background: ${colors.charColor1}; border: none; color: ${colors.charTextColor};`;
-                    break;
-                case 'neon':
-                    sentStyle = `background: ${colors.userColor1}; border: 1px solid ${colors.userColor2}; box-shadow: 0 0 10px ${colors.userColor2}40, inset 0 0 20px ${colors.userColor2}20; color: ${colors.userTextColor};`;
-                    receivedStyle = `background: ${colors.charColor1}; border: 1px solid ${colors.charColor2}; box-shadow: 0 0 10px ${colors.charColor2}40, inset 0 0 20px ${colors.charColor2}20; color: ${colors.charTextColor};`;
-                    break;
-                case 'gradient':
-                    sentStyle = `background: linear-gradient(135deg, ${colors.userColor1}, ${colors.userColor2}); border: none; color: ${colors.userTextColor};`;
-                    receivedStyle = `background: linear-gradient(135deg, ${colors.charColor1}, ${colors.charColor2}); border: none; color: ${colors.charTextColor};`;
-                    break;
-            }
-
-            sentBubble.style.cssText = sentStyle + ' border-radius: 14px; padding: 10px 14px; max-width: 80%; align-self: flex-end;';
-            receivedBubble.style.cssText = receivedStyle + ' border-radius: 14px; padding: 10px 14px; max-width: 80%; align-self: flex-start;';
-
-            // Update glass border options visibility
-            if (style === 'glass') {
-                const borderToggle = document.getElementById('glassBorderToggle');
-                const borderWidthContainer = document.getElementById('glassBorderWidthContainer');
-                borderWidthContainer.style.display = borderToggle.classList.contains('active') ? 'block' : 'none';
-            }
-        }
-
-        function applyBubbleStyleToChat(char) {
-            const styleSheet = document.getElementById('bubbleStyleSheet');
-            if (!char || char.bubbleStyle === 'none' || (char.customCss && char.customCss.trim())) {
-                styleSheet.textContent = '';
-                return;
-            }
-
-            const style = char.bubbleStyle;
-            const colors = char.bubbleColors || App.currentBubbleColors;
-            const glassBorder = char.glassBorder ? `border: ${char.glassBorderWidth || 1}px solid rgba(255,255,255,0.15) !important;` : 'border: none !important;';
-
-            let css = '';
-
-            switch (style) {
-                case 'glass':
-                    css = `
-                        .message.sent { background: ${colors.userColor1}80 !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; ${glassBorder} color: ${colors.userTextColor} !important; }
-                        .message.received { background: ${colors.charColor1}80 !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; ${glassBorder} color: ${colors.charTextColor} !important; }
-                    `;
-                    break;
-                case 'metal':
-                    css = `
-                        .message.sent { background: linear-gradient(145deg, ${colors.userColor1}, ${colors.userColor2}) !important; border: 1px solid rgba(255,255,255,0.08) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.3) !important; color: ${colors.userTextColor} !important; }
-                        .message.received { background: linear-gradient(145deg, ${colors.charColor1}, ${colors.charColor2}) !important; border: 1px solid rgba(255,255,255,0.08) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.3) !important; color: ${colors.charTextColor} !important; }
-                    `;
-                    break;
-                case 'solid':
-                    css = `
-                        .message.sent { background: ${colors.userColor1} !important; border: none !important; color: ${colors.userTextColor} !important; }
-                        .message.received { background: ${colors.charColor1} !important; border: none !important; color: ${colors.charTextColor} !important; }
-                    `;
-                    break;
-                case 'neon':
-                    css = `
-                        .message.sent { background: ${colors.userColor1} !important; border: 1px solid ${colors.userColor2} !important; box-shadow: 0 0 10px ${colors.userColor2}40, inset 0 0 20px ${colors.userColor2}20 !important; color: ${colors.userTextColor} !important; }
-                        .message.received { background: ${colors.charColor1} !important; border: 1px solid ${colors.charColor2} !important; box-shadow: 0 0 10px ${colors.charColor2}40, inset 0 0 20px ${colors.charColor2}20 !important; color: ${colors.charTextColor} !important; }
-                    `;
-                    break;
-                case 'gradient':
-                    css = `
-                        .message.sent { background: linear-gradient(135deg, ${colors.userColor1}, ${colors.userColor2}) !important; border: none !important; color: ${colors.userTextColor} !important; }
-                        .message.received { background: linear-gradient(135deg, ${colors.charColor1}, ${colors.charColor2}) !important; border: none !important; color: ${colors.charTextColor} !important; }
-                    `;
-                    break;
-            }
-
-            styleSheet.textContent = css;
-        }
-
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         // WALLPAPER
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         function applyWallpaper() {
             const el = document.getElementById('wallpaperLayer');
             const wp = App.settings.wallpaper, wpData = App.settings.wallpaperData;
@@ -2939,9 +2808,9 @@
             document.querySelectorAll('#wallpaperGrid > div').forEach(el => { el.style.borderColor = el.dataset.wp === current ? 'var(--accent-gold)' : 'transparent'; });
         }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         // ICONS
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         function updateIconPreviews() {
             ['settings', 'messages', 'worldbook', 'photos', 'fonts'].forEach(app => {
                 const preview = document.getElementById('iconPreview' + app.charAt(0).toUpperCase() + app.slice(1));
@@ -2997,9 +2866,9 @@
 
         async function resetIcons() { App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null }; App.tempIcons = {}; await saveData(); applyAppIcons(); updateIconPreviews(); showToast('Icons reset', 'success'); }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         // NAVIGATION
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         function openPage(id) {
             const page = document.getElementById(id);
             if (page) {
@@ -3007,7 +2876,7 @@
                 if (id === 'messagesPage') renderContacts();
                 if (id === 'worldbookPage') renderWorldbooks();
                 if (id === 'wallpaperPage') { updateWallpaperPreview(); updateIconPreviews(); highlightWallpaper(); applyStatusBarVisibility(); }
-                if (id === 'settingsPage') { updateStorageDisplay(); updateApiPresetSelect(); loadSettingsUI(); }
+                if (id === 'settingsPage') { updateStorageDisplay(); updateApiPresetSelect(); initBubbleStyleUI(); }
                 if (id === 'fontsPage') renderFontList();
             }
         }
@@ -3019,9 +2888,9 @@
         function addLog(msg, type='info') { const c = document.getElementById('debugLog'); const e = document.createElement('div'); e.className = `log-entry ${type}`; e.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`; c.appendChild(e); c.scrollTop = c.scrollHeight; }
         function updateConnectionUI() { const h = document.getElementById('connectionStatusHint'); if (App.connectionStatus === 'connected') { h.className = 'action-hint success'; h.innerHTML = `<span class="action-hint-icon">✓</span><span class="action-hint-text">Connected - ${App.settings.modelName}</span>`; } else { h.className = 'action-hint'; h.innerHTML = `<span class="action-hint-icon">⚠</span><span class="action-hint-text">API not configured</span>`; } }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         // API FUNCTIONS
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         async function fetchModels() {
             const url = document.getElementById('apiBaseUrl').value.trim(), key = document.getElementById('apiKey').value.trim();
             if (!url || !key) { showToast('Please fill in fields', 'error'); return; }
@@ -3062,23 +2931,12 @@
             await saveData(); showToast('API settings saved', 'success');
         }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         // CHARACTER MANAGEMENT
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
         async function createCharacter() {
             const name = document.getElementById('newCharacterName').value.trim(); if (!name) { showToast('Please enter name', 'error'); return; }
-            const char = {
-                id: Date.now().toString(), name,
-                avatar: ['◆','◇','●','○','■','□'][Math.floor(Math.random()*6)],
-                avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle',
-                showBorder: false, borderColor: '#c9a962', borderWidth: 2,
-                description: '', greeting: '', scenario: '', worldbookIds: [],
-                userNick: '', systemPrompt: '', messages: [],
-                chatWallpaper: null, customCss: '', activeCssPresetId: null, timestampPosition: 'default',
-                bubbleStyle: 'none',
-                bubbleColors: { ...App.currentBubbleColors },
-                glassBorder: false, glassBorderWidth: 1
-            };
+            const char = { id: Date.now().toString(), name, avatar: ['◆','◇','●','○','■','□'][Math.floor(Math.random()*6)], avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle', showBorder: false, borderColor: '#c9a962', borderWidth: 2, description: '', greeting: '', scenario: '', worldbookIds: [], userNick: '', systemPrompt: '', messages: [], chatWallpaper: null, customCss: '', activeCssPresetId: null, timestampPosition: 'default' };
             App.characters.push(char); await saveData(); hideModal('createCharacterModal'); document.getElementById('newCharacterName').value = ''; renderContacts(); showToast(`"${name}" created`, 'success');
         }
 
@@ -3091,151 +2949,300 @@
                 const lastTime = c.messages.length > 0 ? formatTime(c.messages[c.messages.length-1].timestamp) : '';
                 const avatarHtml = c.avatarImage ? `<img src="${c.avatarImage}">` : (c.avatar || c.name[0]);
                 return `<div class="contact-item" onclick="openChat('${c.id}')"><div class="contact-avatar">${avatarHtml}</div><div class="contact-info"><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-preview">${escapeHtml(lastMsg)}</div></div><div class="contact-time">${lastTime}</div></div>`;
-            }).join('');         }
-
-        function filterContacts() {
-            const query = document.getElementById('contactSearch').value.toLowerCase();
-            document.querySelectorAll('.contact-item').forEach(item => {
-                const name = item.querySelector('.contact-name').textContent.toLowerCase();
-                item.style.display = name.includes(query) ? 'flex' : 'none';
-            });
+            }).join('');
         }
 
-        function formatTime(ts) {
-            if (!ts) return '';
-            const d = new Date(ts), now = new Date();
-            const isToday = d.toDateString() === now.toDateString();
-            if (isToday) return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-            const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
-            if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
-            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        }
+        function filterContacts() { const q = document.getElementById('contactSearch').value.toLowerCase(); document.querySelectorAll('.contact-item').forEach(el => { el.style.display = el.querySelector('.contact-name').textContent.toLowerCase().includes(q) ? 'flex' : 'none'; }); }
 
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-        }
-
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // CHAT FUNCTIONS
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        function openChat(charId) {
-            App.currentCharId = charId;
-            const char = App.characters.find(c => c.id === charId);
-            if (!char) return;
+        function openChat(id) {
+            const char = App.characters.find(c => c.id === id); if (!char) return;
+            App.currentCharId = id; App.isSelectMode = false; App.selectedMsgs.clear(); App.lastAIStart = -1; App.currentQuote = null;
+            document.getElementById('quotePreviewBar').classList.remove('active');
             document.getElementById('chatTitle').textContent = char.name;
+            document.getElementById('selectModeBar').classList.remove('active');
+            document.getElementById('chatMessages').classList.remove('select-mode');
+            applyChatWallpaper(char); applyCustomCss(char); renderMessages(); openPage('chatPage');
+            if (char.messages.length === 0 && char.greeting) addMessage(char.greeting, 'received');
+        }
+
+        function applyChatWallpaper(char) {
             const chatPage = document.getElementById('chatPage');
-
-            // Apply chat wallpaper
-            if (char.chatWallpaper) {
-                chatPage.style.backgroundImage = `url(${char.chatWallpaper})`;
-                chatPage.classList.add('has-custom-bg');
-            } else {
-                chatPage.style.backgroundImage = '';
-                chatPage.classList.remove('has-custom-bg');
-            }
-
-            // Apply custom CSS or bubble style
-            applyCharacterCss(char);
-            applyBubbleStyleToChat(char);
-
-            renderMessages();
-            openPage('chatPage');
-            setTimeout(() => {
-                const container = document.getElementById('chatMessages');
-                container.scrollTop = container.scrollHeight;
-            }, 100);
-
-            // Send greeting if first time
-            if (char.messages.length === 0 && char.greeting) {
-                const greetingMsg = { id: Date.now().toString(), role: 'assistant', content: char.greeting, timestamp: Date.now() };
-                char.messages.push(greetingMsg);
-                saveData();
-                renderMessages();
-            }
+            if (char.chatWallpaper) { chatPage.classList.add('has-custom-bg'); chatPage.style.backgroundImage = `url(${char.chatWallpaper})`; }
+            else { chatPage.classList.remove('has-custom-bg'); chatPage.style.backgroundImage = ''; }
         }
 
-        function closeChatPage() {
-            closePage('chatPage');
-            document.getElementById('customCssStyles').textContent = '';
-            document.getElementById('bubbleStyleSheet').textContent = '';
-            exitSelectMode();
-            renderContacts();
-        }
-
-        function applyCharacterCss(char) {
+        function applyCustomCss(char) {
             const styleEl = document.getElementById('customCssStyles');
-            let css = char.customCss || '';
-            const tsPos = char.timestampPosition || 'default';
-            if (tsPos === 'hidden') css += '\n.message-time { display: none !important; }';
-            else if (tsPos === 'side') css += '\n.message-time { position: absolute !important; bottom: 6px; margin-top: 0 !important; } .message-wrapper.sent .message-time { left: -44px; right: auto; } .message-wrapper.received .message-time { right: -44px; left: auto; }';
+            let css = '';
+            if (char.activeCssPresetId) { const preset = App.globalCssPresets.find(p => p.id === char.activeCssPresetId); if (preset) css = preset.css; }
+            if (char.customCss) css = char.customCss;
             styleEl.textContent = css;
         }
 
-        function renderMessages() {
+        function closeChatPage() {
+            exitSelectMode(); closePage('chatPage');
+            document.getElementById('customCssStyles').textContent = '';
+            const chatPage = document.getElementById('chatPage');
+            chatPage.classList.remove('has-custom-bg'); chatPage.style.backgroundImage = '';
+            App.currentCharId = null; App.currentQuote = null;
+        }
+
+        function openCharacterSettings() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            updateChatWallpaperPreview(char);
+            const charAvUpload = document.getElementById('charAvatarUpload'), userAvUpload = document.getElementById('userAvatarUpload');
+            if (char.avatarImage) { charAvUpload.innerHTML = `<img src="${char.avatarImage}">`; charAvUpload.classList.add('has-image'); } else { charAvUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'; charAvUpload.classList.remove('has-image'); }
+            charAvUpload.dataset.image = char.avatarImage || '';
+            if (char.userAvatar) { userAvUpload.innerHTML = `<img src="${char.userAvatar}">`; userAvUpload.classList.add('has-image'); } else { userAvUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'; userAvUpload.classList.remove('has-image'); }
+            userAvUpload.dataset.image = char.userAvatar || '';
+            document.getElementById('showAvatarToggle').classList.toggle('active', char.showAvatar !== false);
+            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => { el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle')); });
+            document.getElementById('showBorderToggle').classList.toggle('active', char.showBorder === true);
+            document.getElementById('borderColorPicker').value = char.borderColor || '#c9a962';
+            document.getElementById('charName').value = char.name;
+            document.getElementById('charAvatar').value = char.avatar || '';
+            document.getElementById('charDescription').value = char.description || '';
+            document.getElementById('charGreeting').value = char.greeting || '';
+            document.getElementById('charScenario').value = char.scenario || '';
+            document.getElementById('charUserNick').value = char.userNick || '';
+            document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
+            document.getElementById('timestampPosition').value = char.timestampPosition || 'default';
+            document.getElementById('customCssEditor').value = char.customCss || '';
+            updateCssPresetSelect(char);
+            updateWorldbookMultiSelect(char);
+            updateCharCounter();
+            openPage('characterSettingsPage');
+        }
+
+        function updateChatWallpaperPreview(char) {
+            const preview = document.getElementById('chatWallpaperPreview');
+            if (char.chatWallpaper) { preview.style.backgroundImage = `url(${char.chatWallpaper})`; preview.classList.add('has-image'); }
+            else { preview.style.backgroundImage = ''; preview.classList.remove('has-image'); }
+        }
+
+        function updateCssPresetSelect(char) {
+            const select = document.getElementById('cssPresetSelect');
+            select.innerHTML = '<option value="">-- No Preset --</option>' + App.globalCssPresets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+            select.value = char.activeCssPresetId || '';
+        }
+
+        function updateWorldbookMultiSelect(char) {
+            const container = document.getElementById('worldbookMultiSelect');
+            if (App.worldbooks.length === 0) { container.innerHTML = '<div style="padding:12px;color:var(--text-tertiary);font-size:13px">No worldbooks available</div>'; return; }
+            container.innerHTML = App.worldbooks.map(wb => {
+                const checked = (char.worldbookIds || []).includes(wb.id);
+                return `<div class="worldbook-multi-item" onclick="toggleWorldbookBinding('${wb.id}')"><div class="worldbook-multi-checkbox ${checked ? 'checked' : ''}"></div><span class="worldbook-multi-name">${escapeHtml(wb.name)}</span></div>`;
+            }).join('');
+        }
+
+        function toggleWorldbookBinding(wbId) {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            if (!char.worldbookIds) char.worldbookIds = [];
+            const idx = char.worldbookIds.indexOf(wbId);
+            if (idx >= 0) char.worldbookIds.splice(idx, 1);
+            else char.worldbookIds.push(wbId);
+            updateWorldbookMultiSelect(char);
+        }
+
+        function closeCharacterSettings() { closePage('characterSettingsPage'); }
+
+        async function handleCharAvatarUpload(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async ev => { const compressed = await compressImage(ev.target.result, 200, 0.8); const upload = document.getElementById(' charAvatarUpload'); upload.innerHTML = `<img src="${compressed}">`; upload.classList.add('has-image'); upload.dataset.image = compressed; }; reader.readAsDataURL(file); e.target.value = ''; }
+
+        async function handleUserAvatarUpload(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async ev => { const compressed = await compressImage(ev.target.result, 200, 0.8); const upload = document.getElementById('userAvatarUpload'); upload.innerHTML = `<img src="${compressed}">`; upload.classList.add('has-image'); upload.dataset.image = compressed; }; reader.readAsDataURL(file); e.target.value = ''; }
+
+        async function handleChatWallpaperUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+                char.chatWallpaper = await compressImage(ev.target.result, 600, 0.8);
+                updateChatWallpaperPreview(char);
+                showToast('Wallpaper uploaded. Save to apply.', 'info');
+            };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        function clearChatWallpaper() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            char.chatWallpaper = null; updateChatWallpaperPreview(char);
+            showToast('Wallpaper cleared. Save to apply.', 'info');
+        }
+
+        async function saveCharacterSettings() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const charAvUpload = document.getElementById('charAvatarUpload');
+            const userAvUpload = document.getElementById('userAvatarUpload');
+            char.avatarImage = charAvUpload.dataset.image || null;
+            char.userAvatar = userAvUpload.dataset.image || null;
+            char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
+            const selectedShape = document.querySelector('#avatarShapeOptions .shape-option.selected');
+            char.avatarShape = selectedShape?.dataset.shape || 'circle';
+            char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
+            char.borderColor = document.getElementById('borderColorPicker').value;
+            char.name = document.getElementById('charName').value.trim() || char.name;
+            char.avatar = document.getElementById('charAvatar').value.trim();
+            char.description = document.getElementById('charDescription').value;
+            char.greeting = document.getElementById('charGreeting').value;
+            char.scenario = document.getElementById('charScenario').value;
+            char.userNick = document.getElementById('charUserNick').value.trim();
+            char.systemPrompt = document.getElementById('charSystemPrompt').value;
+            char.timestampPosition = document.getElementById('timestampPosition').value;
+            char.customCss = document.getElementById('customCssEditor').value;
+            char.activeCssPresetId = document.getElementById('cssPresetSelect').value || null;
+            document.getElementById('chatTitle').textContent = char.name;
+            applyChatWallpaper(char); applyCustomCss(char); renderMessages();
+            if (await saveData()) { closeCharacterSettings(); showToast('Settings saved', 'success'); }
+        }
+
+        function selectShape(el) { document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(e => e.classList.remove('selected')); el.classList.add('selected'); }
+        function toggleSwitch(el) { el.classList.toggle('active'); if (el.id === 'glassBorderToggle') { App.settings.bubbleGlassBorder = el.classList.contains('active'); document.getElementById('glassBorderWidthContainer').style.display = App.settings.bubbleGlassBorder ? 'block' : 'none'; } }
+        function updateCharCounter() { const val = document.getElementById('charGreeting').value; const counter = document.getElementById('greetingCharCounter'); counter.textContent = `${val.length}/300`; counter.className = 'char-counter' + (val.length > 280 ? ' warning' : '') + (val.length >= 300 ? ' error' : ''); }
+
+        function deleteCurrentCharacter() { if (!App.currentCharId) return; App.pendingDeleteType = 'character'; App.pendingDeleteId = App.currentCharId; document.getElementById('deleteModalTitle').textContent = 'Delete Character?'; document.getElementById('deleteModalDesc').textContent = 'All messages will be lost.'; showModal('confirmDeleteModal'); }
+
+        async function confirmDelete() {
+            hideModal('confirmDeleteModal');
+            if (App.pendingDeleteType === 'character') {
+                App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
+                await saveData(); closeCharacterSettings(); closeChatPage(); renderContacts();
+                showToast('Character deleted', 'success');
+            } else if (App.pendingDeleteType === 'worldbook') {
+                App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
+                App.characters.forEach(c => { if (c.worldbookIds) c.worldbookIds = c.worldbookIds.filter(id => id !== App.pendingDeleteId); });
+                await saveData(); closeWorldbookEdit(); renderWorldbooks();
+                showToast('Worldbook deleted', 'success');
+            }
+            App.pendingDeleteType = null; App.pendingDeleteId = null;
+        }
+
+        function confirmClearAllMessages() { showModal('clearMessagesModal'); }
+
+        async function executeClearAllMessages() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            char.messages = [];
+            await saveData(); hideModal('clearMessagesModal'); renderMessages();
+            showToast('All messages cleared', 'success');
+        }
+
+        function loadCssPreset() {
+            const presetId = document.getElementById('cssPresetSelect').value; if (!presetId) return;
+            const preset = App.globalCssPresets.find(p => p.id === presetId);
+            if (preset) { document.getElementById('customCssEditor').value = preset.css || ''; showToast(`Loaded: ${preset.name}`, 'info'); }
+        }
+
+        function addNewCssPreset() { showModal('cssPresetNameModal'); document.getElementById('newCssPresetName').value = ''; }
+
+        async function createCssPreset() {
+            const name = document.getElementById('newCssPresetName').value.trim();
+            if (!name) { showToast('Please enter name', 'error'); return; }
+            const preset = { id: Date.now().toString(), name, css: document.getElementById('customCssEditor').value };
+            App.globalCssPresets.push(preset); await saveData(); hideModal('cssPresetNameModal');
             const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
+            if (char) updateCssPresetSelect(char);
+            document.getElementById('cssPresetSelect').value = preset.id;
+            showToast(`Preset "${name}" created`, 'success');
+        }
+
+        async function saveCssPreset() {
+            const presetId = document.getElementById('cssPresetSelect').value;
+            if (!presetId) { showToast('Please select or create a preset first', 'warning'); return; }
+            const preset = App.globalCssPresets.find(p => p.id === presetId);
+            if (!preset) return;
+            preset.css = document.getElementById('customCssEditor').value;
+            await saveData(); showToast(`Preset "${preset.name}" updated`, 'success');
+        }
+
+        function previewCss() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const styleEl = document.getElementById('customCssStyles');
+            styleEl.textContent = document.getElementById('customCssEditor').value;
+            showToast('Preview applied', 'info');
+        }
+
+        function clearCustomCss() {
+            document.getElementById('customCssEditor').value = '';
+            document.getElementById('customCssStyles').textContent = '';
+            showToast('CSS cleared', 'info');
+        }
+
+        function showCssGuide() { showModal('cssGuideModal'); }
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // MESSAGES
+        // ════════════════════════════════════════════════════════════════════════════════
+        function renderMessages() {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             const container = document.getElementById('chatMessages');
-            const showAvatar = char.showAvatar !== false;
-            const avatarShape = char.avatarShape || 'circle';
-            const showBorder = char.showBorder;
-            const borderColor = char.borderColor || '#c9a962';
-            const tsPos = char.timestampPosition || 'default';
-
+            const timestampPos = char.timestampPosition || 'default';
             let html = '';
-            let lastDate = '';
+            let lastDate = null;
+
             char.messages.forEach((msg, idx) => {
-                const msgDate = new Date(msg.timestamp).toDateString();
+                const msgDate = new Date(msg.timestamp).toLocaleDateString();
                 if (msgDate !== lastDate) {
+                    html += `<div class="date-separator"><span class="date-separator-text">${msgDate}</span></div>`;
                     lastDate = msgDate;
-                    const dateLabel = msgDate === new Date().toDateString() ? 'Today' : new Date(msg.timestamp).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-                    html += `<div class="date-separator"><span class="date-separator-text">${dateLabel}</span></div>`;
                 }
 
-                const isSent = msg.role === 'user';
-                const wrapperClass = isSent ? 'sent' : 'received';
-                const avatarContent = isSent ? (char.userAvatar ? `<img src="${char.userAvatar}">` : '👤') : (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || char.name[0]));
-                const avatarClass = `message-avatar ${avatarShape !== 'circle' ? avatarShape : ''} ${!showAvatar ? 'hidden' : ''}`;
-                const avatarStyle = showBorder ? `border: 2px solid ${borderColor};` : '';
-                const timeClass = `message-time ${tsPos === 'hidden' ? 'time-hidden' : ''} ${tsPos === 'side' ? 'time-side' : ''}`;
-                const timeStr = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+                const isSent = msg.type === 'sent';
+                const avatarHtml = getAvatarHtml(char, isSent);
+                const timeClass = timestampPos === 'hidden' ? 'time-hidden' : (timestampPos === 'side' ? 'time-side' : '');
+                const quoteHtml = msg.quote ? `<div class="message-quote">${escapeHtml(msg.quote)}</div>` : '';
+                const imageHtml = msg.image ? `<img src="${msg.image}" class="message-image" onclick="viewImage('${idx}')">` : '';
+                const timeHtml = `<div class="message-time ${timeClass}">${formatTime(msg.timestamp)}</div>`;
 
-                let quoteHtml = '';
-                if (msg.quoteId) {
-                    const quoted = char.messages.find(m => m.id === msg.quoteId);
-                    if (quoted) quoteHtml = `<div class="message-quote">${escapeHtml(quoted.content.substring(0, 100))}</div>`;
-                }
-
-                let imageHtml = '';
-                if (msg.image) imageHtml = `<img src="${msg.image}" class="message-image" onclick="window.open('${msg.image}','_blank')">`;
-
-                const checkboxHtml = `<div class="message-checkbox ${App.selectedMsgs.has(msg.id) ? 'checked' : ''}" onclick="toggleMsgSelect(event, '${msg.id}')"></div>`;
-                const msgNum = idx + 1;
-
-                html += `<div class="message-wrapper ${wrapperClass}" data-msg-id="${msg.id}" data-msg-num="${msgNum}">
-                    ${!isSent ? `<div class="${avatarClass}" style="${avatarStyle}">${avatarContent}</div>` : ''}
-                    ${checkboxHtml}
-                    <div class="message ${wrapperClass}" oncontextmenu="showContextMenu(event, '${msg.id}')" ontouchstart="startLongPress(event, '${msg.id}')" ontouchend="cancelLongPress()" ontouchmove="cancelLongPress()">
-                        ${quoteHtml}
-                        <span>${formatMessageContent(msg.content)}</span>
-                        ${imageHtml}
-                        <div class="${timeClass}">${timeStr}</div>
-                    </div>
-                    ${isSent ? `<div class="${avatarClass}" style="${avatarStyle}">${avatarContent}</div>` : ''}
-                </div>`;
+                html += `<div class="message-wrapper ${msg.type}" data-idx="${idx}">`;
+                if (!isSent && char.showAvatar !== false) html += avatarHtml;
+                html += `<div class="message-checkbox" onclick="toggleMessageSelect(${idx})"></div>`;
+                html += `<div class="message ${msg.type}" oncontextmenu="showContextMenu(event, ${idx})" ontouchstart="startLongPress(${idx})" ontouchend="endLongPress()" ontouchmove="endLongPress()">`;
+                html += quoteHtml;
+                html += `<div class="message-text">${formatMessageContent(msg.content)}</div>`;
+                html += imageHtml;
+                html += timeHtml;
+                html += `</div>`;
+                if (isSent && char.showAvatar !== false) html += avatarHtml;
+                html += `</div>`;
             });
+
             container.innerHTML = html;
-            if (App.isSelectMode) container.classList.add('select-mode');
-            else container.classList.remove('select-mode');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function getAvatarHtml(char, isSent) {
+            if (char.showAvatar === false) return '';
+            const shape = char.avatarShape || 'circle';
+            const shapeClass = shape === 'square' ? ' square' : (shape === 'rounded-square' ? ' rounded-square' : '');
+            const borderStyle = char.showBorder ? `border: 2px solid ${char.borderColor || '#c9a962'};` : '';
+            const avatarImg = isSent ? char.userAvatar : char.avatarImage;
+            const fallback = isSent ? '👤' : (char.avatar || char.name[0]);
+            return `<div class="message-avatar${shapeClass}" style="${borderStyle}">${avatarImg ? `<img src="${avatarImg}">` : fallback}</div>`;
         }
 
         function formatMessageContent(content) {
-            if (!content) return '';
-            let escaped = escapeHtml(content);
-            escaped = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-            escaped = escaped.replace(/\*(.+?)\*/g, '<em>$1</em>');
-            escaped = escaped.replace(/\n/g, '<br>');
-            return escaped;
+            return escapeHtml(content)
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+        }
+
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+        function formatTime(ts) { if (!ts) return ''; const d = new Date(ts); return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); }
+
+        async function addMessage(content, type, quote = null, image = null) {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const msg = { id: Date.now().toString(), type, content, timestamp: Date.now(), quote, image };
+            char.messages.push(msg);
+            await saveData(); renderMessages();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const content = input.value.trim();
+            if (!content) return;
+            const quote = App.currentQuote;
+            await addMessage(content, 'sent', quote);
+            input.value = ''; input.style.height = 'auto';
+            cancelQuote();
         }
 
         function autoResizeTextarea(el) {
@@ -3243,228 +3250,162 @@
             el.style.height = Math.min(el.scrollHeight, 100) + 'px';
         }
 
-        async function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const content = input.value.trim();
-            if (!content) return;
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-
-            const msg = { id: Date.now().toString(), role: 'user', content, timestamp: Date.now() };
-            if (App.currentQuote) { msg.quoteId = App.currentQuote.id; cancelQuote(); }
-            char.messages.push(msg);
-            await saveData();
-            input.value = '';
-            input.style.height = 'auto';
-            renderMessages();
-            scrollToBottom();
-        }
-
         async function triggerAIReply() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
             if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
-                showToast('Please configure API first', 'error');
-                return;
+                showToast('Please configure API first', 'error'); return;
             }
-
             const container = document.getElementById('chatMessages');
-            const typingEl = document.createElement('div');
-            typingEl.className = 'message-wrapper received';
-            typingEl.id = 'typingIndicator';
-            typingEl.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
-            container.appendChild(typingEl);
-            scrollToBottom();
+            const typingHtml = `<div class="message-wrapper received" id="typingIndicator"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+            container.insertAdjacentHTML('beforeend', typingHtml);
+            container.scrollTop = container.scrollHeight;
 
             try {
                 const messages = buildAPIMessages(char);
-                const response = await fetch(`${App.settings.apiBaseUrl.replace(/\/+$/, '').replace(/\/v1$/, '')}/v1/chat/completions`, {
+                const response = await fetch(`${App.settings.apiBaseUrl.replace(/\/+$/,'').replace(/\/v1$/,'')}/v1/chat/completions`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${App.settings.apiKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         model: App.settings.modelName,
-                        messages: messages,
+                        messages,
                         temperature: App.settings.temperature,
                         max_tokens: App.settings.maxTokens
                     })
                 });
 
+                document.getElementById('typingIndicator')?.remove();
+
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
-                let reply = data.choices?.[0]?.message?.content || 'No response';
-                reply = parseAIResponse(reply, char);
+                const reply = parseAIResponse(data);
+                if (reply) await addMessage(reply, 'received');
+                else throw new Error('Empty response');
 
-                const aiMsg = { id: Date.now().toString(), role: 'assistant', content: reply, timestamp: Date.now() };
-                char.messages.push(aiMsg);
-                await saveData();
             } catch (e) {
-                showToast(`AI Error: ${e.message}`, 'error');
-            } finally {
                 document.getElementById('typingIndicator')?.remove();
-                renderMessages();
-                scrollToBottom();
+                showToast(`AI Error: ${e.message}`, 'error');
+                addLog(`AI Error: ${e.message}`, 'error');
             }
         }
 
         function buildAPIMessages(char) {
-            const messages = [];
+            const msgs = [];
+            let systemContent = '';
 
-            // System message construction
-            let systemContent = 'You are roleplaying as ' + char.name + '.';
-            if (char.description) systemContent += '\n\nCharacter Description:\n' + char.description;
-            if (char.scenario) systemContent += '\n\nScenario:\n' + char.scenario;
-            if (char.userNick) systemContent += '\n\nThe user is called: ' + char.userNick;
-            if (char.systemPrompt) systemContent += '\n\nAdditional Instructions:\n' + char.systemPrompt;
+            if (char.description) systemContent += `Character: ${char.name}\n${char.description}\n\n`;
+            if (char.scenario) systemContent += `Scenario: ${char.scenario}\n\n`;
+            if (char.userNick) systemContent += `User's name/identity: ${char.userNick}\n\n`;
+            if (char.systemPrompt) systemContent += `${char.systemPrompt}\n\n`;
 
-            // Add worldbook entries
-            if (char.worldbookIds && char.worldbookIds.length > 0) {
-                const allEntries = [];
-                char.worldbookIds.forEach(wbId => {
-                    const wb = App.worldbooks.find(w => w.id === wbId);
-                    if (wb && wb.entries) {
-                        wb.entries.forEach(entry => {
-                            if (entry.alwaysActive) {
-                                allEntries.push({ name: entry.name, content: entry.content, alwaysActive: true });
-                            } else if (entry.keywords) {
-                                const keywords = entry.keywords.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
-                                const recentMsgs = char.messages.slice(-10).map(m => m.content.toLowerCase()).join(' ');
-                                const triggered = keywords.some(kw => recentMsgs.includes(kw));
-                                if (triggered) allEntries.push({ name: entry.name, content: entry.content, alwaysActive: false });
-                            }
-                        });
+            const worldbookContent = getWorldbookContent(char);
+            if (worldbookContent) systemContent += `World Information:\n${worldbookContent}\n\n`;
+
+            if (systemContent) msgs.push({ role: 'system', content: systemContent.trim() });
+
+            const maxMsgs = App.settings.maxContextMessages || 200;
+            const recentMsgs = char.messages.slice(-maxMsgs);
+
+            recentMsgs.forEach(m => {
+                const role = m.type === 'sent' ? 'user' : 'assistant';
+                let content = m.content;
+                if (m.quote) content = `[Quoting: "${m.quote.substring(0, 100)}..."]\n${content}`;
+                if (m.image) content = `[User sent an image]\n${content}`;
+                msgs.push({ role, content });
+            });
+
+            return msgs;
+        }
+
+        function getWorldbookContent(char) {
+            if (!char.worldbookIds?.length) return '';
+            let content = '';
+            const lastUserMsg = [...char.messages].reverse().find(m => m.type === 'sent')?.content?.toLowerCase() || '';
+
+            char.worldbookIds.forEach(wbId => {
+                const wb = App.worldbooks.find(w => w.id === wbId);
+                if (!wb?.entries) return;
+
+                wb.entries.forEach(entry => {
+                    if (entry.alwaysActive) {
+                        content += `${entry.name}: ${entry.content}\n`;
+                    } else if (entry.keywords) {
+                        const keywords = entry.keywords.split(',').map(k => k.trim().toLowerCase());
+                        if (keywords.some(k => k && lastUserMsg.includes(k))) {
+                            content += `${entry.name}: ${entry.content}\n`;
+                        }
                     }
                 });
-                if (allEntries.length > 0) {
-                    systemContent += '\n\n[Worldbook Entries]\n';
-                    allEntries.forEach(e => { systemContent += `\n[${e.name}${e.alwaysActive ? ' - Always Active' : ''}]\n${e.content}\n`; });
-                }
-            }
-
-            systemContent += '\n\nIMPORTANT FORMAT INSTRUCTIONS:\n';
-            systemContent += '- Use ||| as separator between multiple messages/actions\n';
-            systemContent += '- To quote a previous message, use [Q:#N] where N is the message number\n';
-            systemContent += '- Messages are numbered in the conversation history\n';
-            systemContent += '- Stay in character at all times\n';
-
-            messages.push({ role: 'system', content: systemContent });
-
-            // Add conversation history with message numbers
-            const maxMsgs = App.settings.maxContextMessages || 200;
-            const historyMsgs = char.messages.slice(-maxMsgs);
-            historyMsgs.forEach((msg, idx) => {
-                const msgNum = char.messages.length - historyMsgs.length + idx + 1;
-                let content = `[#${msgNum}] `;
-                if (msg.quoteId) {
-                    const quotedIdx = char.messages.findIndex(m => m.id === msg.quoteId);
-                    if (quotedIdx >= 0) content += `[Q:#${quotedIdx + 1}] `;
-                }
-                content += msg.content;
-                if (msg.image) content += '\n[Image attached]';
-                messages.push({ role: msg.role === 'user' ? 'user' : 'assistant', content });
             });
 
-            return messages;
+            return content;
         }
 
-        function parseAIResponse(response, char) {
-            // Handle ||| separator for multiple messages
-            if (response.includes('|||')) {
-                const parts = response.split('|||').map(p => p.trim()).filter(p => p);
-                if (parts.length > 1) {
-                    // Process first part now, queue rest
-                    const [first, ...rest] = parts;
-                    if (rest.length > 0) {
-                        setTimeout(() => {
-                            rest.forEach((part, idx) => {
-                                setTimeout(() => {
-                                    const msg = { id: Date.now().toString() + idx, role: 'assistant', content: parseQuotes(part, char), timestamp: Date.now() };
-                                    char.messages.push(msg);
-                                    saveData();
-                                    renderMessages();
-                                    scrollToBottom();
-                                }, (idx + 1) * 800);
-                            });
-                        }, 500);
-                    }
-                    return parseQuotes(first, char);
-                }
-            }
-            return parseQuotes(response, char);
-        }
-
-        function parseQuotes(text, char) {
-            // Parse [Q:#N] quote references
-            return text.replace(/\[Q:#(\d+)\]/g, (match, num) => {
-                const msgIdx = parseInt(num) - 1;
-                if (msgIdx >= 0 && msgIdx < char.messages.length) {
-                    const quoted = char.messages[msgIdx];
-                    return `"${quoted.content.substring(0, 50)}${quoted.content.length > 50 ? '...' : ''}"`;
-                }
-                return match;
-            });
-        }
-
-        function scrollToBottom() {
-            const container = document.getElementById('chatMessages');
-            setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
+        function parseAIResponse(data) {
+            if (data.choices?.[0]?.message?.content) return data.choices[0].message.content.trim();
+            if (data.choices?.[0]?.text) return data.choices[0].text.trim();
+            if (data.content) return data.content.trim();
+            if (data.response) return data.response.trim();
+            return null;
         }
 
         async function regenerateLastReply() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char || char.messages.length === 0) return;
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
             toggleExtensionPanel();
-
-            // Find and remove last AI message
             for (let i = char.messages.length - 1; i >= 0; i--) {
-                if (char.messages[i].role === 'assistant') {
+                if (char.messages[i].type === 'received') {
                     char.messages.splice(i, 1);
-                    await saveData();
-                    renderMessages();
-                    break;
+                    await saveData(); renderMessages();
+                    await triggerAIReply();
+                    return;
                 }
             }
-
-            // Trigger new reply
-            await triggerAIReply();
+            showToast('No AI message to regenerate', 'warning');
         }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // QUOTE & CONTEXT MENU
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        function showContextMenu(e, msgId) {
-            e.preventDefault();
-            App.contextMenuMsgId = msgId;
+        function toggleExtensionPanel() { document.getElementById('extensionPanel').classList.toggle('active'); }
+        function openImagePicker() { toggleExtensionPanel(); document.getElementById('chatImageInput').click(); }
+
+        async function handleChatImageUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const compressed = await compressImage(ev.target.result, 400, 0.8);
+                await addMessage('[Image]', 'sent', null, compressed);
+            };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // CONTEXT MENU & QUOTE
+        // ════════════════════════════════════════════════════════════════════════════════
+        function startLongPress(idx) { App.longPressTimer = setTimeout(() => showContextMenu(null, idx), 500); }
+        function endLongPress() { if (App.longPressTimer) { clearTimeout(App.longPressTimer); App.longPressTimer = null; } }
+
+        function showContextMenu(e, idx) {
+            if (e) e.preventDefault();
+            App.contextMenuMsgId = idx;
             document.getElementById('contextMenuOverlay').classList.add('active');
         }
 
-        function hideContextMenu() {
-            document.getElementById('contextMenuOverlay').classList.remove('active');
-            App.contextMenuMsgId = null;
-        }
-
-        function startLongPress(e, msgId) {
-            App.longPressTimer = setTimeout(() => { showContextMenu(e, msgId); }, 500);
-        }
-
-        function cancelLongPress() {
-            if (App.longPressTimer) { clearTimeout(App.longPressTimer); App.longPressTimer = null; }
-        }
+        function hideContextMenu() { document.getElementById('contextMenuOverlay').classList.remove('active'); App.contextMenuMsgId = null; }
 
         function copyMessageText() {
             const char = App.characters.find(c => c.id === App.currentCharId);
-            const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
+            if (!char || App.contextMenuMsgId === null) return;
+            const msg = char.messages[App.contextMenuMsgId];
             if (msg) { navigator.clipboard.writeText(msg.content); showToast('Copied', 'success'); }
             hideContextMenu();
         }
 
         function quoteMessage() {
             const char = App.characters.find(c => c.id === App.currentCharId);
-            const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
+            if (!char || App.contextMenuMsgId === null) return;
+            const msg = char.messages[App.contextMenuMsgId];
             if (msg) {
-                App.currentQuote = msg;
+                App.currentQuote = msg.content.substring(0, 150);
+                document.getElementById('quotePreviewContent').textContent = App.currentQuote;
                 document.getElementById('quotePreviewBar').classList.add('active');
-                document.getElementById('quotePreviewContent').textContent = msg.content.substring(0, 100);
-                document.getElementById('chatInput').focus();
             }
             hideContextMenu();
         }
@@ -3476,9 +3417,10 @@
 
         function editMessage() {
             const char = App.characters.find(c => c.id === App.currentCharId);
-            const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
+            if (!char || App.contextMenuMsgId === null) return;
+            const msg = char.messages[App.contextMenuMsgId];
             if (msg) {
-                App.editingMsgId = msg.id;
+                App.editingMsgId = App.contextMenuMsgId;
                 document.getElementById('editMessageContent').value = msg.content;
                 showModal('editMessageModal');
             }
@@ -3487,27 +3429,26 @@
 
         async function saveEditedMessage() {
             const char = App.characters.find(c => c.id === App.currentCharId);
-            const msg = char?.messages.find(m => m.id === App.editingMsgId);
+            if (!char || App.editingMsgId === null) return;
+            const msg = char.messages[App.editingMsgId];
             if (msg) {
                 msg.content = document.getElementById('editMessageContent').value;
-                await saveData();
-                renderMessages();
-                showToast('Message updated', 'success');
+                await saveData(); renderMessages();
             }
-            hideModal('editMessageModal');
-            App.editingMsgId = null;
+            App.editingMsgId = null; hideModal('editMessageModal');
+            showToast('Message updated', 'success');
         }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // SELECT MODE & BATCH DELETE
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
+        // SELECT MODE
+        // ════════════════════════════════════════════════════════════════════════════════
         function enterSelectMode() {
+            toggleExtensionPanel();
             App.isSelectMode = true;
             App.selectedMsgs.clear();
             document.getElementById('chatMessages').classList.add('select-mode');
             document.getElementById('selectModeBar').classList.add('active');
-            document.getElementById('selectedCount').textContent = '0';
-            toggleExtensionPanel();
+            updateSelectedCount();
         }
 
         function exitSelectMode() {
@@ -3518,447 +3459,51 @@
             document.querySelectorAll('.message-checkbox').forEach(cb => cb.classList.remove('checked'));
         }
 
-        function toggleMsgSelect(e, msgId) {
-            e.stopPropagation();
-            if (App.selectedMsgs.has(msgId)) App.selectedMsgs.delete(msgId);
-            else App.selectedMsgs.add(msgId);
-            e.target.classList.toggle('checked');
-            document.getElementById('selectedCount').textContent = App.selectedMsgs.size;
+        function toggleMessageSelect(idx) {
+            if (!App.isSelectMode) return;
+            const cb = document.querySelector(`.message-wrapper[data-idx="${idx}"] .message-checkbox`);
+            if (App.selectedMsgs.has(idx)) { App.selectedMsgs.delete(idx); cb?.classList.remove('checked'); }
+            else { App.selectedMsgs.add(idx); cb?.classList.add('checked'); }
+            updateSelectedCount();
         }
+
+        function updateSelectedCount() { document.getElementById('selectedCount').textContent = App.selectedMsgs.size; }
 
         async function deleteSelectedMessages() {
-            if (App.selectedMsgs.size === 0) { showToast('No messages selected', 'warning'); return; }
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id));
-            await saveData();
-            exitSelectMode();
-            renderMessages();
-            showToast(`Deleted ${App.selectedMsgs.size} messages`, 'success');
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const toDelete = Array.from(App.selectedMsgs).sort((a, b) => b - a);
+            toDelete.forEach(idx => char.messages.splice(idx, 1));
+            await saveData(); exitSelectMode(); renderMessages();
+            showToast(`${toDelete.length} messages deleted`, 'success');
         }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // IMAGE HANDLING
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        function openImagePicker() {
-            document.getElementById('chatImageInput').click();
-            toggleExtensionPanel();
-        }
-
-        async function handleChatImageUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const compressed = await compressImage(ev.target.result, 400, 0.7);
-                const char = App.characters.find(c => c.id === App.currentCharId);
-                if (!char) return;
-                const msg = { id: Date.now().toString(), role: 'user', content: '[Image]', image: compressed, timestamp: Date.now() };
-                char.messages.push(msg);
-                await saveData();
-                renderMessages();
-                scrollToBottom();
-                showToast('Image sent', 'success');
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        }
-
-        function toggleExtensionPanel() {
-            document.getElementById('extensionPanel').classList.toggle('active');
-        }
-
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // CHARACTER SETTINGS
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        function openCharacterSettings() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-
-            // Basic info
-            document.getElementById('charName').value = char.name || '';
-            document.getElementById('charAvatar').value = char.avatar || '';
-            document.getElementById('charDescription').value = char.description || '';
-            document.getElementById('charGreeting').value = char.greeting || '';
-            document.getElementById('charScenario').value = char.scenario || '';
-            document.getElementById('charUserNick').value = char.userNick || '';
-            document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
-            updateCharCounter();
-
-            // Avatar settings
-            const charAvatarUpload = document.getElementById('charAvatarUpload');
-            if (char.avatarImage) { charAvatarUpload.innerHTML = `<img src="${char.avatarImage}">`; charAvatarUpload.classList.add('has-image'); }
-            else { charAvatarUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'; charAvatarUpload.classList.remove('has-image'); }
-
-            const userAvatarUpload = document.getElementById('userAvatarUpload');
-            if (char.userAvatar) { userAvatarUpload.innerHTML = `<img src="${char.userAvatar}">`; userAvatarUpload.classList.add('has-image'); }
-            else { userAvatarUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'; userAvatarUpload.classList.remove('has-image'); }
-
-            // Toggle states
-            const showAvatarToggle = document.getElementById('showAvatarToggle');
-            showAvatarToggle.classList.toggle('active', char.showAvatar !== false);
-
-            const showBorderToggle = document.getElementById('showBorderToggle');
-            showBorderToggle.classList.toggle('active', char.showBorder === true);
-
-            document.getElementById('borderColorPicker').value = char.borderColor || '#c9a962';
-
-            // Avatar shape
-            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(opt => {
-                opt.classList.toggle('selected', opt.dataset.shape === (char.avatarShape || 'circle'));
-            });
-
-            // Chat wallpaper preview
-            const wpPreview = document.getElementById('chatWallpaperPreview');
-            if (char.chatWallpaper) {
-                wpPreview.style.backgroundImage = `url(${char.chatWallpaper})`;
-                wpPreview.classList.add('has-image');
-            } else {
-                wpPreview.style.backgroundImage = '';
-                wpPreview.classList.remove('has-image');
-            }
-
-            // CSS settings
-            document.getElementById('customCssEditor').value = char.customCss || '';
-            document.getElementById('timestampPosition').value = char.timestampPosition || 'default';
-            updateCssPresetSelect(char);
-
-            // Worldbook multi-select
-            updateWorldbookMultiSelect(char);
-
-            // Bubble style settings
-            loadBubbleStyleSettings(char);
-
-            openPage('characterSettingsPage');
-        }
-
-        function loadBubbleStyleSettings(char) {
-            const style = char.bubbleStyle || 'none';
-            document.querySelectorAll('.bubble-style-item').forEach(item => {
-                item.classList.toggle('selected', item.dataset.style === style);
-            });
-
-            const colors = char.bubbleColors || App.currentBubbleColors;
-            document.getElementById('userColor1Swatch').style.background = colors.userColor1;
-            document.getElementById('userColor2Swatch').style.background = colors.userColor2;
-            document.getElementById('userTextColorSwatch').style.background = colors.userTextColor;
-            document.getElementById('charColor1Swatch').style.background = colors.charColor1;
-            document.getElementById('charColor2Swatch').style.background = colors.charColor2;
-            document.getElementById('charTextColorSwatch').style.background = colors.charTextColor;
-
-            // Glass border settings
-            const glassBorderToggle = document.getElementById('glassBorderToggle');
-            glassBorderToggle.classList.toggle('active', char.glassBorder === true);
-            document.getElementById('glassBorderWidth').value = char.glassBorderWidth || 1;
-            document.getElementById('glassBorderWidthValue').textContent = (char.glassBorderWidth || 1) + 'px';
-
-            selectBubbleStyle(style);
-        }
-
-        function updateWorldbookMultiSelect(char) {
-            const container = document.getElementById('worldbookMultiSelect');
-            if (App.worldbooks.length === 0) {
-                container.innerHTML = '<div style="padding:12px;color:var(--text-tertiary);text-align:center">No worldbooks available</div>';
-                return;
-            }
-            container.innerHTML = App.worldbooks.map(wb => {
-                const isLinked = char.worldbookIds?.includes(wb.id);
-                return `<div class="worldbook-multi-item" onclick="toggleWorldbookLink('${wb.id}')">
-                    <div class="worldbook-multi-checkbox ${isLinked ? 'checked' : ''}"></div>
-                    <span class="worldbook-multi-name">${escapeHtml(wb.name)}</span>
-                </div>`;
-            }).join('');
-        }
-
-        function toggleWorldbookLink(wbId) {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            if (!char.worldbookIds) char.worldbookIds = [];
-            const idx = char.worldbookIds.indexOf(wbId);
-            if (idx >= 0) char.worldbookIds.splice(idx, 1);
-            else char.worldbookIds.push(wbId);
-            updateWorldbookMultiSelect(char);
-        }
-
-        async function saveCharacterSettings() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-
-            char.name = document.getElementById('charName').value.trim() || char.name;
-            char.avatar = document.getElementById('charAvatar').value.trim();
-            char.description = document.getElementById('charDescription').value;
-            char.greeting = document.getElementById('charGreeting').value;
-            char.scenario = document.getElementById('charScenario').value;
-            char.userNick = document.getElementById('charUserNick').value;
-            char.systemPrompt = document.getElementById('charSystemPrompt').value;
-            char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
-            char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
-            char.borderColor = document.getElementById('borderColorPicker').value;
-            char.customCss = document.getElementById('customCssEditor').value;
-            char.timestampPosition = document.getElementById('timestampPosition').value;
-
-            // Bubble style settings
-            char.glassBorder = document.getElementById('glassBorderToggle').classList.contains('active');
-            char.glassBorderWidth = parseFloat(document.getElementById('glassBorderWidth').value) || 1;
-
-            const selectedShape = document.querySelector('#avatarShapeOptions .shape-option.selected');
-            if (selectedShape) char.avatarShape = selectedShape.dataset.shape;
-
-            await saveData();
-            document.getElementById('chatTitle').textContent = char.name;
-            applyCharacterCss(char);
-            applyBubbleStyleToChat(char);
-            renderMessages();
-            closeCharacterSettings();
-            showToast('Settings saved', 'success');
-        }
-
-        function closeCharacterSettings() {
-            closePage('characterSettingsPage');
-        }
-
-        function confirmClearAllMessages() {
-            showModal('clearMessagesModal');
-        }
-
-        async function executeClearAllMessages() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            char.messages = [];
-            await saveData();
-            renderMessages();
-            hideModal('clearMessagesModal');
-            showToast('All messages cleared', 'success');
-        }
-
-        function updateCharCounter() {
-            const counter = document.getElementById('greetingCharCounter');
-            const input = document.getElementById('charGreeting');
-            const len = input.value.length;
-            counter.textContent = `${len}/300`;
-            counter.className = 'char-counter' + (len >= 300 ? ' error' : len >= 250 ? ' warning' : '');
-        }
-
-        function selectShape(el) {
-            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(opt => opt.classList.remove('selected'));
-            el.classList.add('selected');
-        }
-
-        function toggleSwitch(el) {
-            el.classList.toggle('active');
-
-            // Handle glass border toggle specifically
-            if (el.id === 'glassBorderToggle') {
-                const borderWidthContainer = document.getElementById('glassBorderWidthContainer');
-                borderWidthContainer.style.display = el.classList.contains('active') ? 'block' : 'none';
-                const char = App.characters.find(c => c.id === App.currentCharId);
-                if (char) char.glassBorder = el.classList.contains('active');
-                updateBubblePreview();
-            }
-        }
-
-        async function handleCharAvatarUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const char = App.characters.find(c => c.id === App.currentCharId);
-                if (!char) return;
-                char.avatarImage = await compressImage(ev.target.result, 150, 0.8);
-                const upload = document.getElementById('charAvatarUpload');
-                upload.innerHTML = `<img src="${char.avatarImage}">`;
-                upload.classList.add('has-image');
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        }
-
-        async function handleUserAvatarUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const char = App.characters.find(c => c.id === App.currentCharId);
-                if (!char) return;
-                char.userAvatar = await compressImage(ev.target.result, 150, 0.8);
-                const upload = document.getElementById('userAvatarUpload');
-                upload.innerHTML = `<img src="${char.userAvatar}">`;
-                upload.classList.add('has-image');
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        }
-
-        async function handleChatWallpaperUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const char = App.characters.find(c => c.id === App.currentCharId);
-                if (!char) return;
-                char.chatWallpaper = await compressImage(ev.target.result, 600, 0.8);
-                const preview = document.getElementById('chatWallpaperPreview');
-                preview.style.backgroundImage = `url(${char.chatWallpaper})`;
-                preview.classList.add('has-image');
-                showToast('Wallpaper set', 'success');
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        }
-
-        function clearChatWallpaper() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            char.chatWallpaper = null;
-            const preview = document.getElementById('chatWallpaperPreview');
-            preview.style.backgroundImage = '';
-            preview.classList.remove('has-image');
-            showToast('Wallpaper cleared', 'success');
-        }
-
-        function deleteCurrentCharacter() {
-            App.pendingDeleteType = 'character';
-            App.pendingDeleteId = App.currentCharId;
-            document.getElementById('deleteModalTitle').textContent = 'Delete Character?';
-            document.getElementById('deleteModalDesc').textContent = 'This will delete all messages and settings for this character.';
-            showModal('confirmDeleteModal');
-        }
-
-        async function confirmDelete() {
-            if (App.pendingDeleteType === 'character') {
-                App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
-                await saveData();
-                hideModal('confirmDeleteModal');
-                closeCharacterSettings();
-                closeChatPage();
-                renderContacts();
-                showToast('Character deleted', 'success');
-            } else if (App.pendingDeleteType === 'worldbook') {
-                App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
-                App.characters.forEach(c => {
-                    if (c.worldbookIds) c.worldbookIds = c.worldbookIds.filter(id => id !== App.pendingDeleteId);
-                });
-                await saveData();
-                hideModal('confirmDeleteModal');
-                closePage('worldbookEditPage');
-                renderWorldbooks();
-                showToast('Worldbook deleted', 'success');
-            }
-            App.pendingDeleteType = null;
-            App.pendingDeleteId = null;
-        }
-
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // CSS PRESETS
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        function updateCssPresetSelect(char) {
-            const select = document.getElementById('cssPresetSelect');
-            select.innerHTML = '<option value="">-- No Preset --</option>' +
-                App.globalCssPresets.map(p => `<option value="${p.id}" ${char.activeCssPresetId === p.id ? 'selected' : ''}>${escapeHtml(p.name)}</option>`).join('');
-        }
-
-        function loadCssPreset() {
-            const select = document.getElementById('cssPresetSelect');
-            const presetId = select.value;
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-
-            if (!presetId) {
-                char.activeCssPresetId = null;
-                return;
-            }
-
-            const preset = App.globalCssPresets.find(p => p.id === presetId);
-            if (preset) {
-                document.getElementById('customCssEditor').value = preset.css;
-                char.activeCssPresetId = presetId;
-                showToast(`Loaded: ${preset.name}`, 'info');
-            }
-        }
-
-        function addNewCssPreset() {
-            showModal('cssPresetNameModal');
-            document.getElementById('newCssPresetName').value = '';
-        }
-
-        async function createCssPreset() {
-            const name = document.getElementById('newCssPresetName').value.trim();
-            if (!name) { showToast('Please enter name', 'error'); return; }
-            const css = document.getElementById('customCssEditor').value;
-            const preset = { id: Date.now().toString(), name, css };
-            App.globalCssPresets.push(preset);
-            await saveData();
-            hideModal('cssPresetNameModal');
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (char) {
-                char.activeCssPresetId = preset.id;
-                updateCssPresetSelect(char);
-                document.getElementById('cssPresetSelect').value = preset.id;
-            }
-            showToast(`Preset "${name}" created`, 'success');
-        }
-
-        async function saveCssPreset() {
-            const presetId = document.getElementById('cssPresetSelect').value;
-            if (!presetId) { showToast('Please select or create a preset first', 'warning'); return; }
-            const preset = App.globalCssPresets.find(p => p.id === presetId);
-            if (!preset) return;
-            preset.css = document.getElementById('customCssEditor').value;
-            await saveData();
-            showToast(`Preset "${preset.name}" updated`, 'success');
-        }
-
-        function showCssGuide() { showModal('cssGuideModal'); }
-
-        function previewCss() {
-            const css = document.getElementById('customCssEditor').value;
-            document.getElementById('customCssStyles').textContent = css;
-            showToast('CSS preview applied', 'info');
-        }
-
-        function clearCustomCss() {
-            document.getElementById('customCssEditor').value = '';
-            document.getElementById('customCssStyles').textContent = '';
-            showToast('CSS cleared', 'info');
-        }
-
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // WORLDBOOK MANAGEMENT
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        async function createWorldbook() {
-            const name = document.getElementById('newWorldbookName').value.trim();
-            if (!name) { showToast('Please enter name', 'error'); return; }
-            const wb = { id: Date.now().toString(), name, summary: '', entries: [{ name: 'Default Entry', keywords: '', content: '', alwaysActive: false }] };
-            App.worldbooks.push(wb);
-            await saveData();
-            hideModal('createWorldbookModal');
-            document.getElementById('newWorldbookName').value = '';
-            renderWorldbooks();
-            showToast(`"${name}" created`, 'success');
-        }
-
+        // ════════════════════════════════════════════════════════════════════════════════
+        // WORLDBOOK
+        // ════════════════════════════════════════════════════════════════════════════════
         function renderWorldbooks() {
             const list = document.getElementById('worldbookList');
             const empty = document.getElementById('emptyWorldbookState');
             if (App.worldbooks.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
-            list.style.display = 'block';
-            empty.style.display = 'none';
+            list.style.display = 'block'; empty.style.display = 'none';
             list.innerHTML = App.worldbooks.map(wb => {
                 const entryCount = wb.entries?.length || 0;
-                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')">
-                    <div class="worldbook-item-header">
-                        <span class="worldbook-item-title">${escapeHtml(wb.name)}</span>
-                        <span class="worldbook-item-badge">${entryCount} entries</span>
-                    </div>
-                    <div class="worldbook-item-preview">${escapeHtml(wb.summary || 'No description')}</div>
-                </div>`;
+                const preview = wb.summary || (wb.entries?.[0]?.content?.substring(0, 60) + '...') || 'No entries';
+                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entryCount} entries</span></div><div class="worldbook-item-preview">${escapeHtml(preview)}</div></div>`;
             }).join('');
         }
 
-        function openWorldbookEdit(wbId) {
-            App.currentWbId = wbId;
-            const wb = App.worldbooks.find(w => w.id === wbId);
-            if (!wb) return;
+        async function createWorldbook() {
+            const name = document.getElementById('newWorldbookName').value.trim();
+            if (!name) { showToast('Please enter name', 'error'); return; }
+            const wb = { id: Date.now().toString(), name, summary: '', entries: [] };
+            App.worldbooks.push(wb); await saveData(); hideModal('createWorldbookModal');
+            document.getElementById('newWorldbookName').value = '';
+            renderWorldbooks(); showToast(`"${name}" created`, 'success');
+        }
+
+        function openWorldbookEdit(id) {
+            const wb = App.worldbooks.find(w => w.id === id); if (!wb) return;
+            App.currentWbId = id;
             document.getElementById('worldbookName').value = wb.name;
             document.getElementById('worldbookSummary').value = wb.summary || '';
             renderWorldbookEntries(wb);
@@ -3967,105 +3512,76 @@
 
         function renderWorldbookEntries(wb) {
             const container = document.getElementById('worldbookEntries');
-            if (!wb.entries || wb.entries.length === 0) {
-                container.innerHTML = '<div style="text-align:center;color:var(--text-tertiary);padding:20px">No entries yet</div>';
-                return;
-            }
-            container.innerHTML = wb.entries.map((entry, idx) => `
-                <div class="worldbook-entry-item">
-                    <div class="worldbook-entry-header">
-                        <span class="worldbook-entry-title">${escapeHtml(entry.name || 'Untitled')}</span>
-                        <div class="worldbook-entry-actions">
-                            <button class="worldbook-entry-btn" onclick="editWorldbookEntry(${idx})">
-                                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                            </button>
-                            <button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${idx})">
-                                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="worldbook-entry-keywords">${entry.alwaysActive ? '✦ Always Active' : (entry.keywords ? 'Keywords: ' + escapeHtml(entry.keywords) : 'No keywords')}</div>
-                    <div class="worldbook-entry-preview">${escapeHtml(entry.content || 'No content')}</div>
-                </div>
-            `).join('');
+            if (!wb.entries?.length) { container.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px;text-align:center;padding:20px">No entries yet</div>'; return; }
+            container.innerHTML = wb.entries.map((entry, idx) => {
+                const keywords = entry.keywords || 'No keywords';
+                const preview = entry.content?.substring(0, 80) || 'No content';
+                return `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(entry.name || 'Untitled')}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div><div class="worldbook-entry-keywords">${escapeHtml(keywords)}</div><div class="worldbook-entry-preview">${escapeHtml(preview)}</div></div>`;
+            }).join('');
         }
 
         function addWorldbookEntry() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb) return;
-            if (!wb.entries) wb.entries = [];
-            wb.entries.push({ name: 'New Entry', keywords: '', content: '', alwaysActive: false });
-            renderWorldbookEntries(wb);
-            editWorldbookEntry(wb.entries.length - 1);
-        }
-
-        function editWorldbookEntry(idx) {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb || !wb.entries[idx]) return;
-            App.currentEntryIndex = idx;
-            const entry = wb.entries[idx];
-            document.getElementById('entryName').value = entry.name || '';
-            document.getElementById('entryKeywords').value = entry.keywords || '';
-            document.getElementById('entryContent').value = entry.content || '';
-            const toggle = document.getElementById('entryAlwaysActive');
-            toggle.classList.toggle('active', entry.alwaysActive === true);
+            App.currentEntryIndex = -1;
+            document.getElementById('entryName').value = '';
+            document.getElementById('entryKeywords').value = '';
+            document.getElementById('entryContent').value = '';
+            document.getElementById('entryAlwaysActive').classList.remove('active');
             showModal('entryEditModal');
         }
 
-        async function saveWorldbookEntry() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb || App.currentEntryIndex < 0) return;
-            const entry = wb.entries[App.currentEntryIndex];
-            entry.name = document.getElementById('entryName').value.trim() || 'Untitled';
-            entry.keywords = document.getElementById('entryKeywords').value.trim();
-            entry.content = document.getElementById('entryContent').value;
-            entry.alwaysActive = document.getElementById('entryAlwaysActive').classList.contains('active');
-            await saveData();
-            hideModal('entryEditModal');
-            renderWorldbookEntries(wb);
-            showToast('Entry saved', 'success');
-            App.currentEntryIndex = -1;
+        function editWorldbookEntry(idx) {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
+            const entry = wb.entries[idx]; if (!entry) return;
+            App.currentEntryIndex = idx;
+            document.getElementById('entryName').value = entry.name || '';
+            document.getElementById('entryKeywords').value = entry.keywords || '';
+            document.getElementById('entryContent').value = entry.content || '';
+            document.getElementById('entryAlwaysActive').classList.toggle('active', entry.alwaysActive === true);
+            showModal('entryEditModal');
         }
 
-        async function deleteWorldbookEntry(idx) {
-            if (!confirm('Delete this entry?')) return;
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb) return;
-            wb.entries.splice(idx, 1);
-            await saveData();
-            renderWorldbookEntries(wb);
-            showToast('Entry deleted', 'success');
+        function saveWorldbookEntry() {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
+            const entry = {
+                name: document.getElementById('entryName').value.trim() || 'Untitled',
+                keywords: document.getElementById('entryKeywords').value.trim(),
+                content: document.getElementById('entryContent').value,
+                alwaysActive: document.getElementById('entryAlwaysActive').classList.contains('active')
+            };
+            if (App.currentEntryIndex >= 0) wb.entries[App.currentEntryIndex] = entry;
+            else wb.entries.push(entry);
+            hideModal('entryEditModal'); renderWorldbookEntries(wb);
+        }
+
+        function deleteWorldbookEntry(idx) {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
+            wb.entries.splice(idx, 1); renderWorldbookEntries(wb);
         }
 
         async function saveWorldbook() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb) return;
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId); if (!wb) return;
             wb.name = document.getElementById('worldbookName').value.trim() || wb.name;
             wb.summary = document.getElementById('worldbookSummary').value;
-            await saveData();
-            closeWorldbookEdit();
-            renderWorldbooks();
-            showToast('Worldbook saved', 'success');
+            if (await saveData()) { closeWorldbookEdit(); renderWorldbooks(); showToast('Worldbook saved', 'success'); }
         }
 
-        function closeWorldbookEdit() {
-            closePage('worldbookEditPage');
-        }
+        function closeWorldbookEdit() { closePage('worldbookEditPage'); App.currentWbId = null; }
 
         function deleteCurrentWorldbook() {
+            if (!App.currentWbId) return;
             App.pendingDeleteType = 'worldbook';
             App.pendingDeleteId = App.currentWbId;
             document.getElementById('deleteModalTitle').textContent = 'Delete Worldbook?';
-            document.getElementById('deleteModalDesc').textContent = 'This will permanently delete this worldbook and all its entries.';
+            document.getElementById('deleteModalDesc').textContent = 'All entries will be lost.';
             showModal('confirmDeleteModal');
         }
 
-        // ═══════════════════════════════════════════════════════════════════════════════════
-        // DATA IMPORT/EXPORT
-        // ═══════════════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════════════
+        // EXPORT / IMPORT
+        // ════════════════════════════════════════════════════════════════════════════════
         async function exportAllData() {
             const data = {
-                version: '7.0',
+                version: 2,
                 exportDate: new Date().toISOString(),
                 characters: App.characters,
                 worldbooks: App.worldbooks,
@@ -4073,21 +3589,20 @@
                 appIcons: App.appIcons,
                 globalCssPresets: App.globalCssPresets,
                 apiPresets: App.apiPresets,
-                fonts: App.fonts.filter(f => !f.isDefault)
+                fonts: App.fonts
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `noir-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `noir_backup_${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
             showToast('Data exported', 'success');
         }
 
         async function importData(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+            const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = async (ev) => {
                 try {
@@ -4099,64 +3614,49 @@
                     if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets;
                     if (data.apiPresets) App.apiPresets = data.apiPresets;
                     if (data.fonts) {
-                        data.fonts.forEach(f => {
-                            if (!App.fonts.find(ef => ef.id === f.id)) App.fonts.push(f);
-                        });
+                        data.fonts.forEach(f => { if (!App.fonts.find(ef => ef.id === f.id)) App.fonts.push(f); });
                     }
-
-                    // Ensure compatibility
-                    App.characters.forEach(c => {
-                        if (!c.worldbookIds) c.worldbookIds = c.worldbookId ? [c.worldbookId] : [];
-                        if (!c.bubbleStyle) c.bubbleStyle = 'none';
-                        if (!c.bubbleColors) c.bubbleColors = { ...App.currentBubbleColors };
-                    });
-                    App.worldbooks.forEach(wb => {
-                        if (!wb.entries) wb.entries = [{ name: 'Default Entry', keywords: wb.keywords || '', content: wb.content || '', alwaysActive: wb.alwaysActive || false }];
-                    });
-
                     await saveData();
-                    applyWallpaper();
-                    applyAppIcons();
-                    applyGlobalFont();
-                    applyGlobalFontSize();
-                    updateApiPresetSelect();
-                    renderFontList();
-                    renderContacts();
-                    renderWorldbooks();
-                    loadSettingsUI();
+                    applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyFontScale(); applyBubbleStyle();
+                    loadSettingsUI(); updateConnectionUI(); renderContacts(); renderWorldbooks();
                     showToast('Data imported successfully', 'success');
-                } catch (err) {
-                    showToast('Import failed: ' + err.message, 'error');
-                }
+                } catch (err) { showToast('Import failed: Invalid file', 'error'); console.error(err); }
             };
-            reader.readAsText(file);
-            e.target.value = '';
+            reader.readAsText(file); e.target.value = '';
         }
 
         async function clearAllData() {
-            if (!confirm('This will delete ALL data including characters, messages, worldbooks, and settings. Are you sure?')) return;
-            if (!confirm('This action CANNOT be undone. Type "yes" to confirm.')) return;
-            App.characters = [];
-            App.worldbooks = [];
-            App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null, fontScale: 1 };
+            if (!confirm('Delete ALL data? This cannot be undone!')) return;
+            if (!confirm('Are you REALLY sure?')) return;
+            App.characters = []; App.worldbooks = []; App.globalCssPresets = []; App.apiPresets = [];
+            App.settings = {
+                apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048,
+                maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false,
+                selectedFontId: null, fontScale: 1, bubbleStyle: 'none',
+                bubbleGlassBorder: false, bubbleGlassBorderWidth: 0.5,
+                userColor1: '#3a3a3a', userColor2: '#2a2a2a', userTextColor: '#ffffff',
+                charColor1: '#1e1e1e', charColor2: '#151515', charTextColor: '#e0e0e0'
+            };
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null };
-            App.globalCssPresets = [];
-            App.apiPresets = [];
             App.fonts = [...DEFAULT_FONTS];
             await clearIDBStore('appData');
-            await clearIDBStore('images');
             await saveData();
-            applyWallpaper();
-            applyAppIcons();
-            applyGlobalFont();
-            applyGlobalFontSize();
-            renderContacts();
-            renderWorldbooks();
-            renderFontList();
-            loadSettingsUI();
-            updateApiPresetSelect();
-            await updateStorageDisplay();
+            applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyFontScale(); applyBubbleStyle();
+            loadSettingsUI(); updateConnectionUI(); renderContacts(); renderWorldbooks();
             showToast('All data cleared', 'success');
+        }
+
+        function viewImage(idx) {
+            const char = App.characters.find(c => c.id === App.currentCharId); if (!char) return;
+            const msg = char.messages[idx]; if (!msg?.image) return;
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:3000;display:flex;align-items:center;justify-content:center;';
+            overlay.onclick = () => overlay.remove();
+            const img = document.createElement('img');
+            img.src = msg.image;
+            img.style.cssText = 'max-width:90%;max-height:90%;border-radius:12px;';
+            overlay.appendChild(img);
+            document.body.appendChild(overlay);
         }
     </script>
 </body>
