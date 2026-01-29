@@ -3765,44 +3765,46 @@ IMPORTANT:
         }
 
         function parseAIResponse(responseText, char) {
-            const parts = responseText.split('|||').map(p => p.trim()).filter(p => p);
-            return parts.map(part => {
-                let content = part.trim();
-                let quoteId = null;
-                let type = 'text';
+    const parts = responseText.split('|||').map(p => p.trim()).filter(p => p);
+    return parts.map(part => {
+        let content = part.trim();
+        let quoteId = null;
+        let type = 'text';
 
-                // Check for quote format [Q:#N] - flexible matching
-                const quoteMatch = content.match(/^\[Q:\s*#?(\d+)\]\s*/i);
-                if (quoteMatch) {
-                    const msgIndex = parseInt(quoteMatch[1]) - 1;
-                    const recentMsgs = char.messages.slice(-(App.settings.maxContextMessages || 200));
-                    if (recentMsgs[msgIndex]) quoteId = recentMsgs[msgIndex].id;
-                    content = content.replace(quoteMatch[0], '').trim();
-                }
-
-                // Check for scene image format [IMG:description] - case insensitive
-                const imgMatch = content.match(/^\s*\[img\s*:\s*(.+?)\s*\]\s*$/is);
-                if (imgMatch) {
-                    type = 'scene-image';
-                    content = imgMatch[1].trim();
-                    return { content, quoteId, type };
-                }
-
-                // Check for voice message format [VOICE:content] - case insensitive
-                const voiceMatch = content.match(/^\s*\[voice\s*:\s*(.+?)\s*\]\s*$/is);
-                if (voiceMatch) {
-                    type = 'voice';
-                    content = voiceMatch[1].trim();
-                    return { content, quoteId, type };
-                }
-
-                // Clean up any remaining format markers and quotes
-                content = content.replace(/^#\d+:\s*/, '');
-                content = content.replace(/^["']|["']$/g, '');
-
-                return { content, quoteId, type };
-            });
+        // 1. 检查引用格式 [Q:#N] - 可以出现在开头，后面可能跟其他内容
+        const quoteMatch = content.match(/^\[Q:#(\d+)\]\s*/i);
+        if (quoteMatch) {
+            const msgIndex = parseInt(quoteMatch[1]) - 1;
+            const recentMsgs = char.messages.slice(-(App.settings.maxContextMessages || 200));
+            if (msgIndex >= 0 && msgIndex < recentMsgs.length) {
+                quoteId = recentMsgs[msgIndex].id;
+            }
+            content = content.replace(quoteMatch[0], '').trim();
         }
+
+        // 2. 检查场景图片格式 [IMG:description] - 更宽松的匹配
+        const imgMatch = content.match(/^\[IMG:\s*(.+?)\s*\]$/is);
+        if (imgMatch) {
+            type = 'scene-image';
+            content = imgMatch[1].trim();
+            return { content, quoteId, type };
+        }
+
+        // 3. 检查语音消息格式 [VOICE:content] - 更宽松的匹配
+        const voiceMatch = content.match(/^\[VOICE:\s*(.+?)\s*\]$/is);
+        if (voiceMatch) {
+            type = 'voice';
+            content = voiceMatch[1].trim();
+            return { content, quoteId, type };
+        }
+
+        // 4. 清理普通文本
+        content = content.replace(/^#\d+:\s*/, '');
+        content = content.replace(/^["']|["']$/g, '');
+
+        return { content: content.trim(), quoteId, type };
+    });
+}
 
 
         async function triggerAIReply() {
