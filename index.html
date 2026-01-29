@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-title" content="NOIR">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a0a">
-    <title>NOIR · Premium SMS v10</title>
+    <title>NOIR · Premium SMS v10.1</title>
     <style id="globalFontStyle"></style>
     <style id="globalFontSizeStyle"></style>
     <style id="bubbleStyleSheet"></style>
@@ -1759,6 +1759,7 @@
             <input type="file" id="chatImageInput" class="file-input-hidden" accept="image/*" onchange="handleChatImageUpload(event)">
         </div>
 
+        <!-- Context Menu Overlay - 这个是关键的长按菜单 -->
         <div class="context-menu-overlay" id="contextMenuOverlay" onclick="hideContextMenu()">
             <div class="context-menu" id="contextMenu" onclick="event.stopPropagation()">
                 <div class="context-menu-item" onclick="copyMessageText()">
@@ -2450,6 +2451,323 @@
             } catch (e) { console.error('Load failed:', e); return false; }
         }
 
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function showModal(id) { document.getElementById(id).classList.add('active'); }
+        function hideModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function openPage(id) { document.getElementById(id).classList.add('active'); if (id === 'messagesPage') renderContactList(); if (id === 'worldbookPage') renderWorldbookList(); }
+        function closePage(id) { document.getElementById(id).classList.remove('active'); }
+
+        function toggleSwitch(el) { el.classList.toggle('active'); }
+
+        // ========== 长按菜单核心函数 - 修复版 ==========
+
+        function showContextMenu(e, msgId) {
+            if (e) e.preventDefault();
+            App.contextMenuMsgId = msgId;
+            document.getElementById('contextMenuOverlay').classList.add('active');
+        }
+
+        function hideContextMenu() {
+            document.getElementById('contextMenuOverlay').classList.remove('active');
+            App.contextMenuMsgId = null;
+        }
+
+        function startLongPress(msgId, e) {
+            if (e) e.preventDefault();
+            App.longPressTimer = setTimeout(() => {
+                showContextMenu(null, msgId);
+            }, 500);
+        }
+
+        function endLongPress() {
+            if (App.longPressTimer) {
+                clearTimeout(App.longPressTimer);
+                App.longPressTimer = null;
+            }
+        }
+
+        function copyMessageText() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg?.content) {
+                navigator.clipboard.writeText(msg.content);
+                showToast('Copied', 'success');
+            }
+            hideContextMenu();
+        }
+
+        function quoteMessage() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg) {
+                App.currentQuote = msg;
+                document.getElementById('quotePreviewBar').classList.add('active');
+                document.getElementById('quotePreviewContent').textContent = (msg.content || '[Image]').substring(0, 50);
+            }
+            hideContextMenu();
+        }
+
+        function cancelQuote() {
+            App.currentQuote = null;
+            document.getElementById('quotePreviewBar').classList.remove('active');
+        }
+
+        function editMessage() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
+            if (msg) {
+                App.editingMsgId = msg.id;
+                document.getElementById('editMessageContent').value = msg.content || '';
+                showModal('editMessageModal');
+            }
+            hideContextMenu();
+        }
+
+        async function saveEditedMessage() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            const msg = char?.messages.find(m => m.id === App.editingMsgId);
+            if (msg) {
+                msg.content = document.getElementById('editMessageContent').value.trim();
+                renderMessages();
+                await saveData();
+                showToast('Message updated', 'success');
+            }
+            hideModal('editMessageModal');
+            App.editingMsgId = null;
+        }
+
+        // ========== 消息渲染函数 - 包含长按事件 ==========
+
+        function renderMessages() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            const container = document.getElementById('chatMessages');
+            const timestampPos = char.timestampPosition || 'default';
+            let html = '';
+            let lastDate = '';
+
+            char.messages.forEach((msg, idx) => {
+                const msgDate = new Date(msg.timestamp).toDateString();
+                if (msgDate !== lastDate) {
+                    html += `<div class="date-separator"><span class="date-separator-text">${new Date(msg.timestamp).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span></div>`;
+                    lastDate = msgDate;
+                }
+
+                const senderType = msg.sender === 'user' ? 'sent' : 'received';
+                const showAvatar = char.showAvatar !== false;
+                const avatarShape = char.avatarShape || 'circle';
+                const showBorder = char.showBorder;
+                const borderColor = char.borderColor || '#ffffff';
+
+                let avatarHtml = '';
+                if (showAvatar) {
+                    const avatarImg = senderType === 'sent' ? char.userAvatar : char.avatarImage;
+                    const avatarContent = avatarImg ? `<img src="${avatarImg}">` : (char.avatar || '◇');
+                    const borderStyle = showBorder ? `border: 2px solid ${borderColor}` : '';
+                    avatarHtml = `<div class="message-avatar ${avatarShape}" style="${borderStyle}">${avatarContent}</div>`;
+                }
+
+                const timeClass = timestampPos === 'hidden' ? 'time-hidden' : timestampPos === 'side' ? 'time-side' : '';
+                const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+                // 解析消息类型
+                let msgType = msg.type || 'text';
+                let msgContent = msg.content || '';
+                let quoteId = msg.quoteId;
+
+                if (msgType === 'text' || !msgType) {
+                    const imgMatch = msgContent.match(/^\[IMG:\s*(.+?)\s*\]$/is);
+                    if (imgMatch) {
+                        msgType = 'scene-image';
+                        msgContent = imgMatch[1].trim();
+                    }
+                    const voiceMatch = msgContent.match(/^\[VOICE:\s*(.+?)\s*\]$/is);
+                    if (voiceMatch) {
+                        msgType = 'voice';
+                        msgContent = voiceMatch[1].trim();
+                    }
+                    const quoteMatch = msgContent.match(/^\[Q:#(\d+)\]\s*/i);
+                    if (quoteMatch) {
+                        const msgIndex = parseInt(quoteMatch[1]) - 1;
+                        if (msgIndex >= 0 && msgIndex < char.messages.length) {
+                            quoteId = char.messages[msgIndex].id;
+                        }
+                        msgContent = msgContent.replace(quoteMatch[0], '').trim();
+
+                        const imgMatch2 = msgContent.match(/^\[IMG:\s*(.+?)\s*\]$/is);
+                        if (imgMatch2) {
+                            msgType = 'scene-image';
+                            msgContent = imgMatch2[1].trim();
+                        }
+                        const voiceMatch2 = msgContent.match(/^\[VOICE:\s*(.+?)\s*\]$/is);
+                        if (voiceMatch2) {
+                            msgType = 'voice';
+                            msgContent = voiceMatch2[1].trim();
+                        }
+                    }
+                }
+
+                if (msgType === 'scene-image') {
+                    html += renderSceneImageMessage({...msg, content: msgContent}, idx, senderType, avatarHtml, time, timeClass);
+                } else if (msgType === 'voice') {
+                    html += renderVoiceMessage({...msg, content: msgContent}, idx, senderType, avatarHtml, time, timeClass);
+                } else {
+                    let quoteHtml = '';
+                    if (quoteId !== undefined && quoteId !== null) {
+                        const quotedMsg = char.messages.find(m => m.id === quoteId);
+                        if (quotedMsg) {
+                            let quotedContent = quotedMsg.content || '';
+                            quotedContent = quotedContent.replace(/^\[Q:#\d+\]\s*/i, '');
+                            quotedContent = quotedContent.replace(/^\[(IMG|VOICE):\s*/i, '').replace(/\]$/, '');
+                            quoteHtml = `<div class="message-quote">${escapeHtml(quotedContent.substring(0, 50))}</div>`;
+                        }
+                    }
+
+                    let contentHtml = escapeHtml(msgContent);
+                    if (msg.image) contentHtml += `<img src="${msg.image}" class="message-image" onclick="viewImage(this.src)">`;
+
+                    // 普通文本消息 - 包含完整的长按事件
+                    html += `<div class="message-wrapper ${senderType}" data-id="${msg.id}">
+                        ${senderType === 'received' ? avatarHtml : ''}
+                        <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
+                        <div class="message ${senderType}"
+                            oncontextmenu="showContextMenu(event, '${msg.id}')"
+                            ontouchstart="startLongPress('${msg.id}', event)"
+                            ontouchend="endLongPress()"
+                            ontouchmove="endLongPress()">
+                            ${quoteHtml}
+                            <div class="message-content">${contentHtml}</div>
+                            <div class="message-time ${timeClass}">${time}</div>
+                        </div>
+                        ${senderType === 'sent' ? avatarHtml : ''}
+                    </div>`;
+                }
+            });
+
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function renderSceneImageMessage(msg, idx, type, avatarHtml, time, timeClass) {
+            // 场景图片 - 也包含长按事件，可以复制/引用/编辑描述文本
+            return `<div class="message-wrapper ${type}" data-id="${msg.id}">
+                ${type === 'received' ? avatarHtml : ''}
+                <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
+                <div class="scene-image-card"
+                    onclick="toggleSceneImage(this)"
+                    oncontextmenu="showContextMenu(event, '${msg.id}')"
+                    ontouchstart="startLongPress('${msg.id}', event)"
+                    ontouchend="endLongPress()"
+                    ontouchmove="endLongPress()"
+                    data-id="${msg.id}">
+                    <div class="scene-image-cover" style="background-image: url('${SCENE_IMAGE_COVER}')">
+                        <div class="scene-image-icon">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        </div>
+                    </div>
+                    <div class="scene-image-content">
+                        <p class="scene-image-text">${escapeHtml(msg.content)}</p>
+                        <p class="scene-image-hint">Tap to collapse</p>
+                    </div>
+                    <div class="scene-image-footer">
+                        <div class="scene-image-label">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                            Scene Image · ${time}
+                        </div>
+                    </div>
+                </div>
+                ${type === 'sent' ? avatarHtml : ''}
+            </div>`;
+        }
+
+        function renderVoiceMessage(msg, idx, type, avatarHtml, time, timeClass) {
+            const duration = Math.ceil(msg.content.length / 8);
+            const waveBars = generateWaveBars();
+            // 语音消息 - 也包含长按事件，可以复制/引用/编辑语音文本
+            return `<div class="message-wrapper ${type}" data-id="${msg.id}">
+                ${type === 'received' ? avatarHtml : ''}
+                <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
+                <div class="voice-message ${type}"
+                    onclick="toggleVoiceText(this)"
+                    oncontextmenu="showContextMenu(event, '${msg.id}')"
+                    ontouchstart="startLongPress('${msg.id}', event)"
+                    ontouchend="endLongPress()"
+                    ontouchmove="endLongPress()"
+                    data-id="${msg.id}">
+                    <div class="voice-message-header">
+                        <div class="voice-play-btn">
+                            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                        <div class="voice-waveform">${waveBars}</div>
+                        <span class="voice-duration">${duration}"</span>
+                    </div>
+                    <div class="voice-text-content">
+                        <p>${escapeHtml(msg.content)}</p>
+                    </div>
+                    <div class="voice-message-time">${time}</div>
+                </div>
+                ${type === 'sent' ? avatarHtml : ''}
+            </div>`;
+        }
+
+        function generateWaveBars() {
+            let bars = '';
+            const heights = [8, 14, 10, 18, 12, 16, 8, 14, 10, 12, 16, 8, 14, 18, 10];
+            for (let i = 0; i < 15; i++) {
+                bars += `<div class="voice-wave-bar" style="height:${heights[i]}px"></div>`;
+            }
+            return bars;
+        }
+
+        function toggleSceneImage(el) {
+            playClickSound();
+            el.classList.toggle('expanded');
+        }
+
+        function toggleVoiceText(el) {
+            playClickSound();
+            const textContent = el.querySelector('.voice-text-content');
+            textContent.classList.toggle('visible');
+        }
+
+        function playClickSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        function viewImage(src) {
+            window.open(src, '_blank');
+        }
+
+        // ========== 以下是其他核心功能，保持不变 ==========
+
         async function forceSaveAll() { if (await saveData()) { await updateStorageDisplay(); showToast('Saved successfully', 'success'); } }
 
         async function saveMainSettings() {
@@ -2471,7 +2789,6 @@
             document.getElementById('fontScaleValue').textContent = Math.round(scale * 100) + '%';
         }
 
-        // ========== 气泡样式相关 ==========
         function initBubbleStyleUI(char) {
             if (!char) return;
             const style = char.bubbleStyle || 'none';
@@ -2580,32 +2897,6 @@
             return `rgba(${r},${g},${b},${alpha})`;
         }
 
-        function getBubbleStyleCss(char, type) {
-            if (!char) return {};
-            const style = char.bubbleStyle || 'none';
-            const c = char.bubbleColors || DEFAULT_BUBBLE_COLORS;
-            const isSent = type === 'sent';
-            const bg1 = isSent ? c.userBg1 : c.charBg1;
-            const bg2 = isSent ? c.userBg2 : c.charBg2;
-            const text = isSent ? c.userText : c.charText;
-            const glassBorder = char.glassBorder ? `${char.glassBorderWidth || 1}px solid rgba(255,255,255,0.15)` : '1px solid rgba(255,255,255,0.06)';
-
-            switch(style) {
-                case 'glass':
-                    return { background: `linear-gradient(135deg,${hexToRgba(bg1,0.5)},${hexToRgba(bg2,0.4)})`, border: glassBorder, color: text };
-                case 'metal':
-                    return { background: `linear-gradient(145deg,${bg1},${bg2})`, boxShadow: 'inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: text };
-                case 'solid':
-                    return { background: bg1, border: 'none', color: text };
-                case 'neon':
-                    return { background: hexToRgba(bg1,0.3), border: `1px solid ${bg1}`, boxShadow: `0 0 10px ${hexToRgba(bg1,0.5)}`, color: text };
-                case 'gradient':
-                    return { background: `linear-gradient(135deg,${bg1},${bg2})`, border: '1px solid rgba(255,255,255,0.1)', color: text };
-                default:
-                    return {};
-            }
-        }
-
         function applyBubbleStyles(char) {
             const styleEl = document.getElementById('bubbleStyleSheet');
             if (!char) { styleEl.textContent = ''; return; }
@@ -2640,16 +2931,13 @@
         function initColorPicker() {
             const wrapper = document.getElementById('colorWheelWrapper');
             if (!wrapper) return;
-
             drawColorRing();
             drawColorSquare(0);
             positionRingHandle(0);
             positionSquareHandle(0.5, 0.5);
-
             wrapper.addEventListener('mousedown', handleColorPickerStart);
             document.addEventListener('mousemove', handleColorPickerMove);
             document.addEventListener('mouseup', handleColorPickerEnd);
-
             wrapper.addEventListener('touchstart', handleColorPickerStart, { passive: false });
             document.addEventListener('touchmove', handleColorPickerMove, { passive: false });
             document.addEventListener('touchend', handleColorPickerEnd);
@@ -2661,9 +2949,7 @@
             const ctx = canvas.getContext('2d');
             const size = 260, center = size / 2;
             const outerR = 125, innerR = 90;
-
             ctx.clearRect(0, 0, size, size);
-
             for (let angle = 0; angle < 360; angle += 0.5) {
                 const startAngle = (angle - 0.5) * Math.PI / 180;
                 const endAngle = (angle + 0.5) * Math.PI / 180;
@@ -2681,18 +2967,14 @@
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             const size = 110;
-
             ctx.clearRect(0, 0, size, size);
-
             ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
             ctx.fillRect(0, 0, size, size);
-
             const gradWhite = ctx.createLinearGradient(0, 0, size, 0);
             gradWhite.addColorStop(0, 'rgba(255,255,255,1)');
             gradWhite.addColorStop(1, 'rgba(255,255,255,0)');
             ctx.fillStyle = gradWhite;
             ctx.fillRect(0, 0, size, size);
-
             const gradBlack = ctx.createLinearGradient(0, 0, 0, size);
             gradBlack.addColorStop(0, 'rgba(0,0,0,0)');
             gradBlack.addColorStop(1, 'rgba(0,0,0,1)');
@@ -2704,14 +2986,11 @@
             const wrapper = document.getElementById('colorWheelWrapper');
             const handle = document.getElementById('ringHandle');
             if (!wrapper || !handle) return;
-
             const size = 260, center = size / 2;
             const radius = 107.5;
             const angle = hue * Math.PI / 180;
-
             const x = center + radius * Math.cos(angle);
             const y = center + radius * Math.sin(angle);
-
             handle.style.left = x + 'px';
             handle.style.top = y + 'px';
             handle.style.background = `hsl(${hue}, 100%, 50%)`;
@@ -2722,16 +3001,12 @@
             const handle = document.getElementById('squareHandle');
             const wrapper = document.getElementById('colorWheelWrapper');
             if (!squareCanvas || !handle || !wrapper) return;
-
             const wrapperRect = wrapper.getBoundingClientRect();
             const squareRect = squareCanvas.getBoundingClientRect();
-
             const x = satNorm * squareRect.width;
             const y = (1 - brightNorm) * squareRect.height;
-
             const handleX = (squareRect.left - wrapperRect.left) + x;
             const handleY = (squareRect.top - wrapperRect.top) + y;
-
             handle.style.left = handleX + 'px';
             handle.style.top = handleY + 'px';
         }
@@ -2742,10 +3017,8 @@
             const squareCanvas = document.getElementById('colorSquareCanvas');
             const wrapperRect = wrapper.getBoundingClientRect();
             const squareRect = squareCanvas.getBoundingClientRect();
-
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
             if (clientX >= squareRect.left && clientX <= squareRect.right &&
                 clientY >= squareRect.top && clientY <= squareRect.bottom) {
                 App.colorPickerDragging = 'square';
@@ -2754,7 +3027,6 @@
                 const x = clientX - wrapperRect.left - 130;
                 const y = clientY - wrapperRect.top - 130;
                 const dist = Math.sqrt(x * x + y * y);
-
                 if (dist >= 85 && dist <= 130) {
                     App.colorPickerDragging = 'ring';
                     updateRingFromEvent(clientX, clientY, wrapperRect);
@@ -2765,15 +3037,12 @@
         function handleColorPickerMove(e) {
             if (!App.colorPickerDragging) return;
             e.preventDefault();
-
             const wrapper = document.getElementById('colorWheelWrapper');
             const squareCanvas = document.getElementById('colorSquareCanvas');
             const wrapperRect = wrapper.getBoundingClientRect();
             const squareRect = squareCanvas.getBoundingClientRect();
-
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
             if (App.colorPickerDragging === 'ring') {
                 updateRingFromEvent(clientX, clientY, wrapperRect);
             } else if (App.colorPickerDragging === 'square') {
@@ -2781,19 +3050,15 @@
             }
         }
 
-        function handleColorPickerEnd() {
-            App.colorPickerDragging = null;
-        }
+        function handleColorPickerEnd() { App.colorPickerDragging = null; }
 
         function updateRingFromEvent(clientX, clientY, wrapperRect) {
             const centerX = wrapperRect.left + 130;
             const centerY = wrapperRect.top + 130;
             const dx = clientX - centerX;
             const dy = clientY - centerY;
-
             let angle = Math.atan2(dy, dx) * 180 / Math.PI;
             if (angle < 0) angle += 360;
-
             App.currentHue = angle;
             drawColorSquare(angle);
             positionRingHandle(angle);
@@ -2803,13 +3068,10 @@
         function updateSquareFromEvent(clientX, clientY, squareRect) {
             let x = clientX - squareRect.left;
             let y = clientY - squareRect.top;
-
             x = Math.max(0, Math.min(x, squareRect.width));
             y = Math.max(0, Math.min(y, squareRect.height));
-
             App.saturation = x / squareRect.width;
             App.brightness = 1 - (y / squareRect.height);
-
             positionSquareHandle(App.saturation, App.brightness);
             updateFinalColor();
         }
@@ -2818,14 +3080,11 @@
             const h = App.currentHue;
             const s = App.saturation;
             const v = App.brightness;
-
             const rgb = hsvToRgb(h, s, v);
             const hex = '#' + rgb.map(c => Math.round(c).toString(16).padStart(2, '0')).join('');
-
             App.selectedColor = hex;
             document.getElementById('colorHexInput').value = hex.toUpperCase();
             document.getElementById('colorPickerPreview').style.background = hex;
-
             const handle = document.getElementById('squareHandle');
             if (handle) handle.style.background = hex;
         }
@@ -2837,7 +3096,6 @@
             const p = v * (1 - s);
             const q = v * (1 - f * s);
             const t = v * (1 - (1 - f) * s);
-
             switch (i) {
                 case 0: r = v; g = t; b = p; break;
                 case 1: r = q; g = v; b = p; break;
@@ -2846,7 +3104,6 @@
                 case 4: r = t; g = p; b = v; break;
                 case 5: r = v; g = p; b = q; break;
             }
-
             return [r * 255, g * 255, b * 255];
         }
 
@@ -2856,13 +3113,11 @@
             if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
                 App.selectedColor = hex;
                 document.getElementById('colorPickerPreview').style.background = hex;
-
                 const rgb = hexToRgbArray(hex);
                 const hsv = rgbToHsv(rgb[0], rgb[1], rgb[2]);
                 App.currentHue = hsv.h;
                 App.saturation = hsv.s;
                 App.brightness = hsv.v;
-
                 drawColorSquare(hsv.h);
                 positionRingHandle(hsv.h);
                 positionSquareHandle(hsv.s, hsv.v);
@@ -2882,10 +3137,8 @@
             let h, s, v = max;
             const d = max - min;
             s = max === 0 ? 0 : d / max;
-
-            if (max === min) {
-                h = 0;
-            } else {
+            if (max === min) { h = 0; }
+            else {
                 switch (max) {
                     case r: h = (g - b) / d + (g < b ? 6 : 0); break;
                     case g: h = (b - r) / d + 2; break;
@@ -2893,7 +3146,6 @@
                 }
                 h *= 60;
             }
-
             return { h, s, v };
         }
 
@@ -2905,17 +3157,14 @@
             App.selectedColor = currentColor;
             document.getElementById('colorHexInput').value = currentColor.toUpperCase();
             document.getElementById('colorPickerPreview').style.background = currentColor;
-
             const rgb = hexToRgbArray(currentColor);
             const hsv = rgbToHsv(rgb[0], rgb[1], rgb[2]);
             App.currentHue = hsv.h;
             App.saturation = hsv.s;
             App.brightness = hsv.v;
-
             drawColorSquare(hsv.h);
             positionRingHandle(hsv.h);
             positionSquareHandle(hsv.s, hsv.v);
-
             showModal('colorPickerModal');
         }
 
@@ -2931,28 +3180,7 @@
             hideModal('colorPickerModal');
         }
 
-        // ========== 音效 ==========
-        function playClickSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                oscillator.frequency.value = 800;
-                oscillator.type = 'sine';
-
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-
-                oscillator.start(audioCtx.currentTime);
-                oscillator.stop(audioCtx.currentTime + 0.1);
-            } catch(e) {}
-        }
-
-        // ========== 以下是完整的核心功能代码 ==========
+        // ========== 更多核心功能 ==========
 
         async function clearImageCache() {
             if (!confirm('Clear all image cache?')) return;
@@ -3034,7 +3262,7 @@
             container.innerHTML = App.fonts.map(font => {
                 const isSelected = App.settings.selectedFontId === font.id || (!App.settings.selectedFontId && font.id === 'default');
                 const isDefault = font.isDefault;
-                return `<div class="font-item ${isSelected ? 'selected' : ''}" onclick="selectFont('${font.id}')"><div class="font-item-info"><div class="font-item-name">${escapeHtml(font.name)}</div><div class="font-item-preview">${isDefault ? 'Built-in' : 'Custom'}</div></div>${!isDefault ? `<div class="font-item-actions"><button class="font-item-btn danger" onclick="event.stopPropagation(); promptDeleteFont('${font.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>` : ''}</div>`;
+                return `<div class="font-item ${isSelected ? 'selected' : ''}" onclick="selectFont('${font.id}')"><div class="font-item-info"><div class="font-item-name">${escapeHtml(font.name)}</div><div class="font-item-preview">${isDefault ? 'Built-in' : 'Custom'}</div></div>${!isDefault ? `<div class="font-item-actions"><button class="font-item-btn danger" onclick="event.stopPropagation(); promptDeleteFont('${font.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 1 2 2v2"/></svg></button></div>` : ''}</div>`;
             }).join('');
         }
 
@@ -3055,7 +3283,7 @@
             if (App.pendingDeleteFontId) {
                 App.fonts = App.fonts.filter(f => f.id !== App.pendingDeleteFontId);
                 if (App.settings.selectedFontId === App.pendingDeleteFontId) {
-                    App.settings.selectedFontId = 'default';
+                    App.settings.selectedFontId = null;
                     applyGlobalFont();
                 }
                 renderFontList();
@@ -3069,222 +3297,69 @@
         async function addCustomFont() {
             const name = document.getElementById('newFontName').value.trim();
             const url = document.getElementById('newFontUrl').value.trim();
-            if (!name || !url) { showToast('Please fill all fields', 'error'); return; }
+            if (!name || !url) { showToast('Please enter name and URL', 'error'); return; }
             const id = 'custom-' + Date.now();
-            App.fonts.push({ id, name, url, isDefault: false, isGoogleFont: false });
+            App.fonts.push({ id, name, url, isDefault: false });
             renderFontList();
             await saveData();
+            showToast('Font added', 'success');
             hideModal('addFontModal');
             document.getElementById('newFontName').value = '';
             document.getElementById('newFontUrl').value = '';
-            showToast('Font added', 'success');
         }
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        function showModal(id) { document.getElementById(id).classList.add('active'); }
-        function hideModal(id) { document.getElementById(id).classList.remove('active'); }
-
-        function openPage(id) { document.getElementById(id).classList.add('active'); if (id === 'messagesPage') renderContactList(); if (id === 'worldbookPage') renderWorldbookList(); }
-        function closePage(id) { document.getElementById(id).classList.remove('active'); }
-
-        function toggleSwitch(el) { el.classList.toggle('active'); }
-
-        function updateConnectionUI() {
-            const hint = document.getElementById('connectionStatusHint');
-            if (App.connectionStatus === 'connected') {
-                hint.className = 'action-hint success';
-                hint.innerHTML = '<span class="action-hint-icon">✓</span><span class="action-hint-text">API connected</span>';
-            } else {
-                hint.className = 'action-hint';
-                hint.innerHTML = '<span class="action-hint-icon">⚠</span><span class="action-hint-text">API not configured</span>';
-            }
-        }
-
-        function addLog(msg, type = 'info') {
-            const container = document.getElementById('debugLog');
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${type}`;
-            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-            container.appendChild(entry);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        async function fetchModels() {
-            const baseUrl = document.getElementById('apiBaseUrl').value.trim();
-            const apiKey = document.getElementById('apiKey').value.trim();
-            if (!baseUrl || !apiKey) { showToast('Enter API URL and Key first', 'error'); return; }
-            addLog('Fetching models...', 'info');
-            try {
-                const res = await fetch(`${baseUrl}/v1/models`, { headers: { 'Authorization': `Bearer ${apiKey}` } });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                App.models = data.data || [];
-                document.getElementById('modelListContainer').style.display = 'block';
-                document.getElementById('modelList').innerHTML = App.models.map(m => `<div class="model-item" onclick="selectModel('${m.id}')"><span class="model-item-name">${m.id}</span></div>`).join('');
-                addLog(`Found ${App.models.length} models`, 'success');
-            } catch (e) { addLog(`Fetch failed: ${e.message}`, 'error'); showToast('Failed to fetch models', 'error'); }
-        }
-
-        function selectModel(id) {
-            document.getElementById('modelName').value = id;
-            document.querySelectorAll('.model-item').forEach(el => el.classList.toggle('selected', el.textContent === id));
-            addLog(`Selected: ${id}`, 'info');
-        }
-
-        async function testConnection() {
-            const baseUrl = document.getElementById('apiBaseUrl').value.trim();
-            const apiKey = document.getElementById('apiKey').value.trim();
-            const model = document.getElementById('modelName').value.trim();
-            if (!baseUrl || !apiKey || !model) { showToast('Fill all API fields', 'error'); return; }
-            addLog('Testing connection...', 'info');
-            try {
-                const res = await fetch(`${baseUrl}/v1/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                    body: JSON.stringify({ model, messages: [{ role: 'user', content: 'Hi' }], max_tokens: 10 })
-                });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                addLog('Connection successful!', 'success');
-                showToast('Connection successful!', 'success');
-                App.connectionStatus = 'connected';
-                updateConnectionUI();
-            } catch (e) { addLog(`Test failed: ${e.message}`, 'error'); showToast('Connection failed', 'error'); }
-        }
-
-        async function saveApiSettings() {
-            App.settings.apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
-            App.settings.apiKey = document.getElementById('apiKey').value.trim();
-            App.settings.modelName = document.getElementById('modelName').value.trim();
-            App.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
-            App.settings.temperature = parseFloat(document.getElementById('temperature').value);
-            App.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
-            if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
-            updateConnectionUI();
-            await saveData();
-            showToast('API settings saved', 'success');
-        }
-
-        function updateApiPresetSelect() {
-            const select = document.getElementById('apiPresetSelect');
-            select.innerHTML = '<option value="">-- No Preset --</option>' + App.apiPresets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
-        }
-
-        function loadApiPreset() {
-            const id = document.getElementById('apiPresetSelect').value;
-            if (!id) return;
-            const preset = App.apiPresets.find(p => p.id === id);
-            if (preset) {
-                document.getElementById('apiBaseUrl').value = preset.apiBaseUrl || '';
-                document.getElementById('apiKey').value = preset.apiKey || '';
-                document.getElementById('modelName').value = preset.modelName || '';
-                showToast('Preset loaded', 'success');
-            }
-        }
-
-        function addNewApiPreset() { showModal('apiPresetNameModal'); }
-
-        async function createApiPreset() {
-            const name = document.getElementById('newApiPresetName').value.trim();
-            if (!name) { showToast('Enter preset name', 'error'); return; }
-            const preset = {
-                id: 'api-' + Date.now(), name,
-                apiBaseUrl: document.getElementById('apiBaseUrl').value.trim(),
-                apiKey: document.getElementById('apiKey').value.trim(),
-                modelName: document.getElementById('modelName').value.trim()
-            };
-            App.apiPresets.push(preset);
-            updateApiPresetSelect();
-            document.getElementById('apiPresetSelect').value = preset.id;
-            await saveData();
-            hideModal('apiPresetNameModal');
-            document.getElementById('newApiPresetName').value = '';
-            showToast('Preset created', 'success');
-        }
-
-        async function saveApiPreset() {
-            const id = document.getElementById('apiPresetSelect').value;
-            if (!id) { showToast('Select a preset first', 'error'); return; }
-            const preset = App.apiPresets.find(p => p.id === id);
-            if (preset) {
-                preset.apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
-                preset.apiKey = document.getElementById('apiKey').value.trim();
-                preset.modelName = document.getElementById('modelName').value.trim();
-                await saveData();
-                showToast('Preset saved', 'success');
-            }
-        }
-
-        function deleteApiPreset() {
-            const id = document.getElementById('apiPresetSelect').value;
-            if (!id) { showToast('Select a preset first', 'error'); return; }
-            App.pendingDeleteApiPresetId = id;
-            showModal('deleteApiPresetModal');
-        }
-
-        async function confirmDeleteApiPreset() {
-            if (App.pendingDeleteApiPresetId) {
-                App.apiPresets = App.apiPresets.filter(p => p.id !== App.pendingDeleteApiPresetId);
-                updateApiPresetSelect();
-                await saveData();
-                showToast('Preset deleted', 'success');
-            }
-            hideModal('deleteApiPresetModal');
-            App.pendingDeleteApiPresetId = null;
-        }
-
+        // ========== 联系人列表 ==========
         function renderContactList() {
             const list = document.getElementById('contactList');
             const empty = document.getElementById('emptyContactState');
             if (App.characters.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
-            list.style.display = 'flex'; empty.style.display = 'none';
+            list.style.display = 'block'; empty.style.display = 'none';
             list.innerHTML = App.characters.map(c => {
-                const lastMsg = c.messages?.[c.messages.length - 1];
+                const lastMsg = c.messages[c.messages.length - 1];
                 const preview = lastMsg ? (lastMsg.content || '[Image]').substring(0, 30) : 'No messages';
-                const time = lastMsg ? formatTime(lastMsg.timestamp) : '';
-                const avatarHtml = c.avatarImage ? `<img src="${c.avatarImage}" alt="">` : (c.avatar || '◇');
-                return `<div class="contact-item" onclick="openChat('${c.id}')"><div class="contact-avatar">${avatarHtml}</div><div class="contact-info"><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-preview">${escapeHtml(preview)}</div></div><span class="contact-time">${time}</span></div>`;
+                const time = lastMsg ? new Date(lastMsg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }) : '';
+                const avatarContent = c.avatarImage ? `<img src="${c.avatarImage}">` : (c.avatar || '◇');
+                return `<div class="contact-item" onclick="openChat('${c.id}')"><div class="contact-avatar">${avatarContent}</div><div class="contact-info"><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-preview">${escapeHtml(preview)}</div></div><div class="contact-time">${time}</div></div>`;
             }).join('');
         }
 
         function filterContacts() {
             const query = document.getElementById('contactSearch').value.toLowerCase();
-            document.querySelectorAll('.contact-item').forEach(el => {
-                const name = el.querySelector('.contact-name').textContent.toLowerCase();
-                el.style.display = name.includes(query) ? 'flex' : 'none';
+            const items = document.querySelectorAll('.contact-item');
+            items.forEach(item => {
+                const name = item.querySelector('.contact-name').textContent.toLowerCase();
+                item.style.display = name.includes(query) ? 'flex' : 'none';
             });
         }
 
-        function formatTime(ts) {
-            if (!ts) return '';
-            const d = new Date(ts), now = new Date();
-            if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        }
-
+        // ========== 创建角色 ==========
         async function createCharacter() {
             const name = document.getElementById('newCharacterName').value.trim();
-            if (!name) { showToast('Enter character name', 'error'); return; }
+            if (!name) { showToast('Please enter a name', 'error'); return; }
             const char = {
-                id: 'char-' + Date.now(), name, avatar: '◇', description: '', greeting: '', scenario: '',
-                systemPrompt: '', userNick: '', messages: [], worldbookIds: [], avatarImage: null, userAvatar: null,
-                chatWallpaper: null, showAvatar: true, avatarShape: 'circle', showBorder: false, borderColor: '#ffffff',
-                customCss: '', timestampPosition: 'default', cssPresetId: null,
-                bubbleStyle: 'none', bubbleColors: { ...DEFAULT_BUBBLE_COLORS }, glassBorder: false, glassBorderWidth: 1
+                id: Date.now().toString(),
+                name,
+                avatar: '◇',
+                avatarImage: null,
+                userAvatar: null,
+                description: '',
+                greeting: '',
+                scenario: '',
+                systemPrompt: '',
+                userNick: '',
+                messages: [],
+                worldbookIds: [],
+                showAvatar: true,
+                avatarShape: 'circle',
+                showBorder: false,
+                borderColor: '#ffffff',
+                customCss: '',
+                timestampPosition: 'default',
+                chatWallpaper: null,
+                bubbleStyle: 'none',
+                bubbleColors: { ...DEFAULT_BUBBLE_COLORS },
+                glassBorder: false,
+                glassBorderWidth: 1
             };
             App.characters.push(char);
             await saveData();
@@ -3294,240 +3369,70 @@
             showToast('Character created', 'success');
         }
 
-        function openChat(id) {
-            App.currentCharId = id;
-            const char = App.characters.find(c => c.id === id);
+        // ========== 聊天功能 ==========
+        function openChat(charId) {
+            App.currentCharId = charId;
+            const char = App.characters.find(c => c.id === charId);
             if (!char) return;
             document.getElementById('chatTitle').textContent = char.name;
+
+            // 应用聊天壁纸
             const chatPage = document.getElementById('chatPage');
             if (char.chatWallpaper) {
-                chatPage.classList.add('has-custom-bg');
                 chatPage.style.background = `url(${char.chatWallpaper})`;
+                chatPage.classList.add('has-custom-bg');
             } else {
-                chatPage.classList.remove('has-custom-bg');
                 chatPage.style.background = '';
+                chatPage.classList.remove('has-custom-bg');
             }
+
+            // 应用自定义CSS
+            document.getElementById('customCssStyles').textContent = char.customCss || '';
+
+            // 应用气泡样式
             applyBubbleStyles(char);
-            if (char.customCss) document.getElementById('customCssStyles').textContent = char.customCss;
-            else document.getElementById('customCssStyles').textContent = '';
+
+            // 如果没有消息且有开场白，添加开场白
+            if (char.messages.length === 0 && char.greeting) {
+                char.messages.push({
+                    id: Date.now().toString(),
+                    sender: 'char',
+                    content: char.greeting,
+                    timestamp: Date.now()
+                });
+            }
+
             renderMessages();
-            chatPage.classList.add('active');
+            openPage('chatPage');
         }
 
         function closeChatPage() {
-            document.getElementById('chatPage').classList.remove('active');
-            document.getElementById('bubbleStyleSheet').textContent = '';
-            document.getElementById('customCssStyles').textContent = '';
+            closePage('chatPage');
             App.currentCharId = null;
-            App.currentQuote = null;
-            exitSelectMode();
-            renderContactList();
-        }
-
-        function renderMessages() {
-    const char = App.characters.find(c => c.id === App.currentCharId);
-    if (!char) return;
-    const container = document.getElementById('chatMessages');
-    const timestampPos = char.timestampPosition || 'default';
-    let html = '';
-    let lastDate = '';
-
-    char.messages.forEach((msg, idx) => {
-        const msgDate = new Date(msg.timestamp).toDateString();
-        if (msgDate !== lastDate) {
-            html += `<div class="date-separator"><span class="date-separator-text">${new Date(msg.timestamp).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span></div>`;
-            lastDate = msgDate;
-        }
-
-        const senderType = msg.sender === 'user' ? 'sent' : 'received';
-        const showAvatar = char.showAvatar !== false;
-        const avatarShape = char.avatarShape || 'circle';
-        const showBorder = char.showBorder;
-        const borderColor = char.borderColor || '#ffffff';
-
-        let avatarHtml = '';
-        if (showAvatar) {
-            const avatarImg = senderType === 'sent' ? char.userAvatar : char.avatarImage;
-            const avatarContent = avatarImg ? `<img src="${avatarImg}">` : (char.avatar || '◇');
-            const borderStyle = showBorder ? `border: 2px solid ${borderColor}` : '';
-            avatarHtml = `<div class="message-avatar ${avatarShape}" style="${borderStyle}">${avatarContent}</div>`;
-        }
-
-        const timeClass = timestampPos === 'hidden' ? 'time-hidden' : timestampPos === 'side' ? 'time-side' : '';
-        const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-
-        // 运行时解析消息类型和内容
-        let msgType = msg.type || 'text';
-        let msgContent = msg.content || '';
-        let quoteId = msg.quoteId;
-
-        // 如果type不明确，尝试从内容中解析
-        if (msgType === 'text' || !msgType) {
-            // 检查是否是场景图片格式
-            const imgMatch = msgContent.match(/^\[IMG:\s*(.+?)\s*\]$/is);
-            if (imgMatch) {
-                msgType = 'scene-image';
-                msgContent = imgMatch[1].trim();
-            }
-            // 检查是否是语音消息格式
-            const voiceMatch = msgContent.match(/^\[VOICE:\s*(.+?)\s*\]$/is);
-            if (voiceMatch) {
-                msgType = 'voice';
-                msgContent = voiceMatch[1].trim();
-            }
-            // 检查是否有引用格式
-            const quoteMatch = msgContent.match(/^\[Q:#(\d+)\]\s*/i);
-            if (quoteMatch) {
-                const msgIndex = parseInt(quoteMatch[1]) - 1;
-                if (msgIndex >= 0 && msgIndex < char.messages.length) {
-                    quoteId = char.messages[msgIndex].id;
-                }
-                msgContent = msgContent.replace(quoteMatch[0], '').trim();
-
-                // 移除引用后再检查是否是特殊格式
-                const imgMatch2 = msgContent.match(/^\[IMG:\s*(.+?)\s*\]$/is);
-                if (imgMatch2) {
-                    msgType = 'scene-image';
-                    msgContent = imgMatch2[1].trim();
-                }
-                const voiceMatch2 = msgContent.match(/^\[VOICE:\s*(.+?)\s*\]$/is);
-                if (voiceMatch2) {
-                    msgType = 'voice';
-                    msgContent = voiceMatch2[1].trim();
-                }
-            }
-        }
-
-        // 根据解析后的类型渲染
-        if (msgType === 'scene-image') {
-            html += renderSceneImageMessage({...msg, content: msgContent}, idx, senderType, avatarHtml, time, timeClass);
-        } else if (msgType === 'voice') {
-            html += renderVoiceMessage({...msg, content: msgContent}, idx, senderType, avatarHtml, time, timeClass);
-        } else {
-            // 普通文本消息
-            let quoteHtml = '';
-            if (quoteId !== undefined && quoteId !== null) {
-                const quotedMsg = char.messages.find(m => m.id === quoteId);
-                if (quotedMsg) {
-                    let quotedContent = quotedMsg.content || '';
-                    // 清理引用内容中的格式标记
-                    quotedContent = quotedContent.replace(/^\[Q:#\d+\]\s*/i, '');
-                    quotedContent = quotedContent.replace(/^\[(IMG|VOICE):\s*/i, '').replace(/\]$/, '');
-                    quoteHtml = `<div class="message-quote">${escapeHtml(quotedContent.substring(0, 50))}</div>`;
-                }
-            }
-
-            let contentHtml = escapeHtml(msgContent);
-            if (msg.image) contentHtml += `<img src="${msg.image}" class="message-image" onclick="viewImage(this.src)">`;
-
-            html += `<div class="message-wrapper ${senderType}" data-id="${msg.id}">
-                ${senderType === 'received' ? avatarHtml : ''}
-                <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
-                <div class="message ${senderType}" oncontextmenu="showContextMenu(event, '${msg.id}')" ontouchstart="startLongPress('${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()">
-                    ${quoteHtml}
-                    <div class="message-content">${contentHtml}</div>
-                    <div class="message-time ${timeClass}">${time}</div>
-                </div>
-                ${senderType === 'sent' ? avatarHtml : ''}
-            </div>`;
-        }
-    });
-
-    container.innerHTML = html;
-    container.scrollTop = container.scrollHeight;
-}
-
-        function renderSceneImageMessage(msg, idx, type, avatarHtml, time, timeClass) {
-            return `<div class="message-wrapper ${type}" data-id="${msg.id}">
-                ${type === 'received' ? avatarHtml : ''}
-                <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
-                <div class="scene-image-card" onclick="toggleSceneImage(this)" data-id="${msg.id}">
-                    <div class="scene-image-cover" style="background-image: url('${SCENE_IMAGE_COVER}')">
-                        <div class="scene-image-icon">
-                            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-                        </div>
-                    </div>
-                    <div class="scene-image-content">
-                        <p class="scene-image-text">${escapeHtml(msg.content)}</p>
-                        <p class="scene-image-hint">Tap to collapse</p>
-                    </div>
-                    <div class="scene-image-footer">
-                        <div class="scene-image-label">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
-                            Scene Image · ${time}
-                        </div>
-                    </div>
-                </div>
-                ${type === 'sent' ? avatarHtml : ''}
-            </div>`;
-        }
-
-        function renderVoiceMessage(msg, idx, type, avatarHtml, time, timeClass) {
-            const duration = Math.ceil(msg.content.length / 8);
-            const waveBars = generateWaveBars();
-            return `<div class="message-wrapper ${type}" data-id="${msg.id}">
-                ${type === 'received' ? avatarHtml : ''}
-                <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
-                <div class="voice-message ${type}" onclick="toggleVoiceText(this)" data-id="${msg.id}">
-                    <div class="voice-message-header">
-                        <div class="voice-play-btn">
-                            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                        </div>
-                        <div class="voice-waveform">${waveBars}</div>
-                        <span class="voice-duration">${duration}"</span>
-                    </div>
-                    <div class="voice-text-content">
-                        <p>${escapeHtml(msg.content)}</p>
-                    </div>
-                    <div class="voice-message-time">${time}</div>
-                </div>
-                ${type === 'sent' ? avatarHtml : ''}
-            </div>`;
-        }
-
-        function generateWaveBars() {
-            let bars = '';
-            const heights = [8, 14, 10, 18, 12, 16, 8, 14, 10, 12, 16, 8, 14, 18, 10];
-            for (let i = 0; i < 15; i++) {
-                bars += `<div class="voice-wave-bar" style="height:${heights[i]}px"></div>`;
-            }
-            return bars;
-        }
-
-        function toggleSceneImage(el) {
-            playClickSound();
-            el.classList.toggle('expanded');
-        }
-
-        function toggleVoiceText(el) {
-            playClickSound();
-            const textContent = el.querySelector('.voice-text-content');
-            textContent.classList.toggle('visible');
-        }
-
-        function viewImage(src) {
-            window.open(src, '_blank');
-        }
-
-        function autoResizeTextarea(el) {
-            el.style.height = 'auto';
-            el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+            cancelQuote();
+            document.getElementById('customCssStyles').textContent = '';
+            document.getElementById('bubbleStyleSheet').textContent = '';
         }
 
         async function sendMessage() {
             const input = document.getElementById('chatInput');
             const content = input.value.trim();
             if (!content) return;
+
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
             const msg = {
-                id: 'msg-' + Date.now(),
+                id: Date.now().toString(),
                 sender: 'user',
                 content,
-                timestamp: Date.now(),
-                quoteId: App.currentQuote?.id || null
+                timestamp: Date.now()
             };
+
+            if (App.currentQuote) {
+                msg.quoteId = App.currentQuote.id;
+            }
+
             char.messages.push(msg);
             input.value = '';
             input.style.height = 'auto';
@@ -3536,154 +3441,22 @@
             await saveData();
         }
 
+        function autoResizeTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+        }
+
         function toggleExtensionPanel() {
             document.getElementById('extensionPanel').classList.toggle('active');
         }
 
-        function openImagePicker() {
-            document.getElementById('chatImageInput').click();
-            toggleExtensionPanel();
-        }
-
-        async function handleChatImageUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const char = App.characters.find(c => c.id === App.currentCharId);
-                if (!char) return;
-                const compressed = await compressImage(ev.target.result, 400, 0.8);
-                const msg = { id: 'msg-' + Date.now(), sender: 'user', content: '', image: compressed, timestamp: Date.now() };
-                char.messages.push(msg);
-                renderMessages();
-                await saveData();
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        }
-
-        function openSceneImageInput() {
-            toggleExtensionPanel();
-            document.getElementById('sceneImageDesc').value = '';
-            showModal('sceneImageModal');
-        }
-
-        async function sendSceneImage() {
-            const desc = document.getElementById('sceneImageDesc').value.trim();
-            if (!desc) { showToast('Enter scene description', 'error'); return; }
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-
-            const msg = {
-                id: 'msg-' + Date.now(),
-                sender: 'user',
-                type: 'scene-image',
-                content: desc,
-                timestamp: Date.now()
-            };
-            char.messages.push(msg);
-            hideModal('sceneImageModal');
-            renderMessages();
-            await saveData();
-        }
-
-        function openVoiceMessageInput() {
-            toggleExtensionPanel();
-            document.getElementById('voiceMessageText').value = '';
-            showModal('voiceMessageModal');
-        }
-
-        async function sendVoiceMessage() {
-            const text = document.getElementById('voiceMessageText').value.trim();
-            if (!text) { showToast('Enter voice message text', 'error'); return; }
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-
-            const msg = {
-                id: 'msg-' + Date.now(),
-                sender: 'user',
-                type: 'voice',
-                content: text,
-                timestamp: Date.now()
-            };
-            char.messages.push(msg);
-            hideModal('voiceMessageModal');
-            renderMessages();
-            await saveData();
-        }
-
-        function showContextMenu(e, msgId) {
-            e.preventDefault();
-            App.contextMenuMsgId = msgId;
-            document.getElementById('contextMenuOverlay').classList.add('active');
-        }
-
-        function hideContextMenu() {
-            document.getElementById('contextMenuOverlay').classList.remove('active');
-            App.contextMenuMsgId = null;
-        }
-
-        function startLongPress(msgId) {
-            App.longPressTimer = setTimeout(() => showContextMenu(event, msgId), 500);
-        }
-
-        function endLongPress() {
-            if (App.longPressTimer) { clearTimeout(App.longPressTimer); App.longPressTimer = null; }
-        }
-
-        function copyMessageText() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
-            if (msg?.content) { navigator.clipboard.writeText(msg.content); showToast('Copied', 'success'); }
-            hideContextMenu();
-        }
-
-        function quoteMessage() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
-            if (msg) {
-                App.currentQuote = msg;
-                document.getElementById('quotePreviewBar').classList.add('active');
-                document.getElementById('quotePreviewContent').textContent = (msg.content || '[Image]').substring(0, 50);
-            }
-            hideContextMenu();
-        }
-
-        function cancelQuote() {
-            App.currentQuote = null;
-            document.getElementById('quotePreviewBar').classList.remove('active');
-        }
-
-        function editMessage() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
-            if (msg) {
-                App.editingMsgId = msg.id;
-                document.getElementById('editMessageContent').value = msg.content || '';
-                showModal('editMessageModal');
-            }
-            hideContextMenu();
-        }
-
-        async function saveEditedMessage() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            const msg = char?.messages.find(m => m.id === App.editingMsgId);
-            if (msg) {
-                msg.content = document.getElementById('editMessageContent').value.trim();
-                renderMessages();
-                await saveData();
-                showToast('Message updated', 'success');
-            }
-            hideModal('editMessageModal');
-            App.editingMsgId = null;
-        }
-
+        // ========== 选择模式 ==========
         function enterSelectMode() {
             App.isSelectMode = true;
             App.selectedMsgs.clear();
             document.getElementById('chatMessages').classList.add('select-mode');
             document.getElementById('selectModeBar').classList.add('active');
-            updateSelectedCount();
+            document.getElementById('selectedCount').textContent = '0';
             toggleExtensionPanel();
         }
 
@@ -3692,18 +3465,19 @@
             App.selectedMsgs.clear();
             document.getElementById('chatMessages').classList.remove('select-mode');
             document.getElementById('selectModeBar').classList.remove('active');
-            document.querySelectorAll('.message-checkbox').forEach(el => el.classList.remove('checked'));
+            document.querySelectorAll('.message-checkbox').forEach(cb => cb.classList.remove('checked'));
         }
 
-        function toggleMsgSelect(id) {
+        function toggleMsgSelect(msgId) {
             if (!App.isSelectMode) return;
-            if (App.selectedMsgs.has(id)) App.selectedMsgs.delete(id);
-            else App.selectedMsgs.add(id);
-            document.querySelector(`[data-id="${id}"] .message-checkbox`)?.classList.toggle('checked');
-            updateSelectedCount();
-        }
-
-        function updateSelectedCount() {
+            const cb = document.querySelector(`[data-id="${msgId}"] .message-checkbox`);
+            if (App.selectedMsgs.has(msgId)) {
+                App.selectedMsgs.delete(msgId);
+                cb?.classList.remove('checked');
+            } else {
+                App.selectedMsgs.add(msgId);
+                cb?.classList.add('checked');
+            }
             document.getElementById('selectedCount').textContent = App.selectedMsgs.size;
         }
 
@@ -3711,238 +3485,214 @@
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
             char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id));
+            await saveData();
             exitSelectMode();
             renderMessages();
-            await saveData();
             showToast('Messages deleted', 'success');
         }
 
-        function buildAPIMessages(char) {
-            let systemContent = `You are ${char.name}. `;
-            if (char.description) systemContent += `\n\n[Character Description]\n${char.description}`;
-            if (char.scenario) systemContent += `\n\n[Scenario]\n${char.scenario}`;
-            if (char.systemPrompt) systemContent += `\n\n[Instructions]\n${char.systemPrompt}`;
-
-            // Process linked worldbooks
-            if (char.worldbookIds?.length > 0) {
-                const recentMsgs = char.messages.slice(-10).map(m => m.content || '').join(' ').toLowerCase();
-                char.worldbookIds.forEach(wbId => {
-                    const wb = App.worldbooks.find(w => w.id === wbId);
-                    if (wb?.entries) {
-                        wb.entries.forEach(entry => {
-                            if (entry.alwaysActive) {
-                                systemContent += `\n\n[Lore: ${entry.name}]\n${entry.content}`;
-                            } else if (entry.keywords) {
-                                const keywords = entry.keywords.split(',').map(k => k.trim().toLowerCase());
-                                if (keywords.some(k => k && recentMsgs.includes(k))) {
-                                    systemContent += `\n\n[Lore: ${entry.name}]\n${entry.content}`;
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-
-            if (char.userNick) systemContent += `\n\n[User's Name/Identity]\nThe user is called "${char.userNick}".`;
-
-            // Enhanced format instructions with scene image and voice message support
-            systemContent += `\n\n[Response Format]
-You are texting via SMS/messaging app. Respond naturally in ${char.name}'s authentic texting style.
-
-In real texting, people sometimes send a single message or multiple messages depending on their mood and preference. You must fully become ${char.name}, sending text messages continuously as this character based on their personality, contextual logic, and the ongoing plot.
-
-When replying via text, strictly follow these formats:
-
-【Multiple Messages Format】
-Use "|||" to separate multiple messages.
-Example: "Hey!|||How've you been?|||Just thought of you."
-This represents the character sending multiple messages, simulating the feel of consecutive messages in real online texting. The number of separations equals the number of messages sent, mimicking authentic texting style.
-
-【Quoting Messages】
-Use [Q:#N] to quote/reply to message #N.
-Example: "[Q:#5] I agree with that|||But also..."
-
-【Scene Images (Optional)】
-Use [IMG:description] to send a descriptive scene image.
-Write the description from an objective third-person perspective.
-Example: "Check this out|||[IMG:A cozy café with warm lighting, a latte steaming on a wooden table by the window]|||Beautiful, right?"
-
-【Voice Messages (Optional)】
-Use [VOICE:content] to send a voice message.
-Write what you would actually say out loud.
-Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]|||Miss you"
-
-【Critical Guidelines】
-- These special formats are OPTIONAL - use them only when natural and contextually appropriate
-- Do NOT overuse them - most messages should be plain text
-- Scene images are for sharing moments, places, or describing what you're seeing
-- Voice messages are for more personal, emotional, or casual moments, or based on ${char.name}'s own preferences and personality - be spontaneous, not rigid or repetitive
-- Format choices must match ${char.name}'s personality and conversation flow
-- The number of messages per reply depends on the situation and character personality. Sending just one message or three to four in a single response is perfectly normal - texting should be completely spontaneous. Reference how a real person texts with natural spontaneity rather than mechanically. DO NOT let the character go overboard! For example: suddenly outputting a flood of messages when it doesn't fit the scenario or character, or being rigid and repetitive in every output is ABSOLUTELY FORBIDDEN! Text content should be three-dimensional, built on completely mimicking reality and treating the character as a fully-realized person, never losing logic or vivacity. Each message varies in length naturally. Consider the scenario and multiple aspects of the character. Strive to show the character's clever and lively side, unless ${char.name}'s setting is that of a fool or stiff person. Adapt based on character settings.
-- MOST IMPORTANT: While playing ${char.name}, you should default to treating all messages (voice messages, sharing images, typing) as naturally being sent through the input field. To simulate authenticity. The character should NOT know or think they need to follow the above formats - this is only backend formatting to standardize your roleplay output. When sending messages as the character, you should be COMPLETELY in character, logically and narratively defaulting to sending messages the normal way, never breaking character. While maintaining the output formats above`;
-
-            systemContent += `\n\n[Message History Reference Numbers]\n`;
-            const messages = [{ role: 'system', content: systemContent }];
-            const maxMsgs = App.settings.maxContextMessages || 200;
-            const recentMsgs = char.messages.slice(-maxMsgs);
-
-            recentMsgs.forEach((msg, idx) => {
-                const msgNum = idx + 1;
-                const role = msg.sender === 'user' ? 'user' : 'assistant';
-                let content = msg.content || '';
-
-                // Handle special message types in history
-                if (msg.type === 'scene-image') {
-                    content = `[IMG:${msg.content}]`;
-                } else if (msg.type === 'voice') {
-                    content = `[VOICE:${msg.content}]`;
-                }
-
-                if (msg.image) {
-                    messages.push({
-                        role, content: [
-                            { type: 'text', text: `#${msgNum}: ${content}` },
-                            { type: 'image_url', image_url: { url: msg.image } }
-                        ]
-                    });
-                } else {
-                    // Merge consecutive same-role messages
-                    const lastMsg = messages[messages.length - 1];
-                    if (lastMsg && lastMsg.role === role && typeof lastMsg.content === 'string') {
-                        lastMsg.content += `|||#${msgNum}: ${content}`;
-                    } else {
-                        messages.push({ role, content: `#${msgNum}: ${content}` });
-                    }
-                }
-            });
-
-            return messages;
-        }
-
-        function parseAIResponse(responseText, char) {
-    const parts = responseText.split('|||').map(p => p.trim()).filter(p => p);
-    return parts.map(part => {
-        let content = part.trim();
-        let quoteId = null;
-        let type = 'text';
-
-        // 1. 检查引用格式 [Q:#N] - 可以出现在开头，后面可能跟其他内容
-        const quoteMatch = content.match(/^\[Q:#(\d+)\]\s*/i);
-        if (quoteMatch) {
-            const msgIndex = parseInt(quoteMatch[1]) - 1;
-            const recentMsgs = char.messages.slice(-(App.settings.maxContextMessages || 200));
-            if (msgIndex >= 0 && msgIndex < recentMsgs.length) {
-                quoteId = recentMsgs[msgIndex].id;
-            }
-            content = content.replace(quoteMatch[0], '').trim();
-        }
-
-        // 2. 检查场景图片格式 [IMG:description] - 更宽松的匹配
-        const imgMatch = content.match(/^\[IMG:\s*(.+?)\s*\]$/is);
-        if (imgMatch) {
-            type = 'scene-image';
-            content = imgMatch[1].trim();
-            return { content, quoteId, type };
-        }
-
-        // 3. 检查语音消息格式 [VOICE:content] - 更宽松的匹配
-        const voiceMatch = content.match(/^\[VOICE:\s*(.+?)\s*\]$/is);
-        if (voiceMatch) {
-            type = 'voice';
-            content = voiceMatch[1].trim();
-            return { content, quoteId, type };
-        }
-
-        // 4. 清理普通文本
-        content = content.replace(/^#\d+:\s*/, '');
-        content = content.replace(/^["']|["']$/g, '');
-
-        return { content: content.trim(), quoteId, type };
-    });
-}
-
-
+        // ========== AI功能 ==========
         async function triggerAIReply() {
+            if (App.connectionStatus !== 'connected') {
+                showToast('API not configured', 'error');
+                return;
+            }
+
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
-            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
-                showToast('Configure API first', 'error'); return;
-            }
 
-            document.getElementById('extensionPanel').classList.remove('active');
-
-            // Show typing indicator
+            // 添加typing indicator
             const container = document.getElementById('chatMessages');
-            const typingEl = document.createElement('div');
-            typingEl.className = 'message-wrapper received';
-            typingEl.id = 'typingIndicator';
-            typingEl.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
-            container.appendChild(typingEl);
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message-wrapper received';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+            container.appendChild(typingDiv);
             container.scrollTop = container.scrollHeight;
 
-            App.lastAIStart = char.messages.length;
-
             try {
-                const messages = buildAPIMessages(char);
-                const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${App.settings.apiKey}` },
-                    body: JSON.stringify({
-                        model: App.settings.modelName,
-                        messages,
-                        temperature: App.settings.temperature,
-                        max_tokens: App.settings.maxTokens
-                    })
-                });
+                const messages = buildMessages(char);
+                const response = await callAPI(messages);
 
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                const responseText = data.choices?.[0]?.message?.content || '';
-
+                // 移除typing indicator
                 document.getElementById('typingIndicator')?.remove();
 
-                const parsed = parseAIResponse(responseText, char);
-                for (const p of parsed) {
-                    if (!p.content) continue;
-                    const msg = {
-                        id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+                if (response) {
+                    char.messages.push({
+                        id: Date.now().toString(),
                         sender: 'char',
-                        content: p.content,
-                        type: p.type || 'text',
-                        timestamp: Date.now(),
-                        quoteId: p.quoteId
-                    };
-                    char.messages.push(msg);
-                    await new Promise(r => setTimeout(r, 300));
+                        content: response,
+                        timestamp: Date.now()
+                    });
+                    await saveData();
                     renderMessages();
                 }
-
-                await saveData();
             } catch (e) {
                 document.getElementById('typingIndicator')?.remove();
                 showToast('AI reply failed: ' + e.message, 'error');
             }
         }
 
+        function buildMessages(char) {
+            const messages = [];
+
+            // System prompt
+            let systemContent = `You are ${char.name}. ${char.description || ''}`;
+            if (char.scenario) systemContent += `\n\nScenario: ${char.scenario}`;
+            if (char.systemPrompt) systemContent += `\n\n${char.systemPrompt}`;
+
+            // Add worldbook entries
+            const activeEntries = [];
+            char.worldbookIds?.forEach(wbId => {
+                const wb = App.worldbooks.find(w => w.id === wbId);
+                if (wb?.entries) {
+                    wb.entries.forEach(entry => {
+                        if (entry.alwaysActive) activeEntries.push(entry.content);
+                    });
+                }
+            });
+            if (activeEntries.length > 0) {
+                systemContent += '\n\nWorld Information:\n' + activeEntries.join('\n');
+            }
+
+            messages.push({ role: 'system', content: systemContent });
+
+            // Add chat history
+            const historyLimit = App.settings.maxContextMessages || 200;
+            const recentMsgs = char.messages.slice(-historyLimit);
+            recentMsgs.forEach(msg => {
+                messages.push({
+                    role: msg.sender === 'user' ? 'user' : 'assistant',
+                    content: msg.content
+                });
+            });
+
+            return messages;
+        }
+
+        async function callAPI(messages) {
+            const response = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${App.settings.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: App.settings.modelName,
+                    messages,
+                    temperature: App.settings.temperature,
+                    max_tokens: App.settings.maxTokens
+                })
+            });
+
+            if (!response.ok) throw new Error(`API error: ${response.status}`);
+            const data = await response.json();
+            return data.choices?.[0]?.message?.content || '';
+        }
+
         async function regenerateLastReply() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char || char.messages.length === 0) return;
+
+            // 找到最后一条AI回复并删除
+            for (let i = char.messages.length - 1; i >= 0; i--) {
+                if (char.messages[i].sender === 'char') {
+                    char.messages.splice(i, 1);
+                    break;
+                }
+            }
+
+            await saveData();
+            renderMessages();
+            toggleExtensionPanel();
+            triggerAIReply();
+        }
+
+        // ========== 图片处理 ==========
+        function openImagePicker() {
+            document.getElementById('chatImageInput').click();
+            toggleExtensionPanel();
+        }
+
+        async function handleChatImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const char = App.characters.find(c => c.id === App.currentCharId);
+                if (!char) return;
+
+                char.messages.push({
+                    id: Date.now().toString(),
+                    sender: 'user',
+                    content: '',
+                    image: event.target.result,
+                    timestamp: Date.now()
+                });
+
+                await saveData();
+                renderMessages();
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+
+        // ========== 场景图片功能 ==========
+        function openSceneImageInput() {
+            toggleExtensionPanel();
+            showModal('sceneImageModal');
+        }
+
+        async function sendSceneImage() {
+            const desc = document.getElementById('sceneImageDesc').value.trim();
+            if (!desc) { showToast('Please enter a description', 'error'); return; }
+
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
-            // Find and remove the last batch of AI messages
-            let lastUserIdx = -1;
-            for (let i = char.messages.length - 1; i >= 0; i--) {
-                if (char.messages[i].sender === 'user') { lastUserIdx = i; break; }
-            }
+            char.messages.push({
+                id: Date.now().toString(),
+                sender: 'user',
+                content: `[IMG: ${desc}]`,
+                type: 'scene-image',
+                timestamp: Date.now()
+            });
 
-            if (lastUserIdx >= 0 && lastUserIdx < char.messages.length - 1) {
-                char.messages = char.messages.slice(0, lastUserIdx + 1);
-                renderMessages();
-                await saveData();
-            }
-
-            await triggerAIReply();
+            hideModal('sceneImageModal');
+            document.getElementById('sceneImageDesc').value = '';
+            await saveData();
+            renderMessages();
         }
 
+        // ========== 语音消息功能 ==========
+        function openVoiceMessageInput() {
+            toggleExtensionPanel();
+            showModal('voiceMessageModal');
+        }
+
+        async function sendVoiceMessage() {
+            const text = document.getElementById('voiceMessageText').value.trim();
+            if (!text) { showToast('Please enter text', 'error'); return; }
+
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+
+            char.messages.push({
+                id: Date.now().toString(),
+                sender: 'user',
+                content: `[VOICE: ${text}]`,
+                type: 'voice',
+                timestamp: Date.now()
+            });
+
+            hideModal('voiceMessageModal');
+            document.getElementById('voiceMessageText').value = '';
+            await saveData();
+            renderMessages();
+        }
+
+        // ========== 角色设置 ==========
         function openCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
@@ -3952,84 +3702,64 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
             document.getElementById('charDescription').value = char.description || '';
             document.getElementById('charGreeting').value = char.greeting || '';
             document.getElementById('charScenario').value = char.scenario || '';
-            document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
             document.getElementById('charUserNick').value = char.userNick || '';
+            document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
             document.getElementById('customCssEditor').value = char.customCss || '';
             document.getElementById('timestampPosition').value = char.timestampPosition || 'default';
 
-            updateCharCounter();
+            // 头像
+            const charAvatarUpload = document.getElementById('charAvatarUpload');
+            if (char.avatarImage) {
+                charAvatarUpload.innerHTML = `<img src="${char.avatarImage}">`;
+                charAvatarUpload.classList.add('has-image');
+            } else {
+                charAvatarUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
+                charAvatarUpload.classList.remove('has-image');
+            }
 
-            // Avatar uploads
-            const charAvatarEl = document.getElementById('charAvatarUpload');
-            if (char.avatarImage) { charAvatarEl.innerHTML = `<img src="${char.avatarImage}">`; charAvatarEl.classList.add('has-image'); }
-            else { charAvatarEl.innerHTML = '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'; charAvatarEl.classList.remove('has-image'); }
+            const userAvatarUpload = document.getElementById('userAvatarUpload');
+            if (char.userAvatar) {
+                userAvatarUpload.innerHTML = `<img src="${char.userAvatar}">`;
+                userAvatarUpload.classList.add('has-image');
+            } else {
+                userAvatarUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+                userAvatarUpload.classList.remove('has-image');
+            }
 
-            const userAvatarEl = document.getElementById('userAvatarUpload');
-            if (char.userAvatar) { userAvatarEl.innerHTML = `<img src="${char.userAvatar}">`; userAvatarEl.classList.add('has-image'); }
-            else { userAvatarEl.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'; userAvatarEl.classList.remove('has-image'); }
-
-            // Chat wallpaper
-            const wpPreview = document.getElementById('chatWallpaperPreview');
-            if (char.chatWallpaper) { wpPreview.style.background = `url(${char.chatWallpaper})`; wpPreview.classList.add('has-image'); }
-            else { wpPreview.style.background = ''; wpPreview.classList.remove('has-image'); }
-
-            // Avatar settings
-            const showAvatarToggle = document.getElementById('showAvatarToggle');
-            showAvatarToggle.classList.toggle('active', char.showAvatar !== false);
-
-            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => {
-                el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle'));
-            });
-
-            const showBorderToggle = document.getElementById('showBorderToggle');
-            showBorderToggle.classList.toggle('active', char.showBorder);
+            // 头像显示设置
+            document.getElementById('showAvatarToggle').classList.toggle('active', char.showAvatar !== false);
+            document.getElementById('showBorderToggle').classList.toggle('active', char.showBorder);
             document.getElementById('borderColorPicker').value = char.borderColor || '#ffffff';
 
-            // Bubble style UI
+            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.dataset.shape === (char.avatarShape || 'circle'));
+            });
+
+            // 聊天壁纸预览
+            const chatWpPreview = document.getElementById('chatWallpaperPreview');
+            if (char.chatWallpaper) {
+                chatWpPreview.style.background = `url(${char.chatWallpaper})`;
+                chatWpPreview.classList.add('has-image');
+            } else {
+                chatWpPreview.style.background = '';
+                chatWpPreview.classList.remove('has-image');
+            }
+
+            // 世界书多选
+            renderWorldbookMultiSelect(char);
+
+            // CSS预设
+            updateCssPresetSelect();
+
+            // 气泡样式
             initBubbleStyleUI(char);
 
-            // CSS presets
-            updateCssPresetSelect();
-            document.getElementById('cssPresetSelect').value = char.cssPresetId || '';
-
-            // Worldbook multi-select
-            renderWorldbookMultiSelect(char);
-
-            document.getElementById('characterSettingsPage').classList.add('active');
+            updateCharCounter();
+            openPage('characterSettingsPage');
         }
 
-        function updateCharCounter() {
-            const val = document.getElementById('charGreeting').value;
-            const counter = document.getElementById('greetingCharCounter');
-            counter.textContent = `${val.length}/300`;
-            counter.className = 'char-counter' + (val.length > 280 ? ' warning' : '') + (val.length >= 300 ? ' error' : '');
-        }
-
-        function renderWorldbookMultiSelect(char) {
-            const container = document.getElementById('worldbookMultiSelect');
-            if (App.worldbooks.length === 0) {
-                container.innerHTML = '<div style="padding:16px;color:var(--text-tertiary);text-align:center">No worldbooks available</div>';
-                return;
-            }
-            container.innerHTML = App.worldbooks.map(wb => {
-                const isLinked = char.worldbookIds?.includes(wb.id);
-                return `<div class="worldbook-multi-item" onclick="toggleWorldbookLink('${wb.id}')"><div class="worldbook-multi-checkbox ${isLinked ? 'checked' : ''}"></div><span class="worldbook-multi-name">${escapeHtml(wb.name)}</span></div>`;
-            }).join('');
-        }
-
-        function toggleWorldbookLink(wbId) {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            if (!char.worldbookIds) char.worldbookIds = [];
-            const idx = char.worldbookIds.indexOf(wbId);
-            if (idx >= 0) char.worldbookIds.splice(idx, 1);
-            else char.worldbookIds.push(wbId);
-            renderWorldbookMultiSelect(char);
-        }
-
-        function selectShape(el) {
-            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(e => e.classList.remove('selected'));
-            el.classList.add('selected');
+        function closeCharacterSettings() {
+            closePage('characterSettingsPage');
         }
 
         async function saveCharacterSettings() {
@@ -4038,160 +3768,124 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
 
             char.name = document.getElementById('charName').value.trim();
             char.avatar = document.getElementById('charAvatar').value.trim();
-            char.description = document.getElementById('charDescription').value;
-            char.greeting = document.getElementById('charGreeting').value;
-            char.scenario = document.getElementById('charScenario').value;
-            char.systemPrompt = document.getElementById('charSystemPrompt').value;
-            char.userNick = document.getElementById('charUserNick').value;
-            char.customCss = document.getElementById('customCssEditor').value;
+            char.description = document.getElementById('charDescription').value.trim();
+            char.greeting = document.getElementById('charGreeting').value.trim();
+            char.scenario = document.getElementById('charScenario').value.trim();
+            char.userNick = document.getElementById('charUserNick').value.trim();
+            char.systemPrompt = document.getElementById('charSystemPrompt').value.trim();
+            char.customCss = document.getElementById('customCssEditor').value.trim();
             char.timestampPosition = document.getElementById('timestampPosition').value;
-            char.cssPresetId = document.getElementById('cssPresetSelect').value || null;
 
             char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
-            char.avatarShape = document.querySelector('#avatarShapeOptions .shape-option.selected')?.dataset.shape || 'circle';
             char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
             char.borderColor = document.getElementById('borderColorPicker').value;
 
+            const selectedShape = document.querySelector('#avatarShapeOptions .shape-option.selected');
+            char.avatarShape = selectedShape?.dataset.shape || 'circle';
+
+            // 收集选中的世界书
+            char.worldbookIds = [];
+            document.querySelectorAll('#worldbookMultiSelect .worldbook-multi-checkbox.checked').forEach(cb => {
+                char.worldbookIds.push(cb.closest('.worldbook-multi-item').dataset.id);
+            });
+
             document.getElementById('chatTitle').textContent = char.name;
+            document.getElementById('customCssStyles').textContent = char.customCss || '';
+            applyBubbleStyles(char);
 
             await saveData();
             closeCharacterSettings();
-            applyBubbleStyles(char);
-            if (char.customCss) document.getElementById('customCssStyles').textContent = char.customCss;
             renderMessages();
             showToast('Settings saved', 'success');
         }
 
-        function closeCharacterSettings() {
-            document.getElementById('characterSettingsPage').classList.remove('active');
+        function selectShape(el) {
+            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(opt => opt.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        function updateCharCounter() {
+            const textarea = document.getElementById('charGreeting');
+            const counter = document.getElementById('greetingCharCounter');
+            const len = textarea.value.length;
+            counter.textContent = `${len}/300`;
+            counter.className = 'char-counter' + (len > 280 ? ' warning' : '') + (len >= 300 ? ' error' : '');
         }
 
         async function handleCharAvatarUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = async (ev) => {
+            reader.onload = async (event) => {
                 const char = App.characters.find(c => c.id === App.currentCharId);
-                if (!char) return;
-                char.avatarImage = await compressImage(ev.target.result, 150, 0.8);
-                const el = document.getElementById('charAvatarUpload');
-                el.innerHTML = `<img src="${char.avatarImage}">`;
-                el.classList.add('has-image');
+                if (char) {
+                    char.avatarImage = event.target.result;
+                    const upload = document.getElementById('charAvatarUpload');
+                    upload.innerHTML = `<img src="${event.target.result}">`;
+                    upload.classList.add('has-image');
+                }
             };
             reader.readAsDataURL(file);
+            e.target.value = '';
         }
 
         async function handleUserAvatarUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = async (ev) => {
+            reader.onload = async (event) => {
                 const char = App.characters.find(c => c.id === App.currentCharId);
-                if (!char) return;
-                char.userAvatar = await compressImage(ev.target.result, 150, 0.8);
-                const el = document.getElementById('userAvatarUpload');
-                el.innerHTML = `<img src="${char.userAvatar}">`;
-                el.classList.add('has-image');
+                if (char) {
+                    char.userAvatar = event.target.result;
+                    const upload = document.getElementById('userAvatarUpload');
+                    upload.innerHTML = `<img src="${event.target.result}">`;
+                    upload.classList.add('has-image');
+                }
             };
             reader.readAsDataURL(file);
+            e.target.value = '';
         }
 
         async function handleChatWallpaperUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = async (ev) => {
+            reader.onload = async (event) => {
                 const char = App.characters.find(c => c.id === App.currentCharId);
-                if (!char) return;
-                char.chatWallpaper = await compressImage(ev.target.result, 500, 0.8);
-                const preview = document.getElementById('chatWallpaperPreview');
-                preview.style.background = `url(${char.chatWallpaper})`;
-                preview.classList.add('has-image');
+                if (char) {
+                    char.chatWallpaper = event.target.result;
+                    const preview = document.getElementById('chatWallpaperPreview');
+                    preview.style.background = `url(${event.target.result})`;
+                    preview.classList.add('has-image');
+                }
             };
             reader.readAsDataURL(file);
+            e.target.value = '';
         }
 
         function clearChatWallpaper() {
             const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            char.chatWallpaper = null;
-            const preview = document.getElementById('chatWallpaperPreview');
-            preview.style.background = '';
-            preview.classList.remove('has-image');
+            if (char) {
+                char.chatWallpaper = null;
+                const preview = document.getElementById('chatWallpaperPreview');
+                preview.style.background = '';
+                preview.classList.remove('has-image');
+            }
         }
 
-        function confirmClearAllMessages() { showModal('clearMessagesModal'); }
+        function confirmClearAllMessages() {
+            showModal('clearMessagesModal');
+        }
 
         async function executeClearAllMessages() {
             const char = App.characters.find(c => c.id === App.currentCharId);
-            if (char) { char.messages = []; renderMessages(); await saveData(); showToast('Messages cleared', 'success'); }
-            hideModal('clearMessagesModal');
-        }
-
-        function updateCssPresetSelect() {
-            const select = document.getElementById('cssPresetSelect');
-            select.innerHTML = '<option value="">-- No Preset --</option>' + App.globalCssPresets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
-        }
-
-        function loadCssPreset() {
-            const id = document.getElementById('cssPresetSelect').value;
-            if (!id) return;
-            const preset = App.globalCssPresets.find(p => p.id === id);
-            if (preset) document.getElementById('customCssEditor').value = preset.css || '';
-        }
-
-        function addNewCssPreset() { showModal('cssPresetNameModal'); }
-
-        async function createCssPreset() {
-            const name = document.getElementById('newCssPresetName').value.trim();
-            if (!name) { showToast('Enter preset name', 'error'); return; }
-            const preset = { id: 'css-' + Date.now(), name, css: document.getElementById('customCssEditor').value };
-            App.globalCssPresets.push(preset);
-            updateCssPresetSelect();
-            document.getElementById('cssPresetSelect').value = preset.id;
-            await saveData();
-            hideModal('cssPresetNameModal');
-            document.getElementById('newCssPresetName').value = '';
-            showToast('Preset created', 'success');
-        }
-
-        async function saveCssPreset() {
-            const id = document.getElementById('cssPresetSelect').value;
-            if (!id) { showToast('Select a preset first', 'error'); return; }
-            const preset = App.globalCssPresets.find(p => p.id === id);
-            if (preset) { preset.css = document.getElementById('customCssEditor').value; await saveData(); showToast('Preset saved', 'success'); }
-        }
-
-        function deleteCssPreset() {
-            const id = document.getElementById('cssPresetSelect').value;
-            if (!id) { showToast('Select a preset first', 'error'); return; }
-            App.pendingDeleteCssPresetId = id;
-            showModal('deleteCssPresetModal');
-        }
-
-        async function confirmDeleteCssPreset() {
-            if (App.pendingDeleteCssPresetId) {
-                App.globalCssPresets = App.globalCssPresets.filter(p => p.id !== App.pendingDeleteCssPresetId);
-                updateCssPresetSelect();
+            if (char) {
+                char.messages = [];
                 await saveData();
-                showToast('Preset deleted', 'success');
+                renderMessages();
+                showToast('Messages cleared', 'success');
             }
-            hideModal('deleteCssPresetModal');
-            App.pendingDeleteCssPresetId = null;
-        }
-
-        function showCssGuide() { showModal('cssGuideModal'); }
-
-        function previewCss() {
-            const css = document.getElementById('customCssEditor').value;
-            document.getElementById('customCssStyles').textContent = css;
-            showToast('CSS preview applied', 'info');
-        }
-
-        function clearCustomCss() {
-            document.getElementById('customCssEditor').value = '';
-            document.getElementById('customCssStyles').textContent = '';
-            showToast('CSS cleared', 'success');
+            hideModal('clearMessagesModal');
         }
 
         function deleteCurrentCharacter() {
@@ -4207,16 +3901,18 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
                 App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
                 closeCharacterSettings();
                 closeChatPage();
+                renderContactList();
             } else if (App.pendingDeleteType === 'worldbook') {
-                App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
+                App.worldbooks = App.worldbooks.filter(wb => wb.id !== App.pendingDeleteId);
                 closeWorldbookEdit();
+                renderWorldbookList();
             }
             await saveData();
             hideModal('confirmDeleteModal');
             showToast('Deleted', 'success');
         }
 
-        // Worldbook functions
+        // ========== 世界书功能 ==========
         function renderWorldbookList() {
             const list = document.getElementById('worldbookList');
             const empty = document.getElementById('emptyWorldbookState');
@@ -4230,8 +3926,13 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
 
         async function createWorldbook() {
             const name = document.getElementById('newWorldbookName').value.trim();
-            if (!name) { showToast('Enter worldbook name', 'error'); return; }
-            const wb = { id: 'wb-' + Date.now(), name, summary: '', entries: [] };
+            if (!name) { showToast('Please enter a name', 'error'); return; }
+            const wb = {
+                id: Date.now().toString(),
+                name,
+                summary: '',
+                entries: []
+            };
             App.worldbooks.push(wb);
             await saveData();
             hideModal('createWorldbookModal');
@@ -4240,28 +3941,53 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
             showToast('Worldbook created', 'success');
         }
 
-        function openWorldbookEdit(id) {
-            App.currentWbId = id;
-            const wb = App.worldbooks.find(w => w.id === id);
+        function openWorldbookEdit(wbId) {
+            App.currentWbId = wbId;
+            const wb = App.worldbooks.find(w => w.id === wbId);
             if (!wb) return;
             document.getElementById('worldbookName').value = wb.name || '';
             document.getElementById('worldbookSummary').value = wb.summary || '';
             renderWorldbookEntries();
-            document.getElementById('worldbookEditPage').classList.add('active');
+            openPage('worldbookEditPage');
         }
 
         function closeWorldbookEdit() {
-            document.getElementById('worldbookEditPage').classList.remove('active');
+            closePage('worldbookEditPage');
             App.currentWbId = null;
+        }
+
+        async function saveWorldbook() {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb) return;
+            wb.name = document.getElementById('worldbookName').value.trim();
+            wb.summary = document.getElementById('worldbookSummary').value.trim();
+            await saveData();
+            closeWorldbookEdit();
             renderWorldbookList();
+            showToast('Worldbook saved', 'success');
         }
 
         function renderWorldbookEntries() {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId);
             if (!wb) return;
             const container = document.getElementById('worldbookEntries');
-            if (!wb.entries?.length) { container.innerHTML = '<p style="color:var(--text-tertiary);text-align:center;padding:16px">No entries yet</p>'; return; }
-            container.innerHTML = wb.entries.map((entry, idx) => `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(entry.name || 'Unnamed')}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div><div class="worldbook-entry-keywords">Keywords: ${escapeHtml(entry.keywords || 'None')}${entry.alwaysActive ? ' | Always Active' : ''}</div><div class="worldbook-entry-preview">${escapeHtml((entry.content || '').substring(0, 100))}</div></div>`).join('');
+            if (!wb.entries || wb.entries.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-tertiary);text-align:center;padding:20px">No entries yet</p>';
+                return;
+            }
+            container.innerHTML = wb.entries.map((entry, idx) => `
+                <div class="worldbook-entry-item">
+                    <div class="worldbook-entry-header">
+                        <span class="worldbook-entry-title">${escapeHtml(entry.name || 'Unnamed Entry')}</span>
+                        <div class="worldbook-entry-actions">
+                            <button class="worldbook-entry-btn" onclick="editWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                            <button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                        </div>
+                    </div>
+                    <div class="worldbook-entry-keywords">Keywords: ${escapeHtml(entry.keywords || 'None')}</div>
+                    <div class="worldbook-entry-preview">${escapeHtml(entry.content || 'No content')}</div>
+                </div>
+            `).join('');
         }
 
         function addWorldbookEntry() {
@@ -4275,7 +4001,7 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
 
         function editWorldbookEntry(idx) {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb?.entries?.[idx]) return;
+            if (!wb || !wb.entries[idx]) return;
             App.currentEntryIndex = idx;
             const entry = wb.entries[idx];
             document.getElementById('entryName').value = entry.name || '';
@@ -4285,50 +4011,314 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
             showModal('entryEditModal');
         }
 
-        function saveWorldbookEntry() {
+        async function saveWorldbookEntry() {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId);
             if (!wb) return;
             const entry = {
                 name: document.getElementById('entryName').value.trim(),
                 keywords: document.getElementById('entryKeywords').value.trim(),
-                content: document.getElementById('entryContent').value,
+                content: document.getElementById('entryContent').value.trim(),
                 alwaysActive: document.getElementById('entryAlwaysActive').classList.contains('active')
             };
-            if (App.currentEntryIndex >= 0) wb.entries[App.currentEntryIndex] = entry;
-            else { if (!wb.entries) wb.entries = []; wb.entries.push(entry); }
-            renderWorldbookEntries();
+            if (App.currentEntryIndex === -1) {
+                if (!wb.entries) wb.entries = [];
+                wb.entries.push(entry);
+            } else {
+                wb.entries[App.currentEntryIndex] = entry;
+            }
             hideModal('entryEditModal');
+            renderWorldbookEntries();
+            await saveData();
+            showToast('Entry saved', 'success');
         }
 
-        function deleteWorldbookEntry(idx) {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (wb?.entries) { wb.entries.splice(idx, 1); renderWorldbookEntries(); }
-        }
-
-        async function saveWorldbook() {
+        async function deleteWorldbookEntry(idx) {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId);
             if (!wb) return;
-            wb.name = document.getElementById('worldbookName').value.trim();
-            wb.summary = document.getElementById('worldbookSummary').value;
+            wb.entries.splice(idx, 1);
+            renderWorldbookEntries();
             await saveData();
-            closeWorldbookEdit();
-            showToast('Worldbook saved', 'success');
+            showToast('Entry deleted', 'success');
         }
 
         function deleteCurrentWorldbook() {
             App.pendingDeleteType = 'worldbook';
             App.pendingDeleteId = App.currentWbId;
             document.getElementById('deleteModalTitle').textContent = 'Delete Worldbook?';
-            document.getElementById('deleteModalDesc').textContent = 'All entries will be lost.';
+            document.getElementById('deleteModalDesc').textContent = 'This will delete all entries.';
             showModal('confirmDeleteModal');
         }
 
-        // Wallpaper functions
+        function renderWorldbookMultiSelect(char) {
+            const container = document.getElementById('worldbookMultiSelect');
+            if (App.worldbooks.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-tertiary);text-align:center;padding:16px">No worldbooks available</p>';
+                return;
+            }
+            container.innerHTML = App.worldbooks.map(wb => {
+                const isChecked = char.worldbookIds?.includes(wb.id);
+                return `<div class="worldbook-multi-item" data-id="${wb.id}" onclick="toggleWorldbookSelect(this)"><div class="worldbook-multi-checkbox ${isChecked ? 'checked' : ''}"></div><span class="worldbook-multi-name">${escapeHtml(wb.name)}</span></div>`;
+            }).join('');
+        }
+
+        function toggleWorldbookSelect(el) {
+            el.querySelector('.worldbook-multi-checkbox').classList.toggle('checked');
+        }
+
+        // ========== CSS预设 ==========
+        function updateCssPresetSelect() {
+            const select = document.getElementById('cssPresetSelect');
+            select.innerHTML = '<option value="">-- No Preset --</option>' + App.globalCssPresets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+        }
+
+        function loadCssPreset() {
+            const select = document.getElementById('cssPresetSelect');
+            const presetId = select.value;
+            if (!presetId) return;
+            const preset = App.globalCssPresets.find(p => p.id === presetId);
+            if (preset) {
+                document.getElementById('customCssEditor').value = preset.css;
+            }
+        }
+
+        function addNewCssPreset() {
+            showModal('cssPresetNameModal');
+        }
+
+        async function createCssPreset() {
+            const name = document.getElementById('newCssPresetName').value.trim();
+            if (!name) { showToast('Please enter a name', 'error'); return; }
+            const css = document.getElementById('customCssEditor').value.trim();
+            App.globalCssPresets.push({ id: Date.now().toString(), name, css });
+            await saveData();
+            updateCssPresetSelect();
+            hideModal('cssPresetNameModal');
+            document.getElementById('newCssPresetName').value = '';
+            showToast('Preset created', 'success');
+        }
+
+        async function saveCssPreset() {
+            const select = document.getElementById('cssPresetSelect');
+            const presetId = select.value;
+            if (!presetId) { showToast('Select a preset first', 'error'); return; }
+            const preset = App.globalCssPresets.find(p => p.id === presetId);
+            if (preset) {
+                preset.css = document.getElementById('customCssEditor').value.trim();
+                await saveData();
+                showToast('Preset saved', 'success');
+            }
+        }
+
+        function deleteCssPreset() {
+            const select = document.getElementById('cssPresetSelect');
+            if (!select.value) { showToast('Select a preset first', 'error'); return; }
+            App.pendingDeleteCssPresetId = select.value;
+            showModal('deleteCssPresetModal');
+        }
+
+        async function confirmDeleteCssPreset() {
+            App.globalCssPresets = App.globalCssPresets.filter(p => p.id !== App.pendingDeleteCssPresetId);
+            await saveData();
+            updateCssPresetSelect();
+            hideModal('deleteCssPresetModal');
+            showToast('Preset deleted', 'success');
+        }
+
+        function showCssGuide() {
+            showModal('cssGuideModal');
+        }
+
+        function previewCss() {
+            const css = document.getElementById('customCssEditor').value.trim();
+            document.getElementById('customCssStyles').textContent = css;
+            showToast('Preview applied', 'info');
+        }
+
+        function clearCustomCss() {
+            document.getElementById('customCssEditor').value = '';
+            document.getElementById('customCssStyles').textContent = '';
+            showToast('CSS cleared', 'info');
+        }
+
+        // ========== API设置 ==========
+        function updateConnectionUI() {
+            const hint = document.getElementById('connectionStatusHint');
+            if (App.connectionStatus === 'connected') {
+                hint.className = 'action-hint success';
+                hint.innerHTML = '<span class="action-hint-icon">✓</span><span class="action-hint-text">Connected to API</span>';
+            } else {
+                hint.className = 'action-hint';
+                hint.innerHTML = '<span class="action-hint-icon">⚠</span><span class="action-hint-text">API not configured</span>';
+            }
+        }
+
+        function addLog(msg, type = 'info') {
+            const log = document.getElementById('debugLog');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry ' + type;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function fetchModels() {
+            const baseUrl = document.getElementById('apiBaseUrl').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            if (!baseUrl || !apiKey) { showToast('Enter API URL and key', 'error'); return; }
+
+            addLog('Fetching models...', 'info');
+            try {
+                const response = await fetch(`${baseUrl}/v1/models`, {
+                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                App.models = data.data || [];
+
+                const container = document.getElementById('modelListContainer');
+                const list = document.getElementById('modelList');
+                container.style.display = 'block';
+                list.innerHTML = App.models.map(m => `<div class="model-item" onclick="selectModel('${m.id}')"><span class="model-item-name">${escapeHtml(m.id)}</span></div>`).join('');
+
+                addLog(`Found ${App.models.length} models`, 'success');
+            } catch (e) {
+                addLog(`Error: ${e.message}`, 'error');
+                showToast('Failed to fetch models', 'error');
+            }
+        }
+
+        function selectModel(modelId) {
+            document.getElementById('modelName').value = modelId;
+            document.querySelectorAll('.model-item').forEach(item => item.classList.remove('selected'));
+            event.target.closest('.model-item')?.classList.add('selected');
+        }
+
+        async function testConnection() {
+            const baseUrl = document.getElementById('apiBaseUrl').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const model = document.getElementById('modelName').value.trim();
+
+            if (!baseUrl || !apiKey || !model) {
+                showToast('Fill all fields', 'error');
+                return;
+            }
+
+            addLog('Testing connection...', 'info');
+            try {
+                const response = await fetch(`${baseUrl}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model,
+                        messages: [{ role: 'user', content: 'Hi' }],
+                        max_tokens: 5
+                    })
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                addLog('Connection successful!', 'success');
+                showToast('Connection successful!', 'success');
+                App.connectionStatus = 'connected';
+                updateConnectionUI();
+            } catch (e) {
+                addLog(`Connection failed: ${e.message}`, 'error');
+                showToast('Connection failed', 'error');
+            }
+        }
+
+        async function saveApiSettings() {
+            App.settings.apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
+            App.settings.apiKey = document.getElementById('apiKey').value.trim();
+            App.settings.modelName = document.getElementById('modelName').value.trim();
+            App.settings.temperature = parseFloat(document.getElementById('temperature').value);
+            App.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
+            App.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
+
+            if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) {
+                App.connectionStatus = 'connected';
+            }
+            updateConnectionUI();
+            await saveData();
+            showToast('API settings saved', 'success');
+        }
+
+        // ========== API预设 ==========
+        function updateApiPresetSelect() {
+            const select = document.getElementById('apiPresetSelect');
+            select.innerHTML = '<option value="">-- No Preset --</option>' + App.apiPresets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+        }
+
+        function loadApiPreset() {
+            const select = document.getElementById('apiPresetSelect');
+            const presetId = select.value;
+            if (!presetId) return;
+            const preset = App.apiPresets.find(p => p.id === presetId);
+            if (preset) {
+                document.getElementById('apiBaseUrl').value = preset.baseUrl || '';
+                document.getElementById('apiKey').value = preset.apiKey || '';
+                document.getElementById('modelName').value = preset.modelName || '';
+            }
+        }
+
+        function addNewApiPreset() {
+            showModal('apiPresetNameModal');
+        }
+
+        async function createApiPreset() {
+            const name = document.getElementById('newApiPresetName').value.trim();
+            if (!name) { showToast('Please enter a name', 'error'); return; }
+            App.apiPresets.push({
+                id: Date.now().toString(),
+                name,
+                baseUrl: document.getElementById('apiBaseUrl').value.trim(),
+                apiKey: document.getElementById('apiKey').value.trim(),
+                modelName: document.getElementById('modelName').value.trim()
+            });
+            await saveData();
+            updateApiPresetSelect();
+            hideModal('apiPresetNameModal');
+            document.getElementById('newApiPresetName').value = '';
+            showToast('Preset created', 'success');
+        }
+
+        async function saveApiPreset() {
+            const select = document.getElementById('apiPresetSelect');
+            const presetId = select.value;
+            if (!presetId) { showToast('Select a preset first', 'error'); return; }
+            const preset = App.apiPresets.find(p => p.id === presetId);
+            if (preset) {
+                preset.baseUrl = document.getElementById('apiBaseUrl').value.trim();
+                preset.apiKey = document.getElementById('apiKey').value.trim();
+                preset.modelName = document.getElementById('modelName').value.trim();
+                await saveData();
+                showToast('Preset saved', 'success');
+            }
+        }
+
+        function deleteApiPreset() {
+            const select = document.getElementById('apiPresetSelect');
+            if (!select.value) { showToast('Select a preset first', 'error'); return; }
+            App.pendingDeleteApiPresetId = select.value;
+            showModal('deleteApiPresetModal');
+        }
+
+        async function confirmDeleteApiPreset() {
+            App.apiPresets = App.apiPresets.filter(p => p.id !== App.pendingDeleteApiPresetId);
+            await saveData();
+            updateApiPresetSelect();
+            hideModal('deleteApiPresetModal');
+            showToast('Preset deleted', 'success');
+        }
+
+        // ========== 壁纸功能 ==========
         function applyWallpaper() {
             const layer = document.getElementById('wallpaperLayer');
             if (App.settings.wallpaperData) {
                 layer.style.background = `url(${App.settings.wallpaperData}) center/cover no-repeat`;
-            } else if (App.settings.wallpaper && GRADIENTS[App.settings.wallpaper]) {
+            } else if (GRADIENTS[App.settings.wallpaper]) {
                 layer.style.background = GRADIENTS[App.settings.wallpaper];
             } else {
                 layer.style.background = GRADIENTS.gradient1;
@@ -4336,118 +4326,105 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
         }
 
         function highlightWallpaper() {
-            document.querySelectorAll('#wallpaperGrid > div').forEach(el => {
-                el.style.borderColor = el.dataset.wp === App.settings.wallpaper ? 'rgba(255,255,255,0.5)' : 'transparent';
+            document.querySelectorAll('#wallpaperGrid > div').forEach(div => {
+                div.style.borderColor = div.dataset.wp === App.settings.wallpaper ? 'rgba(255,255,255,0.5)' : 'transparent';
             });
         }
 
         function updateWallpaperPreview() {
             const preview = document.getElementById('wallpaperPreview');
-            if (App.tempWallpaper?.type === 'data') {
-                preview.style.background = `url(${App.tempWallpaper.data}) center/cover`;
-            } else if (App.tempWallpaper?.type === 'preset') {
-                preview.style.background = GRADIENTS[App.tempWallpaper.name];
+            if (App.tempWallpaper) {
+                preview.style.background = App.tempWallpaper.startsWith('data:') || App.tempWallpaper.startsWith('http') ?
+                    `url(${App.tempWallpaper}) center/cover no-repeat` : App.tempWallpaper;
             } else if (App.settings.wallpaperData) {
-                preview.style.background = `url(${App.settings.wallpaperData}) center/cover`;
+                preview.style.background = `url(${App.settings.wallpaperData}) center/cover no-repeat`;
             } else {
                 preview.style.background = GRADIENTS[App.settings.wallpaper] || GRADIENTS.gradient1;
             }
         }
 
-        function selectPresetWallpaper(name) {
-            App.tempWallpaper = { type: 'preset', name };
+        function selectPresetWallpaper(wpId) {
+            App.tempWallpaper = GRADIENTS[wpId];
+            App.settings.wallpaper = wpId;
+            App.settings.wallpaperData = null;
+            highlightWallpaper();
             updateWallpaperPreview();
-            document.querySelectorAll('#wallpaperGrid > div').forEach(el => {
-                el.style.borderColor = el.dataset.wp === name ? 'rgba(255,255,255,0.5)' : 'transparent';
-            });
         }
 
         function previewUrlWallpaper() {
             const url = document.getElementById('customWallpaperUrl').value.trim();
-            if (url) { App.tempWallpaper = { type: 'url', url }; updateWallpaperPreview(); }
+            if (!url) { showToast('Enter a URL', 'error'); return; }
+            App.tempWallpaper = url;
+            updateWallpaperPreview();
         }
 
         async function handleWallpaperUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const compressed = await compressImage(ev.target.result, 600, 0.8);
-                App.tempWallpaper = { type: 'data', data: compressed };
+            reader.onload = (event) => {
+                App.tempWallpaper = event.target.result;
                 updateWallpaperPreview();
             };
             reader.readAsDataURL(file);
+            e.target.value = '';
         }
 
         async function saveWallpaper() {
             if (App.tempWallpaper) {
-                if (App.tempWallpaper.type === 'preset') {
-                    App.settings.wallpaper = App.tempWallpaper.name;
-                    App.settings.wallpaperData = null;
-                } else if (App.tempWallpaper.type === 'data') {
-                    App.settings.wallpaperData = App.tempWallpaper.data;
-                    App.settings.wallpaper = null;
-                } else if (App.tempWallpaper.type === 'url') {
-                    try {
-                        const res = await fetch(App.tempWallpaper.url);
-                        const blob = await res.blob();
-                        const reader = new FileReader();
-                        reader.onload = async (e) => {
-                            App.settings.wallpaperData = await compressImage(e.target.result, 600, 0.8);
-                            App.settings.wallpaper = null;
-                            applyWallpaper();
-                            await saveData();
-                        };
-                        reader.readAsDataURL(blob);
-                        return;
-                    } catch { showToast('Failed to load URL', 'error'); return; }
+                if (App.tempWallpaper.startsWith('data:')) {
+                    App.settings.wallpaperData = App.tempWallpaper;
+                    App.settings.wallpaper = 'custom';
+                } else if (App.tempWallpaper.startsWith('http')) {
+                    App.settings.wallpaperData = App.tempWallpaper;
+                    App.settings.wallpaper = 'custom';
                 }
             }
             applyWallpaper();
-            highlightWallpaper();
             await saveData();
+            showToast('Wallpaper saved', 'success');
             App.tempWallpaper = null;
-            showToast('Wallpaper applied', 'success');
         }
 
-        // Icon functions
+        // ========== 图标功能 ==========
         function applyAppIcons() {
             const icons = App.appIcons;
-            ['settings', 'messages', 'worldbook', 'photos', 'fonts'].forEach(key => {
-                const el = document.getElementById('appIcon' + key.charAt(0).toUpperCase() + key.slice(1));
-                if (el && icons[key]) el.innerHTML = `<img src="${icons[key]}">`;
-            });
+            const map = { settings: 'appIconSettings', messages: 'appIconMessages', worldbook: 'appIconWorldbook', photos: 'appIconPhotos', fonts: 'appIconFonts' };
+            for (const [key, elId] of Object.entries(map)) {
+                const el = document.getElementById(elId);
+                if (icons[key]) {
+                    el.innerHTML = `<img src="${icons[key]}">`;
+                }
+            }
         }
 
         function updateIconPreviews() {
-            const icons = App.tempIcons.settings !== undefined ? App.tempIcons : App.appIcons;
-            ['settings', 'messages', 'worldbook', 'photos', 'fonts'].forEach(key => {
-                const preview = document.getElementById('iconPreview' + key.charAt(0).toUpperCase() + key.slice(1));
-                if (preview) {
-                    if (icons[key]) { preview.innerHTML = `<img src="${icons[key]}">`; preview.classList.add('has-image'); }
-                    else { preview.classList.remove('has-image'); }
+            const map = { settings: 'iconPreviewSettings', messages: 'iconPreviewMessages', worldbook: 'iconPreviewWorldbook', photos: 'iconPreviewPhotos', fonts: 'iconPreviewFonts' };
+            for (const [key, elId] of Object.entries(map)) {
+                const el = document.getElementById(elId);
+                const data = App.tempIcons[key] || App.appIcons[key];
+                if (data) {
+                    el.innerHTML = `<img src="${data}">`;
+                    el.classList.add('has-image');
                 }
-            });
+            }
         }
 
-        async function handleIconUpload(e, iconType) {
+        function handleIconUpload(e, iconType) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const compressed = await compressImage(ev.target.result, 100, 0.8);
-                if (Object.keys(App.tempIcons).length === 0) App.tempIcons = { ...App.appIcons };
-                App.tempIcons[iconType] = compressed;
+            reader.onload = (event) => {
+                App.tempIcons[iconType] = event.target.result;
                 updateIconPreviews();
             };
             reader.readAsDataURL(file);
+            e.target.value = '';
         }
 
         async function saveIcons() {
-            if (Object.keys(App.tempIcons).length > 0) {
-                App.appIcons = { ...App.tempIcons };
-                App.tempIcons = {};
-            }
+            Object.assign(App.appIcons, App.tempIcons);
+            App.tempIcons = {};
             applyAppIcons();
             await saveData();
             showToast('Icons saved', 'success');
@@ -4459,19 +4436,23 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
             location.reload();
         }
 
-        // Data management
+        // ========== 数据管理 ==========
         async function exportAllData() {
             const data = {
-                version: 1, exportDate: new Date().toISOString(),
-                characters: App.characters, worldbooks: App.worldbooks,
-                settings: App.settings, appIcons: App.appIcons,
-                globalCssPresets: App.globalCssPresets, apiPresets: App.apiPresets, fonts: App.fonts
+                characters: App.characters,
+                worldbooks: App.worldbooks,
+                settings: App.settings,
+                appIcons: App.appIcons,
+                globalCssPresets: App.globalCssPresets,
+                apiPresets: App.apiPresets,
+                fonts: App.fonts,
+                exportDate: new Date().toISOString()
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `noir-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `noir-backup-${Date.now()}.json`;
             a.click();
             URL.revokeObjectURL(url);
             showToast('Data exported', 'success');
@@ -4481,30 +4462,35 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = async (ev) => {
+            reader.onload = async (event) => {
                 try {
-                    const data = JSON.parse(ev.target.result);
+                    const data = JSON.parse(event.target.result);
                     if (data.characters) App.characters = data.characters;
                     if (data.worldbooks) App.worldbooks = data.worldbooks;
                     if (data.settings) App.settings = { ...App.settings, ...data.settings };
-                    if (data.appIcons) App.appIcons = data.appIcons;
+                    if (data.appIcons) App.appIcons = { ...App.appIcons, ...data.appIcons };
                     if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets;
                     if (data.apiPresets) App.apiPresets = data.apiPresets;
                     if (data.fonts) App.fonts = data.fonts;
                     await saveData();
                     location.reload();
-                } catch (err) { showToast('Import failed: ' + err.message, 'error'); }
+                } catch (err) {
+                    showToast('Invalid file format', 'error');
+                }
             };
             reader.readAsText(file);
+            e.target.value = '';
         }
 
         async function clearAllData() {
             if (!confirm('Delete ALL data? This cannot be undone!')) return;
-            if (!confirm('Are you absolutely sure?')) return;
-            App.characters = []; App.worldbooks = [];
+            App.characters = [];
+            App.worldbooks = [];
             App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null, fontScale: 1 };
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null };
-            App.globalCssPresets = []; App.apiPresets = []; App.fonts = [...DEFAULT_FONTS];
+            App.globalCssPresets = [];
+            App.apiPresets = [];
+            App.fonts = [...DEFAULT_FONTS];
             await saveData();
             location.reload();
         }
