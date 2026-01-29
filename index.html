@@ -1,5 +1,4 @@
-
- ```html
+```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -10,7 +9,7 @@
     <meta name="apple-mobile-web-app-title" content="NOIR">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a0a">
-    <title>NOIR · Premium SMS v9</title>
+    <title>NOIR · Premium SMS v10</title>
     <style id="globalFontStyle"></style>
     <style id="globalFontSizeStyle"></style>
     <style id="bubbleStyleSheet"></style>
@@ -511,6 +510,167 @@
             30% { transform: translateY(-4px); }
         }
 
+        /* ===== 描述性图片样式 ===== */
+        .scene-image-bubble {
+            max-width: 240px;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            animation: msgIn 0.25s ease-out;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .scene-image-bubble:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+        .scene-image-bubble:active {
+            transform: scale(0.98);
+        }
+        .scene-image-cover {
+            width: 100%;
+            height: 160px;
+            background-image: url('https://iili.io/3fAcryG.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .scene-image-cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
+        }
+        .scene-image-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .scene-image-icon {
+            width: 28px; height: 28px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .scene-image-icon svg {
+            width: 14px; height: 14px;
+            stroke: white; stroke-width: 2; fill: none;
+        }
+        .scene-image-hint {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+            letter-spacing: 0.5px;
+        }
+        .scene-image-bubble.expanded .scene-image-cover {
+            display: none;
+        }
+        .scene-image-text {
+            display: none;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(30, 30, 35, 0.95), rgba(20, 20, 25, 0.98));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: calc(13px * var(--font-scale));
+            line-height: 1.6;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        .scene-image-bubble.expanded .scene-image-text {
+            display: block;
+        }
+        .scene-image-text::before {
+            content: '📷 ';
+            font-style: normal;
+        }
+
+        /* ===== 语音消息样式 ===== */
+        .voice-bubble {
+            max-width: 220px;
+            padding: 12px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            animation: msgIn 0.25s ease-out;
+            position: relative;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: transform 0.2s ease;
+        }
+        .voice-bubble:active {
+            transform: scale(0.97);
+        }
+        .voice-bubble.sent {
+            background: rgba(60, 60, 65, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px 20px 4px 20px;
+        }
+        .voice-bubble.received {
+            background: rgba(45, 45, 50, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px 20px 20px 4px;
+        }
+        .voice-bubble-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .voice-play-btn {
+            width: 32px; height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.2s ease;
+        }
+        .voice-bubble:hover .voice-play-btn {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .voice-play-btn svg {
+            width: 14px; height: 14px;
+            stroke: var(--text-primary);
+            stroke-width: 2;
+            fill: none;
+        }
+        .voice-waveform {
+            flex: 1;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .voice-waveform-bar {
+            width: 3px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+        .voice-duration {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            min-width: 28px;
+            text-align: right;
+        }
+        .voice-text-content {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: calc(13px * var(--font-scale));
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .voice-bubble.expanded .voice-text-content {
+            display: block;
+            animation: slideDown 0.25s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .chat-input-wrapper {
             background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
             backdrop-filter: blur(var(--blur-medium));
@@ -594,6 +754,8 @@
             transition: all 0.3s ease;
             overflow: hidden;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-height: 400px;
+            overflow-y: auto;
         }
         .extension-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
 
@@ -601,6 +763,10 @@
             display: flex; justify-content: space-between; align-items: center;
             padding: 16px 20px;
             border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+            z-index: 1;
         }
         .ext-panel-title {
             font-family: var(--font-serif); font-size: calc(12px * var(--font-scale)); font-weight: 500;
@@ -637,6 +803,10 @@
         .ext-btn-icon.purple svg { stroke: var(--accent-rose); }
         .ext-btn-icon.blue { background: rgba(90, 125, 181, 0.15); }
         .ext-btn-icon.blue svg { stroke: var(--accent-blue); }
+        .ext-btn-icon.gold { background: rgba(201, 169, 98, 0.15); }
+        .ext-btn-icon.gold svg { stroke: var(--accent-gold); }
+        .ext-btn-icon.emerald { background: rgba(74, 158, 124, 0.15); }
+        .ext-btn-icon.emerald svg { stroke: var(--accent-emerald); }
 
         .ext-btn-text { flex: 1; }
         .ext-btn-title { font-size: calc(14px * var(--font-scale)); font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
@@ -1066,7 +1236,7 @@
         .preset-btn:active { transform: scale(0.94); }
         .preset-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.5; fill: none; }
 
-        .guide-content { max-height: 50vh; overflow-y: auto; padding-right: 8px; }
+        .guide-content { max-height: 55vh; overflow-y: auto; padding-right: 8px; }
         .guide-section { margin-bottom: 18px; }
         .guide-section-title { font-size: calc(12px * var(--font-scale)); font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; }
         .guide-code {
@@ -1329,7 +1499,7 @@
 
         <div class="home-indicator"></div>
 
-        <!-- Settings Page (全局设置 - 不包含气泡样式) -->
+        <!-- Settings Page -->
         <div class="page" id="settingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('settingsPage')">
@@ -1539,7 +1709,15 @@
                     </button>
                     <button class="ext-btn" onclick="openImagePicker()">
                         <div class="ext-btn-icon blue"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-                        <div class="ext-btn-text"><div class="ext-btn-title">Send Image</div><div class="ext-btn-desc">Share an image with AI</div></div>
+                        <div class="ext-btn-text"><div class="ext-btn-title">Send Image</div><div class="ext-btn-desc">Share a real image with AI</div></div>
+                    </button>
+                    <button class="ext-btn" onclick="showModal('sendSceneImageModal')">
+                        <div class="ext-btn-icon gold"><svg viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
+                        <div class="ext-btn-text"><div class="ext-btn-title">Scene Image</div><div class="ext-btn-desc">Send a descriptive scene photo</div></div>
+                    </button>
+                    <button class="ext-btn" onclick="showModal('sendVoiceModal')">
+                        <div class="ext-btn-icon emerald"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
+                        <div class="ext-btn-text"><div class="ext-btn-title">Voice Message</div><div class="ext-btn-desc">Send a voice message</div></div>
                     </button>
                 </div>
 
@@ -1576,7 +1754,7 @@
             </div>
         </div>
 
-        <!-- Character Settings Page (包含气泡样式 - 每角色独立) -->
+        <!-- Character Settings Page -->
         <div class="page slide-from-bottom" id="characterSettingsPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closeCharacterSettings()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Cancel</button>
@@ -1977,7 +2155,9 @@
                 <div class="guide-section"><div class="guide-section-title">Timestamp</div><div class="guide-code">.message-time { }</div></div>
                 <div class="guide-section"><div class="guide-section-title">Input Area</div><div class="guide-code">.chat-input-area { }<br>.chat-input-field { }</div></div>
                 <div class="guide-section"><div class="guide-section-title">Nav Bar</div><div class="guide-code">#chatPage .nav-bar { }</div></div>
-                <div class="guide-section"><div class="guide-section-title">Example</div><div class="guide-code">.message.sent {<br>  background: rgba(60,60,65,0.8);<br>  border-radius: 20px;<br>}</div></div>
+                <div class="guide-section"><div class="guide-section-title">Scene Image Bubble</div><div class="guide-code">.scene-image-bubble { }<br>.scene-image-cover { }<br>.scene-image-text { }<br>.scene-image-overlay { }<br>.scene-image-icon { }<br>.scene-image-hint { }</div><div class="guide-text">The cover uses background-image. Text shows when .expanded class is added.</div></div>
+                <div class="guide-section"><div class="guide-section-title">Voice Message Bubble</div><div class="guide-code">.voice-bubble { }<br>.voice-bubble.sent { }<br>.voice-bubble.received { }<br>.voice-bubble-header { }<br>.voice-play-btn { }<br>.voice-waveform { }<br>.voice-waveform-bar { }<br>.voice-duration { }<br>.voice-text-content { }</div><div class="guide-text">Voice bubbles inherit bubble style colors. Text shows when .expanded class is added.</div></div>
+                <div class="guide-section"><div class="guide-section-title">Example</div><div class="guide-code">.message.sent {<br>  background: rgba(60,60,65,0.8);<br>  border-radius: 20px;<br>}<br><br>.voice-bubble {<br>  background: rgba(50,50,55,0.9);<br>}<br><br>.scene-image-cover {<br>  filter: brightness(0.9);<br>}</div></div>
             </div>
             <div class="modal-btns" style="margin-top:20px"><button class="modal-btn confirm" onclick="hideModal('cssGuideModal')">Got It</button></div>
         </div>
@@ -2008,7 +2188,7 @@
         </div>
     </div>
 
-    <!-- Color Picker Modal with Classic Wheel + Square Design -->
+    <!-- Color Picker Modal -->
     <div class="modal-overlay" id="colorPickerModal">
         <div class="modal" style="max-width:320px">
             <div class="modal-title">Select Color</div>
@@ -2026,15 +2206,64 @@
         </div>
     </div>
 
+    <!-- Send Scene Image Modal -->
+    <div class="modal-overlay" id="sendSceneImageModal">
+        <div class="modal">
+            <div class="modal-title">Send Scene Image</div>
+            <div class="action-hint"><span class="action-hint-icon">📷</span><span class="action-hint-text">Describe the scene in third-person, objective perspective</span></div>
+            <textarea class="input-field" id="sceneImageDescription" rows="4" placeholder="Example: A cozy café at sunset, warm golden light streaming through large windows, a cup of steaming latte on a wooden table beside an open book..."></textarea>
+            <div class="modal-btns" style="margin-top:16px"><button class="modal-btn cancel" onclick="hideModal('sendSceneImageModal')">Cancel</button><button class="modal-btn confirm" onclick="sendSceneImage()">Send</button></div>
+        </div>
+    </div>
+
+    <!-- Send Voice Modal -->
+    <div class="modal-overlay" id="sendVoiceModal">
+        <div class="modal">
+            <div class="modal-title">Send Voice Message</div>
+            <div class="action-hint"><span class="action-hint-icon">🎙️</span><span class="action-hint-text">Type what you would say out loud</span></div>
+            <textarea class="input-field" id="voiceMessageContent" rows="3" placeholder="Example: Hey~ I was just thinking about you..."></textarea>
+            <div class="modal-btns" style="margin-top:16px"><button class="modal-btn cancel" onclick="hideModal('sendVoiceModal')">Cancel</button><button class="modal-btn confirm" onclick="sendVoiceMessage()">Send</button></div>
+        </div>
+    </div>
+
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ========== 由于代码太长，这里继续JavaScript部分 ==========
-        // 这是完整代码的后半部分
-
         const DB_NAME = 'NoirAppDB';
-        const DB_VERSION = 6;
+        const DB_VERSION = 7;
         let db = null;
+
+        // 音效上下文
+        let audioContext = null;
+
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
+
+        function playClickSound() {
+            try {
+                const ctx = initAudioContext();
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+
+                oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1);
+
+                gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.1);
+            } catch (e) {
+                // 静默失败
+            }
+        }
 
         function openDB() {
             return new Promise((resolve, reject) => {
@@ -2096,7 +2325,6 @@
             pendingDeleteFontId: null,
             pendingDeleteCssPresetId: null,
             pendingDeleteApiPresetId: null,
-            // Color picker state
             currentColorTarget: null,
             selectedColor: '#ffffff',
             currentHue: 0,
@@ -2126,6 +2354,8 @@
             userBg1: '#3c3c41', userBg2: '#2d2d32', userText: '#ffffff',
             charBg1: '#2d2d32', charBg2: '#232328', charText: '#ffffff'
         };
+
+        const SCENE_IMAGE_COVER_URL = 'https://iili.io/3fAcryG.jpg';
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -2212,7 +2442,6 @@
                 App.characters.forEach(c => {
                     if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId];
                     if (!c.worldbookIds) c.worldbookIds = [];
-                    // 每个角色独立的气泡样式
                     if (!c.bubbleStyle) c.bubbleStyle = 'none';
                     if (!c.bubbleColors) c.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
                     if (c.glassBorder === undefined) c.glassBorder = false;
@@ -2247,7 +2476,7 @@
             document.getElementById('fontScaleValue').textContent = Math.round(scale * 100) + '%';
         }
 
-        // ========== 气泡样式相关（角色独立） ==========
+        // ========== 气泡样式相关 ==========
         function initBubbleStyleUI(char) {
             if (!char) return;
             const style = char.bubbleStyle || 'none';
@@ -2368,25 +2597,25 @@
 
             switch(style) {
                 case 'glass':
-                    css = `.message.sent{background:linear-gradient(135deg,${hexToRgba(c.userBg1,0.5)},${hexToRgba(c.userBg2,0.4)})!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;border:${glassBorder}!important;color:${c.userText}!important}.message.received{background:linear-gradient(135deg,${hexToRgba(c.charBg1,0.5)},${hexToRgba(c.charBg2,0.4)})!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;border:${glassBorder}!important;color:${c.charText}!important}`;
+                    css = `.message.sent{background:linear-gradient(135deg,${hexToRgba(c.userBg1,0.5)},${hexToRgba(c.userBg2,0.4)})!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;border:${glassBorder}!important;color:${c.userText}!important}.message.received{background:linear-gradient(135deg,${hexToRgba(c.charBg1,0.5)},${hexToRgba(c.charBg2,0.4)})!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;border:${glassBorder}!important;color:${c.charText}!important}.voice-bubble.sent{background:linear-gradient(135deg,${hexToRgba(c.userBg1,0.6)},${hexToRgba(c.userBg2,0.5)})!important;border:${glassBorder}!important}.voice-bubble.received{background:linear-gradient(135deg,${hexToRgba(c.charBg1,0.6)},${hexToRgba(c.charBg2,0.5)})!important;border:${glassBorder}!important}`;
                     break;
                 case 'metal':
-                    css = `.message.sent{background:linear-gradient(145deg,${c.userBg1},${c.userBg2})!important;box-shadow:inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.3)!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.userText}!important}.message.received{background:linear-gradient(145deg,${c.charBg1},${c.charBg2})!important;box-shadow:inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.3)!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.charText}!important}`;
+                    css = `.message.sent{background:linear-gradient(145deg,${c.userBg1},${c.userBg2})!important;box-shadow:inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.3)!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.userText}!important}.message.received{background:linear-gradient(145deg,${c.charBg1},${c.charBg2})!important;box-shadow:inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.3)!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.charText}!important}.voice-bubble.sent{background:linear-gradient(145deg,${c.userBg1},${c.userBg2})!important;box-shadow:inset 1px 1px 3px rgba(255,255,255,0.1),0 3px 6px rgba(0,0,0,0.3)!important}.voice-bubble.received{background:linear-gradient(145deg,${c.charBg1},${c.charBg2})!important;box-shadow:inset 1px 1px 3px rgba(255,255,255,0.1),0 3px 6px rgba(0,0,0,0.3)!important}`;
                     break;
                 case 'solid':
-                    css = `.message.sent{background:${c.userBg1}!important;border:none!important;color:${c.userText}!important}.message.received{background:${c.charBg1}!important;border:none!important;color:${c.charText}!important}`;
+                    css = `.message.sent{background:${c.userBg1}!important;border:none!important;color:${c.userText}!important}.message.received{background:${c.charBg1}!important;border:none!important;color:${c.charText}!important}.voice-bubble.sent{background:${c.userBg1}!important}.voice-bubble.received{background:${c.charBg1}!important}`;
                     break;
                 case 'neon':
-                    css = `.message.sent{background:${hexToRgba(c.userBg1,0.3)}!important;border:1px solid ${c.userBg1}!important;box-shadow:0 0 10px ${hexToRgba(c.userBg1,0.5)},inset 0 0 20px ${hexToRgba(c.userBg1,0.1)}!important;color:${c.userText}!important}.message.received{background:${hexToRgba(c.charBg1,0.3)}!important;border:1px solid ${c.charBg1}!important;box-shadow:0 0 10px ${hexToRgba(c.charBg1,0.5)},inset 0 0 20px ${hexToRgba(c.charBg1,0.1)}!important;color:${c.charText}!important}`;
+                    css = `.message.sent{background:${hexToRgba(c.userBg1,0.3)}!important;border:1px solid ${c.userBg1}!important;box-shadow:0 0 10px ${hexToRgba(c.userBg1,0.5)},inset 0 0 20px ${hexToRgba(c.userBg1,0.1)}!important;color:${c.userText}!important}.message.received{background:${hexToRgba(c.charBg1,0.3)}!important;border:1px solid ${c.charBg1}!important;box-shadow:0 0 10px ${hexToRgba(c.charBg1,0.5)},inset 0 0 20px ${hexToRgba(c.charBg1,0.1)}!important;color:${c.charText}!important}.voice-bubble.sent{background:${hexToRgba(c.userBg1,0.35)}!important;border:1px solid ${c.userBg1}!important;box-shadow:0 0 8px ${hexToRgba(c.userBg1,0.4)}!important}.voice-bubble.received{background:${hexToRgba(c.charBg1,0.35)}!important;border:1px solid ${c.charBg1}!important;box-shadow:0 0 8px ${hexToRgba(c.charBg1,0.4)}!important}`;
                     break;
                 case 'gradient':
-                    css = `.message.sent{background:linear-gradient(135deg,${c.userBg1},${c.userBg2})!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.userText}!important}.message.received{background:linear-gradient(135deg,${c.charBg1},${c.charBg2})!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.charText}!important}`;
+                    css = `.message.sent{background:linear-gradient(135deg,${c.userBg1},${c.userBg2})!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.userText}!important}.message.received{background:linear-gradient(135deg,${c.charBg1},${c.charBg2})!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.charText}!important}.voice-bubble.sent{background:linear-gradient(135deg,${c.userBg1},${c.userBg2})!important}.voice-bubble.received{background:linear-gradient(135deg,${c.charBg1},${c.charBg2})!important}`;
                     break;
             }
             styleEl.textContent = css;
         }
 
-        // ========== 经典色轮颜色选择器（外圈色环 + 内部正方形） ==========
+        // ========== 颜色选择器 ==========
         function initColorPicker() {
             const wrapper = document.getElementById('colorWheelWrapper');
             if (!wrapper) return;
@@ -2396,12 +2625,10 @@
             positionRingHandle(0);
             positionSquareHandle(0.5, 0.5);
 
-            // 鼠标事件
             wrapper.addEventListener('mousedown', handleColorPickerStart);
             document.addEventListener('mousemove', handleColorPickerMove);
             document.addEventListener('mouseup', handleColorPickerEnd);
 
-            // 触摸事件
             wrapper.addEventListener('touchstart', handleColorPickerStart, { passive: false });
             document.addEventListener('touchmove', handleColorPickerMove, { passive: false });
             document.addEventListener('touchend', handleColorPickerEnd);
@@ -2416,7 +2643,6 @@
 
             ctx.clearRect(0, 0, size, size);
 
-            // 绘制色相环
             for (let angle = 0; angle < 360; angle += 0.5) {
                 const startAngle = (angle - 0.5) * Math.PI / 180;
                 const endAngle = (angle + 0.5) * Math.PI / 180;
@@ -2437,18 +2663,15 @@
 
             ctx.clearRect(0, 0, size, size);
 
-            // 基础色相
             ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
             ctx.fillRect(0, 0, size, size);
 
-            // 白色渐变（左到右）
             const gradWhite = ctx.createLinearGradient(0, 0, size, 0);
             gradWhite.addColorStop(0, 'rgba(255,255,255,1)');
             gradWhite.addColorStop(1, 'rgba(255,255,255,0)');
             ctx.fillStyle = gradWhite;
             ctx.fillRect(0, 0, size, size);
 
-            // 黑色渐变（上到下）
             const gradBlack = ctx.createLinearGradient(0, 0, 0, size);
             gradBlack.addColorStop(0, 'rgba(0,0,0,0)');
             gradBlack.addColorStop(1, 'rgba(0,0,0,1)');
@@ -2462,7 +2685,7 @@
             if (!wrapper || !handle) return;
 
             const size = 260, center = size / 2;
-            const radius = 107.5; // (125 + 90) / 2
+            const radius = 107.5;
             const angle = hue * Math.PI / 180;
 
             const x = center + radius * Math.cos(angle);
@@ -2502,13 +2725,11 @@
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
-            // 检查是否在正方形内
             if (clientX >= squareRect.left && clientX <= squareRect.right &&
                 clientY >= squareRect.top && clientY <= squareRect.bottom) {
                 App.colorPickerDragging = 'square';
                 updateSquareFromEvent(clientX, clientY, squareRect);
             } else {
-                // 检查是否在色环内
                 const x = clientX - wrapperRect.left - 130;
                 const y = clientY - wrapperRect.top - 130;
                 const dist = Math.sqrt(x * x + y * y);
@@ -2562,7 +2783,6 @@
             let x = clientX - squareRect.left;
             let y = clientY - squareRect.top;
 
-            // 限制在正方形内
             x = Math.max(0, Math.min(x, squareRect.width));
             y = Math.max(0, Math.min(y, squareRect.height));
 
@@ -2578,7 +2798,6 @@
             const s = App.saturation;
             const v = App.brightness;
 
-            // HSV to RGB
             const rgb = hsvToRgb(h, s, v);
             const hex = '#' + rgb.map(c => Math.round(c).toString(16).padStart(2, '0')).join('');
 
@@ -2586,7 +2805,6 @@
             document.getElementById('colorHexInput').value = hex.toUpperCase();
             document.getElementById('colorPickerPreview').style.background = hex;
 
-            // 更新正方形手柄颜色
             const handle = document.getElementById('squareHandle');
             if (handle) handle.style.background = hex;
         }
@@ -2618,7 +2836,6 @@
                 App.selectedColor = hex;
                 document.getElementById('colorPickerPreview').style.background = hex;
 
-                // 从hex转换回HSV并更新UI
                 const rgb = hexToRgbArray(hex);
                 const hsv = rgbToHsv(rgb[0], rgb[1], rgb[2]);
                 App.currentHue = hsv.h;
@@ -2668,7 +2885,6 @@
             document.getElementById('colorHexInput').value = currentColor.toUpperCase();
             document.getElementById('colorPickerPreview').style.background = currentColor;
 
-            // 从当前颜色转换为HSV
             const rgb = hexToRgbArray(currentColor);
             const hsv = rgbToHsv(rgb[0], rgb[1], rgb[2]);
             App.currentHue = hsv.h;
@@ -2694,8 +2910,82 @@
             hideModal('colorPickerModal');
         }
 
-        // ========== 以下是原有的所有功能代码，完全保留 ==========
+        // ========== 发送描述性图片和语音消息 ==========
+        function sendSceneImage() {
+            const desc = document.getElementById('sceneImageDescription').value.trim();
+            if (!desc) { showToast('Please enter scene description', 'error'); return; }
 
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+
+            const msg = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                type: 'sent',
+                msgType: 'scene-image',
+                content: desc,
+                timestamp: Date.now()
+            };
+
+            char.messages.push(msg);
+            saveData();
+            renderMessages();
+            hideModal('sendSceneImageModal');
+            document.getElementById('sceneImageDescription').value = '';
+            toggleExtensionPanel(false);
+            showToast('Scene image sent', 'success');
+        }
+
+        function sendVoiceMessage() {
+            const content = document.getElementById('voiceMessageContent').value.trim();
+            if (!content) { showToast('Please enter voice content', 'error'); return; }
+
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+
+            const msg = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                type: 'sent',
+                msgType: 'voice',
+                content: content,
+                timestamp: Date.now()
+            };
+
+            char.messages.push(msg);
+            saveData();
+            renderMessages();
+            hideModal('sendVoiceModal');
+            document.getElementById('voiceMessageContent').value = '';
+            toggleExtensionPanel(false);
+            showToast('Voice message sent', 'success');
+        }
+
+        function toggleSceneImage(el) {
+            playClickSound();
+            el.classList.toggle('expanded');
+        }
+
+        function toggleVoiceBubble(el) {
+            playClickSound();
+            el.classList.toggle('expanded');
+        }
+
+        function calculateVoiceDuration(text) {
+            const charCount = text.length;
+            const seconds = Math.max(1, Math.min(60, Math.ceil(charCount / 8)));
+            return seconds + '"';
+        }
+
+        function generateWaveformBars() {
+            const barCount = 18;
+            let html = '';
+            for (let i = 0; i < barCount; i++) {
+                const height = 4 + Math.random() * 12;
+                html += `<div class="voice-waveform-bar" style="height:${height}px"></div>`;
+            }
+            return html;
+        }
+
+        // ========== 其他功能函数 ==========
         async function clearImageCache() {
             if (!confirm('Clear all image cache?')) return;
             App.settings.wallpaperData = null; App.settings.wallpaper = 'gradient1';
@@ -2921,266 +3211,240 @@
                 if (iconData) { preview.innerHTML = `<img src="${iconData}">`; preview.classList.add('has-image'); }
                 else {
                     const svgMap = {
-                        settings: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+                        settings: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
                         messages: '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
                         worldbook: '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
                         photos: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
                         fonts: '<svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>'
                     };
-                    preview.innerHTML = svgMap[app] || ''; preview.classList.remove('has-image');
+                    preview.innerHTML = svgMap[app] || '';
+                    preview.classList.remove('has-image');
                 }
             });
         }
 
-        function applyAppIcons() {
-            ['settings', 'messages', 'worldbook', 'photos', 'fonts'].forEach(app => {
-                const el = document.getElementById('appIcon' + app.charAt(0).toUpperCase() + app.slice(1));
-                if (!el) return;
-                const iconData = App.appIcons[app];
-                if (iconData) el.innerHTML = `<img src="${iconData}" style="width:100%;height:100%;object-fit:cover;">`;
-                else {
-                    const svgMap = {
-                        settings: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
-                        messages: '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
-                        worldbook: '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
-                        photos: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
-                        fonts: '<svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>'
-                    };
-                    el.innerHTML = svgMap[app] || '';
-                }
-            });
-        }
-
-        async function handleIconUpload(e, appName) {
+        async function handleIconUpload(e, app) {
             const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
-            reader.onload = async (ev) => { App.tempIcons[appName] = await compressImage(ev.target.result, 120, 0.8); updateIconPreviews(); showToast('Click Save to apply', 'info'); };
+            reader.onload = async (ev) => { App.tempIcons[app] = await compressImage(ev.target.result, 128, 0.8); updateIconPreviews(); };
             reader.readAsDataURL(file); e.target.value = '';
         }
 
         async function saveIcons() {
-            let changed = false;
-            ['settings', 'messages', 'worldbook', 'photos', 'fonts'].forEach(app => { if (App.tempIcons[app]) { App.appIcons[app] = App.tempIcons[app]; changed = true; } });
-            App.tempIcons = {};
-            if (changed && await saveData()) { applyAppIcons(); await updateStorageDisplay(); showToast('Icons saved', 'success'); }
-            else if (!changed) showToast('No changes', 'info');
+            if (Object.keys(App.tempIcons).length === 0) { showToast('No changes to save', 'warning'); return; }
+            Object.assign(App.appIcons, App.tempIcons); App.tempIcons = {};
+            await saveData(); applyAppIcons(); updateIconPreviews(); await updateStorageDisplay();
+            showToast('Icons saved', 'success');
         }
 
-        async function resetIcons() { App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null }; App.tempIcons = {}; await saveData(); applyAppIcons(); updateIconPreviews(); showToast('Icons reset', 'success'); }
-
-        function openPage(id) {
-            const page = document.getElementById(id);
-            if (page) {
-                page.classList.add('active');
-                if (id === 'messagesPage') renderContacts();
-                if (id === 'worldbookPage') renderWorldbooks();
-                if (id === 'wallpaperPage') { updateWallpaperPreview(); updateIconPreviews(); highlightWallpaper(); applyStatusBarVisibility(); }
-                if (id === 'settingsPage') { updateStorageDisplay(); updateApiPresetSelect(); }
-                if (id === 'fontsPage') renderFontList();
-            }
+        async function resetIcons() {
+            if (!confirm('Reset all icons?')) return;
+            App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null };
+            App.tempIcons = {}; await saveData(); applyAppIcons(); updateIconPreviews();
+            showToast('Icons reset', 'success');
         }
 
-        function closePage(id) { document.getElementById(id)?.classList.remove('active'); }
+        function applyAppIcons() {
+            const map = { settings: 'appIconSettings', messages: 'appIconMessages', worldbook: 'appIconWorldbook', photos: 'appIconPhotos', fonts: 'appIconFonts' };
+            const svgMap = {
+                settings: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+                messages: '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+                worldbook: '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+                photos: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+                fonts: '<svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>'
+            };
+            Object.keys(map).forEach(app => {
+                const el = document.getElementById(map[app]);
+                if (!el) return;
+                if (App.appIcons[app]) el.innerHTML = `<img src="${App.appIcons[app]}">`;
+                else el.innerHTML = svgMap[app];
+            });
+        }
+
         function showModal(id) { document.getElementById(id)?.classList.add('active'); }
         function hideModal(id) { document.getElementById(id)?.classList.remove('active'); }
-        function showToast(msg, type='info') { const c = document.getElementById('toastContainer'); const t = document.createElement('div'); t.className = `toast ${type}`; t.textContent = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000); }
-        function addLog(msg, type='info') { const c = document.getElementById('debugLog'); const e = document.createElement('div'); e.className = `log-entry ${type}`; e.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`; c.appendChild(e); c.scrollTop = c.scrollHeight; }
-        function updateConnectionUI() { const h = document.getElementById('connectionStatusHint'); if (App.connectionStatus === 'connected') { h.className = 'action-hint success'; h.innerHTML = `<span class="action-hint-icon">✓</span><span class="action-hint-text">Connected - ${App.settings.modelName}</span>`; } else { h.className = 'action-hint'; h.innerHTML = `<span class="action-hint-icon">⚠</span><span class="action-hint-text">API not configured</span>`; } }
 
-        async function fetchModels() {
-            const url = document.getElementById('apiBaseUrl').value.trim(), key = document.getElementById('apiKey').value.trim();
-            if (!url || !key) { showToast('Please fill in fields', 'error'); return; }
-            const btn = document.getElementById('fetchModelsBtn'); btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span>';
-            try {
-                const r = await fetch(`${url.replace(/\/+$/,'').replace(/\/v1$/,'')}/v1/models`, { headers: { 'Authorization': `Bearer ${key}` } });
-                if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                const d = await r.json(), models = d.data || d.models || d || [];
-                App.models = models;
-                document.getElementById('modelListContainer').style.display = 'block';
-                document.getElementById('modelList').innerHTML = models.map(m => { const id = m.id || m.name || m; return `<div class="model-item" onclick="selectModel('${id}')"><span class="model-item-name">${id}</span></div>`; }).join('');
-                addLog(`Found ${models.length} models`, 'success');
-            } catch(e) { addLog(`Failed: ${e.message}`, 'error'); showToast(`Failed: ${e.message}`, 'error'); }
-            finally { btn.disabled = false; btn.innerHTML = 'Fetch Models'; }
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`; toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
 
-        function selectModel(id) { App.settings.modelName = id; document.getElementById('modelName').value = id; document.querySelectorAll('.model-item').forEach(el => { el.classList.toggle('selected', el.querySelector('.model-item-name').textContent === id); }); showToast(`Selected: ${id}`, 'success'); }
+        function openPage(pageId) { document.getElementById(pageId)?.classList.add('active'); }
+        function closePage(pageId) { document.getElementById(pageId)?.classList.remove('active'); }
 
-        async function testConnection() {
-            const url = document.getElementById('apiBaseUrl').value.trim(), key = document.getElementById('apiKey').value.trim(), model = document.getElementById('modelName').value.trim();
-            if (!url || !key || !model) { showToast('Please fill in all fields', 'error'); return; }
-            const btn = document.getElementById('testConnectionBtn'); btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span>';
-            try {
-                const r = await fetch(`${url.replace(/\/+$/,'').replace(/\/v1$/,'')}/v1/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model, messages: [{ role: 'user', content: 'Hi' }], max_tokens: 5 }) });
-                if (r.ok) { App.connectionStatus = 'connected'; App.settings.apiBaseUrl = url; App.settings.apiKey = key; App.settings.modelName = model; await saveData(); showToast('Connection successful!', 'success'); addLog('Connection successful', 'success'); }
-                else throw new Error(`HTTP ${r.status}`);
-            } catch(e) { App.connectionStatus = 'disconnected'; showToast(`Failed: ${e.message}`, 'error'); addLog(`Failed: ${e.message}`, 'error'); }
-            finally { updateConnectionUI(); btn.disabled = false; btn.innerHTML = 'Test Connection'; }
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return String(text).replace(/[&<>"']/g, m => map[m]);
         }
 
-        async function saveApiSettings() {
-            App.settings.apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
-            App.settings.apiKey = document.getElementById('apiKey').value.trim();
-            App.settings.modelName = document.getElementById('modelName').value.trim();
-            App.settings.temperature = parseFloat(document.getElementById('temperature').value);
-            App.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
-            App.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
-            await saveData(); showToast('Configuration saved', 'success');
-        }
+        function toggleSwitch(el) { el.classList.toggle('active'); }
+        function selectShape(el) { document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); }
 
         async function createCharacter() {
-            const name = document.getElementById('newCharacterName').value.trim(); if (!name) { showToast('Please enter name', 'error'); return; }
+            const name = document.getElementById('newCharacterName').value.trim();
+            if (!name) { showToast('Please enter name', 'error'); return; }
             const char = {
-                id: Date.now().toString(), name, avatar: ['◆','◇','●','○','■','□'][Math.floor(Math.random()*6)],
-                avatarImage: null, userAvatar: null, showAvatar: true, avatarShape: 'circle',
-                showBorder: false, borderColor: '#ffffff', borderWidth: 2,
-                description: '', greeting: '', scenario: '', worldbookIds: [],
-                userNick: '', systemPrompt: '', messages: [], chatWallpaper: null,
-                customCss: '', activeCssPresetId: null, timestampPosition: 'default',
-                // 每个角色独立的气泡样式
-                bubbleStyle: 'none',
-                bubbleColors: { ...DEFAULT_BUBBLE_COLORS },
-                glassBorder: false,
-                glassBorderWidth: 1
+                id: Date.now().toString(), name, avatar: '◇', description: '', greeting: '', scenario: '',
+                systemPrompt: '', userNick: '', worldbookIds: [], messages: [], showAvatar: true,
+                avatarShape: 'circle', showBorder: false, borderColor: '#ffffff', avatarImage: null, userAvatar: null,
+                customCss: '', timestampPosition: 'default', activeCssPresetId: null, chatWallpaper: null,
+                bubbleStyle: 'none', bubbleColors: { ...DEFAULT_BUBBLE_COLORS }, glassBorder: false, glassBorderWidth: 1
             };
-            App.characters.push(char); await saveData(); hideModal('createCharacterModal'); document.getElementById('newCharacterName').value = ''; renderContacts(); showToast(`"${name}" created`, 'success');
+            App.characters.push(char); await saveData();
+            hideModal('createCharacterModal'); document.getElementById('newCharacterName').value = '';
+            renderContactList(); showToast(`"${name}" created`, 'success');
         }
 
-        function renderContacts() {
-            const list = document.getElementById('contactList'), empty = document.getElementById('emptyContactState');
-            if (App.characters.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
-            list.style.display = 'flex'; empty.style.display = 'none';
+        function renderContactList() {
+            const list = document.getElementById('contactList');
+            const empty = document.getElementById('emptyContactState');
+            if (App.characters.length === 0) { empty.style.display = ''; list.style.display = 'none'; return; }
+            empty.style.display = 'none'; list.style.display = '';
             list.innerHTML = App.characters.map(c => {
-                const lastMsg = c.messages.length > 0 ? c.messages[c.messages.length-1].content.substring(0,30)+'...' : 'Start conversation';
-                const lastTime = c.messages.length > 0 ? formatTime(c.messages[c.messages.length-1].timestamp) : '';
-                const avatarHtml = c.avatarImage ? `<img src="${c.avatarImage}">` : (c.avatar || c.name[0]);
-                return `<div class="contact-item" onclick="openChat('${c.id}')"><div class="contact-avatar">${avatarHtml}</div><div class="contact-info"><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-preview">${escapeHtml(lastMsg)}</div></div><div class="contact-time">${lastTime}</div></div>`;
+                const lastMsg = c.messages[c.messages.length - 1];
+                let preview = c.greeting || 'No messages yet';
+                if (lastMsg) {
+                    if (lastMsg.msgType === 'scene-image') preview = '📷 [Scene Image]';
+                    else if (lastMsg.msgType === 'voice') preview = '🎙️ [Voice Message]';
+                    else preview = lastMsg.content?.substring(0, 40) || '';
+                }
+                const time = lastMsg ? formatTime(lastMsg.timestamp) : '';
+                const avatarContent = c.avatarImage ? `<img src="${c.avatarImage}">` : (c.avatar || '◇');
+                return `<div class="contact-item" onclick="openChat('${c.id}')"><div class="contact-avatar">${avatarContent}</div><div class="contact-info"><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-preview">${escapeHtml(preview)}</div></div><span class="contact-time">${time}</span></div>`;
             }).join('');
         }
 
-        function filterContacts() { const q = document.getElementById('contactSearch').value.toLowerCase(); document.querySelectorAll('.contact-item').forEach(el => { el.style.display = el.querySelector('.contact-name').textContent.toLowerCase().includes(q) ? 'flex' : 'none'; }); }
-
-        function openChat(id) {
-            const char = App.characters.find(c => c.id === id); if (!char) return;
-            App.currentCharId = id; App.isSelectMode = false; App.selectedMsgs.clear(); App.lastAIStart = -1; App.currentQuote = null;
-            document.getElementById('quotePreviewBar').classList.remove('active');
-            document.getElementById('chatTitle').textContent = char.name;
-            document.getElementById('selectModeBar').classList.remove('active');
-            document.getElementById('chatMessages').classList.remove('select-mode');
-            applyChatWallpaper(char); applyCustomCss(char); applyBubbleStyles(char); renderMessages(); openPage('chatPage');
-            if (char.messages.length === 0 && char.greeting) addMessage(char.greeting, 'received');
+        function filterContacts() {
+            const q = document.getElementById('contactSearch').value.toLowerCase();
+            document.querySelectorAll('#contactList .contact-item').forEach((el, i) => {
+                const char = App.characters[i];
+                el.style.display = char.name.toLowerCase().includes(q) ? '' : 'none';
+            });
         }
 
-        function applyChatWallpaper(char) {
+        function formatTime(ts) {
+            if (!ts) return '';
+            const d = new Date(ts), now = new Date();
+            if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function openChat(charId) {
+            App.currentCharId = charId;
+            const char = App.characters.find(c => c.id === charId);
+            if (!char) return;
+            document.getElementById('chatTitle').textContent = char.name;
             const chatPage = document.getElementById('chatPage');
             if (char.chatWallpaper) { chatPage.classList.add('has-custom-bg'); chatPage.style.backgroundImage = `url(${char.chatWallpaper})`; }
             else { chatPage.classList.remove('has-custom-bg'); chatPage.style.backgroundImage = ''; }
-        }
-
-        function applyCustomCss(char) {
-            const styleEl = document.getElementById('customCssStyles');
-            let css = '';
-            if (char.activeCssPresetId) { const preset = App.globalCssPresets.find(p => p.id === char.activeCssPresetId); if (preset) css = preset.css; }
-            if (char.customCss) css = char.customCss;
-            styleEl.textContent = css;
+            applyBubbleStyles(char);
+            applyCustomCss(char);
+            if (char.messages.length === 0 && char.greeting) {
+                char.messages.push({ id: Date.now().toString(), type: 'received', content: char.greeting, timestamp: Date.now() });
+                saveData();
+            }
+            renderMessages();
+            openPage('chatPage');
         }
 
         function closeChatPage() {
-            exitSelectMode(); closePage('chatPage');
+            closePage('chatPage');
+            App.currentCharId = null;
             document.getElementById('customCssStyles').textContent = '';
             document.getElementById('bubbleStyleSheet').textContent = '';
-            saveData();
+            renderContactList();
         }
 
         function renderMessages() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
             const container = document.getElementById('chatMessages');
+            const showAvatar = char.showAvatar !== false;
+            const avatarShape = char.avatarShape || 'circle';
+            const showBorder = char.showBorder || false;
+            const borderColor = char.borderColor || '#ffffff';
             const timestampPos = char.timestampPosition || 'default';
             let html = '';
             let lastDate = '';
 
-            char.messages.forEach((msg, idx) => {
-                const msgDate = new Date(msg.timestamp).toLocaleDateString();
+            char.messages.forEach((msg, index) => {
+                const msgDate = new Date(msg.timestamp).toDateString();
                 if (msgDate !== lastDate) {
-                    html += `<div class="date-separator"><span class="date-separator-text">${msgDate}</span></div>`;
                     lastDate = msgDate;
+                    html += `<div class="date-separator"><span class="date-separator-text">${new Date(msg.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span></div>`;
                 }
 
                 const isSent = msg.type === 'sent';
-                const avatarHtml = getAvatarHtml(char, isSent);
-                const avatarClass = getAvatarClass(char);
+                const avatarContent = isSent
+                    ? (char.userAvatar ? `<img src="${char.userAvatar}">` : '👤')
+                    : (char.avatarImage ? `<img src="${char.avatarImage}">` : (char.avatar || '◇'));
+                const avatarClass = `message-avatar ${avatarShape === 'square' ? 'square' : avatarShape === 'rounded-square' ? 'rounded-square' : ''} ${!showAvatar ? 'hidden' : ''}`;
+                const avatarStyle = showBorder && showAvatar ? `border:2px solid ${borderColor}` : '';
                 const timeClass = timestampPos === 'hidden' ? 'time-hidden' : timestampPos === 'side' ? 'time-side' : '';
-                const quoteHtml = msg.quoteId ? getQuoteHtml(char, msg.quoteId) : '';
-                const imageHtml = msg.image ? `<img src="${msg.image}" class="message-image" onclick="window.open('${msg.image}','_blank')">` : '';
-                const checkboxHtml = `<div class="message-checkbox ${App.selectedMsgs.has(msg.id) ? 'checked' : ''}" onclick="toggleMessageSelect('${msg.id}')"></div>`;
+                const timeHtml = `<div class="message-time ${timeClass}">${formatTime(msg.timestamp)}</div>`;
 
-                html += `<div class="message-wrapper ${msg.type}" data-id="${msg.id}">`;
-                if (!isSent && char.showAvatar) html += `<div class="message-avatar ${avatarClass}">${avatarHtml}</div>`;
-                html += checkboxHtml;
-                html += `<div class="message ${msg.type}" oncontextmenu="showContextMenu(event,'${msg.id}')" ontouchstart="startLongPress(event,'${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()">`;
-                html += quoteHtml;
-                html += `<div class="message-text">${escapeHtml(msg.content)}</div>`;
-                html += imageHtml;
-                html += `<div class="message-time ${timeClass}">${formatTime(msg.timestamp)}</div>`;
-                html += `</div>`;
-                if (isSent && char.showAvatar) html += `<div class="message-avatar ${avatarClass}">${getAvatarHtml(char, true)}</div>`;
-                html += `</div>`;
+                // 根据消息类型渲染不同的气泡
+                if (msg.msgType === 'scene-image') {
+                    // 描述性图片
+                    html += `<div class="message-wrapper ${isSent ? 'sent' : 'received'}">`;
+                    if (!isSent && showAvatar) html += `<div class="${avatarClass}" style="${avatarStyle}">${avatarContent}</div>`;
+                    if (App.isSelectMode) html += `<div class="message-checkbox ${App.selectedMsgs.has(msg.id) ? 'checked' : ''}" data-id="${msg.id}" onclick="toggleMsgSelect('${msg.id}')"></div>`;
+                    html += `<div class="scene-image-bubble" onclick="toggleSceneImage(this)" oncontextmenu="showContextMenu(event,'${msg.id}')">
+                        <div class="scene-image-cover" style="background-image:url('${SCENE_IMAGE_COVER_URL}')">
+                            <div class="scene-image-overlay">
+                                <div class="scene-image-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+                                <span class="scene-image-hint">Tap to view description</span>
+                            </div>
+                        </div>
+                        <div class="scene-image-text">${escapeHtml(msg.content)}</div>
+                    </div>`;
+                    if (isSent && showAvatar) html += `<div class="${avatarClass}" style="${avatarStyle}">${avatarContent}</div>`;
+                    html += '</div>';
+                } else if (msg.msgType === 'voice') {
+                    // 语音消息
+                    const duration = calculateVoiceDuration(msg.content);
+                    const waveformBars = generateWaveformBars();
+                    html += `<div class="message-wrapper ${isSent ? 'sent' : 'received'}">`;
+                    if (!isSent && showAvatar) html += `<div class="${avatarClass}" style="${avatarStyle}">${avatarContent}</div>`;
+                    if (App.isSelectMode) html += `<div class="message-checkbox ${App.selectedMsgs.has(msg.id) ? 'checked' : ''}" data-id="${msg.id}" onclick="toggleMsgSelect('${msg.id}')"></div>`;
+                    html += `<div class="voice-bubble ${isSent ? 'sent' : 'received'}" onclick="toggleVoiceBubble(this)" oncontextmenu="showContextMenu(event,'${msg.id}')">
+                        <div class="voice-bubble-header">
+                            <div class="voice-play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+                            <div class="voice-waveform">${waveformBars}</div>
+                            <span class="voice-duration">${duration}</span>
+                        </div>
+                        <div class="voice-text-content">${escapeHtml(msg.content)}</div>
+                    </div>`;
+                    if (isSent && showAvatar) html += `<div class="${avatarClass}" style="${avatarStyle}">${avatarContent}</div>`;
+                    html += '</div>';
+                } else {
+                    // 普通文本消息
+                    html += `<div class="message-wrapper ${isSent ? 'sent' : 'received'}">`;
+                    if (!isSent && showAvatar) html += `<div class="${avatarClass}" style="${avatarStyle}">${avatarContent}</div>`;
+                    if (App.isSelectMode) html += `<div class="message-checkbox ${App.selectedMsgs.has(msg.id) ? 'checked' : ''}" data-id="${msg.id}" onclick="toggleMsgSelect('${msg.id}')"></div>`;
+                    html += `<div class="message ${isSent ? 'sent' : 'received'}" data-id="${msg.id}" oncontextmenu="showContextMenu(event,'${msg.id}')" ontouchstart="startLongPress(event,'${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()">`;
+                    if (msg.quote) html += `<div class="message-quote">${escapeHtml(msg.quote)}</div>`;
+                    html += `<div>${formatMessageContent(msg.content)}</div>`;
+                    if (msg.image) html += `<img src="${msg.image}" class="message-image" onclick="window.open(this.src)">`;
+                    html += timeHtml + '</div>';
+                    if (isSent && showAvatar) html += `<div class="${avatarClass}" style="${avatarStyle}">${avatarContent}</div>`;
+                    html += '</div>';
+                }
             });
 
             container.innerHTML = html;
             container.scrollTop = container.scrollHeight;
+            if (App.isSelectMode) container.classList.add('select-mode');
+            else container.classList.remove('select-mode');
         }
 
-        function getAvatarHtml(char, isSent) {
-            if (isSent) {
-                if (char.userAvatar) return `<img src="${char.userAvatar}">`;
-                return '👤';
-            } else {
-                if (char.avatarImage) return `<img src="${char.avatarImage}">`;
-                return char.avatar || char.name[0];
-            }
-        }
-
-        function getAvatarClass(char) {
-            let cls = '';
-            if (!char.showAvatar) cls += ' hidden';
-            if (char.avatarShape === 'square') cls += ' square';
-            else if (char.avatarShape === 'rounded-square') cls += ' rounded-square';
-            if (char.showBorder) cls += ` border-${char.borderColor?.replace('#', '')}`;
-            return cls;
-        }
-
-        function getQuoteHtml(char, quoteId) {
-            const quotedMsg = char.messages.find(m => m.id === quoteId);
-            if (!quotedMsg) return '';
-            return `<div class="message-quote">${escapeHtml(quotedMsg.content.substring(0, 100))}${quotedMsg.content.length > 100 ? '...' : ''}</div>`;
-        }
-
-        function addMessage(content, type, options = {}) {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return null;
-            const msg = {
-                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                content, type, timestamp: Date.now(),
-                image: options.image || null,
-                quoteId: options.quoteId || null
-            };
-            char.messages.push(msg);
-            renderMessages();
-            saveData();
-            return msg;
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const content = input.value.trim();
-            if (!content) return;
-            const options = {};
-            if (App.currentQuote) { options.quoteId = App.currentQuote.id; cancelQuote(); }
-            addMessage(content, 'sent', options);
-            input.value = '';
-            autoResizeTextarea(input);
-            toggleExtensionPanel(false);
+        function formatMessageContent(content) {
+            if (!content) return '';
+            return escapeHtml(content).replace(/\n/g, '<br>');
         }
 
         function autoResizeTextarea(el) {
@@ -3188,269 +3452,236 @@
             el.style.height = Math.min(el.scrollHeight, 100) + 'px';
         }
 
-        function toggleExtensionPanel(force) {
+        function toggleExtensionPanel(forceClose) {
             const panel = document.getElementById('extensionPanel');
-            if (force === false) panel.classList.remove('active');
-            else panel.classList.toggle('active');
+            if (forceClose === false || panel.classList.contains('active')) panel.classList.remove('active');
+            else panel.classList.add('active');
         }
 
-        function openImagePicker() { document.getElementById('chatImageInput').click(); toggleExtensionPanel(false); }
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const content = input.value.trim();
+            if (!content) return;
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
 
-        async function handleChatImageUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const compressed = await compressImage(ev.target.result, 500, 0.8);
-                const options = {};
-                if (App.currentQuote) { options.quoteId = App.currentQuote.id; cancelQuote(); }
-                options.image = compressed;
-                addMessage('', 'sent', options);
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        }
+            const msg = { id: Date.now().toString(), type: 'sent', content, timestamp: Date.now() };
+            if (App.currentQuote) { msg.quote = App.currentQuote; App.currentQuote = null; document.getElementById('quotePreviewBar').classList.remove('active'); }
 
-        // ========== 以下是AI消息系统核心函数，绝对不能修改！ ==========
-
-        function buildAPIMessages(char) {
-            const messages = [];
-            let systemContent = `You are roleplaying as "${char.name}".`;
-
-            if (char.description) systemContent += `\n\nCharacter Description:\n${char.description}`;
-            if (char.scenario) systemContent += `\n\nScenario:\n${char.scenario}`;
-
-            // 世界书触发
-            if (char.worldbookIds && char.worldbookIds.length > 0) {
-                const recentText = char.messages.slice(-10).map(m => m.content).join(' ').toLowerCase();
-                let worldbookContent = '';
-                char.worldbookIds.forEach(wbId => {
-                    const wb = App.worldbooks.find(w => w.id === wbId);
-                    if (wb && wb.entries) {
-                        wb.entries.forEach(entry => {
-                            if (entry.alwaysActive) {
-                                worldbookContent += `\n[${entry.name}]: ${entry.content}`;
-                            } else if (entry.keywords) {
-                                const keywords = entry.keywords.split(',').map(k => k.trim().toLowerCase());
-                                if (keywords.some(kw => kw && recentText.includes(kw))) {
-                                    worldbookContent += `\n[${entry.name}]: ${entry.content}`;
-                                }
-                            }
-                        });
-                    }
-                });
-                if (worldbookContent) systemContent += `\n\nWorld Information:${worldbookContent}`;
-            }
-
-            if (char.userNick) systemContent += `\n\nThe user's name/identity: ${char.userNick}`;
-            if (char.systemPrompt) systemContent += `\n\nAdditional Instructions:\n${char.systemPrompt}`;
-
-            // 多条消息分隔规则
-            systemContent += `\n\n[Response Format]
-If you want to send multiple separate messages, use "|||" as delimiter between messages.
-Example: "Hello!|||How are you today?|||I was just thinking about you."
-Each part separated by ||| will be shown as a separate message bubble.
-
-If you want to quote/reply to a specific message, start that message part with [Q:#N] where N is the message number.
-Example: "[Q:#5] I agree with what you said earlier|||But I also think..."
-The quoted message will appear as a reference above your reply.`;
-
-            // 消息编号供引用
-            systemContent += `\n\n[Message History Reference Numbers]`;
-            const maxContext = App.settings.maxContextMessages || 200;
-            const contextMsgs = char.messages.slice(-maxContext);
-            contextMsgs.forEach((m, i) => {
-                systemContent += `\n#${i + 1} (${m.type}): ${m.content.substring(0, 50)}${m.content.length > 50 ? '...' : ''}`;
-            });
-
-            messages.push({ role: 'system', content: systemContent });
-
-            // 构建消息历史
-            let lastRole = null;
-            let combinedContent = '';
-            contextMsgs.forEach((m, idx) => {
-                const role = m.type === 'sent' ? 'user' : 'assistant';
-                let content = m.content;
-                if (m.image) {
-                    // 多模态支持
-                    const msgObj = {
-                        role: role,
-                        content: [
-                            { type: 'text', text: content || 'User shared an image.' },
-                            { type: 'image_url', image_url: { url: m.image } }
-                        ]
-                    };
-                    if (combinedContent && lastRole) {
-                        messages.push({ role: lastRole, content: combinedContent });
-                        combinedContent = '';
-                    }
-                    messages.push(msgObj);
-                    lastRole = null;
-                } else {
-                    if (role === lastRole) {
-                        combinedContent += '|||' + content;
-                    } else {
-                        if (combinedContent && lastRole) {
-                            messages.push({ role: lastRole, content: combinedContent });
-                        }
-                        combinedContent = content;
-                        lastRole = role;
-                    }
-                }
-            });
-            if (combinedContent && lastRole) {
-                messages.push({ role: lastRole, content: combinedContent });
-            }
-
-            return messages;
-        }
-
-        function parseAIResponse(responseText, char) {
-            const parts = responseText.split('|||').map(p => p.trim()).filter(p => p);
-            const result = [];
-            const contextMsgs = char.messages.slice(-(App.settings.maxContextMessages || 200));
-
-            parts.forEach(part => {
-                let quoteId = null;
-                let content = part;
-
-                // 检查引用格式 [Q:#N]
-                const quoteMatch = part.match(/^\[Q:#(\d+)\]\s*/i);
-                if (quoteMatch) {
-                    const msgNum = parseInt(quoteMatch[1]);
-                    if (msgNum > 0 && msgNum <= contextMsgs.length) {
-                        quoteId = contextMsgs[msgNum - 1].id;
-                    }
-                    content = part.replace(/^\[Q:#\d+\]\s*/i, '');
-                }
-
-                // 清理引号
-                content = content.replace(/^["']|["']$/g, '').trim();
-
-                if (content) {
-                    result.push({ content, quoteId });
-                }
-            });
-
-            return result;
+            char.messages.push(msg);
+            input.value = ''; input.style.height = 'auto';
+            await saveData();
+            renderMessages();
         }
 
         async function triggerAIReply() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
             if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
-                showToast('Please configure API first', 'error');
-                return;
+                showToast('Please configure API first', 'error'); return;
             }
-
-            toggleExtensionPanel(false);
-
-            // 显示打字指示器
             const container = document.getElementById('chatMessages');
-            const typingEl = document.createElement('div');
-            typingEl.className = 'message-wrapper received';
-            typingEl.id = 'typingIndicator';
-            typingEl.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
-            container.appendChild(typingEl);
+            const typingHtml = `<div class="message-wrapper received" id="typingIndicator"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+            container.insertAdjacentHTML('beforeend', typingHtml);
             container.scrollTop = container.scrollHeight;
 
             try {
-                const apiMessages = buildAPIMessages(char);
-                const response = await fetch(`${App.settings.apiBaseUrl.replace(/\/+$/, '').replace(/\/v1$/, '')}/v1/chat/completions`, {
+                const messages = buildAPIMessages(char);
+                const response = await fetch(App.settings.apiBaseUrl + '/v1/chat/completions', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${App.settings.apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${App.settings.apiKey}` },
                     body: JSON.stringify({
                         model: App.settings.modelName,
-                        messages: apiMessages,
+                        messages,
                         temperature: App.settings.temperature,
                         max_tokens: App.settings.maxTokens
                     })
                 });
+                document.getElementById('typingIndicator')?.remove();
 
                 if (!response.ok) throw new Error(`API Error: ${response.status}`);
                 const data = await response.json();
-                const content = data.choices?.[0]?.message?.content || '';
+                const aiContent = data.choices?.[0]?.message?.content || 'No response';
 
-                document.getElementById('typingIndicator')?.remove();
+                // 解析AI回复中的特殊消息格式
+                parseAndAddAIMessages(char, aiContent);
 
-                if (content) {
-                    App.lastAIStart = char.messages.length;
-                    const parsedMessages = parseAIResponse(content, char);
-
-                    for (let i = 0; i < parsedMessages.length; i++) {
-                        const pm = parsedMessages[i];
-                        await new Promise(resolve => setTimeout(resolve, i > 0 ? 300 : 0));
-                        addMessage(pm.content, 'received', { quoteId: pm.quoteId });
-                    }
-                }
+                await saveData();
+                renderMessages();
             } catch (e) {
                 document.getElementById('typingIndicator')?.remove();
-                showToast(`Error: ${e.message}`, 'error');
+                showToast('AI request failed: ' + e.message, 'error');
             }
+        }
+
+        function parseAndAddAIMessages(char, content) {
+            // 用|||分割多条消息
+            const parts = content.split(/\|\|\|/).map(p => p.trim()).filter(p => p);
+
+            parts.forEach(part => {
+                // 检查是否是描述性图片 [IMG:...] 或 [img:...]
+                const imgMatch = part.match(/^\[(?:IMG|img):(.+)\]$/s);
+                if (imgMatch) {
+                    char.messages.push({
+                        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                        type: 'received',
+                        msgType: 'scene-image',
+                        content: imgMatch[1].trim(),
+                        timestamp: Date.now()
+                    });
+                    return;
+                }
+
+                // 检查是否是语音消息 [VOICE:...] 或 [voice:...]
+                const voiceMatch = part.match(/^\[(?:VOICE|voice):(.+)\]$/s);
+                if (voiceMatch) {
+                    char.messages.push({
+                        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                        type: 'received',
+                        msgType: 'voice',
+                        content: voiceMatch[1].trim(),
+                        timestamp: Date.now()
+                    });
+                    return;
+                }
+
+                // 普通文本消息
+                if (part) {
+                    char.messages.push({
+                        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                        type: 'received',
+                        content: part,
+                        timestamp: Date.now()
+                    });
+                }
+            });
+        }
+
+        function buildAPIMessages(char) {
+            const messages = [];
+            const worldbookContent = getActiveWorldbookContent(char);
+
+            let systemContent = `You are roleplaying as ${char.name}. `;
+            if (char.description) systemContent += `\n\nCharacter Description:\n${char.description}`;
+            if (char.scenario) systemContent += `\n\nScenario:\n${char.scenario}`;
+            if (char.userNick) systemContent += `\n\nThe user's name/identity is: ${char.userNick}`;
+            if (worldbookContent) systemContent += `\n\nWorld Information:\n${worldbookContent}`;
+            if (char.systemPrompt) systemContent += `\n\nAdditional Instructions:\n${char.systemPrompt}`;
+
+            // 添加特殊消息格式说明
+            systemContent += `\n\n[Special Message Formats - Use naturally based on context]
+You can send different types of messages:
+
+1. Normal text - just type normally
+
+2. Descriptive Image - Use [IMG:description] to send a "scene photo"
+   - Write in third-person, objective description
+   - Describe what the image would show visually
+   - Example: [IMG:A cozy bedroom at night, soft lamplight casting warm shadows on the wall, a cat curled up on the bed]
+
+3. Voice Message - Use [VOICE:content] to send a voice message
+   - Write what you would say out loud
+   - Can include emotional tones like sighs, laughs
+   - Example: [VOICE:Hmm... I was just thinking about you~]
+
+You can mix multiple messages in one response using ||| as separator:
+"Good morning!|||[IMG:Sunlight streaming through curtains, a breakfast tray with toast and orange juice]|||[VOICE:I made you breakfast, come eat while it's hot~]|||Did you sleep well?"
+
+Important: Use these formats naturally and sparingly. Don't overuse them - choose based on what feels authentic for the character and situation.`;
+
+            messages.push({ role: 'system', content: systemContent });
+
+            const maxMsgs = parseInt(App.settings.maxContextMessages) || 200;
+            const recentMsgs = char.messages.slice(-maxMsgs);
+
+            recentMsgs.forEach(msg => {
+                let content = msg.content;
+                if (msg.msgType === 'scene-image') {
+                    content = `[User sent a scene image: ${msg.content}]`;
+                } else if (msg.msgType === 'voice') {
+                    content = `[User sent a voice message: "${msg.content}"]`;
+                } else if (msg.quote) {
+                    content = `[Replying to: "${msg.quote}"]\n${msg.content}`;
+                }
+                if (msg.image) content += '\n[User attached an image]';
+                messages.push({ role: msg.type === 'sent' ? 'user' : 'assistant', content });
+            });
+
+            return messages;
+        }
+
+        function getActiveWorldbookContent(char) {
+            if (!char.worldbookIds || char.worldbookIds.length === 0) return '';
+            let content = '';
+            char.worldbookIds.forEach(wbId => {
+                const wb = App.worldbooks.find(w => w.id === wbId);
+                if (!wb || !wb.entries) return;
+                wb.entries.forEach(entry => {
+                    if (entry.alwaysActive) { content += `\n${entry.content}`; return; }
+                    if (!entry.keywords) return;
+                    const keywords = entry.keywords.split(',').map(k => k.trim().toLowerCase());
+                    const recentText = char.messages.slice(-10).map(m => m.content || '').join(' ').toLowerCase();
+                    if (keywords.some(kw => kw && recentText.includes(kw))) content += `\n${entry.content}`;
+                });
+            });
+            return content;
         }
 
         async function regenerateLastReply() {
             const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            toggleExtensionPanel(false);
-
-            // 删除最后一批AI消息
-            if (App.lastAIStart >= 0 && App.lastAIStart < char.messages.length) {
-                char.messages = char.messages.slice(0, App.lastAIStart);
-            } else {
-                // 找到并删除最后连续的received消息
-                let i = char.messages.length - 1;
-                while (i >= 0 && char.messages[i].type === 'received') i--;
-                if (i < char.messages.length - 1) {
-                    char.messages = char.messages.slice(0, i + 1);
-                }
-            }
-
-            renderMessages();
+            if (!char || char.messages.length === 0) { showToast('No messages to regenerate', 'warning'); return; }
+            const lastReceived = [...char.messages].reverse().find(m => m.type === 'received');
+            if (!lastReceived) { showToast('No AI message to regenerate', 'warning'); return; }
+            char.messages = char.messages.filter(m => m.id !== lastReceived.id);
             await saveData();
+            renderMessages();
+            toggleExtensionPanel(false);
             await triggerAIReply();
         }
 
-        // ========== 选择模式相关 ==========
+        function openImagePicker() { document.getElementById('chatImageInput').click(); toggleExtensionPanel(false); }
+
+        async function handleChatImageUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const compressed = await compressImage(ev.target.result, 500, 0.8);
+                const msg = { id: Date.now().toString(), type: 'sent', content: '', image: compressed, timestamp: Date.now() };
+                char.messages.push(msg); await saveData(); renderMessages();
+            };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
 
         function enterSelectMode() {
-            App.isSelectMode = true;
-            App.selectedMsgs.clear();
+            App.isSelectMode = true; App.selectedMsgs.clear();
             document.getElementById('selectModeBar').classList.add('active');
             document.getElementById('chatMessages').classList.add('select-mode');
-            document.getElementById('selectedCount').textContent = '0';
             toggleExtensionPanel(false);
+            renderMessages();
         }
 
         function exitSelectMode() {
-            App.isSelectMode = false;
-            App.selectedMsgs.clear();
+            App.isSelectMode = false; App.selectedMsgs.clear();
             document.getElementById('selectModeBar').classList.remove('active');
             document.getElementById('chatMessages').classList.remove('select-mode');
             renderMessages();
         }
 
-        function toggleMessageSelect(msgId) {
+        function toggleMsgSelect(msgId) {
             if (App.selectedMsgs.has(msgId)) App.selectedMsgs.delete(msgId);
             else App.selectedMsgs.add(msgId);
+            document.querySelector(`.message-checkbox[data-id="${msgId}"]`)?.classList.toggle('checked');
             document.getElementById('selectedCount').textContent = App.selectedMsgs.size;
-            const checkbox = document.querySelector(`[data-id="${msgId}"] .message-checkbox`);
-            if (checkbox) checkbox.classList.toggle('checked', App.selectedMsgs.has(msgId));
         }
 
         async function deleteSelectedMessages() {
             const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
+            if (!char || App.selectedMsgs.size === 0) { showToast('No messages selected', 'warning'); return; }
             char.messages = char.messages.filter(m => !App.selectedMsgs.has(m.id));
-            await saveData();
-            exitSelectMode();
-            renderMessages();
-            showToast('Messages deleted', 'success');
+            await saveData(); exitSelectMode(); renderMessages(); showToast('Messages deleted', 'success');
         }
-
-        // ========== 上下文菜单 ==========
 
         function showContextMenu(e, msgId) {
             e.preventDefault();
@@ -3464,24 +3695,16 @@ The quoted message will appear as a reference above your reply.`;
         }
 
         function startLongPress(e, msgId) {
-            App.longPressTimer = setTimeout(() => {
-                showContextMenu(e, msgId);
-            }, 500);
+            App.longPressTimer = setTimeout(() => showContextMenu(e, msgId), 500);
         }
 
-        function endLongPress() {
-            if (App.longPressTimer) {
-                clearTimeout(App.longPressTimer);
-                App.longPressTimer = null;
-            }
-        }
+        function endLongPress() { clearTimeout(App.longPressTimer); }
 
         function copyMessageText() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
-            if (msg) {
-                navigator.clipboard.writeText(msg.content);
-                showToast('Copied', 'success');
+            if (msg?.content) {
+                navigator.clipboard.writeText(msg.content).then(() => showToast('Copied', 'success'));
             }
             hideContextMenu();
         }
@@ -3489,10 +3712,11 @@ The quoted message will appear as a reference above your reply.`;
         function quoteMessage() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
-            if (msg) {
-                App.currentQuote = msg;
+            if (msg?.content) {
+                App.currentQuote = msg.content.substring(0, 100);
+                document.getElementById('quotePreviewContent').textContent = App.currentQuote;
                 document.getElementById('quotePreviewBar').classList.add('active');
-                document.getElementById('quotePreviewContent').textContent = msg.content.substring(0, 80) + (msg.content.length > 80 ? '...' : '');
+                document.getElementById('chatInput').focus();
             }
             hideContextMenu();
         }
@@ -3507,7 +3731,7 @@ The quoted message will appear as a reference above your reply.`;
             const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
             if (msg) {
                 App.editingMsgId = msg.id;
-                document.getElementById('editMessageContent').value = msg.content;
+                document.getElementById('editMessageContent').value = msg.content || '';
                 showModal('editMessageModal');
             }
             hideContextMenu();
@@ -3518,29 +3742,25 @@ The quoted message will appear as a reference above your reply.`;
             const msg = char?.messages.find(m => m.id === App.editingMsgId);
             if (msg) {
                 msg.content = document.getElementById('editMessageContent').value.trim();
-                await saveData();
-                renderMessages();
-                showToast('Message updated', 'success');
+                await saveData(); renderMessages(); showToast('Message updated', 'success');
             }
             hideModal('editMessageModal');
             App.editingMsgId = null;
         }
-
-        // ========== 角色设置 ==========
 
         function openCharacterSettings() {
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) return;
 
             document.getElementById('charName').value = char.name || '';
-            document.getElementById('charAvatar').value = char.avatar || '';
+            document.getElementById('charAvatar').value = char.avatar || '◇';
             document.getElementById('charDescription').value = char.description || '';
             document.getElementById('charGreeting').value = char.greeting || '';
             document.getElementById('charScenario').value = char.scenario || '';
-            document.getElementById('charUserNick').value = char.userNick || '';
             document.getElementById('charSystemPrompt').value = char.systemPrompt || '';
-            document.getElementById('customCssEditor').value = char.customCss || '';
+            document.getElementById('charUserNick').value = char.userNick || '';
             document.getElementById('timestampPosition').value = char.timestampPosition || 'default';
+            document.getElementById('customCssEditor').value = char.customCss || '';
 
             const avatarUpload = document.getElementById('charAvatarUpload');
             if (char.avatarImage) { avatarUpload.innerHTML = `<img src="${char.avatarImage}">`; avatarUpload.classList.add('has-image'); }
@@ -3550,231 +3770,91 @@ The quoted message will appear as a reference above your reply.`;
             if (char.userAvatar) { userAvatarUpload.innerHTML = `<img src="${char.userAvatar}">`; userAvatarUpload.classList.add('has-image'); }
             else { userAvatarUpload.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'; userAvatarUpload.classList.remove('has-image'); }
 
-            const showAvatarToggle = document.getElementById('showAvatarToggle');
-            showAvatarToggle.classList.toggle('active', char.showAvatar !== false);
+            const chatWpPreview = document.getElementById('chatWallpaperPreview');
+            if (char.chatWallpaper) { chatWpPreview.style.backgroundImage = `url(${char.chatWallpaper})`; chatWpPreview.classList.add('has-image'); }
+            else { chatWpPreview.style.backgroundImage = ''; chatWpPreview.classList.remove('has-image'); }
 
-            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(el => {
-                el.classList.toggle('selected', el.dataset.shape === (char.avatarShape || 'circle'));
-            });
-
-            const showBorderToggle = document.getElementById('showBorderToggle');
-            showBorderToggle.classList.toggle('active', char.showBorder);
+            document.getElementById('showAvatarToggle').classList.toggle('active', char.showAvatar !== false);
+            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(o => o.classList.toggle('selected', o.dataset.shape === (char.avatarShape || 'circle')));
+            document.getElementById('showBorderToggle').classList.toggle('active', char.showBorder || false);
             document.getElementById('borderColorPicker').value = char.borderColor || '#ffffff';
-
-            const wpPreview = document.getElementById('chatWallpaperPreview');
-            if (char.chatWallpaper) { wpPreview.style.background = `url(${char.chatWallpaper}) center/cover`; wpPreview.classList.add('has-image'); }
-            else { wpPreview.style.background = ''; wpPreview.classList.remove('has-image'); }
 
             updateCharCounter();
             renderWorldbookMultiSelect(char);
             updateCssPresetSelect(char);
-
-            // 初始化气泡样式UI
             initBubbleStyleUI(char);
 
             openPage('characterSettingsPage');
         }
 
-        function closeCharacterSettings() {
-            closePage('characterSettingsPage');
-        }
-
-        async function saveCharacterSettings() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-
-            char.name = document.getElementById('charName').value.trim() || char.name;
-            char.avatar = document.getElementById('charAvatar').value.trim();
-            char.description = document.getElementById('charDescription').value;
-            char.greeting = document.getElementById('charGreeting').value;
-            char.scenario = document.getElementById('charScenario').value;
-            char.userNick = document.getElementById('charUserNick').value.trim();
-            char.systemPrompt = document.getElementById('charSystemPrompt').value;
-            char.customCss = document.getElementById('customCssEditor').value;
-            char.timestampPosition = document.getElementById('timestampPosition').value;
-
-            char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
-            char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
-            char.borderColor = document.getElementById('borderColorPicker').value;
-
-            const selectedShape = document.querySelector('#avatarShapeOptions .shape-option.selected');
-            if (selectedShape) char.avatarShape = selectedShape.dataset.shape;
-
-            // 收集选中的世界书
-            char.worldbookIds = [];
-            document.querySelectorAll('#worldbookMultiSelect .worldbook-multi-checkbox.checked').forEach(el => {
-                char.worldbookIds.push(el.parentElement.dataset.wbId);
-            });
-
-            document.getElementById('chatTitle').textContent = char.name;
-
-            await saveData();
-            applyChatWallpaper(char);
-            applyCustomCss(char);
-            applyBubbleStyles(char);
-            renderMessages();
-            closeCharacterSettings();
-            showToast('Settings saved', 'success');
-        }
-
         function updateCharCounter() {
-            const textarea = document.getElementById('charGreeting');
-            const counter = document.getElementById('greetingCharCounter');
-            const len = textarea.value.length;
-            counter.textContent = `${len}/300`;
-            counter.className = 'char-counter' + (len > 280 ? ' warning' : '') + (len >= 300 ? ' error' : '');
+            const el = document.getElementById('greetingCharCounter');
+            const len = document.getElementById('charGreeting').value.length;
+            el.textContent = `${len}/300`;
+            el.className = 'char-counter' + (len >= 300 ? ' error' : len >= 250 ? ' warning' : '');
         }
 
-        function toggleSwitch(el) { el.classList.toggle('active'); }
-        function selectShape(el) {
-            document.querySelectorAll('#avatarShapeOptions .shape-option').forEach(s => s.classList.remove('selected'));
-            el.classList.add('selected');
-        }
-
-        async function handleCharAvatarUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                char.avatarImage = await compressImage(ev.target.result, 200, 0.8);
-                const upload = document.getElementById('charAvatarUpload');
-                upload.innerHTML = `<img src="${char.avatarImage}">`;
-                upload.classList.add('has-image');
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        }
-
-        async function handleUserAvatarUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                char.userAvatar = await compressImage(ev.target.result, 200, 0.8);
-                const upload = document.getElementById('userAvatarUpload');
-                upload.innerHTML = `<img src="${char.userAvatar}">`;
-                upload.classList.add('has-image');
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        }
-
-        async function handleChatWallpaperUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                char.chatWallpaper = await compressImage(ev.target.result, 600, 0.8);
-                const preview = document.getElementById('chatWallpaperPreview');
-                preview.style.background = `url(${char.chatWallpaper}) center/cover`;
-                preview.classList.add('has-image');
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        }
-
-        function clearChatWallpaper() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            char.chatWallpaper = null;
-            const preview = document.getElementById('chatWallpaperPreview');
-            preview.style.background = '';
-            preview.classList.remove('has-image');
-        }
-
-        function confirmClearAllMessages() { showModal('clearMessagesModal'); }
-
-        async function executeClearAllMessages() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            char.messages = [];
-            await saveData();
-            renderMessages();
-            hideModal('clearMessagesModal');
-            showToast('All messages cleared', 'success');
-        }
-
-        function deleteCurrentCharacter() {
-            App.pendingDeleteType = 'character';
-            App.pendingDeleteId = App.currentCharId;
-            document.getElementById('deleteModalTitle').textContent = 'Delete Character?';
-            document.getElementById('deleteModalDesc').textContent = 'This will permanently delete this character and all messages.';
-            showModal('confirmDeleteModal');
-        }
-
-        async function confirmDelete() {
-            if (App.pendingDeleteType === 'character') {
-                App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
-                await saveData();
-                hideModal('confirmDeleteModal');
-                closeCharacterSettings();
-                closeChatPage();
-                renderContacts();
-                showToast('Character deleted', 'success');
-            } else if (App.pendingDeleteType === 'worldbook') {
-                App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
-                App.characters.forEach(c => {
-                    if (c.worldbookIds) c.worldbookIds = c.worldbookIds.filter(id => id !== App.pendingDeleteId);
-                });
-                await saveData();
-                hideModal('confirmDeleteModal');
-                closeWorldbookEdit();
-                renderWorldbooks();
-                showToast('Worldbook deleted', 'success');
+        function renderWorldbookMultiSelect(char) {
+            const container = document.getElementById('worldbookMultiSelect');
+            if (App.worldbooks.length === 0) {
+                container.innerHTML = '<div style="padding:14px;color:var(--text-tertiary);text-align:center">No worldbooks available</div>';
+                return;
             }
-            App.pendingDeleteType = null;
-            App.pendingDeleteId = null;
+            container.innerHTML = App.worldbooks.map(wb => {
+                const isLinked = char.worldbookIds?.includes(wb.id);
+                return `<div class="worldbook-multi-item" onclick="toggleWorldbookLink('${wb.id}')"><div class="worldbook-multi-checkbox ${isLinked ? 'checked' : ''}"></div><span class="worldbook-multi-name">${escapeHtml(wb.name)}</span></div>`;
+            }).join('');
         }
 
-        // ========== CSS预设 ==========
+        function toggleWorldbookLink(wbId) {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            if (!char.worldbookIds) char.worldbookIds = [];
+            const idx = char.worldbookIds.indexOf(wbId);
+            if (idx >= 0) char.worldbookIds.splice(idx, 1);
+            else char.worldbookIds.push(wbId);
+            renderWorldbookMultiSelect(char);
+        }
 
         function updateCssPresetSelect(char) {
             const select = document.getElementById('cssPresetSelect');
-            select.innerHTML = '<option value="">-- No Preset --</option>' +
-                App.globalCssPresets.map(p => `<option value="${p.id}" ${char.activeCssPresetId === p.id ? 'selected' : ''}>${escapeHtml(p.name)}</option>`).join('');
+            select.innerHTML = '<option value="">-- No Preset --</option>' + App.globalCssPresets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+            if (char.activeCssPresetId) select.value = char.activeCssPresetId;
         }
 
         function loadCssPreset() {
             const presetId = document.getElementById('cssPresetSelect').value;
+            if (!presetId) return;
             const preset = App.globalCssPresets.find(p => p.id === presetId);
             if (preset) {
                 document.getElementById('customCssEditor').value = preset.css;
+                const char = App.characters.find(c => c.id === App.currentCharId);
+                if (char) char.activeCssPresetId = presetId;
                 showToast(`Loaded: ${preset.name}`, 'info');
             }
         }
 
-        function addNewCssPreset() {
-            showModal('cssPresetNameModal');
-            document.getElementById('newCssPresetName').value = '';
-        }
+        function addNewCssPreset() { showModal('cssPresetNameModal'); document.getElementById('newCssPresetName').value = ''; }
 
         async function createCssPreset() {
             const name = document.getElementById('newCssPresetName').value.trim();
             if (!name) { showToast('Please enter name', 'error'); return; }
             const preset = { id: Date.now().toString(), name, css: document.getElementById('customCssEditor').value };
             App.globalCssPresets.push(preset);
-            await saveData();
-            hideModal('cssPresetNameModal');
             const char = App.characters.find(c => c.id === App.currentCharId);
-            if (char) {
-                char.activeCssPresetId = preset.id;
-                updateCssPresetSelect(char);
-            }
+            if (char) char.activeCssPresetId = preset.id;
+            await saveData(); hideModal('cssPresetNameModal'); updateCssPresetSelect(char);
+            document.getElementById('cssPresetSelect').value = preset.id;
             showToast(`Preset "${name}" created`, 'success');
         }
 
         async function saveCssPreset() {
             const presetId = document.getElementById('cssPresetSelect').value;
-            if (!presetId) { showToast('Select or create a preset first', 'warning'); return; }
+            if (!presetId) { showToast('Please select or create a preset first', 'warning'); return; }
             const preset = App.globalCssPresets.find(p => p.id === presetId);
-            if (preset) {
-                preset.css = document.getElementById('customCssEditor').value;
-                await saveData();
-                showToast(`Preset "${preset.name}" updated`, 'success');
-            }
+            if (!preset) return;
+            preset.css = document.getElementById('customCssEditor').value;
+            await saveData(); showToast(`Preset "${preset.name}" updated`, 'success');
         }
 
         function showCssGuide() { showModal('cssGuideModal'); }
@@ -3788,45 +3868,220 @@ The quoted message will appear as a reference above your reply.`;
         function clearCustomCss() {
             document.getElementById('customCssEditor').value = '';
             document.getElementById('customCssStyles').textContent = '';
-            showToast('CSS cleared', 'info');
+            showToast('CSS cleared', 'success');
         }
 
-        // ========== 世界书 ==========
+        function applyCustomCss(char) {
+            if (!char) return;
+            document.getElementById('customCssStyles').textContent = char.customCss || '';
+        }
 
-        function renderWorldbooks() {
-            const list = document.getElementById('worldbookList');
-            const empty = document.getElementById('emptyWorldbookState');
-            if (App.worldbooks.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
-            list.style.display = 'block'; empty.style.display = 'none';
-            list.innerHTML = App.worldbooks.map(wb => {
-                const entriesCount = wb.entries?.length || 0;
-                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entriesCount} entries</span></div><div class="worldbook-item-preview">${escapeHtml(wb.summary || 'No description')}</div></div>`;
-            }).join('');
+        async function handleCharAvatarUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                char.avatarImage = await compressImage(ev.target.result, 200, 0.8);
+                const upload = document.getElementById('charAvatarUpload');
+                upload.innerHTML = `<img src="${char.avatarImage}">`;
+                upload.classList.add('has-image');
+            };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        async function handleUserAvatarUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                char.userAvatar = await compressImage(ev.target.result, 200, 0.8);
+                const upload = document.getElementById('userAvatarUpload');
+                upload.innerHTML = `<img src="${char.userAvatar}">`;
+                upload.classList.add('has-image');
+            };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        async function handleChatWallpaperUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                char.chatWallpaper = await compressImage(ev.target.result, 600, 0.8);
+                const preview = document.getElementById('chatWallpaperPreview');
+                preview.style.backgroundImage = `url(${char.chatWallpaper})`;
+                preview.classList.add('has-image');
+            };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        function clearChatWallpaper() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            char.chatWallpaper = null;
+            const preview = document.getElementById('chatWallpaperPreview');
+            preview.style.backgroundImage = '';
+            preview.classList.remove('has-image');
+            showToast('Wallpaper cleared', 'success');
+        }
+
+        async function saveCharacterSettings() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+
+            char.name = document.getElementById('charName').value.trim() || char.name;
+            char.avatar = document.getElementById('charAvatar').value || '◇';
+            char.description = document.getElementById('charDescription').value;
+            char.greeting = document.getElementById('charGreeting').value;
+            char.scenario = document.getElementById('charScenario').value;
+            char.systemPrompt = document.getElementById('charSystemPrompt').value;
+            char.userNick = document.getElementById('charUserNick').value;
+            char.timestampPosition = document.getElementById('timestampPosition').value;
+            char.customCss = document.getElementById('customCssEditor').value;
+
+            char.showAvatar = document.getElementById('showAvatarToggle').classList.contains('active');
+            const selectedShape = document.querySelector('#avatarShapeOptions .shape-option.selected');
+            char.avatarShape = selectedShape?.dataset.shape || 'circle';
+            char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
+            char.borderColor = document.getElementById('borderColorPicker').value;
+
+            await saveData();
+            document.getElementById('chatTitle').textContent = char.name;
+            const chatPage = document.getElementById('chatPage');
+            if (char.chatWallpaper) { chatPage.classList.add('has-custom-bg'); chatPage.style.backgroundImage = `url(${char.chatWallpaper})`; }
+            else { chatPage.classList.remove('has-custom-bg'); chatPage.style.backgroundImage = ''; }
+            applyBubbleStyles(char);
+            applyCustomCss(char);
+            renderMessages();
+            closePage('characterSettingsPage');
+            showToast('Settings saved', 'success');
+        }
+
+        function closeCharacterSettings() { closePage('characterSettingsPage'); }
+
+        function confirmClearAllMessages() { showModal('clearMessagesModal'); }
+
+        async function executeClearAllMessages() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            char.messages = [];
+            await saveData(); hideModal('clearMessagesModal'); renderMessages();
+            showToast('Messages cleared', 'success');
+        }
+
+        function deleteCurrentCharacter() {
+            App.pendingDeleteType = 'character';
+            App.pendingDeleteId = App.currentCharId;
+            document.getElementById('deleteModalTitle').textContent = 'Delete Character?';
+            document.getElementById('deleteModalDesc').textContent = 'This will permanently delete all messages.';
+            showModal('confirmDeleteModal');
+        }
+
+        async function confirmDelete() {
+            if (App.pendingDeleteType === 'character') {
+                App.characters = App.characters.filter(c => c.id !== App.pendingDeleteId);
+                await saveData();
+                hideModal('confirmDeleteModal');
+                closePage('characterSettingsPage');
+                closeChatPage();
+                renderContactList();
+                showToast('Character deleted', 'success');
+            } else if (App.pendingDeleteType === 'worldbook') {
+                App.worldbooks = App.worldbooks.filter(w => w.id !== App.pendingDeleteId);
+                App.characters.forEach(c => { if (c.worldbookIds) c.worldbookIds = c.worldbookIds.filter(id => id !== App.pendingDeleteId); });
+                await saveData();
+                hideModal('confirmDeleteModal');
+                closePage('worldbookEditPage');
+                renderWorldbookList();
+                showToast('Worldbook deleted', 'success');
+            }
+            App.pendingDeleteType = null;
+            App.pendingDeleteId = null;
         }
 
         async function createWorldbook() {
             const name = document.getElementById('newWorldbookName').value.trim();
             if (!name) { showToast('Please enter name', 'error'); return; }
             const wb = { id: Date.now().toString(), name, summary: '', entries: [{ name: 'New Entry', keywords: '', content: '', alwaysActive: false }] };
-            App.worldbooks.push(wb);
-            await saveData();
-            hideModal('createWorldbookModal');
-            document.getElementById('newWorldbookName').value = '';
-            renderWorldbooks();
-            openWorldbookEdit(wb.id);
+            App.worldbooks.push(wb); await saveData();
+            hideModal('createWorldbookModal'); document.getElementById('newWorldbookName').value = '';
+            renderWorldbookList(); showToast(`"${name}" created`, 'success');
         }
 
-        function openWorldbookEdit(id) {
-            const wb = App.worldbooks.find(w => w.id === id);
+        function renderWorldbookList() {
+            const list = document.getElementById('worldbookList');
+            const empty = document.getElementById('emptyWorldbookState');
+            if (App.worldbooks.length === 0) { empty.style.display = ''; list.style.display = 'none'; return; }
+            empty.style.display = 'none'; list.style.display = '';
+            list.innerHTML = App.worldbooks.map(wb => {
+                const entryCount = wb.entries?.length || 0;
+                return `<div class="worldbook-item" onclick="openWorldbookEdit('${wb.id}')"><div class="worldbook-item-header"><span class="worldbook-item-title">${escapeHtml(wb.name)}</span><span class="worldbook-item-badge">${entryCount} entries</span></div><div class="worldbook-item-preview">${escapeHtml(wb.summary) || 'No description'}</div></div>`;
+            }).join('');
+        }
+
+        function openWorldbookEdit(wbId) {
+            App.currentWbId = wbId;
+            const wb = App.worldbooks.find(w => w.id === wbId);
             if (!wb) return;
-            App.currentWbId = id;
-            document.getElementById('worldbookName').value = wb.name;
+            document.getElementById('worldbookName').value = wb.name || '';
             document.getElementById('worldbookSummary').value = wb.summary || '';
             renderWorldbookEntries(wb);
             openPage('worldbookEditPage');
         }
 
-        function closeWorldbookEdit() { closePage('worldbookEditPage'); App.currentWbId = null; }
+        function renderWorldbookEntries(wb) {
+            const container = document.getElementById('worldbookEntries');
+            if (!wb.entries || wb.entries.length === 0) { container.innerHTML = '<div style="color:var(--text-tertiary);text-align:center;padding:20px">No entries yet</div>'; return; }
+            container.innerHTML = wb.entries.map((entry, i) => `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(entry.name) || `Entry ${i + 1}`}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${i})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${i})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div><div class="worldbook-entry-keywords">Keywords: ${escapeHtml(entry.keywords) || 'None'} ${entry.alwaysActive ? '• Always Active' : ''}</div><div class="worldbook-entry-preview">${escapeHtml(entry.content) || 'No content'}</div></div>`).join('');
+        }
+
+        function addWorldbookEntry() {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb) return;
+            if (!wb.entries) wb.entries = [];
+            wb.entries.push({ name: 'New Entry', keywords: '', content: '', alwaysActive: false });
+            renderWorldbookEntries(wb);
+        }
+
+        function editWorldbookEntry(index) {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb || !wb.entries[index]) return;
+            App.currentEntryIndex = index;
+            const entry = wb.entries[index];
+            document.getElementById('entryName').value = entry.name || '';
+            document.getElementById('entryKeywords').value = entry.keywords || '';
+            document.getElementById('entryContent').value = entry.content || '';
+            document.getElementById('entryAlwaysActive').classList.toggle('active', entry.alwaysActive || false);
+            showModal('entryEditModal');
+        }
+
+        async function saveWorldbookEntry() {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb || App.currentEntryIndex < 0) return;
+            const entry = wb.entries[App.currentEntryIndex];
+            entry.name = document.getElementById('entryName').value.trim() || 'Unnamed';
+            entry.keywords = document.getElementById('entryKeywords').value.trim();
+            entry.content = document.getElementById('entryContent').value;
+            entry.alwaysActive = document.getElementById('entryAlwaysActive').classList.contains('active');
+            await saveData();
+            hideModal('entryEditModal');
+            renderWorldbookEntries(wb);
+            App.currentEntryIndex = -1;
+            showToast('Entry saved', 'success');
+        }
+
+        async function deleteWorldbookEntry(index) {
+            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
+            if (!wb) return;
+            if (!confirm('Delete this entry?')) return;
+            wb.entries.splice(index, 1);
+            await saveData();
+            renderWorldbookEntries(wb);
+            showToast('Entry deleted', 'success');
+        }
 
         async function saveWorldbook() {
             const wb = App.worldbooks.find(w => w.id === App.currentWbId);
@@ -3834,121 +4089,126 @@ The quoted message will appear as a reference above your reply.`;
             wb.name = document.getElementById('worldbookName').value.trim() || wb.name;
             wb.summary = document.getElementById('worldbookSummary').value;
             await saveData();
-            closeWorldbookEdit();
-            renderWorldbooks();
+            closePage('worldbookEditPage');
+            renderWorldbookList();
             showToast('Worldbook saved', 'success');
         }
+
+        function closeWorldbookEdit() { closePage('worldbookEditPage'); App.currentWbId = null; }
 
         function deleteCurrentWorldbook() {
             App.pendingDeleteType = 'worldbook';
             App.pendingDeleteId = App.currentWbId;
             document.getElementById('deleteModalTitle').textContent = 'Delete Worldbook?';
-            document.getElementById('deleteModalDesc').textContent = 'This will permanently delete this worldbook.';
+            document.getElementById('deleteModalDesc').textContent = 'This will unlink it from all characters.';
             showModal('confirmDeleteModal');
         }
 
-        function renderWorldbookEntries(wb) {
-            const container = document.getElementById('worldbookEntries');
-            if (!wb.entries || wb.entries.length === 0) {
-                container.innerHTML = '<p style="color:var(--text-tertiary);text-align:center">No entries yet</p>';
-                return;
+        async function fetchModels() {
+            const baseUrl = document.getElementById('apiBaseUrl').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            if (!baseUrl || !apiKey) { showToast('Please enter API URL and Key', 'error'); return; }
+            const btn = document.getElementById('fetchModelsBtn');
+            btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span> Fetching...';
+            try {
+                const res = await fetch(baseUrl + '/v1/models', { headers: { 'Authorization': `Bearer ${apiKey}` } });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                App.models = data.data || [];
+                renderModelList();
+                document.getElementById('modelListContainer').style.display = 'block';
+                addDebugLog('Fetched ' + App.models.length + ' models', 'success');
+            } catch (e) {
+                addDebugLog('Fetch failed: ' + e.message, 'error');
+                showToast('Failed to fetch models', 'error');
             }
-            container.innerHTML = wb.entries.map((entry, idx) => `<div class="worldbook-entry-item"><div class="worldbook-entry-header"><span class="worldbook-entry-title">${escapeHtml(entry.name)}${entry.alwaysActive ? ' 🔒' : ''}</span><div class="worldbook-entry-actions"><button class="worldbook-entry-btn" onclick="editWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="worldbook-entry-btn" onclick="deleteWorldbookEntry(${idx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div><div class="worldbook-entry-keywords">Keywords: ${escapeHtml(entry.keywords) || 'None'}</div><div class="worldbook-entry-preview">${escapeHtml(entry.content.substring(0, 100))}${entry.content.length > 100 ? '...' : ''}</div></div>`).join('');
+            btn.disabled = false; btn.textContent = 'Fetch Models';
         }
 
-        function addWorldbookEntry() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb) return;
-            App.currentEntryIndex = -1;
-            document.getElementById('entryName').value = '';
-            document.getElementById('entryKeywords').value = '';
-            document.getElementById('entryContent').value = '';
-            document.getElementById('entryAlwaysActive').classList.remove('active');
-            showModal('entryEditModal');
+        function renderModelList() {
+            const container = document.getElementById('modelList');
+            container.innerHTML = App.models.slice(0, 20).map(m => `<div class="model-item" onclick="selectModel('${m.id}')"><div class="model-item-name">${escapeHtml(m.id)}</div></div>`).join('');
         }
 
-        function editWorldbookEntry(idx) {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb || !wb.entries[idx]) return;
-            App.currentEntryIndex = idx;
-            const entry = wb.entries[idx];
-            document.getElementById('entryName').value = entry.name;
-            document.getElementById('entryKeywords').value = entry.keywords;
-            document.getElementById('entryContent').value = entry.content;
-            document.getElementById('entryAlwaysActive').classList.toggle('active', entry.alwaysActive);
-            showModal('entryEditModal');
+        function selectModel(modelId) {
+            document.getElementById('modelName').value = modelId;
+            document.querySelectorAll('.model-item').forEach(el => el.classList.remove('selected'));
+            event.target.closest('.model-item')?.classList.add('selected');
+            showToast(`Selected: ${modelId}`, 'success');
         }
 
-        async function saveWorldbookEntry() {
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb) return;
-            const entry = {
-                name: document.getElementById('entryName').value.trim() || 'Unnamed Entry',
-                keywords: document.getElementById('entryKeywords').value.trim(),
-                content: document.getElementById('entryContent').value,
-                alwaysActive: document.getElementById('entryAlwaysActive').classList.contains('active')
-            };
-            if (App.currentEntryIndex === -1) wb.entries.push(entry);
-            else wb.entries[App.currentEntryIndex] = entry;
-            await saveData();
-            hideModal('entryEditModal');
-            renderWorldbookEntries(wb);
-            showToast('Entry saved', 'success');
-        }
-
-        async function deleteWorldbookEntry(idx) {
-            if (!confirm('Delete this entry?')) return;
-            const wb = App.worldbooks.find(w => w.id === App.currentWbId);
-            if (!wb) return;
-            wb.entries.splice(idx, 1);
-            await saveData();
-            renderWorldbookEntries(wb);
-            showToast('Entry deleted', 'success');
-        }
-
-        function renderWorldbookMultiSelect(char) {
-            const container = document.getElementById('worldbookMultiSelect');
-            if (App.worldbooks.length === 0) {
-                container.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-tertiary)">No worldbooks available</div>';
-                return;
+        async function testConnection() {
+            const baseUrl = document.getElementById('apiBaseUrl').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const model = document.getElementById('modelName').value.trim();
+            if (!baseUrl || !apiKey || !model) { showToast('Please fill all fields', 'error'); return; }
+            const btn = document.getElementById('testConnectionBtn');
+            btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span> Testing...';
+            addDebugLog('Testing connection...', 'info');
+            try {
+                const res = await fetch(baseUrl + '/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify({ model, messages: [{ role: 'user', content: 'Hello' }], max_tokens: 10 })
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                addDebugLog('Connection successful! Response: ' + (data.choices?.[0]?.message?.content || 'OK'), 'success');
+                App.connectionStatus = 'connected';
+                updateConnectionUI();
+                showToast('Connection successful!', 'success');
+            } catch (e) {
+                addDebugLog('Connection failed: ' + e.message, 'error');
+                App.connectionStatus = 'disconnected';
+                updateConnectionUI();
+                showToast('Connection failed', 'error');
             }
-            container.innerHTML = App.worldbooks.map(wb => {
-                const isSelected = char.worldbookIds?.includes(wb.id);
-                return `<div class="worldbook-multi-item" data-wb-id="${wb.id}" onclick="toggleWorldbookSelection(this)"><div class="worldbook-multi-checkbox ${isSelected ? 'checked' : ''}"></div><span class="worldbook-multi-name">${escapeHtml(wb.name)}</span></div>`;
-            }).join('');
+            btn.disabled = false; btn.textContent = 'Test Connection';
         }
 
-        function toggleWorldbookSelection(el) {
-            el.querySelector('.worldbook-multi-checkbox').classList.toggle('checked');
+        function addDebugLog(msg, type) {
+            const container = document.getElementById('debugLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
         }
 
-        // ========== 数据导入导出 ==========
+        function updateConnectionUI() {
+            const hint = document.getElementById('connectionStatusHint');
+            if (App.connectionStatus === 'connected') {
+                hint.className = 'action-hint success';
+                hint.innerHTML = '<span class="action-hint-icon">✓</span><span class="action-hint-text">API connected</span>';
+            } else {
+                hint.className = 'action-hint';
+                hint.innerHTML = '<span class="action-hint-icon">⚠</span><span class="action-hint-text">API not configured</span>';
+            }
+        }
+
+        async function saveApiSettings() {
+            App.settings.apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
+            App.settings.apiKey = document.getElementById('apiKey').value.trim();
+            App.settings.modelName = document.getElementById('modelName').value.trim();
+            App.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
+            App.settings.temperature = parseFloat(document.getElementById('temperature').value) || 0.7;
+            App.settings.maxTokens = parseInt(document.getElementById('maxTokens').value) || 2048;
+            await saveData();
+            showToast('API settings saved', 'success');
+        }
 
         async function exportAllData() {
-            const data = {
-                version: 2,
-                exportDate: new Date().toISOString(),
-                characters: App.characters,
-                worldbooks: App.worldbooks,
-                settings: App.settings,
-                appIcons: App.appIcons,
-                globalCssPresets: App.globalCssPresets,
-                apiPresets: App.apiPresets,
-                fonts: App.fonts.filter(f => !f.isDefault)
-            };
+            const data = { version: 2, characters: App.characters, worldbooks: App.worldbooks, settings: App.settings, appIcons: App.appIcons, globalCssPresets: App.globalCssPresets, apiPresets: App.apiPresets, fonts: App.fonts.filter(f => !f.isDefault) };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = `noir-backup-${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
+            a.href = url; a.download = `noir-backup-${new Date().toISOString().slice(0,10)}.json`;
+            a.click(); URL.revokeObjectURL(url);
             showToast('Data exported', 'success');
         }
 
         async function importData(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+            const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = async (ev) => {
                 try {
@@ -3959,60 +4219,29 @@ The quoted message will appear as a reference above your reply.`;
                     if (data.appIcons) App.appIcons = { ...App.appIcons, ...data.appIcons };
                     if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets;
                     if (data.apiPresets) App.apiPresets = data.apiPresets;
-                    if (data.fonts) data.fonts.forEach(f => { if (!App.fonts.find(ef => ef.id === f.id)) App.fonts.push(f); });
-
+                    if (data.fonts) { data.fonts.forEach(f => { if (!App.fonts.find(ef => ef.id === f.id)) App.fonts.push(f); }); }
                     await saveData();
-                    applyWallpaper();
-                    applyAppIcons();
-                    applyGlobalFont();
-                    renderContacts();
-                    renderWorldbooks();
-                    updateApiPresetSelect();
-                    renderFontList();
-                    loadSettingsUI();
+                    applyWallpaper(); applyAppIcons(); applyGlobalFont(); renderContactList(); renderWorldbookList(); loadSettingsUI(); updateApiPresetSelect(); renderFontList();
                     showToast('Data imported successfully', 'success');
-                } catch (err) {
-                    showToast('Import failed: Invalid file', 'error');
-                }
+                } catch (err) { showToast('Import failed: Invalid file', 'error'); }
             };
-            reader.readAsText(file);
-            e.target.value = '';
+            reader.readAsText(file); e.target.value = '';
         }
 
         async function clearAllData() {
-            if (!confirm('This will delete ALL data including characters, messages, settings, etc. Continue?')) return;
-            if (!confirm('Are you REALLY sure? This cannot be undone!')) return;
-            App.characters = [];
-            App.worldbooks = [];
+            if (!confirm('Clear ALL data? This cannot be undone!')) return;
+            if (!confirm('Are you absolutely sure?')) return;
+            App.characters = []; App.worldbooks = []; App.globalCssPresets = []; App.apiPresets = [];
             App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null, fontScale: 1 };
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null };
-            App.globalCssPresets = [];
-            App.apiPresets = [];
             App.fonts = [...DEFAULT_FONTS];
             await saveData();
-            applyWallpaper();
-            applyAppIcons();
-            applyGlobalFont();
-            applyFontScale();
-            loadSettingsUI();
-            renderContacts();
-            renderWorldbooks();
-            renderFontList();
-            updateApiPresetSelect();
+            applyWallpaper(); applyAppIcons(); applyGlobalFont(); applyFontScale(); renderContactList(); renderWorldbookList(); loadSettingsUI(); updateApiPresetSelect(); renderFontList();
             showToast('All data cleared', 'success');
         }
 
-        // ========== 工具函数 ==========
-
-        function formatTime(ts) {
-            if (!ts) return '';
-            return new Date(ts).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-        }
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => { renderContactList(); renderWorldbookList(); });
     </script>
 </body>
 </html>
