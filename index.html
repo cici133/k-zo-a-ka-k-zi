@@ -3325,69 +3325,117 @@
         }
 
         function renderMessages() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            const container = document.getElementById('chatMessages');
-            const timestampPos = char.timestampPosition || 'default';
-            let html = '';
-            let lastDate = '';
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    const container = document.getElementById('chatMessages');
+    const timestampPos = char.timestampPosition || 'default';
+    let html = '';
+    let lastDate = '';
 
-            char.messages.forEach((msg, idx) => {
-                const msgDate = new Date(msg.timestamp).toDateString();
-                if (msgDate !== lastDate) {
-                    html += `<div class="date-separator"><span class="date-separator-text">${new Date(msg.timestamp).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span></div>`;
-                    lastDate = msgDate;
-                }
-
-                const type = msg.sender === 'user' ? 'sent' : 'received';
-                const showAvatar = char.showAvatar !== false;
-                const avatarShape = char.avatarShape || 'circle';
-                const showBorder = char.showBorder;
-                const borderColor = char.borderColor || '#ffffff';
-
-                let avatarHtml = '';
-                if (showAvatar) {
-                    const avatarImg = type === 'sent' ? char.userAvatar : char.avatarImage;
-                    const avatarContent = avatarImg ? `<img src="${avatarImg}">` : (char.avatar || '◇');
-                    const borderStyle = showBorder ? `border: 2px solid ${borderColor}` : '';
-                    avatarHtml = `<div class="message-avatar ${avatarShape}" style="${borderStyle}">${avatarContent}</div>`;
-                }
-
-                const timeClass = timestampPos === 'hidden' ? 'time-hidden' : timestampPos === 'side' ? 'time-side' : '';
-                const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-
-                // Check for special message types
-                if (msg.type === 'scene-image') {
-                    html += renderSceneImageMessage(msg, idx, type, avatarHtml, time, timeClass);
-                } else if (msg.type === 'voice') {
-                    html += renderVoiceMessage(msg, idx, type, avatarHtml, time, timeClass);
-                } else {
-                    // Regular text message
-                    let quoteHtml = '';
-                    if (msg.quoteId !== undefined && msg.quoteId !== null) {
-                        const quotedMsg = char.messages.find(m => m.id === msg.quoteId);
-                        if (quotedMsg) quoteHtml = `<div class="message-quote">${escapeHtml((quotedMsg.content || '').substring(0, 50))}</div>`;
-                    }
-
-                    let contentHtml = escapeHtml(msg.content || '');
-                    if (msg.image) contentHtml += `<img src="${msg.image}" class="message-image" onclick="viewImage(this.src)">`;
-
-                    html += `<div class="message-wrapper ${type}" data-id="${msg.id}">
-                        ${type === 'received' ? avatarHtml : ''}
-                        <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
-                        <div class="message ${type}" oncontextmenu="showContextMenu(event, '${msg.id}')" ontouchstart="startLongPress('${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()">
-                            ${quoteHtml}
-                            <div class="message-content">${contentHtml}</div>
-                            <div class="message-time ${timeClass}">${time}</div>
-                        </div>
-                        ${type === 'sent' ? avatarHtml : ''}
-                    </div>`;
-                }
-            });
-
-            container.innerHTML = html;
-            container.scrollTop = container.scrollHeight;
+    char.messages.forEach((msg, idx) => {
+        const msgDate = new Date(msg.timestamp).toDateString();
+        if (msgDate !== lastDate) {
+            html += `<div class="date-separator"><span class="date-separator-text">${new Date(msg.timestamp).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span></div>`;
+            lastDate = msgDate;
         }
+
+        const senderType = msg.sender === 'user' ? 'sent' : 'received';
+        const showAvatar = char.showAvatar !== false;
+        const avatarShape = char.avatarShape || 'circle';
+        const showBorder = char.showBorder;
+        const borderColor = char.borderColor || '#ffffff';
+
+        let avatarHtml = '';
+        if (showAvatar) {
+            const avatarImg = senderType === 'sent' ? char.userAvatar : char.avatarImage;
+            const avatarContent = avatarImg ? `<img src="${avatarImg}">` : (char.avatar || '◇');
+            const borderStyle = showBorder ? `border: 2px solid ${borderColor}` : '';
+            avatarHtml = `<div class="message-avatar ${avatarShape}" style="${borderStyle}">${avatarContent}</div>`;
+        }
+
+        const timeClass = timestampPos === 'hidden' ? 'time-hidden' : timestampPos === 'side' ? 'time-side' : '';
+        const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+        // 运行时解析消息类型和内容
+        let msgType = msg.type || 'text';
+        let msgContent = msg.content || '';
+        let quoteId = msg.quoteId;
+
+        // 如果type不明确，尝试从内容中解析
+        if (msgType === 'text' || !msgType) {
+            // 检查是否是场景图片格式
+            const imgMatch = msgContent.match(/^\[IMG:\s*(.+?)\s*\]$/is);
+            if (imgMatch) {
+                msgType = 'scene-image';
+                msgContent = imgMatch[1].trim();
+            }
+            // 检查是否是语音消息格式
+            const voiceMatch = msgContent.match(/^\[VOICE:\s*(.+?)\s*\]$/is);
+            if (voiceMatch) {
+                msgType = 'voice';
+                msgContent = voiceMatch[1].trim();
+            }
+            // 检查是否有引用格式
+            const quoteMatch = msgContent.match(/^\[Q:#(\d+)\]\s*/i);
+            if (quoteMatch) {
+                const msgIndex = parseInt(quoteMatch[1]) - 1;
+                if (msgIndex >= 0 && msgIndex < char.messages.length) {
+                    quoteId = char.messages[msgIndex].id;
+                }
+                msgContent = msgContent.replace(quoteMatch[0], '').trim();
+
+                // 移除引用后再检查是否是特殊格式
+                const imgMatch2 = msgContent.match(/^\[IMG:\s*(.+?)\s*\]$/is);
+                if (imgMatch2) {
+                    msgType = 'scene-image';
+                    msgContent = imgMatch2[1].trim();
+                }
+                const voiceMatch2 = msgContent.match(/^\[VOICE:\s*(.+?)\s*\]$/is);
+                if (voiceMatch2) {
+                    msgType = 'voice';
+                    msgContent = voiceMatch2[1].trim();
+                }
+            }
+        }
+
+        // 根据解析后的类型渲染
+        if (msgType === 'scene-image') {
+            html += renderSceneImageMessage({...msg, content: msgContent}, idx, senderType, avatarHtml, time, timeClass);
+        } else if (msgType === 'voice') {
+            html += renderVoiceMessage({...msg, content: msgContent}, idx, senderType, avatarHtml, time, timeClass);
+        } else {
+            // 普通文本消息
+            let quoteHtml = '';
+            if (quoteId !== undefined && quoteId !== null) {
+                const quotedMsg = char.messages.find(m => m.id === quoteId);
+                if (quotedMsg) {
+                    let quotedContent = quotedMsg.content || '';
+                    // 清理引用内容中的格式标记
+                    quotedContent = quotedContent.replace(/^\[Q:#\d+\]\s*/i, '');
+                    quotedContent = quotedContent.replace(/^\[(IMG|VOICE):\s*/i, '').replace(/\]$/, '');
+                    quoteHtml = `<div class="message-quote">${escapeHtml(quotedContent.substring(0, 50))}</div>`;
+                }
+            }
+
+            let contentHtml = escapeHtml(msgContent);
+            if (msg.image) contentHtml += `<img src="${msg.image}" class="message-image" onclick="viewImage(this.src)">`;
+
+            html += `<div class="message-wrapper ${senderType}" data-id="${msg.id}">
+                ${senderType === 'received' ? avatarHtml : ''}
+                <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
+                <div class="message ${senderType}" oncontextmenu="showContextMenu(event, '${msg.id}')" ontouchstart="startLongPress('${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()">
+                    ${quoteHtml}
+                    <div class="message-content">${contentHtml}</div>
+                    <div class="message-time ${timeClass}">${time}</div>
+                </div>
+                ${senderType === 'sent' ? avatarHtml : ''}
+            </div>`;
+        }
+    });
+
+    container.innerHTML = html;
+    container.scrollTop = container.scrollHeight;
+}
 
         function renderSceneImageMessage(msg, idx, type, avatarHtml, time, timeClass) {
             return `<div class="message-wrapper ${type}" data-id="${msg.id}">
