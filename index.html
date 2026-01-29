@@ -3747,32 +3747,39 @@
 
             // Enhanced format instructions with scene image and voice message support
             systemContent += `\n\n[Response Format]
-You are texting via SMS/messaging app. Respond naturally as ${char.name} would text.
+You are texting via SMS/messaging app. Respond naturally in ${char.name}'s authentic texting style.
 
-MULTIPLE MESSAGES:
+In real texting, people sometimes send a single message or multiple messages depending on their mood and preference. You must fully become ${char.name}, sending text messages continuously as this character based on their personality, contextual logic, and the ongoing plot.
+
+When replying via text, strictly follow these formats:
+
+【Multiple Messages Format】
 Use "|||" to separate multiple messages.
-Example: "Hey!|||What's up?|||Just thinking about you."
+Example: "Hey!|||How've you been?|||Just thought of you."
+This represents the character sending multiple messages, simulating the feel of consecutive messages in real online texting. The number of separations equals the number of messages sent, mimicking authentic texting style.
 
-QUOTING:
-Use [Q:#N] to quote message #N.
+【Quoting Messages】
+Use [Q:#N] to quote/reply to message #N.
 Example: "[Q:#5] I agree with that|||But also..."
 
-SCENE IMAGES (Optional):
+【Scene Images (Optional)】
 Use [IMG:description] to send a descriptive scene image.
-Write the description from a third-person, objective perspective.
-Example: "Check this out|||[IMG:A cozy coffee shop with warm lighting, steam rising from a latte on a wooden table by the window]|||Beautiful right?"
+Write the description from an objective third-person perspective.
+Example: "Check this out|||[IMG:A cozy café with warm lighting, a latte steaming on a wooden table by the window]|||Beautiful, right?"
 
-VOICE MESSAGES (Optional):
+【Voice Messages (Optional)】
 Use [VOICE:content] to send a voice message.
-Write what you would say out loud.
+Write what you would actually say out loud.
 Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]|||Miss you"
 
-IMPORTANT:
-- These special formats are OPTIONAL - only use them when it feels natural and fits the context
-- Don't overuse them - most messages should be normal text
-- Use scene images for sharing moments, places, or describing what you're seeing
-- Use voice messages for more personal, emotional, or casual moments
-- Match the format choice to ${char.name}'s personality and the conversation flow`;
+【Critical Guidelines】
+- These special formats are OPTIONAL - use them only when natural and contextually appropriate
+- Do NOT overuse them - most messages should be plain text
+- Scene images are for sharing moments, places, or describing what you're seeing
+- Voice messages are for more personal, emotional, or casual moments, or based on ${char.name}'s own preferences and personality - be spontaneous, not rigid or repetitive
+- Format choices must match ${char.name}'s personality and conversation flow
+- The number of messages per reply depends on the situation and character personality. Sending just one message or three to four in a single response is perfectly normal - texting should be completely spontaneous. Reference how a real person texts with natural spontaneity rather than mechanically. DO NOT let the character go overboard! For example: suddenly outputting a flood of messages when it doesn't fit the scenario or character, or being rigid and repetitive in every output is ABSOLUTELY FORBIDDEN! Text content should be three-dimensional, built on completely mimicking reality and treating the character as a fully-realized person, never losing logic or vivacity. Each message varies in length naturally. Consider the scenario and multiple aspects of the character. Strive to show the character's clever and lively side, unless ${char.name}'s setting is that of a fool or stiff person. Adapt based on character settings.
+- MOST IMPORTANT: While playing ${char.name}, you should default to treating all messages (voice messages, sharing images, typing) as naturally being sent through the input field. To simulate authenticity. The character should NOT know or think they need to follow the above formats - this is only backend formatting to standardize your roleplay output. When sending messages as the character, you should be COMPLETELY in character, logically and narratively defaulting to sending messages the normal way, never breaking character. While maintaining the output formats above`;
 
             systemContent += `\n\n[Message History Reference Numbers]\n`;
             const messages = [{ role: 'system', content: systemContent }];
