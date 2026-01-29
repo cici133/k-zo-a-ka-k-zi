@@ -3767,21 +3767,21 @@ IMPORTANT:
         function parseAIResponse(responseText, char) {
             const parts = responseText.split('|||').map(p => p.trim()).filter(p => p);
             return parts.map(part => {
-                let content = part;
+                let content = part.trim();
                 let quoteId = null;
                 let type = 'text';
 
-                // Check for quote format [Q:#N]
-                const quoteMatch = content.match(/^\[Q:#(\d+)\]\s*/i);
+                // Check for quote format [Q:#N] - flexible matching
+                const quoteMatch = content.match(/^\[Q:\s*#?(\d+)\]\s*/i);
                 if (quoteMatch) {
                     const msgIndex = parseInt(quoteMatch[1]) - 1;
                     const recentMsgs = char.messages.slice(-(App.settings.maxContextMessages || 200));
                     if (recentMsgs[msgIndex]) quoteId = recentMsgs[msgIndex].id;
-                    content = content.replace(quoteMatch[0], '');
+                    content = content.replace(quoteMatch[0], '').trim();
                 }
 
                 // Check for scene image format [IMG:description] - case insensitive
-                const imgMatch = content.match(/^\[IMG:(.+)\]$/is);
+                const imgMatch = content.match(/^\s*\[img\s*:\s*(.+?)\s*\]\s*$/is);
                 if (imgMatch) {
                     type = 'scene-image';
                     content = imgMatch[1].trim();
@@ -3789,7 +3789,7 @@ IMPORTANT:
                 }
 
                 // Check for voice message format [VOICE:content] - case insensitive
-                const voiceMatch = content.match(/^\[VOICE:(.+)\]$/is);
+                const voiceMatch = content.match(/^\s*\[voice\s*:\s*(.+?)\s*\]\s*$/is);
                 if (voiceMatch) {
                     type = 'voice';
                     content = voiceMatch[1].trim();
@@ -3811,7 +3811,7 @@ IMPORTANT:
                 showToast('Configure API first', 'error'); return;
             }
 
-            toggleExtensionPanel();
+            document.getElementById('extensionPanel').classList.remove('active');
 
             // Show typing indicator
             const container = document.getElementById('chatMessages');
