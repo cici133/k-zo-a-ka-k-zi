@@ -4,75 +4,82 @@
 <head>
     <meta charset="UTF-8">
     
-    <!-- ========== iOS PWA 全屏模式完整配置 ========== -->
-    <!-- 基础viewport配置 - viewport-fit=cover是关键，让内容延伸到安全区域 -->
+    <!-- ========== iOS PWA 全屏模式关键配置 ========== -->
+    <!-- 视口设置：viewport-fit=cover 让内容延伸到刘海和底部安全区 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- iOS Safari 独立模式 - 这是最关键的标签，让添加到主屏幕后以独立App模式运行 -->
+    <!-- iOS Safari: 启用Web App模式（添加到主屏幕后全屏运行，不显示Safari UI） -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     
-    <!-- iOS 状态栏样式 - black-translucent让状态栏透明，内容可以延伸到状态栏下方 -->
+    <!-- iOS状态栏样式：black-translucent让状态栏透明，内容可延伸到状态栏下方 -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <!-- iOS 主屏幕显示的应用名称 -->
+    <!-- iOS主屏幕上显示的应用名称 -->
     <meta name="apple-mobile-web-app-title" content="NOIR">
     
-    <!-- Android Chrome 独立模式 -->
+    <!-- Android Chrome: 启用Web App模式 -->
     <meta name="mobile-web-app-capable" content="yes">
     
-    <!-- 主题色 - 影响Android状态栏和iOS Safari地址栏颜色 -->
+    <!-- 主题颜色：影响地址栏和任务切换器的颜色 -->
     <meta name="theme-color" content="#0a0a0a">
-    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+    
+    <!-- iOS状态栏在浅色模式下的颜色 -->
     <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: light)">
     
-    <!-- 禁用Safari的电话号码自动检测 -->
+    <!-- iOS状态栏在深色模式下的颜色 -->
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+    
+    <!-- 禁止iOS自动检测电话号码并添加链接 -->
     <meta name="format-detection" content="telephone=no">
     
-    <!-- 禁用自动翻译 -->
-    <meta name="google" content="notranslate">
+    <!-- 禁止iOS自动检测地址 -->
+    <meta name="format-detection" content="address=no">
     
-    <!-- iOS 主屏幕图标 - 不同尺寸适配不同设备 -->
-    <!-- 你需要创建这些图标并托管在GitHub上，或者使用在线图标 -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%230a0a0a' width='180' height='180' rx='40'/><text x='90' y='115' text-anchor='middle' fill='%23c9a962' font-size='60' font-family='serif'>N</text></svg>">
-    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%230a0a0a' width='180' height='180' rx='40'/><text x='90' y='115' text-anchor='middle' fill='%23c9a962' font-size='60' font-family='serif'>N</text></svg>">
-    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152 152'><rect fill='%230a0a0a' width='152' height='152' rx='34'/><text x='76' y='98' text-anchor='middle' fill='%23c9a962' font-size='50' font-family='serif'>N</text></svg>">
-    <link rel="apple-touch-icon" sizes="120x120" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect fill='%230a0a0a' width='120' height='120' rx='27'/><text x='60' y='78' text-anchor='middle' fill='%23c9a962' font-size='40' font-family='serif'>N</text></svg>">
+    <!-- 禁止iOS自动检测邮箱 -->
+    <meta name="format-detection" content="email=no">
     
-    <!-- iOS 启动画面 (Splash Screen) - 各种设备尺寸 -->
-    <!-- iPhone X/XS/11 Pro/12 mini (1125x2436) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 812'><rect fill='%230a0a0a' width='375' height='812'/><text x='187' y='406' text-anchor='middle' fill='%23c9a962' font-size='48' font-family='serif'>NOIR</text></svg>">
+    <!-- ========== iOS 主屏幕图标配置 ========== -->
+    <!-- iOS主屏幕图标 (180x180 for iPhone) -->
+    <link rel="apple-touch-icon" href="https://iili.io/fsAcryG.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://iili.io/fsAcryG.jpg">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://iili.io/fsAcryG.jpg">
+    <link rel="apple-touch-icon" sizes="167x167" href="https://iili.io/fsAcryG.jpg">
+    
+    <!-- iOS启动画面/闪屏配置 - 防止白屏闪烁 -->
+    <!-- iPhone X/XS/11 Pro (1125x2436) -->
+    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
     <!-- iPhone XR/11 (828x1792) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 414 896'><rect fill='%230a0a0a' width='414' height='896'/><text x='207' y='448' text-anchor='middle' fill='%23c9a962' font-size='48' font-family='serif'>NOIR</text></svg>">
+    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)">
     <!-- iPhone XS Max/11 Pro Max (1242x2688) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 414 896'><rect fill='%230a0a0a' width='414' height='896'/><text x='207' y='448' text-anchor='middle' fill='%23c9a962' font-size='48' font-family='serif'>NOIR</text></svg>">
-    <!-- iPhone 12/12 Pro/13/13 Pro/14 (1170x2532) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844'><rect fill='%230a0a0a' width='390' height='844'/><text x='195' y='422' text-anchor='middle' fill='%23c9a962' font-size='48' font-family='serif'>NOIR</text></svg>">
-    <!-- iPhone 12 Pro Max/13 Pro Max/14 Plus (1284x2778) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 428 926'><rect fill='%230a0a0a' width='428' height='926'/><text x='214' y='463' text-anchor='middle' fill='%23c9a962' font-size='48' font-family='serif'>NOIR</text></svg>">
+    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPhone 12/13/14 mini (1080x2340) -->
+    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPhone 12/13/14 (1170x2532) -->
+    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPhone 12/13/14 Pro Max (1284x2778) -->
+    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
     <!-- iPhone 14 Pro (1179x2556) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 393 852'><rect fill='%230a0a0a' width='393' height='852'/><text x='196' y='426' text-anchor='middle' fill='%23c9a962' font-size='48' font-family='serif'>NOIR</text></svg>">
+    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
     <!-- iPhone 14 Pro Max (1290x2796) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 430 932'><rect fill='%230a0a0a' width='430' height='932'/><text x='215' y='466' text-anchor='middle' fill='%23c9a962' font-size='48' font-family='serif'>NOIR</text></svg>">
+    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
     <!-- iPhone 15/15 Pro (1179x2556) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 393 852'><rect fill='%230a0a0a' width='393' height='852'/><text x='196' y='426' text-anchor='middle' fill='%23c9a962' font-size='48' font-family='serif'>NOIR</text></svg>">
-    <!-- iPhone 8/7/6s/6 (750x1334) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 667'><rect fill='%230a0a0a' width='375' height='667'/><text x='187' y='333' text-anchor='middle' fill='%23c9a962' font-size='48' font-family='serif'>NOIR</text></svg>">
-    <!-- iPhone 8 Plus/7 Plus/6s Plus/6 Plus (1242x2208) -->
-    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 414 736'><rect fill='%230a0a0a' width='414' height='736'/><text x='207' y='368' text-anchor='middle' fill='%23c9a962' font-size='48' font-family='serif'>NOIR</text></svg>">
-    <!-- iPad Pro 12.9" -->
-    <link rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1366'><rect fill='%230a0a0a' width='1024' height='1366'/><text x='512' y='683' text-anchor='middle' fill='%23c9a962' font-size='72' font-family='serif'>NOIR</text></svg>">
-    <!-- iPad Pro 11" -->
-    <link rel="apple-touch-startup-image" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 834 1194'><rect fill='%230a0a0a' width='834' height='1194'/><text x='417' y='597' text-anchor='middle' fill='%23c9a962' font-size='60' font-family='serif'>NOIR</text></svg>">
+    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- iPhone 15 Plus/15 Pro Max (1290x2796) -->
+    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
+    <!-- 旧版iPhone 8/SE (750x1334) -->
+    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+    <!-- iPhone 8 Plus (1242x2208) -->
+    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)">
     
-    <!-- Web App Manifest - 内联版本，避免需要单独文件 -->
-    <link rel="manifest" href="data:application/json,{%22name%22:%22NOIR%22,%22short_name%22:%22NOIR%22,%22description%22:%22Premium%20SMS%20Experience%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230a0a0a%22,%22theme_color%22:%22%230a0a0a%22,%22orientation%22:%22portrait%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Crect%20fill%3D%27%25230a0a0a%27%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27100%27%2F%3E%3Ctext%20x%3D%27256%27%20y%3D%27340%27%20text-anchor%3D%27middle%27%20fill%3D%27%2523c9a962%27%20font-size%3D%27200%27%20font-family%3D%27serif%27%3EN%3C%2Ftext%3E%3C%2Fsvg%3E%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%20maskable%22}]}">
+    <!-- ========== Web App Manifest ========== -->
+    <!-- 链接到manifest.json（PWA配置文件） -->
+    <link rel="manifest" href="/k-zo-a-ka-k-zi/manifest.json">
     
-    <!-- 通用favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0a0a' width='100' height='100' rx='20'/><text x='50' y='68' text-anchor='middle' fill='%23c9a962' font-size='50' font-family='serif'>N</text></svg>">
+    <!-- 标准favicon -->
+    <link rel="icon" type="image/jpeg" href="https://iili.io/fsAcryG.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="https://iili.io/fsAcryG.jpg">
     
-    <!-- ========== iOS PWA 配置结束 ========== -->
-    
-    <title>NOIR · Premium SMS v10</title>
+    <title>NOIR · Premium SMS</title>
     <style id="globalFontStyle"></style>
     <style id="globalFontSizeStyle"></style>
     <style id="bubbleStyleSheet"></style>
@@ -2339,203 +2346,6 @@
     </audio>
 
     <script>
-        // ========== iOS PWA 全屏模式专用脚本 ==========
-        
-        // 检测是否在iOS独立模式（从主屏幕启动）
-        function isIOSStandalone() {
-            return (window.navigator.standalone === true) || 
-                   (window.matchMedia('(display-mode: standalone)').matches);
-        }
-        
-        // 检测是否是iOS设备
-        function isIOS() {
-            return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        }
-        
-        // 防止iOS Safari的下拉刷新和橡皮筋效果
-        function preventIOSBounce() {
-            document.body.addEventListener('touchmove', function(e) {
-                // 只在需要时阻止（当不在可滚动元素内时）
-                let target = e.target;
-                let isScrollable = false;
-                
-                while (target && target !== document.body) {
-                    const style = window.getComputedStyle(target);
-                    const overflowY = style.getPropertyValue('overflow-y');
-                    const overflowX = style.getPropertyValue('overflow-x');
-                    
-                    if (overflowY === 'auto' || overflowY === 'scroll' || 
-                        overflowX === 'auto' || overflowX === 'scroll') {
-                        // 检查是否真的可以滚动
-                        if (target.scrollHeight > target.clientHeight || 
-                            target.scrollWidth > target.clientWidth) {
-                            isScrollable = true;
-                            break;
-                        }
-                    }
-                    target = target.parentElement;
-                }
-                
-                if (!isScrollable) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-        }
-        
-        // 处理iOS PWA中的链接点击（防止跳转到Safari）
-        function handleIOSLinks() {
-            if (!isIOS()) return;
-            
-            document.addEventListener('click', function(e) {
-                let target = e.target;
-                
-                // 找到最近的<a>标签
-                while (target && target.tagName !== 'A') {
-                    target = target.parentElement;
-                }
-                
-                if (target && target.tagName === 'A') {
-                    const href = target.getAttribute('href');
-                    
-                    // 如果是外部链接或新窗口链接
-                    if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
-                        // 如果在独立模式下，在当前窗口打开（不跳转到Safari）
-                        if (isIOSStandalone()) {
-                            e.preventDefault();
-                            // 对于内部链接，直接导航
-                            if (href.startsWith('/') || href.startsWith('./') || 
-                                href.startsWith(window.location.origin)) {
-                                window.location.href = href;
-                            } else {
-                                // 对于外部链接，在新窗口打开（这在PWA中仍会打开Safari，但这是预期行为）
-                                window.open(href, '_blank');
-                            }
-                        }
-                    }
-                }
-            }, true);
-        }
-        
-        // iOS状态栏高度适配
-        function updateIOSSafeArea() {
-            // 动态更新CSS��量以适应不同iOS设备
-            const root = document.documentElement;
-            
-            // 检测是否有刘海屏
-            if (window.innerHeight > window.innerWidth) {
-                // 竖屏模式
-                const safeTop = parseInt(getComputedStyle(root).getPropertyValue('--safe-top')) || 0;
-                if (safeTop === 0 && isIOS() && window.innerHeight >= 812) {
-                    // 可能是刘海屏iPhone，但env()不工作
-                    // 设置一个fallback值
-                    root.style.setProperty('--safe-top', '47px');
-                    root.style.setProperty('--safe-bottom', '34px');
-                }
-            }
-        }
-        
-        // 显示"添加到主屏幕"提示（仅在Safari中显示）
-        function showAddToHomeScreenPrompt() {
-            // 只在iOS Safari中显示，不在PWA模式中显示
-            if (!isIOS() || isIOSStandalone()) return;
-            
-            // 检查是否已经提示过
-            const prompted = localStorage.getItem('pwa_prompt_shown');
-            if (prompted) return;
-            
-            // 延迟显示提示
-            setTimeout(() => {
-                // 创建提示元素
-                const prompt = document.createElement('div');
-                prompt.id = 'iosPrompt';
-                prompt.innerHTML = `
-                    <div style="
-                        position: fixed;
-                        bottom: 20px;
-                        left: 20px;
-                        right: 20px;
-                        padding: 16px 20px;
-                        background: rgba(30, 30, 35, 0.98);
-                        backdrop-filter: blur(20px);
-                        -webkit-backdrop-filter: blur(20px);
-                        border-radius: 16px;
-                        border: 1px solid rgba(255,255,255,0.1);
-                        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-                        z-index: 10000;
-                        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-                    ">
-                        <div style="display: flex; align-items: flex-start; gap: 14px;">
-                            <div style="
-                                width: 48px; height: 48px; border-radius: 12px;
-                                background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-                                display: flex; align-items: center; justify-content: center;
-                                font-size: 24px; color: #c9a962; font-family: serif;
-                                border: 1px solid rgba(255,255,255,0.1);
-                                flex-shrink: 0;
-                            ">N</div>
-                            <div style="flex: 1;">
-                                <div style="color: #fff; font-size: 15px; font-weight: 600; margin-bottom: 4px;">
-                                    添加到主屏幕
-                                </div>
-                                <div style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.4;">
-                                    点击底部 <span style="display: inline-block; width: 20px; height: 20px; background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%234A90D9\" stroke-width=\"2\"><path d=\"M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8\"/><polyline points=\"16 6 12 2 8 6\"/><line x1=\"12\" y1=\"2\" x2=\"12\" y2=\"15\"/></svg>') center/contain no-repeat; vertical-align: middle;"></span> 分享按钮，然后选择"添加到主屏幕"获得全屏体验
-                                </div>
-                            </div>
-                            <button onclick="this.parentElement.parentElement.parentElement.remove(); localStorage.setItem('pwa_prompt_shown', '1');" style="
-                                background: transparent;
-                                border: none;
-                                color: rgba(255,255,255,0.4);
-                                font-size: 20px;
-                                cursor: pointer;
-                                padding: 0;
-                                line-height: 1;
-                            ">×</button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(prompt);
-                
-                // 10秒后自动隐藏
-                setTimeout(() => {
-                    if (document.getElementById('iosPrompt')) {
-                        document.getElementById('iosPrompt').remove();
-                    }
-                }, 10000);
-            }, 3000);
-        }
-        
-        // 初始化iOS PWA功能
-        function initIOSPWA() {
-            if (isIOS()) {
-                preventIOSBounce();
-                handleIOSLinks();
-                updateIOSSafeArea();
-                
-                // 监听屏幕方向变化
-                window.addEventListener('orientationchange', updateIOSSafeArea);
-                window.addEventListener('resize', updateIOSSafeArea);
-            }
-            
-            // 显示添加到主屏幕提示
-            showAddToHomeScreenPrompt();
-            
-            // 如果在PWA模式下，添加特殊class
-            if (isIOSStandalone()) {
-                document.body.classList.add('ios-pwa-mode');
-                console.log('Running in iOS PWA standalone mode');
-            }
-        }
-        
-        // 页面加载完成后初始化
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initIOSPWA);
-        } else {
-            initIOSPWA();
-        }
-        
-        // ========== iOS PWA 脚本结束 ==========
-
         const DB_NAME = 'NoirAppDB';
         const DB_VERSION = 7;
         let db = null;
