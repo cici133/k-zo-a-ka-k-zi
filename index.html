@@ -208,6 +208,8 @@
             font-family: var(--font-serif); font-size: calc(16px * var(--font-scale)); font-weight: 400;
             color: var(--text-primary); text-align: center; flex: 1;
             letter-spacing: 2px; text-transform: uppercase;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            max-width: calc(100% - 160px); margin: 0 8px;
         }
 
         .page-content {
@@ -1927,6 +1929,7 @@
                 <p class="settings-group-title">Basic Info</p>
                 <div class="settings-group" style="padding:16px">
                     <div class="input-group"><label class="input-label">Name</label><input type="text" class="input-field" id="charName" placeholder="Character name"></div>
+                    <div class="input-group"><label class="input-label">Nickname (Display Only)</label><input type="text" class="input-field" id="charNickname" placeholder="Custom display name (max 30 chars)" maxlength="30" oninput="updateNicknameCharCounter()"><div class="char-counter" id="nicknameCharCounter">0/30</div></div>
                     <div class="input-group"><label class="input-label">Emoji (fallback)</label><input type="text" class="input-field" id="charAvatar" placeholder="◇"></div>
                 </div>
 
@@ -3315,7 +3318,7 @@
             App.currentCharId = id;
             const char = App.characters.find(c => c.id === id);
             if (!char) return;
-            document.getElementById('chatTitle').textContent = char.name;
+            document.getElementById('chatTitle').textContent = char.nickname || char.name;
             const chatPage = document.getElementById('chatPage');
             if (char.chatWallpaper) {
                 chatPage.classList.add('has-custom-bg');
@@ -4008,6 +4011,8 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
             if (!char) return;
 
             document.getElementById('charName').value = char.name || '';
+            document.getElementById('charNickname').value = char.nickname || '';
+            updateNicknameCharCounter();
             document.getElementById('charAvatar').value = char.avatar || '';
             document.getElementById('charDescription').value = char.description || '';
             document.getElementById('charGreeting').value = char.greeting || '';
@@ -4065,6 +4070,13 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
             counter.className = 'char-counter' + (val.length > 280 ? ' warning' : '') + (val.length >= 300 ? ' error' : '');
         }
 
+        function updateNicknameCharCounter() {
+            const val = document.getElementById('charNickname').value;
+            const counter = document.getElementById('nicknameCharCounter');
+            counter.textContent = `${val.length}/30`;
+            counter.className = 'char-counter' + (val.length > 25 ? ' warning' : '') + (val.length >= 30 ? ' error' : '');
+        }
+
         function renderWorldbookMultiSelect(char) {
             const container = document.getElementById('worldbookMultiSelect');
             if (App.worldbooks.length === 0) {
@@ -4097,6 +4109,7 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
             if (!char) return;
 
             char.name = document.getElementById('charName').value.trim();
+            char.nickname = document.getElementById('charNickname').value.trim();
             char.avatar = document.getElementById('charAvatar').value.trim();
             char.description = document.getElementById('charDescription').value;
             char.greeting = document.getElementById('charGreeting').value;
@@ -4112,7 +4125,7 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
             char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
             char.borderColor = document.getElementById('borderColorPicker').value;
 
-            document.getElementById('chatTitle').textContent = char.name;
+            document.getElementById('chatTitle').textContent = char.nickname || char.name;
 
             await saveData();
             closeCharacterSettings();
