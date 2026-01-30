@@ -4,9 +4,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- iOS PWA 全屏模式配置 - 关键设置 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon" href="https://iili.io/fsAcryG.jpg">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NOIR">
+    
+    <!-- Android PWA 配置 -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0a0a">
+    
+    <!-- 防止iOS自动检测电话号码/邮箱等 -->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no">
+    <meta name="format-detection" content="address=no">
+    
+    <!-- iOS 启动画面 - 各种设备尺寸 -->
+    <!-- iPhone 15 Pro Max, 14 Pro Max -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 430 932'%3E%3Crect fill='%230a0a0a' width='430' height='932'/%3E%3C/svg%3E">
+    <!-- iPhone 15 Pro, 14 Pro -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 393 852'%3E%3Crect fill='%230a0a0a' width='393' height='852'/%3E%3C/svg%3E">
+    <!-- iPhone 14 Plus, 13 Pro Max, 12 Pro Max -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 428 926'%3E%3Crect fill='%230a0a0a' width='428' height='926'/%3E%3C/svg%3E">
+    <!-- iPhone 14, 13, 13 Pro, 12, 12 Pro -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844'%3E%3Crect fill='%230a0a0a' width='390' height='844'/%3E%3C/svg%3E">
+    <!-- iPhone 13 mini, 12 mini -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 812'%3E%3Crect fill='%230a0a0a' width='375' height='812'/%3E%3C/svg%3E">
+    <!-- iPhone 11 Pro Max, XS Max -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 414 896'%3E%3Crect fill='%230a0a0a' width='414' height='896'/%3E%3C/svg%3E">
+    <!-- iPhone 11, XR -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 414 896'%3E%3Crect fill='%230a0a0a' width='414' height='896'/%3E%3C/svg%3E">
+    <!-- iPhone X, XS, 11 Pro -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 812'%3E%3Crect fill='%230a0a0a' width='375' height='812'/%3E%3C/svg%3E">
+    <!-- iPhone 8 Plus, 7 Plus, 6s Plus -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 414 736'%3E%3Crect fill='%230a0a0a' width='414' height='736'/%3E%3C/svg%3E">
+    <!-- iPhone 8, 7, 6s, SE 2nd/3rd gen -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 667'%3E%3Crect fill='%230a0a0a' width='375' height='667'/%3E%3C/svg%3E">
+    <!-- iPhone SE 1st gen -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 568'%3E%3Crect fill='%230a0a0a' width='320' height='568'/%3E%3C/svg%3E">
+    <!-- iPad Pro 12.9" -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1366'%3E%3Crect fill='%230a0a0a' width='1024' height='1366'/%3E%3C/svg%3E">
+    <!-- iPad Pro 11" -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 834 1194'%3E%3Crect fill='%230a0a0a' width='834' height='1194'/%3E%3C/svg%3E">
+    <!-- iPad Air, iPad 10th gen -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 820 1180'%3E%3Crect fill='%230a0a0a' width='820' height='1180'/%3E%3C/svg%3E">
+    <!-- iPad mini 6 -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 744 1133'%3E%3Crect fill='%230a0a0a' width='744' height='1133'/%3E%3C/svg%3E">
+    <!-- iPad 9th gen and earlier -->
+    <link rel="apple-touch-startup-image" media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2)" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 810 1080'%3E%3Crect fill='%230a0a0a' width='810' height='1080'/%3E%3C/svg%3E">
+    
+    <!-- iOS 主屏幕图标 -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect fill='%230a0a0a' width='180' height='180' rx='40'/%3E%3Ctext x='90' y='110' font-family='serif' font-size='48' fill='%23c9a962' text-anchor='middle'%3ENOIR%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect fill='%230a0a0a' width='180' height='180' rx='40'/%3E%3Ctext x='90' y='110' font-family='serif' font-size='48' fill='%23c9a962' text-anchor='middle'%3ENOIR%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152 152'%3E%3Crect fill='%230a0a0a' width='152' height='152' rx='32'/%3E%3Ctext x='76' y='92' font-family='serif' font-size='40' fill='%23c9a962' text-anchor='middle'%3ENOIR%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" sizes="120x120" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect fill='%230a0a0a' width='120' height='120' rx='26'/%3E%3Ctext x='60' y='74' font-family='serif' font-size='32' fill='%23c9a962' text-anchor='middle'%3ENOIR%3C/text%3E%3C/svg%3E">
+    
+    <!-- Web App Manifest for PWA -->
+    <link rel="manifest" href="manifest.json">
+    
+    <title>NOIR · Premium SMS v10</title>
     <style id="globalFontStyle"></style>
     <style id="globalFontSizeStyle"></style>
     <style id="bubbleStyleSheet"></style>
@@ -2368,6 +2424,89 @@
             userBg1: '#3c3c41', userBg2: '#2d2d32', userText: '#ffffff',
             charBg1: '#2d2d32', charBg2: '#232328', charText: '#ffffff'
         };
+
+        // ========== iOS PWA 全屏模式支持 ==========
+        // 检测是否在iOS独立模式（从主屏幕启动）
+        function isIOSPWA() {
+            return (window.navigator.standalone === true) || 
+                   (window.matchMedia('(display-mode: standalone)').matches) ||
+                   (window.matchMedia('(display-mode: fullscreen)').matches);
+        }
+
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        }
+
+        // 阻止所有链接在PWA模式下跳转到Safari
+        function preventSafariRedirect() {
+            if (!isIOSPWA()) return;
+            
+            // 拦截所有点击事件
+            document.addEventListener('click', function(e) {
+                const target = e.target.closest('a');
+                if (target && target.href) {
+                    const href = target.getAttribute('href');
+                    // 允许锚点链接和javascript:链接
+                    if (href.startsWith('#') || href.startsWith('javascript:')) {
+                        return;
+                    }
+                    // 如果是同域链接，在当前窗口打开
+                    if (target.hostname === window.location.hostname || !target.hostname) {
+                        e.preventDefault();
+                        window.location.href = target.href;
+                    }
+                }
+            }, true);
+
+            // 拦截window.open调用
+            const originalOpen = window.open;
+            window.open = function(url, target, features) {
+                if (url && !url.startsWith('javascript:')) {
+                    window.location.href = url;
+                    return null;
+                }
+                return originalOpen.call(window, url, target, features);
+            };
+        }
+
+        // 设置iOS状态栏和安全区域
+        function setupIOSFullscreen() {
+            if (!isIOS()) return;
+
+            // 添加iOS特定的body类
+            document.body.classList.add('ios-device');
+            
+            if (isIOSPWA()) {
+                document.body.classList.add('ios-pwa');
+                
+                // 禁用下拉刷新
+                document.body.style.overscrollBehavior = 'none';
+                
+                // 禁用双击缩放
+                let lastTouchEnd = 0;
+                document.addEventListener('touchend', function(e) {
+                    const now = Date.now();
+                    if (now - lastTouchEnd <= 300) {
+                        e.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, { passive: false });
+
+                // 禁用捏合缩放
+                document.addEventListener('gesturestart', function(e) {
+                    e.preventDefault();
+                }, { passive: false });
+
+                console.log('NOIR: Running in iOS PWA mode (fullscreen)');
+            }
+        }
+
+        // 页面加载时初始化iOS支持
+        document.addEventListener('DOMContentLoaded', function() {
+            setupIOSFullscreen();
+            preventSafariRedirect();
+        });
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
