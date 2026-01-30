@@ -3,16 +3,26 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <!-- iOS全屏模式核心设置 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NOIR">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a0a">
-    <!-- PWA Manifest for fullscreen mode when added to home screen -->
-    <link rel="manifest" href="data:application/json,%7B%22name%22%3A%22NOIR%22%2C%22short_name%22%3A%22NOIR%22%2C%22description%22%3A%22Premium%20SMS%20Experience%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22fullscreen%22%2C%22background_color%22%3A%22%230a0a0a%22%2C%22theme_color%22%3A%22%230a0a0a%22%2C%22orientation%22%3A%22portrait%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%2520viewBox%3D%270%25200%2520100%2520100%27%253E%253Crect%2520fill%3D%27%25230a0a0a%27%2520width%3D%27100%27%2520height%3D%27100%27%2F%253E%253Ctext%2520x%3D%2750%27%2520y%3D%2755%27%2520font-size%3D%2730%27%2520text-anchor%3D%27middle%27%2520fill%3D%27white%27%253ENOIR%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
-    <!-- Additional iOS fullscreen support -->
-    <meta name="apple-touch-fullscreen" content="yes">
+    
+    <!-- 禁用iOS自动识别 -->
+    <meta name="format-detection" content="telephone=no, email=no, address=no">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk5PSVIgUHJlbWl1bSBTTVMiLAogICJzaG9ydF9uYW1lIjogIk5PSVIiLAogICJkZXNjcmlwdGlvbiI6ICJQcmVtaXVtIFNNUyBFeHBlcmllbmNlIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzBhMGEwYSIsCiAgInRoZW1lX2NvbG9yIjogIiMwYTBhMGEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDE5MiAxOTInJTNFJTNDcmVjdCB3aWR0aD0nMTkyJyBoZWlnaHQ9JzE5Micgcng9JzQwJyBmaWxsPSclMjMxYTFhMWEnLyUzRSUzQ3RleHQgeD0nNTAlJyB5PSc1NSUnIGZvbnQtc2l6ZT0nNjAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZpbGw9JyUyM2ZmZiclM0VOJTNDL3RleHQlM0UlM0Mvc3ZnJTNFIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfSwKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDUxMiA1MTInJTNFJTNDcmVjdCB3aWR0aD0nNTEyJyBoZWlnaHQ9JzUxMicgcng9JzEwMCcgZmlsbD0nJTIzMWExYTFhJy8lM0UlM0N0ZXh0IHg9JzUwJScgeT0nNTUlJyBmb250LXNpemU9JzE2MCcgdGV4dC1hbmNob3I9J21pZGRsZScgZmlsbD0nJTIzZmZmJyUzRU4lM0MvdGV4dCUzRSUzQy9zdmclM0UiLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9">
+    
+    <!-- Apple Touch Icon (添加到主屏幕时的图标) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='55%25' font-size='60' text-anchor='middle' fill='%23fff'%3EN%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152 152'%3E%3Crect width='152' height='152' rx='30' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='55%25' font-size='50' text-anchor='middle' fill='%23fff'%3EN%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" sizes="167x167" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 167 167'%3E%3Crect width='167' height='167' rx='35' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='55%25' font-size='55' text-anchor='middle' fill='%23fff'%3EN%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='55%25' font-size='60' text-anchor='middle' fill='%23fff'%3EN%3C/text%3E%3C/svg%3E">
+    
     <title>NOIR · Premium SMS v10</title>
     <style id="globalFontStyle"></style>
     <style id="globalFontSizeStyle"></style>
@@ -53,15 +63,46 @@
             --font-scale: 1;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html { height: 100%; height: -webkit-fill-available; }
+        /* iOS PWA全屏模式样式 */
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+        
+        html { 
+            height: 100%; 
+            height: -webkit-fill-available;
+            overflow: hidden;
+        }
+        
         body {
-            height: 100%; min-height: 100vh; min-height: -webkit-fill-available;
-            overflow: hidden; font-family: var(--font-sans);
-            background: var(--bg-primary); color: var(--text-primary);
-            overscroll-behavior: none; position: fixed; width: 100%; top: 0; left: 0;
-            letter-spacing: 0.02em; line-height: 1.5;
+            height: 100%; 
+            min-height: 100vh; 
+            min-height: -webkit-fill-available;
+            overflow: hidden; 
+            font-family: var(--font-sans);
+            background: var(--bg-primary); 
+            color: var(--text-primary);
+            overscroll-behavior: none; 
+            position: fixed; 
+            width: 100%; 
+            top: 0; 
+            left: 0;
+            letter-spacing: 0.02em; 
+            line-height: 1.5;
             font-size: calc(14px * var(--font-scale));
+            /* iOS安全区域适配 */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* PWA模式特殊样式 */
+        body.pwa-mode {
+            /* 在PWA模式下的额外样式 */
         }
 
         #wallpaperLayer {
@@ -1481,49 +1522,6 @@
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
-        /* 🔥 PWA全屏模式样式 - 添加到桌面后自动全屏 */
-        @media all and (display-mode: fullscreen),
-               all and (display-mode: standalone) {
-            html, body {
-                height: 100% !important;
-                width: 100% !important;
-                overflow: hidden !important;
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            
-            .phone-container {
-                width: 100vw !important;
-                height: 100vh !important;
-                border-radius: 0 !important;
-                border: none !important;
-                box-shadow: none !important;
-                margin: 0 !important;
-                max-width: none !important;
-                max-height: none !important;
-                transform: none !important;
-            }
-            
-            #wallpaperLayer {
-                width: 100vw !important;
-                height: 100vh !important;
-            }
-        }
-
-        /* iOS Safari 独立模式检测 */
-        @media (display-mode: standalone) {
-            body {
-                -webkit-touch-callout: none;
-                -webkit-user-select: none;
-                user-select: none;
-            }
-        }
-
         #customCssStyles { }
     </style>
     <style id="customCssStyles"></style>
@@ -2419,8 +2417,69 @@
             charBg1: '#2d2d32', charBg2: '#232328', charText: '#ffffff'
         };
 
+        // ========== iOS PWA全屏模式检测和处理 ==========
+        function isRunningAsPWA() {
+            // iOS Safari检测
+            if (window.navigator.standalone === true) {
+                return true;
+            }
+            // 其他浏览器检测
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                return true;
+            }
+            return false;
+        }
+
+        // 处理iOS视口高度问题
+        function setViewportHeight() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        // 初始化PWA模式
+        function initPWAMode() {
+            if (isRunningAsPWA()) {
+                document.body.classList.add('pwa-mode');
+                console.log('Running in PWA fullscreen mode');
+            } else {
+                document.body.classList.add('browser-mode');
+                console.log('Running in browser mode');
+            }
+
+            // 设置视口高度
+            setViewportHeight();
+            window.addEventListener('resize', setViewportHeight);
+            window.addEventListener('orientationchange', setViewportHeight);
+
+            // 禁止双击缩放
+            document.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+
+            // 禁止下拉刷新（仅在body上）
+            document.body.addEventListener('touchmove', function(e) {
+                if (e.target === document.body || e.target === document.documentElement) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            // 处理iOS软键盘弹出时的视口调整
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    setTimeout(() => {
+                        window.scrollTo(0, 0);
+                        document.body.scrollTop = 0;
+                    }, 100);
+                });
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             try {
+                // 初始化PWA模式
+                initPWAMode();
+                
                 await openDB();
                 await loadData();
                 updateTime();
