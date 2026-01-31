@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NOIR</title>
     
     <!-- iOS PWA 关键配置 - 必须有 apple-touch-icon -->
@@ -45,46 +45,113 @@
             --blur-heavy: 40px;
             --blur-medium: 25px;
             --blur-light: 15px;
-            --safe-top: env(safe-area-inset-top, 0px);
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            /* 简化safe-area处理 - 仅在必要时使用固定值作为回退 */
+            --safe-top: 0px;
+            --safe-bottom: 0px;
             --font-serif: 'Cormorant Garamond', 'Noto Serif SC', Georgia, serif;
             --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
             --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             --transition-fast: all 0.2s ease;
             --font-scale: 1;
+            /* 手机屏幕固定尺寸 - 参照章鱼机成功模式 */
+            --phone-max-width: 420px;
+            --phone-max-height: 900px;
+            --phone-corner-radius: 0;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html { height: 100%; }
+        html { 
+            height: 100%; 
+            /* 防止iOS橡皮筋效果 */
+            overflow: hidden;
+        }
         body {
-            /* 使用 flex 布局代替 position: fixed - 这是 PWA 全屏模式的关键 */
+            /* PWA 全屏模式关键配置 - 参照章鱼机成功模式 */
             margin: 0;
             padding: 0;
+            height: 100%;
             min-height: 100vh;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
             font-family: var(--font-sans);
             background: var(--bg-primary);
             color: var(--text-primary);
             overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
             letter-spacing: 0.02em;
             line-height: 1.5;
             font-size: calc(14px * var(--font-scale));
+            /* 防止iOS Safari的滚动问题 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
 
+        /* 手机屏幕容器 - 采用章鱼机的固定值策略确保PWA全屏兼容 */
+        .phone-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 900px;
+            background-color: var(--bg-primary);
+            border-radius: 0;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
+
+        /* 壁纸层 - 移入phone-container内部管理 */
         #wallpaperLayer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
             background: linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%);
             pointer-events: none;
         }
 
-        .phone-container {
-            position: relative;
-            width: 100%; max-width: 100vw;
-            height: 100vh; height: 100dvh;
-            margin: 0; overflow: hidden; z-index: 1;
+        /* PWA全屏模式下的特殊处理 - 参照章鱼机成功模式 */
+        @media all and (display-mode: standalone) {
+            html, body {
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+            }
+            .phone-container {
+                max-width: 100%;
+                max-height: 100%;
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+            }
+            /* 在PWA模式下，壁纸层高度使用百分比而非vh */
+            #wallpaperLayer {
+                height: 100%;
+            }
+        }
+
+        /* iOS Safari PWA 模式额外适配 - 简化处理避免兼容性问题 */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                /* 使用-webkit-fill-available作为首选，100vh作为回退 */
+                min-height: 100vh;
+            }
+            @media all and (display-mode: standalone) {
+                body {
+                    min-height: -webkit-fill-available;
+                }
+                .phone-container {
+                    height: -webkit-fill-available;
+                }
+            }
         }
 
         .status-bar {
@@ -1499,9 +1566,10 @@
     <style id="customCssStyles"></style>
 </head>
 <body>
-    <div id="wallpaperLayer"></div>
-
     <div class="phone-container">
+        <!-- 壁纸层现在在phone-container内部，确保PWA全屏模式下正确渲染 -->
+        <div id="wallpaperLayer"></div>
+        
         <div class="status-bar" id="statusBar">
             <span class="status-bar-time" id="statusBarTime">9:41</span>
             <div class="status-bar-icons">
