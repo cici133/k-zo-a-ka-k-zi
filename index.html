@@ -3,13 +3,15 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="https://i.postimg.cc/nzP9sgxr/chan-125.png">
-    <link rel="icon" type="image/png" href="https://i.postimg.cc/nzP9sgxr/chan-125.png">
-    <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"NOIR","short_name":"NOIR","start_url":".","display":"standalone","background_color":"#0a0a0a","theme_color":"#0a0a0a","icons":[{"src":"https://i.postimg.cc/nzP9sgxr/chan-125.png","sizes":"192x192","type":"image/png"}]}'>
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NOIR">
+    <!-- 新增：苹果设备图标配置 -->
+    <link rel="apple-touch-icon" sizes="180x180" href="https://i.postimg.cc/nzP9sgxr/chan-125.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://i.postimg.cc/nzP9sgxr/chan-125.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="https://i.postimg.cc/nzP9sgxr/chan-125.png">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/nzP9sgxr/chan-125.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a0a">
     <title>NOIR · Premium SMS v10</title>
@@ -53,25 +55,72 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html { height: 100%; height: -webkit-fill-available; }
+        html {
+    height: 100%;
+    height: -webkit-fill-available;
+    width: 100%;
+    overflow: hidden; /* 新增：防止整体页面滚动 */
+}
         body {
-            height: 100%; min-height: 100vh; min-height: -webkit-fill-available;
-            overflow: hidden; font-family: var(--font-sans);
-            background: var(--bg-primary); color: var(--text-primary);
-            overscroll-behavior: none; position: fixed; width: 100%; top: 0; left: 0;
-            letter-spacing: 0.02em; line-height: 1.5;
-            font-size: calc(14px * var(--font-scale));
-        }
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    /* 关键修改：用flex替代fixed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* 保持原有样式 */
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overscroll-behavior: none;
+
+    /* 高度处理：优先使用-webkit-fill-available */
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    height: 100%;
+    width: 100%;
+
+    /* 保持原有字体样式 */
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+    font-size: calc(14px * var(--font-scale));
+}
 
         #wallpaperLayer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
-            background: linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%);
-        }
+    /* 关键修改：改为absolute，相对于phone-container定位 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%);
+
+    /* 新增：确保背景覆盖整个容器 */
+    pointer-events: none; /* 让点击事件穿透到下层 */
+}
 
         .phone-container {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%; height: 100%; margin: 0; overflow: hidden; z-index: 1;
-        }
+    /* 关键修改：改为relative定位 */
+    position: relative;
+
+    /* 高度和宽度：使用视口单位 */
+    width: 100%;
+    max-width: 100vw; /* 新增：确保不超出视口 */
+    height: 100vh;
+    height: -webkit-fill-available; /* iOS优化 */
+
+    /* 保持原有样式 */
+    margin: 0;
+    overflow: hidden;
+
+    /* z-index不再需要，因为不是fixed定位 */
+
+    /* 新增：确保flex子元素正确布局 */
+    display: flex;
+    flex-direction: column;
+}
 
         .status-bar {
             position: absolute; top: 0; left: 0; right: 0;
@@ -89,13 +138,26 @@
         .status-bar-icons svg { width: 14px; height: 14px; fill: var(--text-tertiary); }
 
         .home-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding-top: calc(60px + var(--safe-top));
-            padding-bottom: calc(100px + var(--safe-bottom));
-            padding-left: 24px; padding-right: 24px;
-            display: flex; flex-direction: column;
-            overflow-y: auto; z-index: 1;
-        }
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    padding-top: calc(60px + var(--safe-top));
+    padding-bottom: calc(100px + var(--safe-bottom));
+    padding-left: 24px;
+    padding-right: 24px;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* 新增 */
+    overscroll-behavior-y: contain; /* 新增 */
+
+    z-index: 1;
+}
         .home-screen.no-statusbar { padding-top: calc(40px + var(--safe-top)); }
 
         .home-header { margin-bottom: 40px; text-align: center; }
@@ -162,7 +224,7 @@
         }
 
         .page {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             width: 100%; height: 100%;
             background: rgba(10, 10, 10, 0.92);
             backdrop-filter: blur(var(--blur-heavy));
@@ -893,7 +955,7 @@
         .context-menu-label { font-size: calc(14px * var(--font-scale)); color: var(--text-primary); }
 
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             display: flex; align-items: center; justify-content: center;
@@ -948,7 +1010,7 @@
         }
 
         .toast-container {
-            position: fixed; top: calc(60px + var(--safe-top));
+            position: absolute; top: calc(60px + var(--safe-top));
             left: 50%; transform: translateX(-50%);
             z-index: 3000; display: flex; flex-direction: column; gap: 8px;
             pointer-events: none;
@@ -956,6 +1018,7 @@
         .toast {
             padding: 12px 20px;
             background: var(--bg-secondary);
+            pointer-events: auto;
             backdrop-filter: blur(var(--blur-medium));
             border-radius: 12px; color: var(--text-primary);
             font-size: calc(13px * var(--font-scale)); font-weight: 400;
