@@ -3,83 +3,18 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    
-    <!-- ========== iOS PWA 全屏模式关键配置 ========== -->
-    <!-- 视口设置：viewport-fit=cover 让内容延伸到刘海和底部安全区 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <!-- iOS Safari: 启用Web App模式（添加到主屏幕后全屏运行，不显示Safari UI） -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    
-    <!-- iOS状态栏样式：black-translucent让状态栏透明，内容可延伸到状态栏下方 -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <!-- iOS主屏幕上显示的应用名称 -->
     <meta name="apple-mobile-web-app-title" content="NOIR">
-    
-    <!-- Android Chrome: 启用Web App模式 -->
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/CMZqNMRh/IMG-6497.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://i.postimg.cc/CMZqNMRh/IMG-6497.jpg">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://i.postimg.cc/CMZqNMRh/IMG-6497.jpg">
+    <link rel="apple-touch-icon" sizes="120x120" href="https://i.postimg.cc/CMZqNMRh/IMG-6497.jpg">
     <meta name="mobile-web-app-capable" content="yes">
-    
-    <!-- 主题颜色：影响地址栏和任务切换器的颜色 -->
     <meta name="theme-color" content="#0a0a0a">
-    
-    <!-- iOS状态栏在浅色模式下的颜色 -->
-    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: light)">
-    
-    <!-- iOS状态栏在深色模式下的颜色 -->
-    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
-    
-    <!-- 禁止iOS自动检测电话号码并添加链接 -->
     <meta name="format-detection" content="telephone=no">
-    
-    <!-- 禁止iOS自动检测地址 -->
-    <meta name="format-detection" content="address=no">
-    
-    <!-- 禁止iOS自动检测邮箱 -->
-    <meta name="format-detection" content="email=no">
-    
-    <!-- ========== iOS 主屏幕图标配置 ========== -->
-    <!-- iOS主屏幕图标 (180x180 for iPhone) -->
-    <link rel="apple-touch-icon" href="https://iili.io/fsAcryG.jpg">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://iili.io/fsAcryG.jpg">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://iili.io/fsAcryG.jpg">
-    <link rel="apple-touch-icon" sizes="167x167" href="https://iili.io/fsAcryG.jpg">
-    
-    <!-- iOS启动画面/闪屏配置 - 防止白屏闪烁 -->
-    <!-- iPhone X/XS/11 Pro (1125x2436) -->
-    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
-    <!-- iPhone XR/11 (828x1792) -->
-    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)">
-    <!-- iPhone XS Max/11 Pro Max (1242x2688) -->
-    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
-    <!-- iPhone 12/13/14 mini (1080x2340) -->
-    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
-    <!-- iPhone 12/13/14 (1170x2532) -->
-    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
-    <!-- iPhone 12/13/14 Pro Max (1284x2778) -->
-    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
-    <!-- iPhone 14 Pro (1179x2556) -->
-    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
-    <!-- iPhone 14 Pro Max (1290x2796) -->
-    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
-    <!-- iPhone 15/15 Pro (1179x2556) -->
-    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
-    <!-- iPhone 15 Plus/15 Pro Max (1290x2796) -->
-    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
-    <!-- 旧版iPhone 8/SE (750x1334) -->
-    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
-    <!-- iPhone 8 Plus (1242x2208) -->
-    <link rel="apple-touch-startup-image" href="https://iili.io/fsAcryG.jpg" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)">
-    
-    <!-- ========== Web App Manifest ========== -->
-    <!-- 链接到manifest.json（PWA配置文件） -->
-    <link rel="manifest" href="/k-zo-a-ka-k-zi/manifest.json">
-    
-    <!-- 标准favicon -->
-    <link rel="icon" type="image/jpeg" href="https://iili.io/fsAcryG.jpg">
-    <link rel="shortcut icon" type="image/jpeg" href="https://iili.io/fsAcryG.jpg">
-    
-    <title>NOIR · Premium SMS</title>
+    <title>NOIR · Premium SMS v10</title>
     <style id="globalFontStyle"></style>
     <style id="globalFontSizeStyle"></style>
     <style id="bubbleStyleSheet"></style>
