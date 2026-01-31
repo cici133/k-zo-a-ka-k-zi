@@ -3757,7 +3757,7 @@
             list.innerHTML = App.characters.map(c => {
                 const lastMsg = c.messages?.[c.messages.length - 1];
                 const preview = lastMsg ? (lastMsg.content || '[Image]').substring(0, 30) : 'No messages';
-                const time = last Msg ? formatTime(lastMsg.timestamp) : '';
+                const time = lastMsg ? formatTime(lastMsg.timestamp) : '';
                 const displayName = c.nickname || c.name;
                 const avatarHtml = c.avatarImage ? `<img src="${c.avatarImage}" alt="">` : (c.avatar || '◇');
                 return `<div class="contact-item" onclick="openChat('${c.id}')"><div class="contact-avatar">${avatarHtml}</div><div class="contact-info"><div class="contact-name">${escapeHtml(displayName)}</div><div class="contact-preview">${escapeHtml(preview)}</div></div><span class="contact-time">${time}</span></div>`;
