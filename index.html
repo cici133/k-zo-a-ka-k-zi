@@ -3,13 +3,18 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NOIR</title>
+    
+    <!-- iOS PWA 关键配置 - 必须有 apple-touch-icon -->
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/0jqKB6Vy/noir-icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NOIR">
+    
+    <!-- 其他配置 -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a0a">
-    <title>NOIR · Premium SMS v10</title>
     <style id="globalFontStyle"></style>
     <style id="globalFontSizeStyle"></style>
     <style id="bubbleStyleSheet"></style>
@@ -50,24 +55,36 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html { height: 100%; height: -webkit-fill-available; }
+        html { height: 100%; }
         body {
-            height: 100%; min-height: 100vh; min-height: -webkit-fill-available;
-            overflow: hidden; font-family: var(--font-sans);
-            background: var(--bg-primary); color: var(--text-primary);
-            overscroll-behavior: none; position: fixed; width: 100%; top: 0; left: 0;
-            letter-spacing: 0.02em; line-height: 1.5;
+            /* 使用 flex 布局代替 position: fixed - 这是 PWA 全屏模式的关键 */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: var(--font-sans);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overscroll-behavior: none;
+            letter-spacing: 0.02em;
+            line-height: 1.5;
             font-size: calc(14px * var(--font-scale));
         }
 
         #wallpaperLayer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
             background: linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%);
+            pointer-events: none;
         }
 
         .phone-container {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%; height: 100%; margin: 0; overflow: hidden; z-index: 1;
+            position: relative;
+            width: 100%; max-width: 100vw;
+            height: 100vh; height: 100dvh;
+            margin: 0; overflow: hidden; z-index: 1;
         }
 
         .status-bar {
