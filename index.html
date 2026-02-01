@@ -4956,11 +4956,15 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
             
             // Send request to AI
             try {
-                const prompt = `[Voice Call Request]
-User has initiated a voice call.
-Check the recent chat history. If you have recently agreed to a voice call or if the context implies you are available, you should ACCEPT.
-Only REJECT if there is a strong reason in the plot (e.g., you are angry, busy, or it's out of character).
-Output ONLY "ACCEPT" or "REJECT". Do not output anything else.`;
+                const prompt = `[SYSTEM INSTRUCTION]
+You are receiving a voice call request from the user.
+You MUST choose to accept or reject it based on the context.
+REQUIRED OUTPUT FORMAT:
+You must reply with EXACTLY one word.
+Reply "ACCEPT" to take the call.
+Reply "REJECT" to decline.
+DO NOT output any other text, punctuation, or explanation.
+ONLY "ACCEPT" or "REJECT".`;
                 
                 // Construct temporary message history for context
                 const messages = buildAPIMessages(char);
@@ -4972,16 +4976,16 @@ Output ONLY "ACCEPT" or "REJECT". Do not output anything else.`;
                     body: JSON.stringify({
                         model: App.settings.modelName,
                         messages,
-                        temperature: 0.5,
+                        temperature: App.settings.temperature,
                         max_tokens: 10
                     })
                 });
                 
                 if (!res.ok) throw new Error('API Error');
                 const data = await res.json();
-                const response = data.choices?.[0]?.message?.content?.trim().toUpperCase() || 'REJECT';
+                const text = data.choices?.[0]?.message?.content?.trim().toUpperCase() || 'REJECT';
                 
-                if (response.includes('ACCEPT')) {
+                if (text.includes('ACCEPT')) {
                     handleCallAccepted();
                 } else {
                     handleCallRejected();
