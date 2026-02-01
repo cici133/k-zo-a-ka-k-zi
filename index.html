@@ -1491,6 +1491,8 @@
             overflow: hidden;
         }
         .voice-call-room.active { opacity: 1; visibility: visible; }
+        .voice-call-room.history-mode .voice-controls { display: none !important; }
+        .voice-call-room.history-mode .voice-minimize-btn { display: none !important; }
         
         .voice-center-indicator {
             position: absolute; right: 20px; top: 60%; transform: translateY(-50%);
@@ -1512,9 +1514,15 @@
 
         /* Avatar Area */
         .voice-header {
-            flex: 0 0 35%; display: flex; flex-direction: column;
+            flex: 0 0 30%; display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             position: relative; z-index: 2;
+            min-height: 200px;
+            transition: all 0.3s ease;
+        }
+        @media (max-height: 700px) {
+            .voice-header { flex: 0 0 25%; min-height: 160px; }
+            .voice-avatar-wrapper { transform: scale(0.8); }
         }
         .voice-avatar-wrapper {
             position: relative; width: 140px; height: 140px;
@@ -1558,40 +1566,45 @@
             font-size: 16px; color: rgba(255, 255, 255, 0.4);
             transition: all 0.4s ease; line-height: 1.6;
             text-align: center; cursor: pointer;
-            position: relative; padding: 10px 0;
+            position: relative; padding: 12px 0;
         }
         .voice-line.active {
-            font-size: 20px; color: white; font-weight: 500;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            font-size: 20px; color: white; font-weight: 600;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
             transform: scale(1.05);
         }
         .voice-line.sound-effect {
-            font-style: italic; color: rgba(255, 255, 255, 0.5); font-size: 14px;
+            font-style: italic; color: rgba(255, 200, 100, 0.6); font-size: 14px;
         }
-        .voice-line.active.sound-effect { color: rgba(255, 255, 255, 0.8); font-size: 16px; }
+        .voice-line.active.sound-effect { 
+            color: rgba(255, 200, 100, 1); font-size: 16px; 
+            text-shadow: 0 0 10px rgba(255, 200, 100, 0.4);
+        }
         .voice-line-marker {
-            position: absolute; left: -20px; top: 50%; transform: translateY(-50%);
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
             width: 0; height: 0; 
             border-top: 6px solid transparent;
             border-bottom: 6px solid transparent;
-            border-left: 8px solid white;
+            border-right: 8px solid white;
             opacity: 0; transition: opacity 0.3s;
         }
         .voice-line.active .voice-line-marker { opacity: 1; }
 
         /* Controls */
         .voice-controls {
-            flex: 0 0 auto; padding: 20px 20px 40px;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            flex: 0 0 auto; padding: 20px 20px calc(20px + var(--safe-bottom));
+            background: linear-gradient(to top, #000000 40%, rgba(0,0,0,0.9) 80%, transparent 100%);
             display: flex; flex-direction: column; gap: 16px;
+            z-index: 50;
         }
         .voice-input-row { display: flex; gap: 10px; align-items: center; }
         .voice-input {
-            flex: 1; background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 24px; padding: 12px 20px;
-            color: white; font-size: 14px; outline: none;
-            backdrop-filter: blur(10px);
+            flex: 1; background: rgba(20, 20, 25, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px; padding: 14px 20px;
+            color: white; font-size: 15px; outline: none;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         .voice-action-btn {
             width: 44px; height: 44px; border-radius: 50%;
@@ -1602,12 +1615,16 @@
         }
         .voice-action-btn:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.2); }
         .voice-hangup-btn {
-            width: 60px; height: 60px; border-radius: 50%;
-            background: rgba(235, 77, 75, 0.8);
-            border: none; color: white;
+            width: 64px; height: 64px; border-radius: 50%;
+            background: #eb4d4b;
+            border: 4px solid rgba(235, 77, 75, 0.3);
+            color: white;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto; box-shadow: 0 4px 15px rgba(235, 77, 75, 0.4);
+            margin: 0 auto; 
+            box-shadow: 0 10px 30px rgba(235, 77, 75, 0.4);
+            transition: transform 0.2s;
         }
+        .voice-hangup-btn:active { transform: scale(0.9); }
         .voice-minimize-btn {
             position: absolute; top: calc(20px + var(--safe-top)); right: 20px;
             width: 36px; height: 36px; border-radius: 12px;
@@ -1655,9 +1672,18 @@
         .voice-history-item {
             background: var(--bg-glass); border: 1px solid var(--border-subtle);
             border-radius: 12px; padding: 16px; margin-bottom: 10px;
-            cursor: pointer; transition: all 0.2s;
+            cursor: pointer; transition: all 0.2s; position: relative;
+            padding-right: 48px;
         }
         .voice-history-item:hover { background: var(--bg-glass-hover); }
+        .voice-history-delete {
+            position: absolute; top: 0; right: 0; bottom: 0; width: 48px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-tertiary); transition: color 0.2s;
+            z-index: 5; cursor: pointer;
+        }
+        .voice-history-delete:hover { color: var(--danger); background: rgba(199, 80, 80, 0.1); border-radius: 0 12px 12px 0; }
+        .voice-history-delete svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.5; fill: none; }
         .voice-history-date { font-size: 12px; color: var(--text-tertiary); margin-bottom: 4px; }
         .voice-history-summary { font-size: 14px; color: var(--text-primary); line-height: 1.4; }
         
@@ -2510,15 +2536,22 @@
         <div class="modal">
             <div class="modal-title">Call Summary</div>
             <p style="color:var(--text-secondary);font-size:12px;margin-bottom:8px">Summary Prompt:</p>
-            <textarea class="input-field" id="summaryPrompt" rows="2">Summarize our voice call conversation, focusing on key topics and emotional tone.</textarea>
-            <div class="btn-row" style="margin-top:12px">
-                <button class="btn btn-primary btn-small" onclick="generateCallSummary()">Generate Summary</button>
+            <textarea class="input-field" id="summaryPrompt" rows="3">Summarize the voice call conversation between [Char] and [User]. Focus on key topics, emotional shifts, and memorable moments.</textarea>
+            
+            <div class="modal-btns" style="margin-top:12px" id="summaryActionBtns">
+                <button class="modal-btn cancel" onclick="hideModal('callSummaryModal')">Cancel</button>
+                <button class="modal-btn confirm" onclick="startSummarization()">Start Summary</button>
             </div>
-            <div id="summaryResultBox" style="display:none">
+
+            <div id="summaryLoading" style="display:none;text-align:center;padding:20px;color:var(--text-secondary)">
+                <div class="loading-spinner" style="margin:0 auto 10px"></div>
+                Summarizing...
+            </div>
+
+            <div id="summaryResultBox" style="display:none;margin-top:16px">
                 <div class="summary-box" id="summaryText"></div>
-                <button class="btn btn-secondary" style="margin-top:12px" onclick="saveSummaryToWorldbook()">Save to Lore</button>
+                <button class="btn btn-secondary" style="margin-top:12px;background:linear-gradient(135deg,rgba(255,255,255,0.1),rgba(255,255,255,0.05))" onclick="saveSummaryToWorldbook()">Save to Worldbook & Link</button>
             </div>
-            <div class="modal-btns" style="margin-top:16px"><button class="modal-btn cancel" onclick="hideModal('callSummaryModal')">Close</button></div>
         </div>
     </div>
 
@@ -4007,8 +4040,7 @@ If you refuse, the call will not connect. If you accept, you will enter voice ca
             addToVoiceTranscript('user', text);
             input.value = '';
             
-            // Trigger AI response
-            triggerVoiceAI();
+            // Do NOT trigger AI response automatically. User must click lightning button.
         }
 
         function addToVoiceTranscript(sender, text, type = 'text') {
@@ -4076,6 +4108,7 @@ You are currently in a voice call with ${char.userNick || 'User'}.
 3. Keep responses relatively short and conversational, like real speech.
 4. You can hang up if appropriate by outputting [HANGUP].
 5. Do NOT output "User:" or "Char:", just the content.
+6. Use (parentheses) ONLY for sounds/actions you hear or make. Everything else is spoken text.
 ]`;
 
             const messages = [
@@ -4110,10 +4143,6 @@ You are currently in a voice call with ${char.userNick || 'User'}.
                 }
 
                 // Parse response for sound effects vs speech
-                // Simple parser: content in () is sound, outside is speech
-                // This is a basic implementation.
-                
-                // Regex to find (content)
                 const parts = responseText.split(/(\(.*?\))/g);
                 
                 for (let part of parts) {
@@ -4121,10 +4150,10 @@ You are currently in a voice call with ${char.userNick || 'User'}.
                     if (!part) continue;
                     
                     if (part.startsWith('(') && part.endsWith(')')) {
-                        // Sound effect
+                        // Sound effect - Type 2
                         addToVoiceTranscript('char', part.slice(1, -1), 'sound');
                     } else {
-                        // Speech
+                        // Speech - Type 1
                         addToVoiceTranscript('char', part, 'text');
                     }
                     await new Promise(r => setTimeout(r, 500)); // Delay between parts
@@ -4163,7 +4192,7 @@ You are currently in a voice call with ${char.userNick || 'User'}.
             if (history.length === 0) {
                 list.innerHTML = '<p style="text-align:center;color:var(--text-tertiary);padding:20px">No call history</p>';
             } else {
-                list.innerHTML = history.sort((a,b) => b.timestamp - a.timestamp).map(session => {
+                list.innerHTML = history.sort((a,b) => b.timestamp - a.timestamp).map((session, idx) => {
                     const date = new Date(session.timestamp).toLocaleString();
                     const duration = Math.round(session.duration / 1000) + 's';
                     const preview = session.transcript.length > 0 ? session.transcript[0].content.substring(0, 30) + '...' : 'Empty call';
@@ -4171,11 +4200,24 @@ You are currently in a voice call with ${char.userNick || 'User'}.
                     return `<div class="voice-history-item" onclick="viewCallTranscript('${session.id}')">
                         <div class="voice-history-date">${date} • ${duration}</div>
                         <div class="voice-history-summary">${escapeHtml(preview)}</div>
+                        <div class="voice-history-delete" onclick="event.stopPropagation(); deleteVoiceHistory('${session.id}')">
+                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </div>
                     </div>`;
                 }).join('');
             }
             
             showModal('voiceHistoryModal');
+        }
+        
+        function deleteVoiceHistory(id) {
+            if (!confirm('Delete this call record?')) return;
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (char && char.voiceHistory) {
+                char.voiceHistory = char.voiceHistory.filter(h => h.id !== id);
+                saveData();
+                showVoiceHistory(); // Refresh list
+            }
         }
 
         let currentViewingCallId = null;
@@ -4184,81 +4226,97 @@ You are currently in a voice call with ${char.userNick || 'User'}.
             hideModal('voiceHistoryModal');
             currentViewingCallId = id;
             
-            // Re-use the voice room UI but in "read-only" mode? 
-            // Or a separate modal? User asked for "popup complete window".
-            // Let's use the voice room UI for viewing as it's already styled for transcripts.
-            // But we need to hide controls and show "Summary" button.
-            
-            // Actually, let's build a dedicated modal content or reuse a generic large modal.
-            // Since we don't have a generic large modal, let's use the voiceCallRoom but adapted.
-            
             const char = App.characters.find(c => c.id === App.currentCharId);
             const session = char.voiceHistory.find(s => s.id === id);
             if (!session) return;
 
-            // Reuse voice room
+            // Reuse voice room but in history mode
             const room = document.getElementById('voiceCallRoom');
             room.classList.add('active');
+            room.classList.add('history-mode');
             
             document.getElementById('voiceCallStatus').textContent = 'Call History';
-            document.getElementById('voiceCallInput').parentElement.style.display = 'none'; // Hide input
             
-            // Add Summary Button to top right (or reuse minimize button area)
-            // We'll replace minimize button with Close button for history view
-            const minBtn = room.querySelector('.voice-minimize-btn');
-            const originalMinBtnHtml = minBtn.innerHTML;
-            const originalMinBtnOnClick = minBtn.onclick;
-            
-            // Override for history view
-            minBtn.innerHTML = '✕';
-            minBtn.onclick = () => {
-                room.classList.remove('active');
-                // Restore original state
-                minBtn.innerHTML = originalMinBtnHtml;
-                minBtn.onclick = originalMinBtnOnClick;
-                document.getElementById('voiceCallInput').parentElement.style.display = 'flex';
-                document.getElementById('voiceCallSummaryBtn')?.remove();
-            };
+            // Custom close button for history mode
+            let closeBtn = document.getElementById('voiceHistoryCloseBtn');
+            if (!closeBtn) {
+                closeBtn = document.createElement('div');
+                closeBtn.id = 'voiceHistoryCloseBtn';
+                closeBtn.className = 'voice-minimize-btn';
+                closeBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+                closeBtn.style.zIndex = '101';
+                closeBtn.onclick = closeVoiceHistoryView;
+                room.appendChild(closeBtn);
+            }
+            closeBtn.style.display = 'flex';
 
             // Add Summary Button
-            const header = room.querySelector('.voice-header');
-            let summaryBtn = document.createElement('div');
-            summaryBtn.id = 'voiceCallSummaryBtn';
-            summaryBtn.className = 'nav-btn'; // Reuse nav-btn style
-            summaryBtn.style.position = 'absolute';
-            summaryBtn.style.top = '20px';
-            summaryBtn.style.right = '60px'; // Left of close button
-            summaryBtn.style.zIndex = '100';
-            summaryBtn.style.cursor = 'pointer';
-            summaryBtn.textContent = 'Summarize';
-            summaryBtn.onclick = () => openSummaryModal(id);
-            room.appendChild(summaryBtn);
+            let summaryBtn = document.getElementById('voiceCallSummaryBtn');
+            if (!summaryBtn) {
+                summaryBtn = document.createElement('div');
+                summaryBtn.id = 'voiceCallSummaryBtn';
+                summaryBtn.className = 'nav-btn';
+                summaryBtn.style.position = 'absolute';
+                summaryBtn.style.top = 'calc(20px + var(--safe-top))';
+                summaryBtn.style.right = '70px';
+                summaryBtn.style.zIndex = '100';
+                summaryBtn.style.cursor = 'pointer';
+                summaryBtn.style.background = 'rgba(255,255,255,0.1)';
+                summaryBtn.textContent = 'Summarize';
+                summaryBtn.onclick = () => openSummaryModal(id);
+                room.appendChild(summaryBtn);
+            }
+            summaryBtn.style.display = 'flex';
 
             // Render transcript
-            const container = document.getElementById('voiceTranscript');
-            container.innerHTML = session.transcript.map(line => {
-                const sender = line.sender === 'user' ? 'You' : char.name;
-                const content = line.type === 'sound' ? `*${line.content}*` : line.content;
-                const style = line.sender === 'user' ? 'color:rgba(255,255,255,0.9)' : 'color:rgba(255,255,255,0.6)';
-                return `<div style="padding:8px 0;${style}"><strong>${sender}:</strong> ${content}</div>`;
-            }).join('');
+            App.voiceCall.transcript = session.transcript; // Load into current state for rendering
+            renderVoiceTranscript();
+        }
+        
+        function closeVoiceHistoryView() {
+            const room = document.getElementById('voiceCallRoom');
+            room.classList.remove('active');
+            room.classList.remove('history-mode');
+            
+            // Clean up custom buttons
+            const closeBtn = document.getElementById('voiceHistoryCloseBtn');
+            if (closeBtn) closeBtn.style.display = 'none';
+            
+            const summaryBtn = document.getElementById('voiceCallSummaryBtn');
+            if (summaryBtn) summaryBtn.style.display = 'none';
+            
+            // Reset transcript
+            App.voiceCall.transcript = [];
+            
+            // Re-open history list
+            showVoiceHistory();
         }
 
         function openSummaryModal(callId) {
             currentViewingCallId = callId;
             showModal('callSummaryModal');
+            document.getElementById('summaryActionBtns').style.display = 'flex';
+            document.getElementById('summaryLoading').style.display = 'none';
             document.getElementById('summaryResultBox').style.display = 'none';
+            
+            // Pre-fill prompt with user/char names
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (char) {
+                const prompt = document.getElementById('summaryPrompt');
+                prompt.value = `Summarize the voice call conversation between ${char.name} and ${char.userNick || 'User'}. Focus on key topics, emotional shifts, and memorable moments.`;
+            }
         }
 
-        async function generateCallSummary() {
+        async function startSummarization() {
+            document.getElementById('summaryActionBtns').style.display = 'none';
+            document.getElementById('summaryLoading').style.display = 'block';
+            
             const char = App.characters.find(c => c.id === App.currentCharId);
             const session = char.voiceHistory.find(s => s.id === currentViewingCallId);
             if (!session) return;
 
             const prompt = document.getElementById('summaryPrompt').value;
             const transcriptText = session.transcript.map(t => `${t.sender}: ${t.content}`).join('\n');
-            
-            showToast('Generating summary...', 'info');
             
             try {
                 const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
@@ -4278,9 +4336,12 @@ You are currently in a voice call with ${char.userNick || 'User'}.
                 const summary = data.choices?.[0]?.message?.content || 'No summary generated.';
                 
                 document.getElementById('summaryText').textContent = summary;
+                document.getElementById('summaryLoading').style.display = 'none';
                 document.getElementById('summaryResultBox').style.display = 'block';
                 
             } catch (e) {
+                document.getElementById('summaryLoading').style.display = 'none';
+                document.getElementById('summaryActionBtns').style.display = 'flex';
                 showToast('Summary failed: ' + e.message, 'error');
             }
         }
