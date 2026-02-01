@@ -3,18 +3,13 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>NOIR</title>
-    
-    <!-- iOS PWA 关键配置 - 必须有 apple-touch-icon -->
-    <link rel="apple-touch-icon" href="https://i.postimg.cc/nzP9sgxr/chan-125.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NOIR">
-    
-    <!-- 其他配置 -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a0a">
+    <title>NOIR · Premium SMS v10</title>
     <style id="globalFontStyle"></style>
     <style id="globalFontSizeStyle"></style>
     <style id="bubbleStyleSheet"></style>
@@ -55,36 +50,24 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html { height: 100%; }
+        html { height: 100%; height: -webkit-fill-available; }
         body {
-            /* 使用 flex 布局代替 position: fixed - 这是 PWA 全屏模式的关键 */
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            font-family: var(--font-sans);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            overscroll-behavior: none;
-            letter-spacing: 0.02em;
-            line-height: 1.5;
+            height: 100%; min-height: 100vh; min-height: -webkit-fill-available;
+            overflow: hidden; font-family: var(--font-sans);
+            background: var(--bg-primary); color: var(--text-primary);
+            overscroll-behavior: none; position: fixed; width: 100%; top: 0; left: 0;
+            letter-spacing: 0.02em; line-height: 1.5;
             font-size: calc(14px * var(--font-scale));
         }
 
         #wallpaperLayer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
             background: linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%);
-            pointer-events: none;
         }
 
         .phone-container {
-            position: relative;
-            width: 100%; max-width: 100vw;
-            height: 100vh; height: 100dvh;
-            margin: 0; overflow: hidden; z-index: 1;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%; margin: 0; overflow: hidden; z-index: 1;
         }
 
         .status-bar {
@@ -1495,6 +1478,197 @@
         ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
         #customCssStyles { }
+
+        /* Voice Call Styles */
+        .voice-call-page {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+            display: flex; flex-direction: column;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2000; transform: translateY(100%); transition: transform 0.4s ease;
+        }
+        .voice-call-page.active { transform: translateY(0); }
+        
+        .voice-call-header {
+            padding: calc(20px + var(--safe-top)) 20px 10px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        .voice-call-avatar-container {
+            position: relative; width: 120px; height: 120px; margin: 40px auto 20px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .voice-call-avatar {
+            width: 80px; height: 80px; border-radius: 50%;
+            overflow: hidden; z-index: 2; position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .voice-call-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .voice-call-ring {
+            position: absolute; top: 50%; left: 50%;
+            width: 160px; height: 160px;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 30px rgba(255,255,255,0.02);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .voice-call-ring::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 220px; height: 60px;
+            border: 3px solid rgba(150, 150, 150, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) rotate(-20deg);
+            box-shadow: 0 0 15px rgba(255,255,255,0.05);
+        }
+        
+        .voice-stars {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; overflow: hidden;
+        }
+        .voice-star {
+            position: absolute; background: white; border-radius: 50%;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+        
+        .voice-chat-container {
+            flex: 1; overflow-y: auto; padding: 20px;
+            display: flex; flex-direction: column; gap: 20px;
+            mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        }
+        
+        .voice-lyric-line {
+            text-align: center; color: rgba(255,255,255,0.3);
+            font-size: 15px; transition: all 0.4s ease;
+            padding: 10px; border-radius: 12px;
+            cursor: pointer;
+        }
+        .voice-lyric-line.active {
+            color: white; font-size: 18px; font-weight: 500;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        .voice-lyric-line.user { text-align: right; padding-right: 30px; position: relative; }
+        .voice-lyric-line.char { text-align: left; padding-left: 30px; position: relative; }
+        .voice-lyric-line.ambient { font-style: italic; color: rgba(255,255,255,0.2); font-size: 13px; }
+        
+        .voice-lyric-line.user.active { color: #b0c4de; }
+        .voice-lyric-line.char.active { color: #ffffff; }
+
+        .voice-scroll-indicator {
+            position: absolute; top: 50%; right: 10px;
+            width: 0; height: 0; transform: translateY(-50%);
+            border-style: solid; border-width: 6px 8px 6px 0;
+            border-color: transparent white transparent transparent;
+            pointer-events: none; z-index: 10;
+        }
+        
+        .voice-input-area {
+            padding: 20px; padding-bottom: calc(20px + var(--safe-bottom));
+            background: linear-gradient(to top, #000 0%, transparent 100%);
+        }
+        
+        .voice-input-bar {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(20,20,25,0.9);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px; padding: 8px 8px 8px 16px;
+            backdrop-filter: blur(20px);
+        }
+        
+        .voice-input {
+            flex: 1; background: transparent; border: none;
+            color: white; font-size: 15px; outline: none;
+        }
+        
+        .voice-send-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            border: none; color: white; cursor: pointer;
+        }
+        
+        .voice-waiting-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
+            z-index: 2100; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .voice-waiting-overlay.active { opacity: 1; visibility: visible; }
+        .voice-waiting-overlay.minimized {
+            width: 120px; height: 160px; top: 60px; left: 20px;
+            border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.9);
+            justify-content: flex-start; padding-top: 20px;
+            cursor: pointer;
+        }
+        .voice-waiting-overlay.minimized .waiting-content { transform: scale(0.6); margin: 0; }
+        .voice-waiting-overlay.minimized .waiting-actions { display: none; }
+        .voice-waiting-overlay.minimized .waiting-text { display: none; }
+        
+        .waiting-avatar-pulse {
+            width: 100px; height: 100px; border-radius: 50%;
+            position: relative; margin-bottom: 40px;
+        }
+        .waiting-avatar-pulse img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; z-index: 2; position: relative; }
+        .waiting-avatar-pulse::before, .waiting-avatar-pulse::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50%; border: 2px solid rgba(255,255,255,0.5);
+            animation: pulse-ring 2s infinite;
+        }
+        .waiting-avatar-pulse::after { animation-delay: 1s; }
+        @keyframes pulse-ring { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
+        
+        .waiting-text { font-size: 18px; color: white; margin-bottom: 60px; font-weight: 300; letter-spacing: 1px; }
+        
+        .waiting-cancel-btn {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: #c75050; border: none; color: white;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: transform 0.2s;
+        }
+        .waiting-cancel-btn:active { transform: scale(0.9); }
+        
+        .call-history-item {
+            background: var(--bg-glass); border: 1px solid var(--border-subtle);
+            border-radius: 12px; padding: 16px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .call-history-item:hover { background: var(--bg-glass-hover); }
+        .call-history-info { flex: 1; }
+        .call-history-date { font-size: 14px; color: var(--text-primary); margin-bottom: 4px; }
+        .call-history-preview { font-size: 12px; color: var(--text-tertiary); }
+        
+        .summary-modal-content {
+            background: var(--bg-card); border-radius: 12px; padding: 16px;
+            margin-top: 16px; font-size: 13px; line-height: 1.6;
+            color: var(--text-secondary); max-height: 200px; overflow-y: auto;
+        }
+        .voice-call-bubble {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 12px; border-radius: 12px;
+            font-size: 13px; color: var(--text-secondary);
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle);
+            margin: 4px 0; width: fit-content;
+        }
+        .voice-call-bubble.rejected { color: var(--text-tertiary); }
+        .voice-call-bubble svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+        
+        .system-message {
+            display: flex; justify-content: center; margin: 10px 0;
+        }
+        .system-message-text {
+            background: rgba(255,255,255,0.1); color: var(--text-tertiary);
+            padding: 4px 12px; border-radius: 10px; font-size: 11px;
+        }
+        
+        .context-menu-item.disabled { opacity: 0.5; pointer-events: none; }
     </style>
     <style id="customCssStyles"></style>
 </head>
@@ -1776,6 +1950,14 @@
                     <button class="ext-btn" onclick="openVoiceMessageInput()">
                         <div class="ext-btn-icon rose"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
                         <div class="ext-btn-text"><div class="ext-btn-title">Voice Message</div><div class="ext-btn-desc">Send as voice format</div></div>
+                    </button>
+                    <button class="ext-btn" onclick="initiateVoiceCall()">
+                        <div class="ext-btn-icon purple"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                        <div class="ext-btn-text"><div class="ext-btn-title">Voice Call</div><div class="ext-btn-desc">Call character</div></div>
+                    </button>
+                    <button class="ext-btn" onclick="openCallHistory()">
+                        <div class="ext-btn-icon blue"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+                        <div class="ext-btn-text"><div class="ext-btn-title">Call History</div><div class="ext-btn-desc">View past calls</div></div>
                     </button>
                 </div>
 
@@ -2282,6 +2464,117 @@
             <p style="color:var(--text-secondary);text-align:center;margin-bottom:16px;font-size:calc(12px * var(--font-scale))">Enter what you would say out loud. This will appear as a voice message.</p>
             <textarea class="input-field" id="voiceMessageText" rows="3" placeholder="Hey, I was just thinking about you..."></textarea>
             <div class="modal-btns" style="margin-top:16px"><button class="modal-btn cancel" onclick="hideModal('voiceMessageModal')">Cancel</button><button class="modal-btn confirm" onclick="sendVoiceMessage()">Send</button></div>
+        </div>
+    </div>
+
+    <!-- Voice Call Waiting Overlay -->
+    <div class="voice-waiting-overlay" id="voiceWaitingOverlay">
+        <div class="waiting-content" style="display:flex;flex-direction:column;align-items:center;transition:transform 0.3s ease">
+            <div class="waiting-avatar-pulse">
+                <img id="waitingAvatarImg" src="">
+            </div>
+            <div class="waiting-text">Calling...</div>
+            <div class="waiting-actions">
+                <button class="waiting-cancel-btn" onclick="cancelVoiceCall()">
+                    <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
+        <div style="position:absolute;top:20px;right:20px">
+            <button class="nav-btn" onclick="minimizeWaitingOverlay()">
+                <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/><polyline points="9 21 3 21 3 15"/><line x1="14" y1="10" x2="3" y2="21"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Voice Call Page -->
+    <div class="voice-call-page" id="voiceCallPage">
+        <div class="voice-stars" id="voiceStars"></div>
+        <div class="voice-call-header">
+            <button class="nav-btn" onclick="endVoiceCall()">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <button class="nav-btn" onclick="minimizeVoiceCall()">
+                <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/><polyline points="9 21 3 21 3 15"/><line x1="14" y1="10" x2="3" y2="21"/></svg>
+            </button>
+        </div>
+        
+        <div class="voice-call-avatar-container">
+            <div class="voice-call-ring"></div>
+            <div class="voice-call-avatar">
+                <img id="voiceCallAvatarImg" src="">
+            </div>
+        </div>
+        
+        <div class="voice-chat-container" id="voiceChatContainer">
+            <!-- Lyrics lines will go here -->
+        </div>
+        <div class="voice-scroll-indicator"></div>
+        
+        <div class="voice-input-area">
+            <div class="voice-input-bar">
+                <input type="text" class="voice-input" id="voiceCallInput" placeholder="Type to speak...">
+                <button class="voice-send-btn" onclick="sendVoiceCallMessage()">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+                <button class="voice-send-btn" onclick="triggerVoiceCallAI()" style="margin-left:8px">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call History Page -->
+    <div class="page" id="callHistoryPage">
+        <div class="nav-bar">
+            <button class="nav-btn" onclick="closePage('callHistoryPage')">Back</button>
+            <span class="nav-title">Call History</span>
+            <div class="nav-btn" style="visibility:hidden">X</div>
+        </div>
+        <div class="page-content" id="callHistoryList">
+            <!-- List items -->
+        </div>
+    </div>
+
+    <!-- Call History Detail Modal -->
+    <div class="modal-overlay" id="callDetailModal">
+        <div class="modal" style="max-width:500px;height:80vh">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                <div class="modal-title" style="margin:0">Call Record</div>
+                <button class="btn btn-secondary btn-small" onclick="openCallSummary()">Summary</button>
+            </div>
+            <div id="callDetailContent" style="overflow-y:auto;max-height:calc(80vh - 100px);padding-right:8px"></div>
+            <div class="modal-btns" style="margin-top:16px">
+                <button class="modal-btn cancel" onclick="hideModal('callDetailModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Modal -->
+    <div class="modal-overlay" id="summaryModal">
+        <div class="modal">
+            <div class="modal-title">Summarize Call</div>
+            <textarea class="input-field" id="summaryPrompt" rows="3" placeholder="Summary instructions...">Summarize this voice call conversation, highlighting key points and emotional shifts.</textarea>
+            <div class="modal-btns" style="margin-top:12px">
+                <button class="modal-btn cancel" onclick="hideModal('summaryModal')">Cancel</button>
+                <button class="modal-btn confirm" onclick="generateSummary()">Start Summary</button>
+            </div>
+            <div id="summaryResultContainer" style="display:none">
+                <div class="summary-modal-content" id="summaryResult"></div>
+                <button class="btn btn-primary" style="margin-top:16px" onclick="saveSummaryToWorldbook()">Save to Worldbook</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Call Confirm Modal -->
+    <div class="modal-overlay" id="voiceCallConfirmModal">
+        <div class="modal">
+            <div class="modal-title">Voice Call</div>
+            <p style="text-align:center;color:var(--text-secondary);margin-bottom:20px">Start a voice call with this character?</p>
+            <div class="modal-btns">
+                <button class="modal-btn cancel" onclick="hideModal('voiceCallConfirmModal')">Cancel</button>
+                <button class="modal-btn confirm" onclick="startVoiceCallRequest()">Call</button>
+            </div>
         </div>
     </div>
 
@@ -3376,7 +3669,29 @@
             lastDate = msgDate;
         }
 
+        // Handle System Messages
+        if (msg.type && msg.type.startsWith('system-')) {
+            html += `<div class="system-message"><span class="system-message-text">${escapeHtml(msg.content)}</span></div>`;
+            return;
+        }
+
         const senderType = msg.sender === 'user' ? 'sent' : 'received';
+        
+        // Handle Voice Call Status Bubbles (Rejected/Cancelled)
+        if (msg.type === 'voice-call-status') {
+            const isRejected = msg.status === 'rejected';
+            const icon = isRejected 
+                ? '<svg viewBox="0 0 24 24"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+                : '<svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'; 
+            
+            html += `<div class="message-wrapper ${senderType}" data-id="${msg.id}">
+                <div class="voice-call-bubble ${isRejected ? 'rejected' : ''}" oncontextmenu="showContextMenu(event, '${msg.id}', true)">
+                    ${icon} <span>${escapeHtml(msg.content)}</span>
+                </div>
+            </div>`;
+            return;
+        }
+
         const showAvatar = char.showAvatar !== false;
         const avatarShape = char.avatarShape || 'circle';
         const showBorder = char.showBorder;
@@ -3398,56 +3713,33 @@
         let msgContent = msg.content || '';
         let quoteId = msg.quoteId;
 
-        // 如果type不明确，尝试从内容中解析
         if (msgType === 'text' || !msgType) {
-            // 检查是否是场景图片格式
             const imgMatch = msgContent.match(/^\[IMG:\s*(.+?)\s*\]$/is);
-            if (imgMatch) {
-                msgType = 'scene-image';
-                msgContent = imgMatch[1].trim();
-            }
-            // 检查是否是语音消息格式
+            if (imgMatch) { msgType = 'scene-image'; msgContent = imgMatch[1].trim(); }
             const voiceMatch = msgContent.match(/^\[VOICE:\s*(.+?)\s*\]$/is);
-            if (voiceMatch) {
-                msgType = 'voice';
-                msgContent = voiceMatch[1].trim();
-            }
-            // 检查是否有引用格式
+            if (voiceMatch) { msgType = 'voice'; msgContent = voiceMatch[1].trim(); }
             const quoteMatch = msgContent.match(/^\[Q:#(\d+)\]\s*/i);
             if (quoteMatch) {
                 const msgIndex = parseInt(quoteMatch[1]) - 1;
-                if (msgIndex >= 0 && msgIndex < char.messages.length) {
-                    quoteId = char.messages[msgIndex].id;
-                }
+                if (msgIndex >= 0 && msgIndex < char.messages.length) { quoteId = char.messages[msgIndex].id; }
                 msgContent = msgContent.replace(quoteMatch[0], '').trim();
-
-                // 移除引用后再检查是否是特殊格式
                 const imgMatch2 = msgContent.match(/^\[IMG:\s*(.+?)\s*\]$/is);
-                if (imgMatch2) {
-                    msgType = 'scene-image';
-                    msgContent = imgMatch2[1].trim();
-                }
+                if (imgMatch2) { msgType = 'scene-image'; msgContent = imgMatch2[1].trim(); }
                 const voiceMatch2 = msgContent.match(/^\[VOICE:\s*(.+?)\s*\]$/is);
-                if (voiceMatch2) {
-                    msgType = 'voice';
-                    msgContent = voiceMatch2[1].trim();
-                }
+                if (voiceMatch2) { msgType = 'voice'; msgContent = voiceMatch2[1].trim(); }
             }
         }
 
-        // 根据解析后的类型渲染
         if (msgType === 'scene-image') {
             html += renderSceneImageMessage({...msg, content: msgContent}, idx, senderType, avatarHtml, time, timeClass);
         } else if (msgType === 'voice') {
             html += renderVoiceMessage({...msg, content: msgContent}, idx, senderType, avatarHtml, time, timeClass);
         } else {
-            // 普通文本消息
             let quoteHtml = '';
             if (quoteId !== undefined && quoteId !== null) {
                 const quotedMsg = char.messages.find(m => m.id === quoteId);
                 if (quotedMsg) {
                     let quotedContent = quotedMsg.content || '';
-                    // 清理引用内容中的格式标记
                     quotedContent = quotedContent.replace(/^\[Q:#\d+\]\s*/i, '');
                     quotedContent = quotedContent.replace(/^\[(IMG|VOICE):\s*/i, '').replace(/\]$/, '');
                     quoteHtml = `<div class="message-quote">${escapeHtml(quotedContent.substring(0, 50))}</div>`;
@@ -3664,10 +3956,23 @@
             await saveData();
         }
 
-        function showContextMenu(e, msgId) {
+        function showContextMenu(e, msgId, isDisabled = false) {
             e.preventDefault();
             App.contextMenuMsgId = msgId;
-            document.getElementById('contextMenuOverlay').classList.add('active');
+            const overlay = document.getElementById('contextMenuOverlay');
+            
+            // Disable edit/copy if isDisabled is true
+            const items = document.querySelectorAll('.context-menu-item');
+            items.forEach((item, index) => {
+                // 0: Copy, 1: Quote, 2: Edit
+                if (isDisabled && (index === 0 || index === 2)) {
+                    item.classList.add('disabled');
+                } else {
+                    item.classList.remove('disabled');
+                }
+            });
+            
+            overlay.classList.add('active');
         }
 
         function hideContextMenu() {
@@ -3876,6 +4181,18 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
                     content = `[IMG:${msg.content}]`;
                 } else if (msg.type === 'voice') {
                     content = `[VOICE:${msg.content}]`;
+                } else if (msg.type === 'system-call-init') {
+                    messages.push({ role: 'system', content: `[System: ${msg.content}]` });
+                    return;
+                } else if (msg.type === 'voice-call-status') {
+                    let statusDesc = msg.content;
+                    if (msg.status === 'rejected') statusDesc = `${char.name} declined the call.`;
+                    else if (msg.status === 'cancelled') statusDesc = 'User cancelled the call.';
+                    messages.push({ role: 'system', content: `[System: ${statusDesc}]` });
+                    return;
+                } else if (msg.type === 'system-call-end') {
+                    messages.push({ role: 'system', content: `[System: ${msg.content}]` });
+                    return;
                 }
 
                 if (msg.image) {
@@ -4597,6 +4914,457 @@ Example: "[VOICE:Hey, I was just thinking about you... hope you're doing well]||
             App.globalCssPresets = []; App.apiPresets = []; App.fonts = [...DEFAULT_FONTS];
             await saveData();
             location.reload();
+        }
+
+        // ========== 语音通话功能 ==========
+        
+        let isVoiceCallActive = false;
+        let voiceCallId = null;
+        let voiceCallMessages = [];
+        let voiceCallStartTime = 0;
+        
+        function initiateVoiceCall() {
+            toggleExtensionPanel();
+            showModal('voiceCallConfirmModal');
+        }
+        
+        async function startVoiceCallRequest() {
+            hideModal('voiceCallConfirmModal');
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            
+            // Add system message
+            const sysMsg = {
+                id: 'msg-' + Date.now(),
+                sender: 'system',
+                content: `${char.userNick || 'User'} initiated a voice call`,
+                timestamp: Date.now(),
+                type: 'system-call-init'
+            };
+            char.messages.push(sysMsg);
+            renderMessages();
+            
+            // Show waiting overlay
+            const overlay = document.getElementById('voiceWaitingOverlay');
+            const avatarImg = document.getElementById('waitingAvatarImg');
+            avatarImg.src = char.avatarImage || '';
+            if (!char.avatarImage) avatarImg.style.display = 'none';
+            else avatarImg.style.display = 'block';
+            
+            overlay.classList.remove('minimized');
+            overlay.classList.add('active');
+            
+            // Send request to AI
+            try {
+                const prompt = `[Voice Call Request]
+User has initiated a voice call.
+Check the recent chat history. If you have recently agreed to a voice call or if the context implies you are available, you should ACCEPT.
+Only REJECT if there is a strong reason in the plot (e.g., you are angry, busy, or it's out of character).
+Output ONLY "ACCEPT" or "REJECT". Do not output anything else.`;
+                
+                // Construct temporary message history for context
+                const messages = buildAPIMessages(char);
+                messages.push({ role: 'system', content: prompt });
+                
+                const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${App.settings.apiKey}` },
+                    body: JSON.stringify({
+                        model: App.settings.modelName,
+                        messages,
+                        temperature: 0.5,
+                        max_tokens: 10
+                    })
+                });
+                
+                if (!res.ok) throw new Error('API Error');
+                const data = await res.json();
+                const response = data.choices?.[0]?.message?.content?.trim().toUpperCase() || 'REJECT';
+                
+                if (response.includes('ACCEPT')) {
+                    handleCallAccepted();
+                } else {
+                    handleCallRejected();
+                }
+            } catch (e) {
+                showToast('Connection failed, call cancelled', 'error');
+                cancelVoiceCall();
+            }
+        }
+        
+        function cancelVoiceCall() {
+            const overlay = document.getElementById('voiceWaitingOverlay');
+            overlay.classList.remove('active');
+            
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (char) {
+                const msg = {
+                    id: 'msg-' + Date.now(),
+                    sender: 'user',
+                    content: 'Cancelled call',
+                    type: 'voice-call-status',
+                    status: 'cancelled',
+                    timestamp: Date.now()
+                };
+                char.messages.push(msg);
+                renderMessages();
+                saveData();
+            }
+        }
+        
+        function handleCallRejected() {
+            const overlay = document.getElementById('voiceWaitingOverlay');
+            if (!overlay.classList.contains('active')) return;
+            overlay.classList.remove('active');
+            showToast('Call rejected', 'info');
+            
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (char) {
+                const msg = {
+                    id: 'msg-' + Date.now(),
+                    sender: 'char',
+                    content: 'Declined voice call',
+                    type: 'voice-call-status',
+                    status: 'rejected',
+                    timestamp: Date.now()
+                };
+                char.messages.push(msg);
+                renderMessages();
+                saveData();
+            }
+        }
+        
+        function handleCallAccepted() {
+            const overlay = document.getElementById('voiceWaitingOverlay');
+            if (!overlay.classList.contains('active')) return;
+            overlay.classList.remove('active');
+            showToast('Call accepted!', 'success');
+            
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            
+            // Setup voice call page
+            isVoiceCallActive = true;
+            voiceCallId = 'vc-' + Date.now();
+            voiceCallMessages = [];
+            voiceCallStartTime = Date.now();
+            
+            const page = document.getElementById('voiceCallPage');
+            const avatarImg = document.getElementById('voiceCallAvatarImg');
+            avatarImg.src = char.avatarImage || '';
+            
+            // Setup stars
+            const starsContainer = document.getElementById('voiceStars');
+            starsContainer.innerHTML = '';
+            for(let i=0; i<50; i++) {
+                const star = document.createElement('div');
+                star.className = 'voice-star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                const size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starsContainer.appendChild(star);
+            }
+            
+            page.classList.add('active');
+            document.getElementById('voiceChatContainer').innerHTML = '';
+            
+            // Trigger first AI message
+            setTimeout(() => triggerVoiceCallAI(true), 1000);
+        }
+        
+        function minimizeWaitingOverlay() {
+            document.getElementById('voiceWaitingOverlay').classList.toggle('minimized');
+        }
+        
+        function minimizeVoiceCall() {
+            document.getElementById('voiceCallPage').classList.remove('active');
+            showToast('Call running in background', 'info');
+        }
+        
+        // Override initiateVoiceCall to handle active call
+        const originalInitiate = initiateVoiceCall;
+        initiateVoiceCall = function() {
+            if (isVoiceCallActive) {
+                document.getElementById('voiceCallPage').classList.add('active');
+                toggleExtensionPanel();
+            } else {
+                originalInitiate();
+            }
+        };
+        
+        function endVoiceCall() {
+            if (!confirm('End voice call?')) return;
+            isVoiceCallActive = false;
+            document.getElementById('voiceCallPage').classList.remove('active');
+            
+            // Save call history
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (char) {
+                if (!char.voiceCallHistory) char.voiceCallHistory = [];
+                char.voiceCallHistory.push({
+                    id: voiceCallId,
+                    startTime: voiceCallStartTime,
+                    endTime: Date.now(),
+                    messages: voiceCallMessages,
+                    summary: null
+                });
+                
+                // Add "Call ended" message to chat
+                const duration = Math.round((Date.now() - voiceCallStartTime) / 1000);
+                const mins = Math.floor(duration / 60);
+                const secs = duration % 60;
+                char.messages.push({
+                    id: 'msg-' + Date.now(),
+                    sender: 'system',
+                    content: `Voice call ended (${mins}m ${secs}s)`,
+                    type: 'system-call-end',
+                    timestamp: Date.now()
+                });
+                
+                renderMessages();
+                saveData();
+            }
+        }
+        
+        function sendVoiceCallMessage() {
+            const input = document.getElementById('voiceCallInput');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            addVoiceCallLine(text, 'user');
+            input.value = '';
+            
+            // Trigger AI response
+            triggerVoiceCallAI();
+        }
+        
+        function addVoiceCallLine(text, sender, type = 'speech') {
+            const container = document.getElementById('voiceChatContainer');
+            const div = document.createElement('div');
+            div.className = `voice-lyric-line ${sender} ${type === 'ambient' ? 'ambient' : ''}`;
+            div.textContent = text;
+            div.onclick = () => highlightVoiceLine(div);
+            
+            if (sender === 'char' || sender === 'user') {
+                const marker = document.createElement('div');
+                marker.className = 'voice-lyric-marker';
+                div.appendChild(marker);
+            }
+            
+            container.appendChild(div);
+            
+            // Auto scroll
+            div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            highlightVoiceLine(div);
+            
+            voiceCallMessages.push({
+                sender,
+                content: text,
+                type: type === 'ambient' ? 'voice-call-ambient' : 'voice-call-speech',
+                timestamp: Date.now()
+            });
+        }
+        
+        function highlightVoiceLine(el) {
+            document.querySelectorAll('.voice-lyric-line').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+        }
+        
+        async function triggerVoiceCallAI(isFirst = false) {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            
+            // System prompt for voice call
+            let systemPrompt = `[Voice Call Mode]
+You are now in a voice call with the user. Simulate a real phone conversation.
+Format requirements:
+1. Output speech directly. No quotes.
+2. Use {{sound description}} for background sounds or actions audible over phone.
+3. Keep responses concise (20-80 words), like natural speech.
+4. If you want to hang up, end with [HANGUP].
+5. Do NOT use parentheses for actions. Only {{}} for sounds.`;
+
+            if (isFirst) systemPrompt += "\nThis is the start of the call. Say hello.";
+
+            const messages = buildAPIMessages(char);
+            // Append voice call history
+            voiceCallMessages.forEach(m => {
+                const role = m.sender === 'user' ? 'user' : 'assistant';
+                let content = m.content;
+                if (m.type === 'voice-call-ambient') content = `{{${content}}}`;
+                messages.push({ role, content });
+            });
+            
+            // Replace/Append system prompt
+            messages.push({ role: 'system', content: systemPrompt });
+            
+            try {
+                const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${App.settings.apiKey}` },
+                    body: JSON.stringify({
+                        model: App.settings.modelName,
+                        messages,
+                        temperature: 0.7,
+                        max_tokens: 150
+                    })
+                });
+                
+                if (!res.ok) throw new Error('API Error');
+                const data = await res.json();
+                const responseText = data.choices?.[0]?.message?.content || '';
+                
+                if (responseText.includes('[HANGUP]')) {
+                    const cleanText = responseText.replace('[HANGUP]', '').trim();
+                    if (cleanText) processVoiceResponse(cleanText);
+                    setTimeout(() => {
+                        showToast('Character hung up', 'info');
+                        endVoiceCall();
+                    }, 2000);
+                } else {
+                    processVoiceResponse(responseText);
+                }
+            } catch (e) {
+                showToast('AI error: ' + e.message, 'error');
+            }
+        }
+        
+        function processVoiceResponse(text) {
+            // Split by {{...}}
+            const parts = text.split(/(\{\{.+?\}\})/g);
+            parts.forEach(part => {
+                if (!part.trim()) return;
+                if (part.startsWith('{{') && part.endsWith('}}')) {
+                    const content = part.slice(2, -2).trim();
+                    addVoiceCallLine(content, 'char', 'ambient');
+                } else {
+                    addVoiceCallLine(part.trim(), 'char', 'speech');
+                }
+            });
+        }
+        
+        // Call History & Summary
+        function openCallHistory() {
+            toggleExtensionPanel();
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            if (!char) return;
+            
+            const list = document.getElementById('callHistoryList');
+            if (!char.voiceCallHistory || char.voiceCallHistory.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="empty-state-title">No Calls</div></div>';
+            } else {
+                list.innerHTML = char.voiceCallHistory.slice().reverse().map((call, idx) => {
+                    const date = new Date(call.startTime).toLocaleString();
+                    const duration = Math.round((call.endTime - call.startTime)/1000);
+                    const mins = Math.floor(duration/60);
+                    const secs = duration%60;
+                    return `<div class="call-history-item" onclick="openCallDetail('${call.id}')">
+                        <div class="call-history-info">
+                            <div class="call-history-date">${date}</div>
+                            <div class="call-history-preview">${mins}m ${secs}s · ${call.messages.length} messages</div>
+                        </div>
+                        <div style="color:var(--text-tertiary)">›</div>
+                    </div>`;
+                }).join('');
+            }
+            openPage('callHistoryPage');
+        }
+        
+        let currentViewingCall = null;
+        function openCallDetail(callId) {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            const call = char.voiceCallHistory.find(c => c.id === callId);
+            if (!call) return;
+            currentViewingCall = call;
+            
+            const content = document.getElementById('callDetailContent');
+            content.innerHTML = call.messages.map(m => {
+                const isUser = m.sender === 'user';
+                const color = isUser ? 'var(--accent-blue)' : 'var(--accent-rose)';
+                const name = isUser ? 'You' : char.name;
+                return `<div style="margin-bottom:12px">
+                    <div style="font-size:11px;color:${color};margin-bottom:2px">${name} ${m.type.includes('ambient') ? '(Sound)' : ''}</div>
+                    <div style="font-size:14px;color:var(--text-primary);line-height:1.5;${m.type.includes('ambient') ? 'font-style:italic;color:var(--text-secondary)' : ''}">${escapeHtml(m.content)}</div>
+                </div>`;
+            }).join('');
+            
+            showModal('callDetailModal');
+        }
+        
+        function openCallSummary() {
+            hideModal('callDetailModal');
+            document.getElementById('summaryResultContainer').style.display = 'none';
+            showModal('summaryModal');
+        }
+        
+        async function generateSummary() {
+            const prompt = document.getElementById('summaryPrompt').value;
+            const content = currentViewingCall.messages.map(m => `${m.sender}: ${m.content}`).join('\n');
+            
+            const btn = document.querySelector('#summaryModal .confirm');
+            const originalText = btn.textContent;
+            btn.textContent = 'Summarizing...';
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${App.settings.apiKey}` },
+                    body: JSON.stringify({
+                        model: App.settings.modelName,
+                        messages: [
+                            { role: 'system', content: 'You are a helpful assistant.' },
+                            { role: 'user', content: `${prompt}\n\n[Transcript]\n${content}` }
+                        ],
+                        temperature: 0.7
+                    })
+                });
+                
+                const data = await res.json();
+                const summary = data.choices?.[0]?.message?.content || 'Failed to generate summary.';
+                
+                document.getElementById('summaryResult').textContent = summary;
+                document.getElementById('summaryResultContainer').style.display = 'block';
+                currentViewingCall.summary = summary;
+                saveData();
+            } catch (e) {
+                showToast('Summary failed', 'error');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        async function saveSummaryToWorldbook() {
+            const char = App.characters.find(c => c.id === App.currentCharId);
+            const summary = currentViewingCall.summary;
+            if (!summary) return;
+            
+            // Create or find Worldbook
+            let wbName = `Voice Calls: ${char.name} & User`;
+            let wb = App.worldbooks.find(w => w.name === wbName);
+            if (!wb) {
+                wb = { id: 'wb-' + Date.now(), name: wbName, summary: 'Auto-generated voice call summaries', entries: [] };
+                App.worldbooks.push(wb);
+            }
+            
+            // Add entry
+            const date = new Date(currentViewingCall.startTime).toLocaleDateString();
+            wb.entries.push({
+                name: `Call ${date}`,
+                keywords: `call, ${date}`,
+                content: summary,
+                alwaysActive: false
+            });
+            
+            // Link to character if not already
+            if (!char.worldbookIds.includes(wb.id)) char.worldbookIds.push(wb.id);
+            
+            await saveData();
+            hideModal('summaryModal');
+            showToast('Saved to Worldbook', 'success');
         }
     </script>
 </body>
