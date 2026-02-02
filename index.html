@@ -1492,13 +1492,21 @@
         }
         .voice-call-room.active { opacity: 1; visibility: visible; }
         
+        /* Center Indicator for scroll locking */
         .voice-center-indicator {
-            position: absolute; right: 20px; top: 60%; transform: translateY(-50%);
-            width: 0; height: 0;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
             border-top: 8px solid transparent;
             border-bottom: 8px solid transparent;
-            border-right: 10px solid white;
-            z-index: 20; pointer-events: none;
+            border-left: 10px solid rgba(255, 255, 255, 0.9);
+            pointer-events: none;
+            z-index: 50;
+            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+            transition: opacity 0.2s;
         }
         
         /* Stars Effect */
@@ -2690,36 +2698,257 @@
             } catch (e) { console.error('Init failed:', e); showToast('Initialization failed', 'error'); }
         });
 
+        // 优化的语音通话滚动系统 - 更灵活稳定的锁定机制
+        let voiceScrollState = {
+            snapTimeout: null,
+            lastActiveIndex: -1,
+            isTouching: false,
+            isSnapping: false,
+            velocityY: 0,
+            lastTouchY: 0,
+            lastTouchTime: 0,
+            momentumId: null
+        };
+
         function initVoiceScroll() {
             const container = document.getElementById('voiceTranscript');
-            const indicator = document.querySelector('.voice-center-indicator');
-            if (!container || !indicator) return;
+            if (!container) return;
             
+            // 滚动时实时更新高亮
+            let scrollThrottleTimer = null;
             container.addEventListener('scroll', () => {
-                const indicatorRect = indicator.getBoundingClientRect();
-                const indicatorY = indicatorRect.top + indicatorRect.height / 2;
+                if (voiceScrollState.isSnapping) return;
                 
-                const lines = document.querySelectorAll('.voice-line');
-                let closest = null;
-                let minDiff = Infinity;
+                if (!scrollThrottleTimer) {
+                    scrollThrottleTimer = setTimeout(() => {
+                        handleVoiceScroll();
+                        scrollThrottleTimer = null;
+                    }, 16); // ~60fps
+                }
                 
-                lines.forEach(line => {
-                    const rect = line.getBoundingClientRect();
-                    const lineCenter = rect.top + rect.height / 2;
-                    const diff = Math.abs(lineCenter - indicatorY);
-                    
-                    if (diff < minDiff) {
-                        minDiff = diff;
-                        closest = line;
+                // 清除之前的snap定时器
+                if (voiceScrollState.snapTimeout) {
+                    clearTimeout(voiceScrollState.snapTimeout);
+                    voiceScrollState.snapTimeout = null;
+                }
+                
+                // 只在非触摸状态下设置snap定时器
+                if (!voiceScrollState.isTouching) {
+                    voiceScrollState.snapTimeout = setTimeout(() => {
+                        snapToClosestLine(container);
+                    }, 150);
+                }
+            }, { passive: true });
+            
+            // 触摸开始
+            container.addEventListener('touchstart', (e) => {
+                voiceScrollState.isTouching = true;
+                voiceScrollState.isSnapping = false;
+                voiceScrollState.lastTouchY = e.touches[0].clientY;
+                voiceScrollState.lastTouchTime = performance.now();
+                voiceScrollState.velocityY = 0;
+                
+                // 取消任何正在进行的动量滚动
+                if (voiceScrollState.momentumId) {
+                    cancelAnimationFrame(voiceScrollState.momentumId);
+                    voiceScrollState.momentumId = null;
+                }
+                
+                // 清除snap定时器
+                if (voiceScrollState.snapTimeout) {
+                    clearTimeout(voiceScrollState.snapTimeout);
+                    voiceScrollState.snapTimeout = null;
+                }
+            }, { passive: true });
+            
+            // 触摸移动 - 计算速度
+            container.addEventListener('touchmove', (e) => {
+                if (!voiceScrollState.isTouching) return;
+                
+                const currentY = e.touches[0].clientY;
+                const currentTime = performance.now();
+                const deltaTime = currentTime - voiceScrollState.lastTouchTime;
+                
+                if (deltaTime > 0) {
+                    voiceScrollState.velocityY = (voiceScrollState.lastTouchY - currentY) / deltaTime;
+                }
+                
+                voiceScrollState.lastTouchY = currentY;
+                voiceScrollState.lastTouchTime = currentTime;
+            }, { passive: true });
+            
+            // 触摸结束 - 更智能的惯性处理
+            container.addEventListener('touchend', () => {
+                voiceScrollState.isTouching = false;
+                
+                const absVelocity = Math.abs(voiceScrollState.velocityY);
+                
+                // 根据滑动速度决定等待时间
+                if (absVelocity < 0.3) {
+                    // 慢速滑动，快速snap
+                    voiceScrollState.snapTimeout = setTimeout(() => {
+                        snapToClosestLine(container);
+                    }, 80);
+                } else if (absVelocity < 1.0) {
+                    // 中速滑动
+                    voiceScrollState.snapTimeout = setTimeout(() => {
+                        snapToClosestLine(container);
+                    }, 200);
+                } else {
+                    // 快速滑动，等待惯性滚动减速
+                    waitForScrollStop(container);
+                }
+            }, { passive: true });
+            
+            // 鼠标滚轮支持
+            container.addEventListener('wheel', () => {
+                if (voiceScrollState.snapTimeout) {
+                    clearTimeout(voiceScrollState.snapTimeout);
+                }
+                voiceScrollState.snapTimeout = setTimeout(() => {
+                    snapToClosestLine(container);
+                }, 200);
+            }, { passive: true });
+        }
+        
+        function waitForScrollStop(container) {
+            let lastScrollTop = container.scrollTop;
+            let stableCount = 0;
+            
+            const checkStable = () => {
+                if (voiceScrollState.isTouching) return; // 用户又触摸了
+                
+                if (Math.abs(container.scrollTop - lastScrollTop) < 1) {
+                    stableCount++;
+                    if (stableCount >= 2) {
+                        // 滚动已稳定
+                        snapToClosestLine(container);
+                        return;
                     }
-                });
+                } else {
+                    stableCount = 0;
+                }
                 
-                if (closest && !closest.classList.contains('active')) {
-                    lines.forEach(l => l.classList.remove('active'));
-                    closest.classList.add('active');
-                    playClickSound();
+                lastScrollTop = container.scrollTop;
+                voiceScrollState.momentumId = requestAnimationFrame(checkStable);
+            };
+            
+            // 延迟开始检测
+            setTimeout(() => {
+                if (!voiceScrollState.isTouching) {
+                    voiceScrollState.momentumId = requestAnimationFrame(checkStable);
+                }
+            }, 50);
+        }
+
+        function handleVoiceScroll() {
+            const container = document.getElementById('voiceTranscript');
+            if (!container) return;
+            if (voiceScrollState.isSnapping) return;
+            
+            const containerRect = container.getBoundingClientRect();
+            const centerY = containerRect.top + containerRect.height / 2;
+            
+            const lines = container.querySelectorAll('.voice-line');
+            let closest = null;
+            let closestIndex = -1;
+            let minDiff = Infinity;
+            
+            lines.forEach((line, idx) => {
+                const rect = line.getBoundingClientRect();
+                const lineCenter = rect.top + rect.height / 2;
+                const diff = Math.abs(lineCenter - centerY);
+                
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closest = line;
+                    closestIndex = idx;
                 }
             });
+            
+            // 只在切换到新行时更新高亮
+            if (closest && closestIndex !== voiceScrollState.lastActiveIndex) {
+                lines.forEach(l => l.classList.remove('active'));
+                closest.classList.add('active');
+                voiceScrollState.lastActiveIndex = closestIndex;
+            }
+        }
+
+        function snapToClosestLine(container) {
+            if (!container) return;
+            if (voiceScrollState.isTouching) return;
+            if (voiceScrollState.isSnapping) return;
+            
+            voiceScrollState.isSnapping = true;
+            
+            const containerRect = container.getBoundingClientRect();
+            const centerY = containerRect.top + containerRect.height / 2;
+            
+            const lines = container.querySelectorAll('.voice-line');
+            let closest = null;
+            let closestIndex = -1;
+            let minDiff = Infinity;
+            
+            lines.forEach((line, idx) => {
+                const rect = line.getBoundingClientRect();
+                const lineCenter = rect.top + rect.height / 2;
+                const diff = Math.abs(lineCenter - centerY);
+                
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closest = line;
+                    closestIndex = idx;
+                }
+            });
+            
+            if (closest) {
+                const lineRect = closest.getBoundingClientRect();
+                const lineCenter = lineRect.top + lineRect.height / 2;
+                const offset = lineCenter - centerY;
+                
+                // 偏差阈值检查
+                if (Math.abs(offset) > 3) {
+                    const startScroll = container.scrollTop;
+                    const duration = Math.min(180, Math.abs(offset) * 2 + 80); // 动态时长
+                    const startTime = performance.now();
+                    
+                    const animateScroll = (currentTime) => {
+                        // 如果用户开始触摸，立即停止
+                        if (voiceScrollState.isTouching) {
+                            voiceScrollState.isSnapping = false;
+                            return;
+                        }
+                        
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        
+                        // easeOutQuart - 更平滑的减速
+                        const easeProgress = 1 - Math.pow(1 - progress, 4);
+                        container.scrollTop = startScroll + (offset * easeProgress);
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(animateScroll);
+                        } else {
+                            finishSnap(lines, closest, closestIndex);
+                        }
+                    };
+                    
+                    requestAnimationFrame(animateScroll);
+                } else {
+                    finishSnap(lines, closest, closestIndex);
+                }
+            } else {
+                voiceScrollState.isSnapping = false;
+            }
+        }
+        
+        function finishSnap(lines, closest, closestIndex) {
+            voiceScrollState.isSnapping = false;
+            lines.forEach(l => l.classList.remove('active'));
+            closest.classList.add('active');
+            voiceScrollState.lastActiveIndex = closestIndex;
+            // 轻微的触觉反馈音效
+            playClickSound();
         }
 
         async function updateStorageDisplay() {
@@ -4065,10 +4294,12 @@ DEFAULT BEHAVIOR: When in doubt, ACCEPT. Real people usually answer calls from p
             App.voiceCall.state = 'connected';
             document.getElementById('voiceCallStatus').textContent = 'Connected';
             document.getElementById('voiceCallInput').disabled = false;
+            document.getElementById('voiceCallInput').focus();
             
-            // Initial greeting from AI in voice mode?
-            // Optionally trigger AI to speak first
-            triggerVoiceAI(true);
+            // 确保UI已完全准备好后再触发AI首次回复
+            setTimeout(() => {
+                triggerVoiceAI(true);
+            }, 300);
         }
 
         function endVoiceCall() {
@@ -4176,44 +4407,85 @@ DEFAULT BEHAVIOR: When in doubt, ACCEPT. Real people usually answer calls from p
 
         async function triggerVoiceAI(isFirst = false) {
             const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
+            if (!char) {
+                console.error('[VoiceAI] No character found');
+                return;
+            }
+            
+            // 检查API配置
+            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
+                showToast('Please configure API first', 'error');
+                return;
+            }
+            
+            // 检查通话状态
+            if (App.voiceCall.state !== 'connected') {
+                console.error('[VoiceAI] Voice call not connected, state:', App.voiceCall.state);
+                return;
+            }
 
-            // Show typing/thinking state in transcript?
-            // Maybe a subtle indicator
+            console.log('[VoiceAI] Triggering AI response, isFirst:', isFirst);
 
+            // 构建语音通话历史
             const transcriptHistory = App.voiceCall.transcript.map(t => {
                 const role = t.sender === 'user' ? 'user' : 'assistant';
-                return { role, content: t.content }; // Simplified for voice context
+                return { role, content: t.content };
             });
 
-            // Context from main chat (last 20 messages)
+            // 从短信聊天获取上下文（最近20条）
             const chatContext = buildAPIMessages(char).slice(-20);
             
-            const systemPrompt = `[SYSTEM: VOICE CALL MODE ACTIVE.
-You are currently in a voice call with ${char.userNick || 'User'}.
-1. Output ONLY the words you speak. NO actions/asterisks unless it is a sound effect.
-2. Format: 
-   - Type 1 (Speech): Just text.
-   - Type 2 (Sound Effect): Wrap in parenthesis, e.g. (laughs), (glass breaking).
-3. Keep responses relatively short and conversational, like real speech.
-4. You can hang up if appropriate by outputting [HANGUP].
-5. Do NOT output "User:" or "Char:", just the content.
-]`;
+            const systemPrompt = `[SYSTEM: VOICE CALL MODE ACTIVE]
+You are ${char.name}, currently in a voice call with ${char.userNick || 'User'}.
 
+RULES:
+1. Output ONLY the words you speak. NO actions or asterisks.
+2. Format:
+   - Speech: Just text (what you say)
+   - Sound Effect: Wrap in parenthesis, e.g. (laughs), (sighs)
+3. Keep responses SHORT and conversational (1-3 sentences typical for phone calls)
+4. To hang up, output [HANGUP] at the end
+5. Do NOT output "User:" or your name, just speak naturally
+6. Stay in character based on your personality
+
+${char.description ? `[Your personality: ${char.description.substring(0, 500)}]` : ''}`;
+
+            // 构建消息数组
             const messages = [
-                ...chatContext,
-                { role: 'system', content: systemPrompt },
-                ...transcriptHistory
+                { role: 'system', content: systemPrompt }
             ];
             
-            if (isFirst) {
-                messages.push({ role: 'system', content: '[SYSTEM: The call has just connected. Say hello.]' });
+            // 添加短信聊天上下文作为背景
+            if (chatContext.length > 1) {
+                const contextSummary = chatContext.slice(1).map(m => {
+                    if (typeof m.content === 'string') return m.content;
+                    return '';
+                }).filter(c => c).join('\n').substring(0, 1000);
+                
+                if (contextSummary) {
+                    messages.push({ role: 'system', content: `[Previous text chat context for reference:\n${contextSummary}]` });
+                }
             }
+            
+            // 添加语音通话历史
+            transcriptHistory.forEach(t => {
+                messages.push(t);
+            });
+            
+            // 首次通话时添加提示
+            if (isFirst) {
+                messages.push({ role: 'user', content: '[Call connected - say hello]' });
+            }
+
+            console.log('[VoiceAI] Sending request with', messages.length, 'messages');
 
             try {
                 const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${App.settings.apiKey}` },
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${App.settings.apiKey}` 
+                    },
                     body: JSON.stringify({
                         model: App.settings.modelName,
                         messages,
@@ -4222,38 +4494,60 @@ You are currently in a voice call with ${char.userNick || 'User'}.
                     })
                 });
 
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error('[VoiceAI] API Error:', res.status, errorText);
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                
                 const data = await res.json();
+                console.log('[VoiceAI] Response received:', data);
+                
                 const responseText = data.choices?.[0]?.message?.content?.trim() || '';
-
-                if (responseText.includes('[HANGUP]')) {
-                    endVoiceCall();
+                
+                if (!responseText) {
+                    console.error('[VoiceAI] Empty response from API');
+                    showToast('AI returned empty response', 'error');
                     return;
                 }
 
-                // Parse response for sound effects vs speech
-                // Simple parser: content in () is sound, outside is speech
-                // This is a basic implementation.
-                
-                // Regex to find (content)
-                const parts = responseText.split(/(\(.*?\))/g);
+                // 检查是否挂断
+                if (responseText.includes('[HANGUP]')) {
+                    const cleanText = responseText.replace('[HANGUP]', '').trim();
+                    if (cleanText) {
+                        addToVoiceTranscript('char', cleanText, 'text');
+                        await new Promise(r => setTimeout(r, 1000));
+                    }
+                    showToast(`${char.name} ended the call`, 'info');
+                    saveVoiceCallTranscript();
+                    App.voiceCall.state = 'idle';
+                    hideVoiceRoom();
+                    return;
+                }
+
+                // 解析响应：区分语音和音效
+                // 使用更好的解析逻辑
+                const parts = responseText.split(/(\([^)]+\))/g);
                 
                 for (let part of parts) {
                     part = part.trim();
                     if (!part) continue;
                     
                     if (part.startsWith('(') && part.endsWith(')')) {
-                        // Sound effect
+                        // 音效
                         addToVoiceTranscript('char', part.slice(1, -1), 'sound');
                     } else {
-                        // Speech
+                        // 语音
                         addToVoiceTranscript('char', part, 'text');
                     }
-                    await new Promise(r => setTimeout(r, 500)); // Delay between parts
+                    await new Promise(r => setTimeout(r, 400));
                 }
+                
+                console.log('[VoiceAI] Response processed successfully');
 
             } catch (e) {
-                showToast('AI Voice Error: ' + e.message, 'error');
+                console.error('[VoiceAI] Error:', e);
+                showToast('Voice AI Error: ' + e.message, 'error');
             }
         }
 
