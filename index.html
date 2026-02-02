@@ -1492,22 +1492,7 @@
         }
         .voice-call-room.active { opacity: 1; visibility: visible; }
         
-        /* Center Indicator for scroll locking */
-        .voice-center-indicator {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            border-left: 10px solid rgba(255, 255, 255, 0.9);
-            pointer-events: none;
-            z-index: 50;
-            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
-            transition: opacity 0.2s;
-        }
+        /* Center Indicator removed - using only dynamic line markers */
         
         /* Stars Effect */
         .stars-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -2505,7 +2490,6 @@
 
     <!-- Voice Call Room -->
     <div class="voice-call-room" id="voiceCallRoom">
-        <div class="voice-center-indicator"></div>
         <div class="stars-bg" id="starsBg"></div>
         <div class="voice-nav-bar">
             <div class="voice-nav-btn" id="voiceBackBtn" style="display:none" onclick="closeCallTranscript()"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="15 18 9 12 15 6"/></svg></div>
@@ -4380,27 +4364,31 @@ DEFAULT BEHAVIOR: When in doubt, ACCEPT. Real people usually answer calls from p
             
             container.innerHTML = transcript.map((line, idx) => {
                 const effectClass = line.type === 'sound' ? 'sound-effect' : '';
+                const senderClass = line.sender === 'user' ? 'user-line' : 'char-line';
                 const content = line.type === 'sound' ? `(${line.content})` : line.content;
                 
-                return `<div class="voice-line ${effectClass}" data-idx="${idx}">
+                return `<div class="voice-line ${effectClass} ${senderClass}" data-idx="${idx}">
                     <div class="voice-line-marker"></div>
                     ${escapeHtml(content)}
                 </div>`;
             }).join('');
             
-            // Auto scroll to make the last item centered
+            // Auto scroll to bottom and activate last line
             if (container.lastElementChild) {
                 setTimeout(() => {
-                    const last = container.lastElementChild;
-                    const indicator = document.querySelector('.voice-center-indicator');
-                    if (indicator) {
-                         const containerRect = container.getBoundingClientRect();
-                         const indicatorRect = indicator.getBoundingClientRect();
-                         const targetY = indicatorRect.top - containerRect.top + container.scrollTop - (last.clientHeight / 2);
-                         container.scrollTo({ top: targetY, behavior: 'smooth' });
-                    } else {
-                         container.scrollTop = container.scrollHeight;
-                    }
+                    // Scroll to center the last message
+                    const containerRect = container.getBoundingClientRect();
+                    const lastLine = container.lastElementChild;
+                    const lastLineRect = lastLine.getBoundingClientRect();
+                    const centerY = containerRect.height / 2;
+                    const targetScroll = container.scrollTop + (lastLineRect.top - containerRect.top) - centerY + (lastLineRect.height / 2);
+                    
+                    container.scrollTo({ top: targetScroll, behavior: 'smooth' });
+                    
+                    // Activate the last line
+                    container.querySelectorAll('.voice-line').forEach(l => l.classList.remove('active'));
+                    lastLine.classList.add('active');
+                    voiceScrollState.lastActiveIndex = transcript.length - 1;
                 }, 100);
             }
         }
@@ -4409,6 +4397,7 @@ DEFAULT BEHAVIOR: When in doubt, ACCEPT. Real people usually answer calls from p
             const char = App.characters.find(c => c.id === App.currentCharId);
             if (!char) {
                 console.error('[VoiceAI] No character found');
+                showToast('Character not found', 'error');
                 return;
             }
             
@@ -4418,66 +4407,128 @@ DEFAULT BEHAVIOR: When in doubt, ACCEPT. Real people usually answer calls from p
                 return;
             }
             
-            // 检查通话状态
+            // 检查通话状态 - 更宽松的检查
+            const voiceRoom = document.getElementById('voiceCallRoom');
+            const isRoomActive = voiceRoom && voiceRoom.classList.contains('active');
+            
             if (App.voiceCall.state !== 'connected') {
-                console.error('[VoiceAI] Voice call not connected, state:', App.voiceCall.state);
-                return;
+                // 如果用户在语音界面，自动修正状态
+                if (isRoomActive) {
+                    console.log('[VoiceAI] Force setting state to connected (room is active)');
+                    App.voiceCall.state = 'connected';
+                } else if (App.voiceCall.state === 'requesting') {
+                    // 正在请求中，等待状态变化
+                    console.log('[VoiceAI] Still in requesting state, waiting...');
+                    return;
+                } else {
+                    console.error('[VoiceAI] Voice call not in valid state:', App.voiceCall.state);
+                    return;
+                }
             }
 
-            console.log('[VoiceAI] Triggering AI response, isFirst:', isFirst);
+            console.log('[VoiceAI] Triggering AI response, isFirst:', isFirst, 'state:', App.voiceCall.state);
 
-            // 构建语音通话历史
-            const transcriptHistory = App.voiceCall.transcript.map(t => {
-                const role = t.sender === 'user' ? 'user' : 'assistant';
-                return { role, content: t.content };
-            });
-
-            // 从短信聊天获取上下文（最近20条）
-            const chatContext = buildAPIMessages(char).slice(-20);
+            // 构建角色背景信息
+            let characterContext = '';
+            if (char.description) {
+                characterContext += `[Character Description]\n${char.description.substring(0, 800)}\n\n`;
+            }
+            if (char.scenario) {
+                characterContext += `[Scenario]\n${char.scenario.substring(0, 300)}\n\n`;
+            }
             
             const systemPrompt = `[SYSTEM: VOICE CALL MODE ACTIVE]
-You are ${char.name}, currently in a voice call with ${char.userNick || 'User'}.
+You are ${char.name}, currently in a live voice call with ${char.userNick || 'User'}.
 
-RULES:
-1. Output ONLY the words you speak. NO actions or asterisks.
+${characterContext}
+VOICE CALL RULES:
+1. Output ONLY the words you speak aloud. NO actions, NO asterisks, NO narration.
 2. Format:
    - Speech: Just text (what you say)
-   - Sound Effect: Wrap in parenthesis, e.g. (laughs), (sighs)
+   - Sound Effect: Wrap in parenthesis, e.g. (laughs), (sighs), (clears throat)
 3. Keep responses SHORT and conversational (1-3 sentences typical for phone calls)
-4. To hang up, output [HANGUP] at the end
-5. Do NOT output "User:" or your name, just speak naturally
-6. Stay in character based on your personality
+4. To hang up the call, output [HANGUP] at the very end of your message
+5. Do NOT output "User:" or "${char.name}:" - just speak naturally
+6. Stay completely in character based on your personality
+7. This is a real-time conversation - respond as if actually on the phone
 
-${char.description ? `[Your personality: ${char.description.substring(0, 500)}]` : ''}`;
+${isFirst ? 'The call just connected. You should greet the caller or start the conversation naturally.' : ''}`;
 
-            // 构建消息数组
+            // 构建消息数组 - 严格确保正确的格式
             const messages = [
                 { role: 'system', content: systemPrompt }
             ];
             
-            // 添加短信聊天上下文作为背景
-            if (chatContext.length > 1) {
-                const contextSummary = chatContext.slice(1).map(m => {
-                    if (typeof m.content === 'string') return m.content;
-                    return '';
-                }).filter(c => c).join('\n').substring(0, 1000);
+            // 从短信聊天获取简化的上下文（作为system消息的一部分）
+            try {
+                const recentMsgs = char.messages.slice(-10);
+                const textContext = recentMsgs
+                    .filter(m => m.content && typeof m.content === 'string' && m.type !== 'system-call')
+                    .slice(-5) // 只取最近5条
+                    .map(m => {
+                        const sender = m.sender === 'user' ? (char.userNick || 'User') : char.name;
+                        const content = (m.content || '').substring(0, 80);
+                        return `${sender}: ${content}`;
+                    })
+                    .join('\n');
                 
-                if (contextSummary) {
-                    messages.push({ role: 'system', content: `[Previous text chat context for reference:\n${contextSummary}]` });
+                if (textContext) {
+                    // 合并到system消息中，而不是添加新的system消息
+                    messages[0].content += `\n\n[Recent text chat context for reference]\n${textContext}`;
+                }
+            } catch (e) {
+                console.warn('[VoiceAI] Error building context:', e);
+            }
+            
+            // 构建语音通话历史 - 严格确保user/assistant交替
+            const transcript = App.voiceCall.transcript || [];
+            
+            if (transcript.length > 0) {
+                // 收集并合并连续的同角色消息
+                let mergedMessages = [];
+                let currentRole = null;
+                let currentContent = '';
+                
+                for (const t of transcript) {
+                    const role = t.sender === 'user' ? 'user' : 'assistant';
+                    const content = t.type === 'sound' ? `(${t.content})` : t.content;
+                    
+                    if (role === currentRole) {
+                        // 同角色，合并
+                        currentContent += ' ' + content;
+                    } else {
+                        // 不同角色，保存之前的并开始新的
+                        if (currentRole && currentContent) {
+                            mergedMessages.push({ role: currentRole, content: currentContent.trim() });
+                        }
+                        currentRole = role;
+                        currentContent = content;
+                    }
+                }
+                // 保存最后一条
+                if (currentRole && currentContent) {
+                    mergedMessages.push({ role: currentRole, content: currentContent.trim() });
+                }
+                
+                // 添加到messages数组
+                for (const msg of mergedMessages) {
+                    messages.push(msg);
                 }
             }
             
-            // 添加语音通话历史
-            transcriptHistory.forEach(t => {
-                messages.push(t);
-            });
-            
-            // 首次通话时添加提示
-            if (isFirst) {
-                messages.push({ role: 'user', content: '[Call connected - say hello]' });
+            // 确保最后一条是user消息（API需要user消息来触发assistant回复）
+            const lastMsg = messages[messages.length - 1];
+            if (!lastMsg || lastMsg.role === 'system' || lastMsg.role === 'assistant') {
+                // 需要添加一个user消息
+                if (isFirst) {
+                    messages.push({ role: 'user', content: '(The call has connected. Please respond.)' });
+                } else {
+                    messages.push({ role: 'user', content: '(Waiting for your response...)' });
+                }
             }
 
             console.log('[VoiceAI] Sending request with', messages.length, 'messages');
+            console.log('[VoiceAI] Messages structure:', messages.map(m => ({ role: m.role, len: m.content?.length || 0 })));
 
             try {
                 const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
@@ -4489,7 +4540,7 @@ ${char.description ? `[Your personality: ${char.description.substring(0, 500)}]`
                     body: JSON.stringify({
                         model: App.settings.modelName,
                         messages,
-                        temperature: 0.7,
+                        temperature: App.settings.temperature || 0.7,
                         max_tokens: 150
                     })
                 });
@@ -4501,13 +4552,19 @@ ${char.description ? `[Your personality: ${char.description.substring(0, 500)}]`
                 }
                 
                 const data = await res.json();
-                console.log('[VoiceAI] Response received:', data);
+                console.log('[VoiceAI] Response received');
                 
                 const responseText = data.choices?.[0]?.message?.content?.trim() || '';
                 
                 if (!responseText) {
                     console.error('[VoiceAI] Empty response from API');
                     showToast('AI returned empty response', 'error');
+                    return;
+                }
+
+                // 再次检查状态，确保还在通话中
+                if (App.voiceCall.state !== 'connected') {
+                    console.log('[VoiceAI] Call ended during API request, discarding response');
                     return;
                 }
 
@@ -4526,8 +4583,26 @@ ${char.description ? `[Your personality: ${char.description.substring(0, 500)}]`
                 }
 
                 // 解析响应：区分语音和音效
-                // 使用更好的解析逻辑
-                const parts = responseText.split(/(\([^)]+\))/g);
+                // 使用更健壮的解析逻辑
+                let cleanResponse = responseText;
+                
+                // 清理可能的角色名前缀
+                cleanResponse = cleanResponse.replace(new RegExp(`^${char.name}:\\s*`, 'i'), '');
+                cleanResponse = cleanResponse.replace(/^(AI|Assistant|Bot|Character):\s*/i, '');
+                
+                // 跳过系统相关的括号内容
+                cleanResponse = cleanResponse.replace(/\(call connected\)/gi, '');
+                cleanResponse = cleanResponse.replace(/\(waiting for response\)/gi, '');
+                cleanResponse = cleanResponse.replace(/\(the call has connected[^)]*\)/gi, '');
+                cleanResponse = cleanResponse.trim();
+                
+                if (!cleanResponse) {
+                    console.log('[VoiceAI] Response was empty after cleaning');
+                    return;
+                }
+                
+                // 分割语音和音效
+                const parts = cleanResponse.split(/(\([^)]+\))/g);
                 
                 for (let part of parts) {
                     part = part.trim();
@@ -4535,12 +4610,17 @@ ${char.description ? `[Your personality: ${char.description.substring(0, 500)}]`
                     
                     if (part.startsWith('(') && part.endsWith(')')) {
                         // 音效
-                        addToVoiceTranscript('char', part.slice(1, -1), 'sound');
+                        const soundContent = part.slice(1, -1).trim();
+                        if (soundContent) {
+                            addToVoiceTranscript('char', soundContent, 'sound');
+                        }
                     } else {
                         // 语音
-                        addToVoiceTranscript('char', part, 'text');
+                        if (part.trim()) {
+                            addToVoiceTranscript('char', part.trim(), 'text');
+                        }
                     }
-                    await new Promise(r => setTimeout(r, 400));
+                    await new Promise(r => setTimeout(r, 300));
                 }
                 
                 console.log('[VoiceAI] Response processed successfully');
