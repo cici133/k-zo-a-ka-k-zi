@@ -3836,9 +3836,18 @@
 
             // 3. Send request to AI
             // We construct a special prompt for the AI to decide
-            const prompt = `[SYSTEM: ${userNick} has initiated a voice call request. You must choose to accept or refuse based on your current relationship, mood, and context. 
-Reply with ONLY one word: "ACCEPT" or "REFUSE". 
-If you refuse, the call will not connect. If you accept, you will enter voice call mode.]`;
+            const prompt = `[SYSTEM: ${userNick} has initiated a voice call request.
+IMPORTANT: You must decide to ACCEPT or REFUSE based on your character settings and current relationship.
+
+IRON RULES:
+1. If your character traits include keywords like "clingy", "loving", "friendly", "talkative", "partner", "spouse", "girlfriend", "boyfriend", or if you have a good relationship with ${userNick}, you MUST ACCEPT.
+2. Do NOT refuse just to create dramatic conflict unless the relationship is explicitly hostile or broken.
+3. If the conversation atmosphere has been positive, default to ACCEPT.
+
+RESPONSE FORMAT:
+You must reply with a valid JSON object. Do not output any other text.
+Format: {"decision": "ACCEPT" or "REFUSE", "reason": "brief internal thought explaining why"}
+]`;
             
             await triggerSpecialAIReply(prompt, 'call-request');
         }
@@ -3859,8 +3868,8 @@ If you refuse, the call will not connect. If you accept, you will enter voice ca
                     body: JSON.stringify({
                         model: App.settings.modelName,
                         messages,
-                        temperature: 0.5, // Lower temp for decision making
-                        max_tokens: 50
+                        temperature: 0.9, // Lower temp for decision making
+                        max_tokens: 150
                     })
                 });
 
@@ -3880,7 +3889,35 @@ If you refuse, the call will not connect. If you accept, you will enter voice ca
             if (!char) return;
 
             if (type === 'call-request') {
-                if (response.toUpperCase().includes('ACCEPT')) {
+                let decision = 'REFUSE';
+                let reason = '';
+
+                try {
+                    // Attempt to parse JSON
+                    // Handle potential markdown code blocks
+                    let cleanJson = response.replace(/```json\s*|```/g, '').trim();
+                    // If response is not pure JSON, try to find the first '{' and last '}'
+                    const firstBrace = cleanJson.indexOf('{');
+                    const lastBrace = cleanJson.lastIndexOf('}');
+                    if (firstBrace !== -1 && lastBrace !== -1) {
+                        cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
+                    }
+                    
+                    const parsed = JSON.parse(cleanJson);
+                    if (parsed.decision && parsed.decision.toUpperCase() === 'ACCEPT') {
+                        decision = 'ACCEPT';
+                    }
+                    reason = parsed.reason || '';
+                } catch (e) {
+                    console.error("JSON Parse Error", e);
+                    // Fallback: simple string match if JSON parsing fails completely
+                    if (response.toUpperCase().includes('"DECISION": "ACCEPT"') || 
+                        response.toUpperCase().includes("'DECISION': 'ACCEPT'")) {
+                        decision = 'ACCEPT';
+                    }
+                }
+
+                if (decision === 'ACCEPT') {
                     // Accepted
                     showToast(`${char.name} accepted!`, 'success');
                     startVoiceCall();
@@ -3897,12 +3934,16 @@ If you refuse, the call will not connect. If you accept, you will enter voice ca
                         content: `Voice call refused`,
                         timestamp: Date.now()
                     };
-                    // Add explanation to history context (invisible to user in main chat, but visible to AI in future)
-                    sysMsg.aiContext = `[System: You refused the voice call request.]`;
+                    // Add explanation to history context
+                    sysMsg.aiContext = `[System: You refused the voice call request. Reason: ${reason}]`;
                     
                     char.messages.push(sysMsg);
                     renderMessages();
                     await saveData();
+                    
+                    if (reason) {
+                        showToast(`Refused: ${reason}`, 'info');
+                    }
                 }
             }
         }
