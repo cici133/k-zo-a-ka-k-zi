@@ -3868,7 +3868,7 @@ Format: {"decision": "ACCEPT" or "REFUSE", "reason": "brief internal thought exp
                     body: JSON.stringify({
                         model: App.settings.modelName,
                         messages,
-                        temperature: 0.9, // Lower temp for decision making
+                        temperature: 0.5, // Lower temp for decision making
                         max_tokens: 150
                     })
                 });
@@ -3976,6 +3976,14 @@ Format: {"decision": "ACCEPT" or "REFUSE", "reason": "brief internal thought exp
             const status = document.getElementById('voiceCallStatus');
             const transcript = document.getElementById('voiceTranscript');
             const input = document.getElementById('voiceCallInput');
+            
+            // FIX: Ensure controls are visible (resetting potential hidden state from history view)
+            const controls = document.querySelector('.voice-controls');
+            if (controls) controls.style.display = 'flex';
+
+            // Reset nav buttons
+            document.getElementById('voiceBackBtn').style.display = 'none';
+            document.getElementById('voiceMinimizeBtn').style.display = 'flex';
             
             if (char) {
                 avatar.src = char.avatarImage || char.avatar || ''; // Fallback if no image
