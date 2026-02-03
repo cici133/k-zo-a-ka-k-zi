@@ -6047,6 +6047,9 @@ Important notes:
     // 显示等待界面
     document.getElementById('voiceCallWaitingOverlay').classList.add('active');
 
+requestAICallDecision(char) 
+}
+
     // 请求AI决定是否接听 - 与短信功能保持一致
 async function requestAICallDecision(char) {
     addVoiceCallLog('=== 开始通话决策 ===', 'info');
