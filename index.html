@@ -3239,9 +3239,14 @@
                 <span>Generating summary...</span>
             </div>
             <div class="voice-call-summary-result" id="voiceCallSummaryResult">
-                <div class="voice-call-summary-result-text" id="voiceCallSummaryText"></div>
-                <button class="voice-call-save-worldbook-btn" onclick="saveVoiceCallToWorldbook()">Save to Worldbook</button>
-            </div>
+    <div class="voice-call-summary-result-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:1px;">Summary Result (Editable)</span>
+        <button onclick="toggleSummaryEdit()" style="padding:4px 10px;background:var(--bg-glass);border:1px solid var(--border-subtle);border-radius:6px;color:var(--text-secondary);font-size:11px;cursor:pointer;">Edit</button>
+    </div>
+    <div class="voice-call-summary-result-text" id="voiceCallSummaryText" style="min-height:80px;"></div>
+    <textarea class="voice-call-summary-edit-area" id="voiceCallSummaryEditArea" style="display:none;width:100%;min-height:120px;padding:12px;background:var(--bg-glass);border:1px solid var(--border-subtle);border-radius:10px;color:var(--text-primary);font-size:13px;resize:vertical;margin-bottom:10px;"></textarea>
+    <button class="voice-call-save-worldbook-btn" onclick="saveVoiceCallToWorldbook()">Save to Worldbook</button>
+</div>
         </div>
     </div>
 
@@ -3302,10 +3307,11 @@
             lastAIStart: -1, tempWallpaper: null, tempIcons: {},
             appIcons: { settings: null, messages: null, worldbook: null, photos: null, fonts: null },
             settings: {
-                apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048,
-                maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false,
-                selectedFontId: null, fontScale: 1
-            },
+    apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048,
+    maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false,
+    selectedFontId: null, fontScale: 1,
+    voiceCallSummaryPrompt: ''
+},
             globalCssPresets: [],
             apiPresets: [],
             fonts: [],
@@ -6187,8 +6193,8 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
                 </div>`;
             }).join('');
 
-            // 设置总结区域
-            document.getElementById('voiceCallSummaryPrompt').value = '';
+// 设置总结区域 - 加载永久保存的提示词
+document.getElementById('voiceCallSummaryPrompt').value = App.settings.voiceCallSummaryPrompt || '';
             document.getElementById('voiceCallSummaryLoading').classList.remove('active');
             document.getElementById('voiceCallSummaryResult').classList.remove('active');
 
@@ -6222,122 +6228,213 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
         }
 
         // 保存总结提示词
-        function saveVoiceCallSummaryPrompt() {
-            showToast('Prompt saved', 'success');
-        }
+        async function saveVoiceCallSummaryPrompt() {
+    const prompt = document.getElementById('voiceCallSummaryPrompt').value;
+    App.settings.voiceCallSummaryPrompt = prompt;
+    await saveData();
+    showToast('Prompt saved permanently', 'success');
+}
 
         // 开始总结语音通话
-        async function startVoiceCallSummary() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            const record = char?.voiceCallRecords?.find(r => r.id === VoiceCallState.currentRecordId);
-            if (!record) return;
+async function startVoiceCallSummary() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    const record = char?.voiceCallRecords?.find(r => r.id === VoiceCallState.currentRecordId);
+    if (!record) return;
 
-            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
-                showToast('API not configured', 'error');
-                return;
-            }
+    if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
+        showToast('API not configured', 'error');
+        return;
+    }
 
-            document.getElementById('voiceCallSummaryLoading').classList.add('active');
-            document.getElementById('voiceCallSummaryResult').classList.remove('active');
+    // 检查是否有消息可以总结
+    if (!record.messages || record.messages.length === 0) {
+        showToast('No messages to summarize', 'error');
+        return;
+    }
 
-            try {
-                const customPrompt = document.getElementById('voiceCallSummaryPrompt').value.trim();
-                
-                let systemPrompt = `You are a helpful assistant. Summarize the following voice call conversation between a user and ${char.name}.`;
-                if (customPrompt) {
-                    systemPrompt += `\n\nAdditional instructions: ${customPrompt}`;
-                }
-                systemPrompt += `\n\nProvide a concise summary that captures:
-- Key topics discussed
-- Important information shared
-- Emotional tone of the conversation
-- Any decisions or plans made
+    document.getElementById('voiceCallSummaryLoading').classList.add('active');
+    document.getElementById('voiceCallSummaryResult').classList.remove('active');
 
-Keep the summary brief but comprehensive.`;
+    try {
+        const customPrompt = document.getElementById('voiceCallSummaryPrompt').value.trim();
 
-                const conversationText = record.messages.map(m => {
-                    const sender = m.sender === 'user' ? 'User' : char.name;
-                    const prefix = m.type === 'sound' ? '[Sound]' : '';
-                    return `${sender}: ${prefix}${m.content}`;
-                }).join('\n');
+        // 构建系统提示词
+        let systemPrompt = `You are a helpful assistant. Your task is to summarize a voice call conversation between a user and a character named "${char.nickname || char.name}".`;
 
-                const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${App.settings.apiKey}` },
-                    body: JSON.stringify({
-                        model: App.settings.modelName,
-                        messages: [
-                            { role: 'system', content: systemPrompt },
-                            { role: 'user', content: conversationText }
-                        ],
-                        temperature: 0.7,
-                        max_tokens: 500
-                    })
-                });
-
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                const summary = data.choices?.[0]?.message?.content || 'Failed to generate summary';
-
-                record.summary = summary;
-                VoiceCallState.currentSummary = summary;
-                await saveData();
-
-                document.getElementById('voiceCallSummaryLoading').classList.remove('active');
-                document.getElementById('voiceCallSummaryText').textContent = summary;
-                document.getElementById('voiceCallSummaryResult').classList.add('active');
-
-            } catch (e) {
-                console.error('Summary error:', e);
-                document.getElementById('voiceCallSummaryLoading').classList.remove('active');
-                showToast('Summary failed: ' + e.message, 'error');
-            }
+        if (customPrompt) {
+            systemPrompt += `\n\nAdditional instructions from the user: ${customPrompt}`;
         }
+
+        systemPrompt += `\n\nPlease provide a concise but comprehensive summary that includes:
+1. Main topics discussed during the call
+2. Key information exchanged
+3. The overall emotional tone and atmosphere
+4. Any decisions, plans, or agreements made
+5. Notable moments or highlights
+
+Keep the summary clear and well-organized. Write in a narrative style.`;
+
+        // 构建对话文本
+        let conversationText = `Voice Call Transcript:\n`;
+        conversationText += `Duration: ${Math.floor(record.duration / 60)}:${(record.duration % 60).toString().padStart(2, '0')}\n`;
+        conversationText += `Date: ${new Date(record.startTime).toLocaleString()}\n\n`;
+
+        record.messages.forEach((m, index) => {
+            const sender = m.sender === 'user' ? 'User' : (char.nickname || char.name);
+            if (m.type === 'sound') {
+                conversationText += `[Sound Effect] ${m.content}\n`;
+            } else {
+                conversationText += `${sender}: ${m.content}\n`;
+            }
+        });
+
+        console.log('Sending summary request with conversation:', conversationText.substring(0, 500));
+
+        const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${App.settings.apiKey}`
+            },
+            body: JSON.stringify({
+                model: App.settings.modelName,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: `Please summarize the following voice call:\n\n${conversationText}` }
+                ],
+                temperature: 1.0,
+                max_tokens: 2000
+            })
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error('API Error:', res.status, errorText);
+            throw new Error(`API Error: HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        console.log('Summary API response:', data);
+
+        const summary = data.choices?.[0]?.message?.content;
+
+        if (!summary || summary.trim() === '') {
+            throw new Error('Empty summary received from API');
+        }
+
+        // 保存总结到记录
+        record.summary = summary.trim();
+        VoiceCallState.currentSummary = summary.trim();
+        await saveData();
+
+        // 隐藏loading，显示结果
+        document.getElementById('voiceCallSummaryLoading').classList.remove('active');
+        document.getElementById('voiceCallSummaryText').textContent = summary.trim();
+        document.getElementById('voiceCallSummaryResult').classList.add('active');
+
+        showToast('Summary generated successfully', 'success');
+
+    } catch (e) {
+        console.error('Summary generation error:', e);
+        document.getElementById('voiceCallSummaryLoading').classList.remove('active');
+        showToast('Summary failed: ' + e.message, 'error');
+    }
+}
 
         // 保存到世界书
-        async function saveVoiceCallToWorldbook() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            const record = char?.voiceCallRecords?.find(r => r.id === VoiceCallState.currentRecordId);
-            if (!record?.summary) {
-                showToast('Generate a summary first', 'error');
-                return;
-            }
+async function saveVoiceCallToWorldbook() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    const record = char?.voiceCallRecords?.find(r => r.id === VoiceCallState.currentRecordId);
 
-            // 找到或创建一个世界书
-            let targetWb = App.worldbooks.find(wb => 
-                char.worldbookIds?.includes(wb.id)
-            );
+    // 优先从显示区域获取（允许用户编辑过的版本），其次从record获取
+    let summaryContent = document.getElementById('voiceCallSummaryText').textContent;
 
-            if (!targetWb) {
-                // 创建新的世界书
-                targetWb = {
-                    id: 'wb-' + Date.now(),
-                    name: `${char.name}'s Memories`,
-                    summary: 'Auto-generated from voice call summaries',
-                    entries: []
-                };
-                App.worldbooks.push(targetWb);
-                if (!char.worldbookIds) char.worldbookIds = [];
-                char.worldbookIds.push(targetWb.id);
-            }
+    if (!summaryContent || summaryContent.trim() === '' || summaryContent.includes('Failed')) {
+        summaryContent = record?.summary;
+    }
 
-            // 添加条目
-            const date = new Date(record.startTime);
-            const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            
-            const entry = {
-                name: `Voice Call - ${dateStr}`,
-                keywords: 'call, phone, voice call',
-                content: record.summary,
-                alwaysActive: false
-            };
+    if (!summaryContent || summaryContent.trim() === '') {
+        showToast('No summary available. Please generate a summary first.', 'error');
+        return;
+    }
 
-            if (!targetWb.entries) targetWb.entries = [];
-            targetWb.entries.push(entry);
+    // 找到已绑定的世界书或创建新的
+    let targetWb = null;
 
-            await saveData();
-            showToast('Saved to worldbook', 'success');
+    // 先检查是否有专门用于存储通话记录的世界书
+    const callLogWbName = `${char.nickname || char.name}'s Call Memories`;
+    targetWb = App.worldbooks.find(wb => wb.name === callLogWbName);
+
+    if (!targetWb) {
+        // 创建新的世界书
+        targetWb = {
+            id: 'wb-call-' + Date.now(),
+            name: callLogWbName,
+            summary: `Voice call summaries and memories with ${char.nickname || char.name}`,
+            entries: []
+        };
+        App.worldbooks.push(targetWb);
+    }
+
+    // 确保角色绑定了这个世界书
+    if (!char.worldbookIds) char.worldbookIds = [];
+    if (!char.worldbookIds.includes(targetWb.id)) {
+        char.worldbookIds.push(targetWb.id);
+    }
+
+    // 添加条目
+    const date = new Date(record.startTime);
+    const dateStr = date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    const durationStr = `${Math.floor(record.duration / 60)}:${(record.duration % 60).toString().padStart(2, '0')}`;
+
+    const entry = {
+        name: `Voice Call - ${dateStr}`,
+        keywords: `voice call, phone call, ${char.nickname || char.name}, conversation`,
+        content: `[Voice Call Summary - ${dateStr} - Duration: ${durationStr}]\n\n${summaryContent.trim()}`,
+        alwaysActive: false
+    };
+
+    if (!targetWb.entries) targetWb.entries = [];
+    targetWb.entries.push(entry);
+
+    await saveData();
+    showToast(`Saved to worldbook: "${targetWb.name}"`, 'success');
+}
+
+// 切换总结编辑模式
+function toggleSummaryEdit() {
+    const textDiv = document.getElementById('voiceCallSummaryText');
+    const editArea = document.getElementById('voiceCallSummaryEditArea');
+
+    if (editArea.style.display === 'none') {
+        // 进入编辑模式
+        editArea.value = textDiv.textContent;
+        editArea.style.display = 'block';
+        textDiv.style.display = 'none';
+        editArea.focus();
+    } else {
+        // 退出编辑模式，保存修改
+        textDiv.textContent = editArea.value;
+        textDiv.style.display = 'block';
+        editArea.style.display = 'none';
+
+        // 同时更新record中的summary
+        const char = App.characters.find(c => c.id === App.currentCharId);
+        const record = char?.voiceCallRecords?.find(r => r.id === VoiceCallState.currentRecordId);
+        if (record) {
+            record.summary = editArea.value;
+            saveData();
         }
+
+        showToast('Summary updated', 'success');
+    }
+}
     </script>
 </body>
 </html>
