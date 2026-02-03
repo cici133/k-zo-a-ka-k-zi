@@ -6070,7 +6070,8 @@ function resetVoiceCallState() {
     // 显示等待界面
     document.getElementById('voiceCallWaitingOverlay').classList.add('active');
 
-requestAICallDecision(char) 
+// 调用AI决定是否接听
+    await requestAICallDecision(char);
 }
 
     // 请求AI决定是否接听 - 与短信功能保持一致
