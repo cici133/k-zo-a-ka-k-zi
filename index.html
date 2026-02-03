@@ -2123,160 +2123,6 @@
             letter-spacing: 0.3px;
         }
 
-/* 语音通话相关消息样式 */
-.voice-call-system-msg {
-    display: flex;
-    justify-content: center;
-    padding: 8px 0;
-}
-.voice-call-system-content {
-    padding: 8px 16px;
-    background: rgba(74, 158, 124, 0.1);
-    border: 1px solid rgba(74, 158, 124, 0.2);
-    border-radius: 12px;
-    font-size: calc(12px * var(--font-scale));
-    color: var(--accent-emerald);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.voice-call-system-content svg {
-    width: 14px;
-    height: 14px;
-    stroke: var(--accent-emerald);
-    stroke-width: 1.5;
-    fill: none;
-}
-
-/* 语音通话气泡（已拒绝/已取消） */
-.voice-call-action-bubble {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    border-radius: 16px;
-    max-width: 180px;
-    animation: msgIn 0.25s ease-out;
-}
-.voice-call-action-bubble.rejected {
-    background: rgba(199, 80, 80, 0.15);
-    border: 1px solid rgba(199, 80, 80, 0.3);
-}
-.voice-call-action-bubble.cancelled {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-subtle);
-}
-.voice-call-action-bubble.initiated {
-    background: rgba(74, 158, 124, 0.15);
-    border: 1px solid rgba(74, 158, 124, 0.3);
-}
-.voice-call-action-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-.voice-call-action-bubble.rejected .voice-call-action-icon {
-    background: rgba(199, 80, 80, 0.2);
-}
-.voice-call-action-bubble.cancelled .voice-call-action-icon,
-.voice-call-action-bubble.initiated .voice-call-action-icon {
-    background: rgba(255, 255, 255, 0.1);
-}
-.voice-call-action-bubble.initiated .voice-call-action-icon {
-    background: rgba(74, 158, 124, 0.2);
-}
-.voice-call-action-icon svg {
-    width: 16px;
-    height: 16px;
-    stroke-width: 1.5;
-    fill: none;
-}
-.voice-call-action-bubble.rejected .voice-call-action-icon svg {
-    stroke: var(--danger);
-}
-.voice-call-action-bubble.cancelled .voice-call-action-icon svg {
-    stroke: var(--text-secondary);
-}
-.voice-call-action-bubble.initiated .voice-call-action-icon svg {
-    stroke: var(--accent-emerald);
-}
-.voice-call-action-text {
-    font-size: calc(13px * var(--font-scale));
-}
-.voice-call-action-bubble.rejected .voice-call-action-text {
-    color: var(--danger);
-}
-.voice-call-action-bubble.cancelled .voice-call-action-text {
-    color: var(--text-secondary);
-}
-.voice-call-action-bubble.initiated .voice-call-action-text {
-    color: var(--accent-emerald);
-}
-
-.voice-call-ended-msg {
-    display: flex;
-    justify-content: center;
-    padding: 10px 0;
-    position: relative;
-}
-
-.voice-call-ended-msg .message-checkbox {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.voice-call-system-msg {
-    position: relative;
-}
-
-.voice-call-system-msg .message-checkbox {
-    display: none;
-}
-
-/* 在选择模式下显示语音通话结束消息的复选框 */
-.chat-messages.select-mode .voice-call-ended-msg .message-checkbox {
-    display: flex;
-}
-
-.voice-call-ended-content {
-    padding: 10px 18px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-subtle);
-    border-radius: 14px;
-    font-size: calc(12px * var(--font-scale));
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.voice-call-ended-content svg {
-    width: 16px;
-    height: 16px;
-    stroke: var(--text-tertiary);
-    stroke-width: 1.5;
-    fill: none;
-}
-.voice-call-ended-duration {
-    color: var(--text-primary);
-    font-weight: 500;
-}
-
-/* 禁用的Context菜单选项 */
-.context-menu-item.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-.context-menu-item.disabled:hover {
-    background: transparent;
-}
-
         /* 语音通话记录页面 */
         .voice-call-records-page {
             position: fixed;
@@ -2469,6 +2315,120 @@
             font-size: calc(13px * var(--font-scale));
             cursor: pointer;
         }
+        
+                /* 语音通话状态消息气泡 */
+        .voice-call-status-bubble {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            max-width: 200px;
+            animation: msgIn 0.25s ease-out;
+        }
+        .voice-call-status-bubble.initiated {
+            background: rgba(74, 158, 124, 0.15);
+            border: 1px solid rgba(74, 158, 124, 0.3);
+        }
+        .voice-call-status-bubble.rejected {
+            background: rgba(199, 80, 80, 0.15);
+            border: 1px solid rgba(199, 80, 80, 0.3);
+        }
+        .voice-call-status-bubble.cancelled {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+        }
+        .voice-call-status-bubble.ended {
+            background: rgba(90, 125, 181, 0.15);
+            border: 1px solid rgba(90, 125, 181, 0.3);
+        }
+        .voice-call-status-icon {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .voice-call-status-bubble.initiated .voice-call-status-icon {
+            background: rgba(74, 158, 124, 0.2);
+        }
+        .voice-call-status-bubble.initiated .voice-call-status-icon svg {
+            stroke: var(--accent-emerald);
+        }
+        .voice-call-status-bubble.rejected .voice-call-status-icon {
+            background: rgba(199, 80, 80, 0.2);
+        }
+        .voice-call-status-bubble.rejected .voice-call-status-icon svg {
+            stroke: var(--danger);
+        }
+        .voice-call-status-bubble.cancelled .voice-call-status-icon {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .voice-call-status-bubble.cancelled .voice-call-status-icon svg {
+            stroke: var(--text-secondary);
+        }
+        .voice-call-status-bubble.ended .voice-call-status-icon {
+            background: rgba(90, 125, 181, 0.2);
+        }
+        .voice-call-status-bubble.ended .voice-call-status-icon svg {
+            stroke: var(--accent-blue);
+        }
+        .voice-call-status-icon svg {
+            width: 16px; height: 16px;
+            stroke-width: 1.5;
+            fill: none;
+        }
+        .voice-call-status-text {
+            font-size: calc(13px * var(--font-scale));
+        }
+        .voice-call-status-bubble.initiated .voice-call-status-text {
+            color: var(--accent-emerald);
+        }
+        .voice-call-status-bubble.rejected .voice-call-status-text {
+            color: var(--danger);
+        }
+        .voice-call-status-bubble.cancelled .voice-call-status-text {
+            color: var(--text-secondary);
+        }
+        .voice-call-status-bubble.ended .voice-call-status-text {
+            color: var(--accent-blue);
+        }
+
+        /* 上下文菜单禁用项样式 */
+        .context-menu-item.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .context-menu-item.disabled:hover {
+            background: transparent;
+        }
+
+        /* 通话结束系统消息 */
+        .voice-call-end-system-message {
+            display: flex;
+            justify-content: center;
+            padding: 12px 0;
+        }
+        .voice-call-end-system-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(90, 125, 181, 0.1);
+            border: 1px solid rgba(90, 125, 181, 0.2);
+            border-radius: 14px;
+            font-size: calc(11px * var(--font-scale));
+            color: var(--accent-blue);
+        }
+        .voice-call-end-system-content svg {
+            width: 14px; height: 14px;
+            stroke: var(--accent-blue);
+            stroke-width: 1.5;
+            fill: none;
+        }
+
     </style>
     <style id="customCssStyles"></style>
 </head>
@@ -4494,31 +4454,6 @@
             lastDate = msgDate;
         }
 
-        // 处理语音通话相关的特殊消息类型
-        if (msg.type === 'voice-call-initiate') {
-            // 用户发起语音通话的气泡
-            html += renderVoiceCallInitiateBubble(msg, idx);
-            return;
-        }
-
-        if (msg.type === 'voice-call-rejected') {
-            // AI拒绝的气泡
-            html += renderVoiceCallRejectedBubble(msg, idx);
-            return;
-        }
-
-        if (msg.type === 'voice-call-cancelled') {
-            // 用户取消的气泡
-            html += renderVoiceCallCancelledBubble(msg, idx);
-            return;
-        }
-
-        if (msg.type === 'voice-call-ended') {
-            // 语音通话结束的系统消息
-            html += renderVoiceCallEndedMessage(msg, idx);
-            return;
-        }
-
         const senderType = msg.sender === 'user' ? 'sent' : 'received';
         const showAvatar = char.showAvatar !== false;
         const avatarShape = char.avatarShape || 'circle';
@@ -4535,6 +4470,34 @@
 
         const timeClass = timestampPos === 'hidden' ? 'time-hidden' : timestampPos === 'side' ? 'time-side' : '';
         const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+        // 处理语音通话状态消息
+        if (msg.type === 'voice-call-initiated') {
+            const userName = char.userNick || 'User';
+            html += renderVoiceCallStatusMessage(msg, 'initiated', `${userName} initiated a voice call`, senderType, avatarHtml);
+            return;
+        }
+        if (msg.type === 'voice-call-rejected') {
+            html += renderVoiceCallStatusMessage(msg, 'rejected', 'Call Rejected', 'received', avatarHtml);
+            return;
+        }
+        if (msg.type === 'voice-call-cancelled') {
+            html += renderVoiceCallStatusMessage(msg, 'cancelled', 'Call Cancelled', 'sent', avatarHtml);
+            return;
+        }
+        if (msg.type === 'voice-call-ended') {
+            const mins = Math.floor(msg.duration / 60);
+            const secs = msg.duration % 60;
+            const durationStr = `${mins}:${secs.toString().padStart(2, '0')}`;
+            html += `<div class="voice-call-end-system-message" data-id="${msg.id}">
+                <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
+                <div class="voice-call-end-system-content">
+                    <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span>Voice call ended · ${durationStr}</span>
+                </div>
+            </div>`;
+            return;
+        }
 
         // 运行时解析消息类型和内容
         let msgType = msg.type || 'text';
@@ -4615,68 +4578,6 @@
 
     container.innerHTML = html;
     container.scrollTop = container.scrollHeight;
-}
-
-// 渲染用户发起语音通话的气泡
-function renderVoiceCallInitiateBubble(msg, idx) {
-    const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-    return `<div class="message-wrapper sent" data-id="${msg.id}">
-        <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
-        <div class="voice-call-action-bubble initiated" data-msg-type="voice-call-initiate" oncontextmenu="showContextMenu(event, '${msg.id}')" ontouchstart="startLongPress('${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()">
-            <div class="voice-call-action-text">Voice call initiated</div>
-            <div class="voice-call-action-icon">
-                <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            </div>
-        </div>
-    </div>
-    <div class="voice-call-system-msg" data-id="${msg.id}-sys">
-        <div class="voice-call-system-content">
-            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span>${escapeHtml(msg.content)}</span>
-        </div>
-    </div>`;
-}
-
-// 渲染AI拒绝语音通话的气泡
-function renderVoiceCallRejectedBubble(msg, idx) {
-    return `<div class="message-wrapper received" data-id="${msg.id}">
-        <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
-        <div class="voice-call-action-bubble rejected" data-msg-type="voice-call-rejected" oncontextmenu="showContextMenu(event, '${msg.id}')" ontouchstart="startLongPress('${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()">
-            <div class="voice-call-action-icon">
-                <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" transform="rotate(135, 12, 12)"/></svg>
-            </div>
-            <div class="voice-call-action-text">Declined</div>
-        </div>
-    </div>`;
-}
-
-// 渲染用户取消语音通话的气泡
-function renderVoiceCallCancelledBubble(msg, idx) {
-    return `<div class="message-wrapper sent" data-id="${msg.id}">
-        <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
-        <div class="voice-call-action-bubble cancelled" data-msg-type="voice-call-cancelled" oncontextmenu="showContextMenu(event, '${msg.id}')" ontouchstart="startLongPress('${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()">
-            <div class="voice-call-action-text">Cancelled</div>
-            <div class="voice-call-action-icon">
-                <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            </div>
-        </div>
-    </div>`;
-}
-
-// 渲染语音通话结束的系统消息
-function renderVoiceCallEndedMessage(msg, idx) {
-    const duration = msg.duration || 0;
-    const mins = Math.floor(duration / 60);
-    const secs = duration % 60;
-    const durationStr = mins > 0 ? `${mins}:${secs.toString().padStart(2, '0')}` : `0:${secs.toString().padStart(2, '0')}`;
-
-    return `<div class="voice-call-ended-msg" data-id="${msg.id}">
-        <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
-        <div class="voice-call-ended-content">
-            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span>Voice call ended · <span class="voice-call-ended-duration">${durationStr}</span></span>
-        </div>
-    </div>`;
 }
 
         function renderSceneImageMessage(msg, idx, type, avatarHtml, time, timeClass) {
@@ -4793,6 +4694,25 @@ function renderVoiceCallEndedMessage(msg, idx) {
             await saveData();
         }
 
+// 渲染语音通话状态消息
+function renderVoiceCallStatusMessage(msg, statusType, text, senderType, avatarHtml) {
+    const phoneIcon = `<svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+
+    return `<div class="message-wrapper ${senderType}" data-id="${msg.id}" data-type="voice-call-status">
+        ${senderType === 'received' ? avatarHtml : ''}
+        <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
+        <div class="voice-call-status-bubble ${statusType}"
+             oncontextmenu="showContextMenu(event, '${msg.id}')"
+             ontouchstart="startLongPress('${msg.id}')"
+             ontouchend="endLongPress()"
+             ontouchmove="endLongPress()">
+            <div class="voice-call-status-icon">${phoneIcon}</div>
+            <span class="voice-call-status-text">${escapeHtml(text)}</span>
+        </div>
+        ${senderType === 'sent' ? avatarHtml : ''}
+    </div>`;
+}
+
         function toggleExtensionPanel() {
             document.getElementById('extensionPanel').classList.toggle('active');
         }
@@ -4873,60 +4793,52 @@ function renderVoiceCallEndedMessage(msg, idx) {
     e.preventDefault();
     App.contextMenuMsgId = msgId;
 
+    // 检查是否是语音通话状态消息
     const char = App.characters.find(c => c.id === App.currentCharId);
     const msg = char?.messages.find(m => m.id === msgId);
+    const isVoiceCallStatus = msg?.type?.startsWith('voice-call-');
 
-    // 检查是否是语音通话相关的特殊消息
-    const isVoiceCallMsg = msg?.type && (
-        msg.type === 'voice-call-initiate' ||
-        msg.type === 'voice-call-rejected' ||
-        msg.type === 'voice-call-cancelled' ||
-        msg.type === 'voice-call-ended'
-    );
+    // 获取菜单项
+    const copyItem = document.querySelector('#contextMenu .context-menu-item:nth-child(1)');
+    const quoteItem = document.querySelector('#contextMenu .context-menu-item:nth-child(2)');
+    const editItem = document.querySelector('#contextMenu .context-menu-item:nth-child(3)');
 
-    // 根据消息类型设置菜单选项的可用状态
-    const copyItem = document.querySelector('.context-menu-item[onclick="copyMessageText()"]');
-    const editItem = document.querySelector('.context-menu-item[onclick="editMessage()"]');
-    const quoteItem = document.querySelector('.context-menu-item[onclick="quoteMessage()"]');
-
-    if (isVoiceCallMsg) {
-        // 语音通话相关消息：禁用复制和编辑，只允许引用
-        copyItem?.classList.add('disabled');
-        editItem?.classList.add('disabled');
-        quoteItem?.classList.remove('disabled');
-
-        // 语音通话结束消息不能引用
-        if (msg.type === 'voice-call-ended') {
-            quoteItem?.classList.add('disabled');
-        }
+    // 根据消息类型设置菜单项状态
+    if (isVoiceCallStatus) {
+        copyItem.classList.add('disabled');
+        editItem.classList.add('disabled');
+        quoteItem.classList.remove('disabled');
     } else {
-        // 普通消息：恢复所有功能
-        copyItem?.classList.remove('disabled');
-        editItem?.classList.remove('disabled');
-        quoteItem?.classList.remove('disabled');
+        copyItem.classList.remove('disabled');
+        editItem.classList.remove('disabled');
+        quoteItem.classList.remove('disabled');
     }
 
     document.getElementById('contextMenuOverlay').classList.add('active');
 }
 
-function hideContextMenu() {
+        function hideContextMenu() {
             document.getElementById('contextMenuOverlay').classList.remove('active');
             App.contextMenuMsgId = null;
         }
 
-function copyMessageText() {
+        function startLongPress(msgId) {
+    App.longPressTimer = setTimeout(() => {
+        // 创建一个模拟事件用于定位菜单
+        showContextMenu({ preventDefault: () => {} }, msgId);
+    }, 500);
+}
+
+        function endLongPress() {
+            if (App.longPressTimer) { clearTimeout(App.longPressTimer); App.longPressTimer = null; }
+        }
+
+        function copyMessageText() {
     const char = App.characters.find(c => c.id === App.currentCharId);
     const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
 
-    // 检查是否是禁用的消息类型
-    const isVoiceCallMsg = msg?.type && (
-        msg.type === 'voice-call-initiate' ||
-        msg.type === 'voice-call-rejected' ||
-        msg.type === 'voice-call-cancelled' ||
-        msg.type === 'voice-call-ended'
-    );
-
-    if (isVoiceCallMsg) {
+    // 检查是否是语音通话状态消息（不允许复制）
+    if (msg?.type?.startsWith('voice-call-')) {
         hideContextMenu();
         return;
     }
@@ -4948,28 +4860,28 @@ function copyMessageText() {
         function quoteMessage() {
     const char = App.characters.find(c => c.id === App.currentCharId);
     const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
-
-    // 语音通话结束消息不能引用
-    if (msg?.type === 'voice-call-ended') {
-        hideContextMenu();
-        return;
-    }
-
     if (msg) {
         App.currentQuote = msg;
         document.getElementById('quotePreviewBar').classList.add('active');
 
         let previewText = msg.content || '';
-        if (msg.type === 'scene-image') {
+
+        // 根据消息类型设置引用预览文本
+        if (msg.type === 'voice-call-initiated') {
+            const userName = char.userNick || 'User';
+            previewText = `[Call] ${userName} initiated a call`;
+        } else if (msg.type === 'voice-call-rejected') {
+            previewText = '[Call] Rejected';
+        } else if (msg.type === 'voice-call-cancelled') {
+            previewText = '[Call] Cancelled';
+        } else if (msg.type === 'voice-call-ended') {
+            const mins = Math.floor(msg.duration / 60);
+            const secs = msg.duration % 60;
+            previewText = `[Call] Ended · ${mins}:${secs.toString().padStart(2, '0')}`;
+        } else if (msg.type === 'scene-image') {
             previewText = '[Scene] ' + (msg.content || '').substring(0, 40);
         } else if (msg.type === 'voice') {
             previewText = '[Voice] ' + (msg.content || '').substring(0, 40);
-        } else if (msg.type === 'voice-call-initiate') {
-            previewText = '[Voice Call Initiated]';
-        } else if (msg.type === 'voice-call-rejected') {
-            previewText = '[Voice Call Declined]';
-        } else if (msg.type === 'voice-call-cancelled') {
-            previewText = '[Voice Call Cancelled]';
         } else if (msg.image && !msg.content) {
             previewText = '[Image]';
         } else {
@@ -4990,15 +4902,8 @@ function copyMessageText() {
     const char = App.characters.find(c => c.id === App.currentCharId);
     const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
 
-    // 检查是否是禁用的消息类型
-    const isVoiceCallMsg = msg?.type && (
-        msg.type === 'voice-call-initiate' ||
-        msg.type === 'voice-call-rejected' ||
-        msg.type === 'voice-call-cancelled' ||
-        msg.type === 'voice-call-ended'
-    );
-
-    if (isVoiceCallMsg) {
+    // 检查是否是语音通话状态消息（不允许编辑）
+    if (msg?.type?.startsWith('voice-call-')) {
         hideContextMenu();
         return;
     }
@@ -5149,34 +5054,31 @@ Important notes:
 
             recentMsgs.forEach((msg, idx) => {
     const msgNum = idx + 1;
-    const role = msg.sender === 'user' ? 'user' : 'assistant';
+    let role = msg.sender === 'user' ? 'user' : 'assistant';
     let content = msg.content || '';
 
-    // Handle special message types in history
-    if (msg.type === 'scene-image') {
+    // 处理语音通话状态消息 - 添加解释说明
+    if (msg.type === 'voice-call-initiated') {
+        const userName = char.userNick || 'User';
+        content = `[System: ${userName} initiated a voice call request]`;
+        role = 'user';
+    } else if (msg.type === 'voice-call-rejected') {
+        content = `[System: ${char.nickname || char.name} rejected the voice call request]`;
+        role = 'assistant';
+    } else if (msg.type === 'voice-call-cancelled') {
+        content = `[System: User cancelled the voice call request before it was answered]`;
+        role = 'user';
+    } else if (msg.type === 'voice-call-ended') {
+        const mins = Math.floor(msg.duration / 60);
+        const secs = msg.duration % 60;
+        content = `[System: Voice call ended. Duration: ${mins}:${secs.toString().padStart(2, '0')}]`;
+        // 系统消息可以作为user消息发送
+        role = 'user';
+    } else if (msg.type === 'scene-image') {
+        // Handle special message types in history
         content = `[IMG:${msg.content}]`;
     } else if (msg.type === 'voice') {
         content = `[VOICE:${msg.content}]`;
-    } else if (msg.type === 'voice-call-initiate') {
-        // 用户发起语音通话的记录 - 作为user消息
-        messages.push({ role: 'user', content: `#${msgNum}: [User initiated a voice call]` });
-        return;
-    } else if (msg.type === 'voice-call-rejected') {
-        // AI拒绝语音通话的记录 - 作为assistant消息
-        messages.push({ role: 'assistant', content: `#${msgNum}: [${char.name} declined the voice call]` });
-        return;
-    } else if (msg.type === 'voice-call-cancelled') {
-        // 用户取消语音通话的记录 - 作为user消息
-        messages.push({ role: 'user', content: `#${msgNum}: [User cancelled the voice call before it was answered]` });
-        return;
-    } else if (msg.type === 'voice-call-ended') {
-        // 语音通话结束的系统消息 - 作为系统提示
-        const duration = msg.duration || 0;
-        const mins = Math.floor(duration / 60);
-        const secs = duration % 60;
-        const durationStr = mins > 0 ? `${mins} minutes ${secs} seconds` : `${secs} seconds`;
-        messages.push({ role: 'system', content: `[Voice call ended. Duration: ${durationStr}]` });
-        return;
     }
 
     if (msg.image) {
@@ -5937,23 +5839,22 @@ Important notes:
         }
 
         // 开始等待接听
-async function startVoiceCallWaiting() {
+        async function startVoiceCallWaiting() {
     const char = App.characters.find(c => c.id === App.currentCharId);
     if (!char) return;
 
     hideVoiceCallConfirm();
     VoiceCallState.isWaiting = true;
 
-    // 在聊天窗口添加"发起语音通话"的系统消息
-    const userName = char.userNick || 'User';
-    const initiateMsg = {
+    // 添加"用户发起语音通话"消息到聊天记录
+    const initiatedMsg = {
         id: 'msg-' + Date.now(),
         sender: 'user',
-        type: 'voice-call-initiate',
-        content: `${userName} initiated a voice call`,
+        type: 'voice-call-initiated',
+        content: '',
         timestamp: Date.now()
     };
-    char.messages.push(initiateMsg);
+    char.messages.push(initiatedMsg);
     renderMessages();
     await saveData();
 
@@ -6092,15 +5993,15 @@ Output ONLY one word: ACCEPT or REJECT`;
     document.getElementById('voiceCallWaitingOverlay').classList.remove('active');
     document.getElementById('voiceCallMiniWindow').classList.remove('active');
 
-    // 在聊天窗口添加"已拒绝"的气泡消息
-    const rejectMsg = {
+    // 添加"已拒绝"消息到聊天记录
+    const rejectedMsg = {
         id: 'msg-' + Date.now(),
         sender: 'char',
         type: 'voice-call-rejected',
-        content: 'Declined',
+        content: '',
         timestamp: Date.now()
     };
-    char.messages.push(rejectMsg);
+    char.messages.push(rejectedMsg);
     renderMessages();
     await saveData();
 
@@ -6174,16 +6075,16 @@ Output ONLY one word: ACCEPT or REJECT`;
     document.getElementById('voiceCallWaitingOverlay').classList.remove('active');
     document.getElementById('voiceCallMiniWindow').classList.remove('active');
 
-    // 在聊天窗口添加"已取消"的气泡消息
+    // 添加"已取消"消息到聊天记录
     if (char) {
-        const cancelMsg = {
+        const cancelledMsg = {
             id: 'msg-' + Date.now(),
             sender: 'user',
             type: 'voice-call-cancelled',
-            content: 'Cancelled',
+            content: '',
             timestamp: Date.now()
         };
-        char.messages.push(cancelMsg);
+        char.messages.push(cancelledMsg);
         renderMessages();
         await saveData();
     }
@@ -6453,7 +6354,6 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
     if (!VoiceCallState.isInCall) return;
 
     const char = App.characters.find(c => c.id === App.currentCharId);
-    const finalDuration = VoiceCallState.duration;
 
     VoiceCallState.isInCall = false;
 
@@ -6466,32 +6366,28 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
     // 保存通话记录
     await saveVoiceCallRecord();
 
-    // 隐藏通话界面
-    document.getElementById('voiceCallActiveOverlay').classList.remove('active');
-    document.getElementById('voiceCallMiniWindow').classList.remove('active');
-
-    // 在聊天窗口添加通话结束的系统消息
+    // 添加通话结束系统消息
     if (char) {
-        const mins = Math.floor(finalDuration / 60);
-        const secs = finalDuration % 60;
-        const durationStr = mins > 0 ? `${mins} min ${secs} sec` : `${secs} sec`;
-
-        const endMsg = {
+        const endedMsg = {
             id: 'msg-' + Date.now(),
             sender: 'system',
             type: 'voice-call-ended',
-            content: `Voice call ended. Duration: ${durationStr}`,
-            duration: finalDuration,
+            content: '',
+            duration: VoiceCallState.duration,
             timestamp: Date.now()
         };
-        char.messages.push(endMsg);
+        char.messages.push(endedMsg);
         renderMessages();
         await saveData();
     }
 
+    // 隐藏通话界面
+    document.getElementById('voiceCallActiveOverlay').classList.remove('active');
+    document.getElementById('voiceCallMiniWindow').classList.remove('active');
+
     // 显示结束弹窗
-    const mins = Math.floor(finalDuration / 60).toString().padStart(2, '0');
-    const secs = (finalDuration % 60).toString().padStart(2, '0');
+    const mins = Math.floor(VoiceCallState.duration / 60).toString().padStart(2, '0');
+    const secs = (VoiceCallState.duration % 60).toString().padStart(2, '0');
     document.getElementById('voiceCallEndDuration').textContent = `${mins}:${secs}`;
     document.getElementById('voiceCallEndModal').classList.add('active');
 
