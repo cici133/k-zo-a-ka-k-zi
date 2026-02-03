@@ -1,3 +1,4 @@
+
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -4584,6 +4585,7 @@ function clearVoiceCallLog() {
         }
 
         function openChat(id) {
+            resetVoiceCallState();
             App.currentCharId = id;
             const char = App.characters.find(c => c.id === id);
             if (!char) return;
@@ -4604,14 +4606,15 @@ function clearVoiceCallLog() {
         }
 
         function closeChatPage() {
-            document.getElementById('chatPage').classList.remove('active');
-            document.getElementById('bubbleStyleSheet').textContent = '';
-            document.getElementById('customCssStyles').textContent = '';
-            App.currentCharId = null;
-            App.currentQuote = null;
-            exitSelectMode();
-            renderContactList();
-        }
+    document.getElementById('chatPage').classList.remove('active');
+    document.getElementById('bubbleStyleSheet').textContent = '';
+    document.getElementById('customCssStyles').textContent = '';
+    App.currentCharId = null;
+    App.currentQuote = null;
+    exitSelectMode();
+    resetVoiceCallState(); // 重置语音通话状态
+    renderContactList();
+}
 
         function renderMessages() {
     const char = App.characters.find(c => c.id === App.currentCharId);
@@ -5989,6 +5992,26 @@ Important notes:
             currentRecordId: null,
             currentSummary: null
         };
+        
+// 重置语音通话状态
+function resetVoiceCallState() {
+    VoiceCallState.isInCall = false;
+    VoiceCallState.isWaiting = false;
+    VoiceCallState.isMinimized = false;
+    if (VoiceCallState.timer) {
+        clearInterval(VoiceCallState.timer);
+        VoiceCallState.timer = null;
+    }
+    VoiceCallState.duration = 0;
+    VoiceCallState.currentSession = null;
+
+    // 隐藏所有语音通话相关的overlay
+    document.getElementById('voiceCallConfirmModal')?.classList.remove('active');
+    document.getElementById('voiceCallWaitingOverlay')?.classList.remove('active');
+    document.getElementById('voiceCallMiniWindow')?.classList.remove('active');
+    document.getElementById('voiceCallActiveOverlay')?.classList.remove('active');
+    document.getElementById('voiceCallEndModal')?.classList.remove('active');
+}
 
         // 初始化语音通话记录数组（存储在角色数据中）
         function getVoiceCallRecords(charId) {
