@@ -6022,6 +6022,10 @@ Important notes:
     // 显示等待界面
     document.getElementById('voiceCallWaitingOverlay').classList.add('active');
 
+    // 请求AI决定是否接听
+    requestAICallDecision(char);
+}
+
     // 请求AI决定是否接听 - 完整重写版本
 async function requestAICallDecision(char) {
     if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
