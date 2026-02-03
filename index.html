@@ -6422,38 +6422,53 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
         }
 
         // 打开语音通话记录页面
-        function openVoiceCallRecords() {
-    // 强制关闭扩展面板，而不是切换
+function openVoiceCallRecords() {
+    // 关闭扩展面板
     document.getElementById('extensionPanel').classList.remove('active');
-    renderVoiceCallRecordsList();
+    // 先显示页面，再渲染内容
     document.getElementById('voiceCallRecordsPage').classList.add('active');
+    // 确保详情页是关闭的
+    document.getElementById('voiceCallDetailPage').classList.remove('active');
+    // 渲染列表
+    renderVoiceCallRecordsList();
 }
 
         // 关闭语音通话记录页面
-        function closeVoiceCallRecords() {
+function closeVoiceCallRecords() {
+    // 先关闭详情页（如果打开的话）
+    document.getElementById('voiceCallDetailPage').classList.remove('active');
+    // 再关闭记录列表页
     document.getElementById('voiceCallRecordsPage').classList.remove('active');
+    // 重置状态
     VoiceCallState.currentRecordId = null;
 }
 
+// 关闭语音通话详情
+function closeVoiceCallDetail() {
+    document.getElementById('voiceCallDetailPage').classList.remove('active');
+}
+
         // 渲染语音通话记录列表
-        function renderVoiceCallRecordsList() {
+function renderVoiceCallRecordsList() {
     const char = App.characters.find(c => c.id === App.currentCharId);
     const container = document.getElementById('voiceCallRecordsList');
     const emptyState = document.getElementById('emptyCallRecordsState');
 
-    // 确保详情页面是关闭的
-    document.getElementById('voiceCallDetailPage').classList.remove('active');
-
     if (!char?.voiceCallRecords?.length) {
-        emptyState.style.display = 'flex';
-        // 先清空容器，再添加空状态
-        container.innerHTML = '';
-        container.appendChild(emptyState);
+        // 没有记录时显示空状态
+        container.innerHTML = `
+            <div class="empty-state" id="emptyCallRecordsState" style="display:flex">
+                <div class="empty-state-icon">
+                    <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <div class="empty-state-title">No Call Records</div>
+                <div class="empty-state-desc">Your call history will appear here</div>
+            </div>
+        `;
         return;
     }
 
-    emptyState.style.display = 'none';
-
+    // 有记录时渲染列表
     const recordsHtml = char.voiceCallRecords.slice().reverse().map(record => {
         const date = new Date(record.startTime);
         const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -6474,13 +6489,12 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
 }
 
         // 打开语音通话详情
-        function openVoiceCallDetail(recordId) {
+function openVoiceCallDetail(recordId) {
     const char = App.characters.find(c => c.id === App.currentCharId);
     const record = char?.voiceCallRecords?.find(r => r.id === recordId);
     if (!record) return;
 
     VoiceCallState.currentRecordId = recordId;
-    VoiceCallState.currentSummary = record.summary || null;
 
     // 渲染详情内容
     const content = document.getElementById('voiceCallDetailContent');
@@ -6497,26 +6511,27 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
         </div>`;
     }).join('');
 
-    // 设置总结区域 - 加载永久保存的提示词
+    // 设置总结区域
     document.getElementById('voiceCallSummaryPrompt').value = App.settings.voiceCallSummaryPrompt || '';
     document.getElementById('voiceCallSummaryLoading').classList.remove('active');
 
-    // 重置编辑区域状态
+    // 重置编辑区域
     const editArea = document.getElementById('voiceCallSummaryEditArea');
     const textDiv = document.getElementById('voiceCallSummaryText');
     if (editArea) editArea.style.display = 'none';
     if (textDiv) textDiv.style.display = 'block';
 
-    // 根据是否有已保存的总结来显示结果区域
+    // 显示总结结果
     const resultDiv = document.getElementById('voiceCallSummaryResult');
     if (record.summary) {
-        document.getElementById('voiceCallSummaryText').textContent = record.summary;
+        textDiv.textContent = record.summary;
         resultDiv.classList.add('active');
     } else {
-        document.getElementById('voiceCallSummaryText').textContent = '';
+        textDiv.textContent = '';
         resultDiv.classList.remove('active');
     }
 
+    // 显示详情页面
     document.getElementById('voiceCallDetailPage').classList.add('active');
 }
 
