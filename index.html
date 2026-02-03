@@ -6061,7 +6061,7 @@ Important notes:
     await requestAICallDecision(char);
 }
 
-        // 请求AI决定是否接听 - 增强调试版本
+        // 请求AI决定是否接听 - 完全重写版本
 async function requestAICallDecision(char) {
     if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
         showToast('API not configured', 'error');
@@ -6073,11 +6073,11 @@ async function requestAICallDecision(char) {
     addVoiceCallLog(`Requesting AI decision for call to ${char.nickname || char.name}...`, 'info');
 
     try {
-        // 使用设置中的上下文长度
+        // 使用设置中的上下文长度，而不是固定的10条
         const maxContext = App.settings.maxContextMessages || 200;
-        const recentMessages = char.messages.slice(-Math.min(maxContext, 30));
+        const recentMessages = char.messages.slice(-Math.min(maxContext, 20)); // 最多取20条用于决策
 
-        // 构建系统提示词
+        // 构建简洁的系统提示词
         let systemPrompt = `You are ${char.name}.`;
         if (char.description) {
             systemPrompt += `\n\nCharacter Description:\n${char.description}`;
@@ -6087,41 +6087,31 @@ async function requestAICallDecision(char) {
         }
 
         // 构建对话上下文
-        const contextMessages = recentMessages.map(m => {
-            let content = m.content || '';
-            if (m.type === 'scene-image') content = `[Scene: ${content}]`;
-            if (m.type === 'voice') content = `[Voice message: ${content}]`;
-            return {
-                role: m.sender === 'user' ? 'user' : 'assistant',
-                content: content.substring(0, 300)
-            };
-        }).filter(m => m.content);
+        const contextMessages = recentMessages.map(m => ({
+            role: m.sender === 'user' ? 'user' : 'assistant',
+            content: (m.content || '').substring(0, 200) // 截取前200字符
+        })).filter(m => m.content);
 
-        // 决策请求 - 更明确的指令
-        const decisionPrompt = `[INCOMING PHONE CALL]
-
-The user is trying to call you right now. You must decide whether to answer.
-
-Based on your personality, your current mood, and your relationship with the user, make a decision.
-
-INSTRUCTION: Reply with exactly one word only - either "ACCEPT" or "REJECT". Do not say anything else.`;
-
+        // 构建API请求消息
         const messages = [
             { role: 'system', content: systemPrompt },
             ...contextMessages,
-            { role: 'user', content: decisionPrompt }
+            {
+                role: 'user',
+                content: `[PHONE CALL INCOMING]
+
+The user is calling you on the phone right now. Based on the conversation context, your character personality, current mood, and your relationship with the user, decide whether to answer this call.
+
+Consider:
+- Your character's personality and habits
+- The current context and mood of your recent conversation
+- Whether you would realistically want to talk right now
+
+You MUST reply with ONLY one single word - either ACCEPT or REJECT. Nothing else.`
+            }
         ];
 
-        addVoiceCallLog(`Sending request (model: ${App.settings.modelName}, temp: ${App.settings.temperature})...`, 'info');
-
-        const requestBody = {
-            model: App.settings.modelName,
-            messages,
-            temperature: App.settings.temperature,
-            max_tokens: 50  // 改回较小的值，足够回复ACCEPT/REJECT
-        };
-
-        addVoiceCallLog(`Request body messages count: ${messages.length}`, 'info');
+        addVoiceCallLog(`Sending decision request to AI (temp: ${App.settings.temperature})...`, 'info');
 
         const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
             method: 'POST',
@@ -6129,173 +6119,72 @@ INSTRUCTION: Reply with exactly one word only - either "ACCEPT" or "REJECT". Do 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${App.settings.apiKey}`
             },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify({
+                model: App.settings.modelName,
+                messages,
+                temperature: App.settings.temperature, // 使用设置中的温度
+                max_tokens: 20 // 只需要很短的回复
+            })
         });
 
-        // 获取原始响应文本用于调试
-        const responseText = await res.text();
-        addVoiceCallLog(`Raw API response (first 500 chars): ${responseText.substring(0, 500)}`, 'info');
-
         if (!res.ok) {
-            addVoiceCallLog(`API Error: HTTP ${res.status}`, 'error');
-            throw new Error(`HTTP ${res.status}: ${responseText.substring(0, 200)}`);
+            const errorText = await res.text();
+            addVoiceCallLog(`API Error: HTTP ${res.status} - ${errorText.substring(0, 100)}`, 'error');
+            throw new Error(`HTTP ${res.status}`);
         }
 
-        // 解析JSON
-        let data;
-        try {
-            data = JSON.parse(responseText);
-        } catch (parseError) {
-            addVoiceCallLog(`JSON parse error: ${parseError.message}`, 'error');
-            throw new Error('Failed to parse API response as JSON');
-        }
+        const data = await res.json();
+        const responseText = (data.choices?.[0]?.message?.content || '').trim();
 
-        // 记录完整的响应结构
-        addVoiceCallLog(`Response structure: ${JSON.stringify(Object.keys(data))}`, 'info');
-
-        if (data.choices) {
-            addVoiceCallLog(`Choices length: ${data.choices.length}`, 'info');
-            if (data.choices[0]) {
-                addVoiceCallLog(`Choice[0] keys: ${JSON.stringify(Object.keys(data.choices[0]))}`, 'info');
-                if (data.choices[0].message) {
-                    addVoiceCallLog(`Message keys: ${JSON.stringify(Object.keys(data.choices[0].message))}`, 'info');
-                }
-            }
-        }
-
-        // 尝试多种方式获取AI回复内容
-        let aiContent = '';
-
-        // 标准OpenAI格式
-        if (data.choices?.[0]?.message?.content) {
-            aiContent = data.choices[0].message.content;
-        }
-        // 某些API使用text字段
-        else if (data.choices?.[0]?.text) {
-            aiContent = data.choices[0].text;
-        }
-        // Claude API格式
-        else if (data.content?.[0]?.text) {
-            aiContent = data.content[0].text;
-        }
-        // 直接的content字段
-        else if (data.content) {
-            aiContent = typeof data.content === 'string' ? data.content : JSON.stringify(data.content);
-        }
-        // 某些API的response字段
-        else if (data.response) {
-            aiContent = data.response;
-        }
-
-        aiContent = (aiContent || '').trim();
-
-        addVoiceCallLog(`Extracted AI content: "${aiContent}"`, 'info');
+        // 记录AI的原始响应
+        addVoiceCallLog(`AI raw response: "${responseText}"`, 'info');
 
         if (!VoiceCallState.isWaiting) {
             addVoiceCallLog('Call was cancelled while waiting for AI response', 'info');
             return;
         }
 
-        // 如果响应为空，不要默认接受！
-        if (!aiContent) {
-            addVoiceCallLog('AI returned empty response! Will retry or ask user.', 'error');
+        // 解析AI的决策 - 更严格的判断
+        const upperResponse = responseText.toUpperCase();
 
-            // 询问用户
-            const userChoice = confirm(`AI returned empty response. What would you like to do?\n\nOK = Accept call\nCancel = Reject call`);
+        // 检查是否明确拒绝
+        const isReject = upperResponse.includes('REJECT') ||
+                         upperResponse.includes('REFUSE') ||
+                         upperResponse.includes('DECLINE') ||
+                         upperResponse.includes('NO') ||
+                         upperResponse.includes('拒绝') ||
+                         upperResponse.includes('不接');
 
-            if (userChoice) {
-                addVoiceCallLog('User chose to accept (empty response fallback)', 'info');
-                await new Promise(r => setTimeout(r, 500));
-                if (VoiceCallState.isWaiting) {
-                    await startActiveVoiceCall(char);
-                }
-            } else {
-                addVoiceCallLog('User chose to reject (empty response fallback)', 'info');
-                await handleCallRejected(char);
-            }
-            return;
-        }
+        // 检查是否明确接受
+        const isAccept = upperResponse.includes('ACCEPT') ||
+                         upperResponse.includes('ANSWER') ||
+                         upperResponse.includes('YES') ||
+                         upperResponse.includes('接受') ||
+                         upperResponse.includes('接听');
 
-        // 解析AI的决策
-        const upperContent = aiContent.toUpperCase();
+        addVoiceCallLog(`Decision analysis: isReject=${isReject}, isAccept=${isAccept}`, 'info');
 
-        const isReject = upperContent.includes('REJECT') ||
-                         upperContent.includes('REFUSE') ||
-                         upperContent.includes('DECLINE') ||
-                         upperContent.includes('拒绝') ||
-                         upperContent.includes('不接') ||
-                         upperContent.includes('不想');
-
-        const isAccept = upperContent.includes('ACCEPT') ||
-                         upperContent.includes('ANSWER') ||
-                         upperContent.includes('OK') ||
-                         upperContent.includes('SURE') ||
-                         upperContent.includes('接受') ||
-                         upperContent.includes('接听') ||
-                         upperContent.includes('好的') ||
-                         upperContent.includes('可以');
-
-        addVoiceCallLog(`Decision parse: isReject=${isReject}, isAccept=${isAccept}`, 'info');
-
-        // 更智能的决策逻辑
+        // 决策逻辑：如果明确拒绝且没有明确接受，则拒绝
         if (isReject && !isAccept) {
-            addVoiceCallLog('Final decision: REJECTED (explicit reject)', 'error');
+            addVoiceCallLog(`Decision: REJECTED`, 'error');
             await handleCallRejected(char);
-        } else if (isAccept && !isReject) {
-            addVoiceCallLog('Final decision: ACCEPTED (explicit accept)', 'success');
-            await new Promise(r => setTimeout(r, 800 + Math.random() * 1000));
+        } else {
+            // 其他情况（包括模糊回答）默认接受
+            addVoiceCallLog(`Decision: ACCEPTED`, 'success');
+            // 添加短暂延迟模拟响铃
+            await new Promise(r => setTimeout(r, 800 + Math.random() * 1200));
             if (VoiceCallState.isWaiting) {
                 await startActiveVoiceCall(char);
-            }
-        } else if (isReject && isAccept) {
-            // 两者都有，需要更仔细判断
-            addVoiceCallLog('Ambiguous response (both accept and reject detected)', 'info');
-            // 检查哪个词出现在更后面（更可能是最终决定）
-            const rejectIndex = Math.max(
-                upperContent.lastIndexOf('REJECT'),
-                upperContent.lastIndexOf('REFUSE'),
-                upperContent.lastIndexOf('拒绝')
-            );
-            const acceptIndex = Math.max(
-                upperContent.lastIndexOf('ACCEPT'),
-                upperContent.lastIndexOf('ANSWER'),
-                upperContent.lastIndexOf('接受')
-            );
-
-            if (rejectIndex > acceptIndex) {
-                addVoiceCallLog('Final decision: REJECTED (reject appeared later)', 'error');
-                await handleCallRejected(char);
-            } else {
-                addVoiceCallLog('Final decision: ACCEPTED (accept appeared later)', 'success');
-                await new Promise(r => setTimeout(r, 800));
-                if (VoiceCallState.isWaiting) {
-                    await startActiveVoiceCall(char);
-                }
-            }
-        } else {
-            // 都没检测到，让用户决定
-            addVoiceCallLog(`Unclear response: "${aiContent}". Asking user.`, 'info');
-            const userChoice = confirm(`AI's response was unclear: "${aiContent.substring(0, 100)}"\n\nInterpret as:\nOK = Accept\nCancel = Reject`);
-
-            if (userChoice) {
-                addVoiceCallLog('User interpreted as ACCEPT', 'info');
-                await new Promise(r => setTimeout(r, 500));
-                if (VoiceCallState.isWaiting) {
-                    await startActiveVoiceCall(char);
-                }
-            } else {
-                addVoiceCallLog('User interpreted as REJECT', 'info');
-                await handleCallRejected(char);
             }
         }
 
     } catch (e) {
-        addVoiceCallLog(`Error: ${e.message}`, 'error');
+        addVoiceCallLog(`Error during decision: ${e.message}`, 'error');
         console.error('Voice call decision error:', e);
 
+        // 出错时询问用户是否继续
         if (VoiceCallState.isWaiting) {
-            const userChoice = confirm(`Error getting AI decision: ${e.message}\n\nStart call anyway?\n\nOK = Yes\nCancel = No`);
-            if (userChoice) {
+            if (confirm('Failed to get AI decision. Start call anyway?')) {
                 await startActiveVoiceCall(char);
             } else {
                 await cancelVoiceCall();
