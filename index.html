@@ -2725,6 +2725,20 @@
                     <div class="log-container" id="debugLog"><div class="log-entry info">Waiting...</div></div>
                 </div>
 
+<!-- 在第373行 debugLog 的 </div> 后面添加以下内容 -->
+<div class="divider"></div>
+<p class="settings-group-title">Voice Call Decision Log</p>
+<div class="settings-group" style="padding:16px">
+    <div class="action-hint">
+        <span class="action-hint-icon">📞</span>
+        <span class="action-hint-text">Records AI's raw decision responses for voice calls</span>
+    </div>
+    <div class="log-container" id="voiceCallDecisionLog" style="max-height:200px">
+        <div class="log-entry info">Waiting for voice call decisions...</div>
+    </div>
+    <button class="btn btn-secondary btn-small" onclick="clearVoiceCallDecisionLog()" style="margin-top:10px">Clear Log</button>
+</div>
+
                 <p class="settings-group-title">Conversation</p>
                 <div class="settings-group" style="padding:16px">
                     <div class="input-group">
@@ -4430,6 +4444,27 @@
             } catch (e) { addLog(`Test failed: ${e.message}`, 'error'); showToast('Connection failed', 'error'); }
         }
 
+// 在 addLog 函数后面添加（约第1653行后）
+function addVoiceCallLog(msg, type = 'info') {
+    const container = document.getElementById('voiceCallDecisionLog');
+    if (!container) return;
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type}`;
+    const timestamp = new Date().toLocaleTimeString();
+    entry.textContent = `[${timestamp}] ${msg}`;
+    container.appendChild(entry);
+    container.scrollTop = container.scrollHeight;
+    // 同时输出到控制台
+    console.log(`[VoiceCallDecision ${timestamp}] ${msg}`);
+}
+
+function clearVoiceCallDecisionLog() {
+    const container = document.getElementById('voiceCallDecisionLog');
+    if (container) {
+        container.innerHTML = '<div class="log-entry info">Log cleared</div>';
+    }
+}
+
         async function saveApiSettings() {
             App.settings.apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
             App.settings.apiKey = document.getElementById('apiKey').value.trim();
@@ -6026,70 +6061,57 @@ Important notes:
     await requestAICallDecision(char);
 }
 
-        // 请求AI决定是否接听
+        // 请求AI决定是否接听 - 完全重写版本
 async function requestAICallDecision(char) {
     if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
         showToast('API not configured', 'error');
+        addVoiceCallLog('API not configured, cancelling call', 'error');
         cancelVoiceCall();
         return;
     }
 
+    addVoiceCallLog(`Requesting AI decision for call to ${char.nickname || char.name}...`, 'info');
+
     try {
-        // 添加延迟模拟"响铃"效果（1.5-3秒）
-        await new Promise(r => setTimeout(r, 1500 + Math.random() * 1500));
+        // 使用设置中的上下文长度，而不是固定的10条
+        const maxContext = App.settings.maxContextMessages || 200;
+        const recentMessages = char.messages.slice(-Math.min(maxContext, 20)); // 最多取20条用于决策
 
-        if (!VoiceCallState.isWaiting) return;
-
-        // 使用设置中的上下文数量（修复：不再硬编码为10条）
-        const maxMsgs = App.settings.maxContextMessages || 200;
-        const recentMessages = char.messages.slice(-maxMsgs);
-
-        // 构建系统提示词 - 包含角色完整设定
+        // 构建简洁的系统提示词
         let systemPrompt = `You are ${char.name}.`;
-        if (char.description) systemPrompt += `\n\n${char.description}`;
-        if (char.scenario) systemPrompt += `\n\n[Current Scenario]\n${char.scenario}`;
-        if (char.systemPrompt) systemPrompt += `\n\n[Additional Context]\n${char.systemPrompt}`;
+        if (char.description) {
+            systemPrompt += `\n\nCharacter Description:\n${char.description}`;
+        }
+        if (char.scenario) {
+            systemPrompt += `\n\nCurrent Scenario:\n${char.scenario}`;
+        }
 
-        // 构建消息数组
-        const messages = [{ role: 'system', content: systemPrompt }];
+        // 构建对话上下文
+        const contextMessages = recentMessages.map(m => ({
+            role: m.sender === 'user' ? 'user' : 'assistant',
+            content: (m.content || '').substring(0, 200) // 截取前200字符
+        })).filter(m => m.content);
 
-        // 添加对话历史作为上下文
-        recentMessages.forEach(msg => {
-            // 跳过语音通话状态消息，避免干扰
-            if (msg.type?.startsWith('voice-call-')) return;
+        // 构建API请求消息
+        const messages = [
+            { role: 'system', content: systemPrompt },
+            ...contextMessages,
+            {
+                role: 'user',
+                content: `[PHONE CALL INCOMING]
 
-            const role = msg.sender === 'user' ? 'user' : 'assistant';
-            let content = msg.content || '';
+The user is calling you on the phone right now. Based on the conversation context, your character personality, current mood, and your relationship with the user, decide whether to answer this call.
 
-            // 处理特殊消息类型
-            if (msg.type === 'scene-image') content = `[Shared a scene image: ${content}]`;
-            else if (msg.type === 'voice') content = `[Voice message: ${content}]`;
+Consider:
+- Your character's personality and habits
+- The current context and mood of your recent conversation
+- Whether you would realistically want to talk right now
 
-            if (content.trim()) {
-                messages.push({ role, content });
+You MUST reply with ONLY one single word - either ACCEPT or REJECT. Nothing else.`
             }
-        });
+        ];
 
-        // 关键：通话决策请求作为最后一条user消息（优先级最高）
-        messages.push({
-            role: 'user',
-            content: `[INCOMING PHONE CALL]
-
-The user is calling you on the phone right now.
-
-Based on:
-- Your character's personality
-- Your current emotional state
-- Your relationship with the user
-- The context of recent conversations
-
-Decide whether to answer this call.
-
-IMPORTANT: Reply with ONLY one single word - either ACCEPT or REJECT
-Do not explain. Do not add anything else. Just one word.`
-        });
-
-        console.log('Sending call decision request to AI with', messages.length, 'messages');
+        addVoiceCallLog(`Sending decision request to AI (temp: ${App.settings.temperature})...`, 'info');
 
         const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
             method: 'POST',
@@ -6100,41 +6122,73 @@ Do not explain. Do not add anything else. Just one word.`
             body: JSON.stringify({
                 model: App.settings.modelName,
                 messages,
-                temperature: App.settings.temperature,  // 修复：使用设置中的温度
-                max_tokens: 20  // 只需要一两个词
+                temperature: App.settings.temperature, // 使用设置中的温度
+                max_tokens: 20 // 只需要很短的回复
             })
         });
 
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+            const errorText = await res.text();
+            addVoiceCallLog(`API Error: HTTP ${res.status} - ${errorText.substring(0, 100)}`, 'error');
+            throw new Error(`HTTP ${res.status}`);
+        }
+
         const data = await res.json();
-        const responseText = (data.choices?.[0]?.message?.content || '').toUpperCase().trim();
+        const responseText = (data.choices?.[0]?.message?.content || '').trim();
 
-        console.log('Voice call AI decision raw response:', responseText);
+        // 记录AI的原始响应
+        addVoiceCallLog(`AI raw response: "${responseText}"`, 'info');
 
-        if (!VoiceCallState.isWaiting) return;
+        if (!VoiceCallState.isWaiting) {
+            addVoiceCallLog('Call was cancelled while waiting for AI response', 'info');
+            return;
+        }
 
-        // 解析AI的决定
-        // 提取第一个词来判断
-        const firstWord = responseText.split(/[\s.,!?]/)[0];
-        const hasReject = firstWord === 'REJECT' || responseText.startsWith('REJECT');
-        const hasAccept = firstWord === 'ACCEPT' || responseText.startsWith('ACCEPT');
+        // 解析AI的决策 - 更严格的判断
+        const upperResponse = responseText.toUpperCase();
 
-        // 只有明确是REJECT开头才视为拒绝
-        if (hasReject && !hasAccept) {
-            console.log('AI decision: REJECT');
+        // 检查是否明确拒绝
+        const isReject = upperResponse.includes('REJECT') ||
+                         upperResponse.includes('REFUSE') ||
+                         upperResponse.includes('DECLINE') ||
+                         upperResponse.includes('NO') ||
+                         upperResponse.includes('拒绝') ||
+                         upperResponse.includes('不接');
+
+        // 检查是否明确接受
+        const isAccept = upperResponse.includes('ACCEPT') ||
+                         upperResponse.includes('ANSWER') ||
+                         upperResponse.includes('YES') ||
+                         upperResponse.includes('接受') ||
+                         upperResponse.includes('接听');
+
+        addVoiceCallLog(`Decision analysis: isReject=${isReject}, isAccept=${isAccept}`, 'info');
+
+        // 决策逻辑：如果明确拒绝且没有明确接受，则拒绝
+        if (isReject && !isAccept) {
+            addVoiceCallLog(`Decision: REJECTED`, 'error');
             await handleCallRejected(char);
         } else {
-            // 其他情况（包括ACCEPT或不明确）视为接受
-            console.log('AI decision: ACCEPT');
-            await startActiveVoiceCall(char);
+            // 其他情况（包括模糊回答）默认接受
+            addVoiceCallLog(`Decision: ACCEPTED`, 'success');
+            // 添加短暂延迟模拟响铃
+            await new Promise(r => setTimeout(r, 800 + Math.random() * 1200));
+            if (VoiceCallState.isWaiting) {
+                await startActiveVoiceCall(char);
+            }
         }
 
     } catch (e) {
+        addVoiceCallLog(`Error during decision: ${e.message}`, 'error');
         console.error('Voice call decision error:', e);
+
+        // 出错时询问用户是否继续
         if (VoiceCallState.isWaiting) {
-            // 出错时默认接受，保证功能可用性
-            console.log('Error occurred, defaulting to accept for UX');
-            await startActiveVoiceCall(char);
+            if (confirm('Failed to get AI decision. Start call anyway?')) {
+                await startActiveVoiceCall(char);
+            } else {
+                await cancelVoiceCall();
+            }
         }
     }
 }
