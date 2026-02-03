@@ -6026,7 +6026,7 @@ Important notes:
     requestAICallDecision(char);
 }
 
-    // 请求AI决定是否接听 - 完整重写版本
+    // 请求AI决定是否接听 - 修正版
 async function requestAICallDecision(char) {
     if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
         showToast('API not configured', 'error');
@@ -6035,25 +6035,35 @@ async function requestAICallDecision(char) {
     }
 
     try {
-        // 获取最近的对话上下文
-        const recentMessages = char.messages.slice(-8);
+        // 使用设置中的maxContextMessages，而不是硬编码
+        const maxContext = App.settings.maxContextMessages || 200;
+        const recentMessages = char.messages.slice(-maxContext);
+
         let conversationContext = '';
         if (recentMessages.length > 0) {
             conversationContext = recentMessages.map(m => {
                 const sender = m.sender === 'user' ? 'User' : char.name;
                 let content = m.content || '';
-                // 处理特殊消息类型
                 if (m.type === 'voice-call-initiated') return `[User initiated a voice call]`;
                 if (m.type === 'voice-call-rejected') return `[${char.name} rejected the call]`;
                 if (m.type === 'voice-call-cancelled') return `[User cancelled the call]`;
                 if (m.type === 'voice-call-ended') return `[Voice call ended]`;
                 if (m.type === 'scene-image') content = `[Sent a scene image: ${content}]`;
                 if (m.type === 'voice') content = `[Sent a voice message: ${content}]`;
-                return `${sender}: ${content.substring(0, 150)}`;
+                return `${sender}: ${content.substring(0, 200)}`;
             }).join('\n');
         }
 
-        // 构建强制JSON输出的系统提示词
+        // 检测用户是否在对话中明确要求拒绝
+        const rejectKeywords = [
+            '拒绝', '不要接', '别接', '不接', '挂掉', '不要接听', '测试拒绝',
+            'reject', 'decline', 'refuse', "don't answer", 'do not answer',
+            "don't pick up", 'ignore my call'
+        ];
+        const recentText = recentMessages.map(m => (m.content || '').toLowerCase()).join(' ');
+        const hasExplicitRejectRequest = rejectKeywords.some(kw => recentText.includes(kw.toLowerCase()));
+
+        // 构建系统提示词
         const systemPrompt = `[VOICE CALL DECISION SYSTEM]
 
 You are the decision-making module for character "${char.name}".
@@ -6070,33 +6080,33 @@ ${conversationContext || 'No recent messages.'}
 === SITUATION ===
 The user is now calling "${char.name}" via voice call. You must decide whether ${char.name} would answer this call.
 
-=== DECISION FACTORS TO CONSIDER ===
-1. Character's personality - Are they social? Introverted? Do they like phone calls?
-2. Current relationship with user - Based on recent messages, are they on good terms?
-3. Current context/mood - Is there any indication they're busy, angry, or wouldn't want to talk?
-4. Logical probability - In real life, most people answer calls from people they know unless there's a specific reason not to.
+${hasExplicitRejectRequest ? `
+=== ⚠️ CRITICAL DETECTION ⚠️ ===
+The system has detected that the user EXPLICITLY requested you to REJECT/DECLINE this call in recent messages.
+Words like "拒绝", "不要接", "测试拒绝", "reject", "don't answer" were found.
+You MUST respect the user's explicit request and output {"decision": "reject"}.
+` : ''}
 
-=== IRON RULES (ABSOLUTE COMPLIANCE REQUIRED) ===
-Rule 1: Your response MUST be ONLY a valid JSON object.
-Rule 2: The JSON format is: {"decision": "accept"} OR {"decision": "reject"}
-Rule 3: NO other text, NO explanations, NO greetings. ONLY the JSON.
-Rule 4: "accept" = ${char.name} picks up the phone
-Rule 5: "reject" = ${char.name} declines the call
+=== DECISION FACTORS ===
+1. **HIGHEST PRIORITY**: If user explicitly asked you to reject the call → REJECT
+2. Character's personality - social vs introverted
+3. Current relationship and mood based on conversation
+4. Any logical reason the character wouldn't answer
 
-=== DECISION GUIDELINES ===
-- Default tendency should be NEUTRAL (not biased toward accept or reject)
-- Accept if: relationship seems positive, character is social, no reason to avoid
-- Reject if: character explicitly dislikes calls, current mood is very negative, they're clearly busy/unavailable, relationship is hostile
-- Consider what a REAL person with this personality would do
+=== OUTPUT FORMAT (MANDATORY) ===
+Your response MUST be ONLY: {"decision": "accept"} OR {"decision": "reject"}
+NO other text. ONLY the JSON.
 
-OUTPUT YOUR JSON DECISION NOW:`;
+OUTPUT NOW:`;
 
         const messages = [
             { role: 'system', content: systemPrompt },
-            { role: 'user', content: '{"request": "voice_call", "from": "user", "awaiting_decision": true}' }
+            { role: 'user', content: '{"request": "voice_call", "awaiting_decision": true}' }
         ];
 
-        console.log('Requesting AI call decision with full context...');
+        console.log('Requesting AI call decision...');
+        console.log('Context messages count:', recentMessages.length);
+        console.log('Explicit reject request detected:', hasExplicitRejectRequest);
 
         const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
             method: 'POST',
@@ -6107,29 +6117,23 @@ OUTPUT YOUR JSON DECISION NOW:`;
             body: JSON.stringify({
                 model: App.settings.modelName,
                 messages,
-                temperature: App.settings.temperature, // 使用用户设置的温度，不额外修改
-                max_tokens: 30 // 只需要输出JSON，不需要太多token
+                temperature: App.settings.temperature,
+                max_tokens: 50
             })
         });
 
-        if (!res.ok) {
-            const errorText = await res.text();
-            console.error('API Error:', res.status, errorText);
-            throw new Error(`HTTP ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data = await res.json();
         const responseText = (data.choices?.[0]?.message?.content || '').trim();
 
-        console.log('AI call decision raw response:', responseText);
+        console.log('AI raw response:', responseText);
 
-        // 如果用户已经取消了等待，直接返回
         if (!VoiceCallState.isWaiting) return;
 
-        // 解析AI的决策
+        // 解析决策
         let decision = null;
 
-        // 方法1：尝试直接解析整个响应为JSON
         try {
             const parsed = JSON.parse(responseText);
             if (parsed.decision === 'accept' || parsed.decision === 'reject') {
@@ -6137,70 +6141,37 @@ OUTPUT YOUR JSON DECISION NOW:`;
             }
         } catch {}
 
-        // 方法2：如果整体解析失败，尝试提取JSON片段
         if (!decision) {
             const jsonMatch = responseText.match(/\{\s*"decision"\s*:\s*"(accept|reject)"\s*\}/i);
             if (jsonMatch) {
-                try {
-                    const parsed = JSON.parse(jsonMatch[0]);
-                    decision = parsed.decision;
-                } catch {}
+                decision = JSON.parse(jsonMatch[0]).decision;
             }
         }
 
-        // 方法3：如果JSON提取失败，检查关键词（最后手段）
         if (!decision) {
-            const lowerResponse = responseText.toLowerCase();
-            if (lowerResponse.includes('"reject"') || lowerResponse.includes("'reject'")) {
-                decision = 'reject';
-            } else if (lowerResponse.includes('"accept"') || lowerResponse.includes("'accept'")) {
-                decision = 'accept';
-            }
+            const lower = responseText.toLowerCase();
+            if (lower.includes('reject')) decision = 'reject';
+            else if (lower.includes('accept')) decision = 'accept';
+            else decision = 'accept';
         }
 
-        // 方法4：如果完全无法解析，检查是否有明显的拒绝意图
-        if (!decision) {
-            const lowerResponse = responseText.toLowerCase();
-            // 只有在明确表达拒绝时才判定为reject
-            const rejectPatterns = ['reject', 'decline', 'refuse', 'no', 'busy', 'unavailable'];
-            const acceptPatterns = ['accept', 'answer', 'pick up', 'yes', 'okay', 'sure'];
+        console.log('Final decision:', decision);
 
-            const hasReject = rejectPatterns.some(p => lowerResponse.includes(p));
-            const hasAccept = acceptPatterns.some(p => lowerResponse.includes(p));
-
-            if (hasReject && !hasAccept) {
-                decision = 'reject';
-            } else {
-                decision = 'accept'; // 默认接受（无法解析时的安全选项）
-            }
-        }
-
-        console.log('Parsed call decision:', decision);
-
-        // 模拟响铃延迟（1-2.5秒）
         await new Promise(r => setTimeout(r, 1000 + Math.random() * 1500));
 
-        // 再次检查用户是否已取消
         if (!VoiceCallState.isWaiting) return;
 
-        // 执行决策
         if (decision === 'reject') {
-            console.log('AI decided to REJECT the call');
             await handleCallRejected(char);
         } else {
-            console.log('AI decided to ACCEPT the call');
             await startActiveVoiceCall(char);
         }
 
     } catch (e) {
         console.error('Voice call decision error:', e);
         if (VoiceCallState.isWaiting) {
-            // 发生错误时，默认接受（保证用户体验）
-            console.log('Error occurred during decision, defaulting to accept');
             await new Promise(r => setTimeout(r, 1500));
-            if (VoiceCallState.isWaiting) {
-                await startActiveVoiceCall(char);
-            }
+            if (VoiceCallState.isWaiting) await startActiveVoiceCall(char);
         }
     }
 }
