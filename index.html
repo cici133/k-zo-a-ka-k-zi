@@ -2228,10 +2228,154 @@
 
         /* 总结功能 */
         .voice-call-summary-section {
-            padding: 20px;
-            border-top: 1px solid var(--border-subtle);
-            background: var(--bg-card);
-        }
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-subtle);
+    transition: all 0.3s ease;
+    z-index: 100;
+    max-height: 60px;
+    overflow: hidden;
+}
+.voice-call-summary-section.expanded {
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.voice-call-summary-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 20px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 100%;
+    color: var(--text-secondary);
+    font-size: calc(12px * var(--font-scale));
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: var(--transition-fast);
+}
+.voice-call-summary-toggle:hover {
+    color: var(--text-primary);
+}
+.voice-call-summary-toggle svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    transition: transform 0.3s ease;
+}
+.voice-call-summary-section.expanded .voice-call-summary-toggle svg {
+    transform: rotate(180deg);
+}
+
+.voice-call-summary-inner {
+    padding: 0 20px 20px;
+    display: none;
+}
+.voice-call-summary-section.expanded .voice-call-summary-inner {
+    display: block;
+}
+
+.voice-call-summary-title {
+    font-size: calc(12px * var(--font-scale));
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+.voice-call-summary-prompt {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: calc(13px * var(--font-scale));
+    min-height: 80px;
+    resize: vertical;
+    outline: none;
+    font-family: inherit;
+    margin-bottom: 12px;
+}
+.voice-call-summary-btns {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+.voice-call-summary-btns button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: calc(13px * var(--font-scale));
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+.voice-call-summary-btns .save-btn {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+}
+.voice-call-summary-btns .start-btn {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.2));
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    color: var(--accent-purple);
+}
+.voice-call-summary-loading {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    color: var(--text-secondary);
+    font-size: calc(13px * var(--font-scale));
+}
+.voice-call-summary-loading.active {
+    display: flex;
+}
+.voice-call-summary-result {
+    display: none;
+    padding: 16px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+.voice-call-summary-result.active {
+    display: block;
+}
+.voice-call-summary-result-text {
+    font-size: calc(13px * var(--font-scale));
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin-bottom: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+.voice-call-save-worldbook-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(74, 158, 124, 0.3), rgba(74, 158, 124, 0.2));
+    border: 1px solid rgba(74, 158, 124, 0.4);
+    border-radius: 10px;
+    color: var(--accent-emerald);
+    font-size: calc(13px * var(--font-scale));
+    cursor: pointer;
+}
+
+/* 详情内容区域需要给底部留出空间 */
+.voice-call-detail-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    padding-bottom: 80px; /* 给折叠的总结栏留出空间 */
+}
         .voice-call-summary-title {
             font-size: calc(12px * var(--font-scale));
             color: var(--text-tertiary);
@@ -3342,27 +3486,32 @@
         </div>
         <div class="voice-call-detail-content" id="voiceCallDetailContent"></div>
         <div class="voice-call-summary-section" id="voiceCallSummarySection">
-            <div class="voice-call-summary-title">Summarize & Save</div>
-            <textarea class="voice-call-summary-prompt" id="voiceCallSummaryPrompt" placeholder="Enter summary prompt or leave empty for auto-summary..."></textarea>
-            <div class="voice-call-summary-btns">
-                <button class="save-btn" onclick="saveVoiceCallSummaryPrompt()">Save Prompt</button>
-                <button class="start-btn" onclick="startVoiceCallSummary()">Summarize</button>
+    <button class="voice-call-summary-toggle" onclick="toggleSummarySection()">
+        <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+        <span id="summaryToggleText">Summarize & Save</span>
+    </button>
+    <div class="voice-call-summary-inner">
+        <div class="voice-call-summary-title">Summary Options</div>
+        <textarea class="voice-call-summary-prompt" id="voiceCallSummaryPrompt" placeholder="Enter summary prompt or leave empty for auto-summary..."></textarea>
+        <div class="voice-call-summary-btns">
+            <button class="save-btn" onclick="saveVoiceCallSummaryPrompt()">Save Prompt</button>
+            <button class="start-btn" onclick="startVoiceCallSummary()">Summarize</button>
+        </div>
+        <div class="voice-call-summary-loading" id="voiceCallSummaryLoading">
+            <div class="loading-spinner"></div>
+            <span>Generating summary...</span>
+        </div>
+        <div class="voice-call-summary-result" id="voiceCallSummaryResult">
+            <div class="voice-call-summary-result-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <span style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:1px;">Summary Result (Editable)</span>
+                <button onclick="toggleSummaryEdit()" style="padding:4px 10px;background:var(--bg-glass);border:1px solid var(--border-subtle);border-radius:6px;color:var(--text-secondary);font-size:11px;cursor:pointer;">Edit</button>
             </div>
-            <div class="voice-call-summary-loading" id="voiceCallSummaryLoading">
-                <div class="loading-spinner"></div>
-                <span>Generating summary...</span>
-            </div>
-            <div class="voice-call-summary-result" id="voiceCallSummaryResult">
-    <div class="voice-call-summary-result-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <span style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:1px;">Summary Result (Editable)</span>
-        <button onclick="toggleSummaryEdit()" style="padding:4px 10px;background:var(--bg-glass);border:1px solid var(--border-subtle);border-radius:6px;color:var(--text-secondary);font-size:11px;cursor:pointer;">Edit</button>
-    </div>
-    <div class="voice-call-summary-result-text" id="voiceCallSummaryText" style="min-height:80px;"></div>
-    <textarea class="voice-call-summary-edit-area" id="voiceCallSummaryEditArea" style="display:none;width:100%;min-height:120px;padding:12px;background:var(--bg-glass);border:1px solid var(--border-subtle);border-radius:10px;color:var(--text-primary);font-size:13px;resize:vertical;margin-bottom:10px;"></textarea>
-    <button class="voice-call-save-worldbook-btn" onclick="saveVoiceCallToWorldbook()">Save to Worldbook</button>
-</div>
+            <div class="voice-call-summary-result-text" id="voiceCallSummaryText"></div>
+            <textarea class="voice-call-summary-edit-area" id="voiceCallSummaryEditArea" style="display:none;width:100%;min-height:120px;padding:12px;background:var(--bg-glass);border:1px solid var(--border-subtle);border-radius:10px;color:var(--text-primary);font-size:13px;resize:vertical;margin-bottom:10px;"></textarea>
+            <button class="voice-call-save-worldbook-btn" onclick="saveVoiceCallToWorldbook()">Save to Worldbook</button>
         </div>
     </div>
+</div>
 
     <!-- Audio for click sounds -->
     <audio id="clickSound" preload="auto">
@@ -6531,6 +6680,11 @@ function openVoiceCallDetail(recordId) {
         resultDiv.classList.remove('active');
     }
 
+// 重置总结区域为折叠状态
+const summarySection = document.getElementById('voiceCallSummarySection');
+summarySection.classList.remove('expanded');
+document.getElementById('summaryToggleText').textContent = 'Summarize & Save';
+
     // 显示详情页面
     document.getElementById('voiceCallDetailPage').classList.add('active');
 }
@@ -6728,6 +6882,20 @@ async function saveVoiceCallToWorldbook() {
 
     await saveData();
     showToast(`Saved to worldbook: "${targetWb.name}"`, 'success');
+}
+
+// 切换总结区域展开/收缩
+function toggleSummarySection() {
+    const section = document.getElementById('voiceCallSummarySection');
+    const toggleText = document.getElementById('summaryToggleText');
+
+    section.classList.toggle('expanded');
+
+    if (section.classList.contains('expanded')) {
+        toggleText.textContent = 'Collapse';
+    } else {
+        toggleText.textContent = 'Summarize & Save';
+    }
 }
 
 // 切换总结编辑模式
