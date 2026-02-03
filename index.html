@@ -6423,91 +6423,102 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
 
         // 打开语音通话记录页面
         function openVoiceCallRecords() {
-            toggleExtensionPanel();
-            renderVoiceCallRecordsList();
-            document.getElementById('voiceCallRecordsPage').classList.add('active');
-        }
+    // 强制关闭扩展面板，而不是切换
+    document.getElementById('extensionPanel').classList.remove('active');
+    renderVoiceCallRecordsList();
+    document.getElementById('voiceCallRecordsPage').classList.add('active');
+}
 
         // 关闭语音通话记录页面
         function closeVoiceCallRecords() {
-            document.getElementById('voiceCallRecordsPage').classList.remove('active');
-        }
+    document.getElementById('voiceCallRecordsPage').classList.remove('active');
+    VoiceCallState.currentRecordId = null;
+}
 
         // 渲染语音通话记录列表
         function renderVoiceCallRecordsList() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            const container = document.getElementById('voiceCallRecordsList');
-            const emptyState = document.getElementById('emptyCallRecordsState');
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    const container = document.getElementById('voiceCallRecordsList');
+    const emptyState = document.getElementById('emptyCallRecordsState');
 
-            if (!char?.voiceCallRecords?.length) {
-                emptyState.style.display = 'flex';
-                container.innerHTML = '';
-                container.appendChild(emptyState);
-                return;
-            }
+    // 确保详情页面是关闭的
+    document.getElementById('voiceCallDetailPage').classList.remove('active');
 
-            emptyState.style.display = 'none';
+    if (!char?.voiceCallRecords?.length) {
+        emptyState.style.display = 'flex';
+        // 先清空容器，再添加空状态
+        container.innerHTML = '';
+        container.appendChild(emptyState);
+        return;
+    }
 
-            const recordsHtml = char.voiceCallRecords.slice().reverse().map(record => {
-                const date = new Date(record.startTime);
-                const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                const mins = Math.floor(record.duration / 60).toString().padStart(2, '0');
-                const secs = (record.duration % 60).toString().padStart(2, '0');
-                const preview = record.messages[0]?.content?.substring(0, 50) || 'No messages';
+    emptyState.style.display = 'none';
 
-                return `<div class="voice-call-record-item" onclick="openVoiceCallDetail('${record.id}')">
-                    <div class="voice-call-record-header">
-                        <span class="voice-call-record-date">${dateStr}</span>
-                        <span class="voice-call-record-duration">${mins}:${secs}</span>
-                    </div>
-                    <div class="voice-call-record-preview">${escapeHtml(preview)}</div>
-                </div>`;
-            }).join('');
+    const recordsHtml = char.voiceCallRecords.slice().reverse().map(record => {
+        const date = new Date(record.startTime);
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const mins = Math.floor(record.duration / 60).toString().padStart(2, '0');
+        const secs = (record.duration % 60).toString().padStart(2, '0');
+        const preview = record.messages[0]?.content?.substring(0, 50) || 'No messages';
 
-            container.innerHTML = recordsHtml + '<div style="height:20px"></div>';
-        }
+        return `<div class="voice-call-record-item" onclick="openVoiceCallDetail('${record.id}')">
+            <div class="voice-call-record-header">
+                <span class="voice-call-record-date">${dateStr}</span>
+                <span class="voice-call-record-duration">${mins}:${secs}</span>
+            </div>
+            <div class="voice-call-record-preview">${escapeHtml(preview)}</div>
+        </div>`;
+    }).join('');
+
+    container.innerHTML = recordsHtml + '<div style="height:20px"></div>';
+}
 
         // 打开语音通话详情
         function openVoiceCallDetail(recordId) {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            const record = char?.voiceCallRecords?.find(r => r.id === recordId);
-            if (!record) return;
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    const record = char?.voiceCallRecords?.find(r => r.id === recordId);
+    if (!record) return;
 
-            VoiceCallState.currentRecordId = recordId;
+    VoiceCallState.currentRecordId = recordId;
+    VoiceCallState.currentSummary = record.summary || null;
 
-            // 渲染详情内容
-            const content = document.getElementById('voiceCallDetailContent');
-            content.innerHTML = record.messages.map(msg => {
-                const isUser = msg.sender === 'user';
-                const isSound = msg.type === 'sound';
-                let classes = 'voice-call-detail-msg';
-                if (isUser) classes += ' user';
-                if (isSound) classes += ' sound';
+    // 渲染详情内容
+    const content = document.getElementById('voiceCallDetailContent');
+    content.innerHTML = record.messages.map(msg => {
+        const isUser = msg.sender === 'user';
+        const isSound = msg.type === 'sound';
+        let classes = 'voice-call-detail-msg';
+        if (isUser) classes += ' user';
+        if (isSound) classes += ' sound';
 
-                return `<div class="${classes}">
-                    <div class="voice-call-detail-sender">${isUser ? 'You' : (char.nickname || char.name)}</div>
-                    <div class="voice-call-detail-text">${escapeHtml(msg.content)}</div>
-                </div>`;
-            }).join('');
+        return `<div class="${classes}">
+            <div class="voice-call-detail-sender">${isUser ? 'You' : (char.nickname || char.name)}</div>
+            <div class="voice-call-detail-text">${escapeHtml(msg.content)}</div>
+        </div>`;
+    }).join('');
 
-// 设置总结区域 - 加载永久保存的提示词
-document.getElementById('voiceCallSummaryPrompt').value = App.settings.voiceCallSummaryPrompt || '';
-            document.getElementById('voiceCallSummaryLoading').classList.remove('active');
-            document.getElementById('voiceCallSummaryResult').classList.remove('active');
+    // 设置总结区域 - 加载永久保存的提示词
+    document.getElementById('voiceCallSummaryPrompt').value = App.settings.voiceCallSummaryPrompt || '';
+    document.getElementById('voiceCallSummaryLoading').classList.remove('active');
 
-            if (record.summary) {
-                document.getElementById('voiceCallSummaryText').textContent = record.summary;
-                document.getElementById('voiceCallSummaryResult').classList.add('active');
-            }
+    // 重置编辑区域状态
+    const editArea = document.getElementById('voiceCallSummaryEditArea');
+    const textDiv = document.getElementById('voiceCallSummaryText');
+    if (editArea) editArea.style.display = 'none';
+    if (textDiv) textDiv.style.display = 'block';
 
-            document.getElementById('voiceCallDetailPage').classList.add('active');
-        }
+    // 根据是否有已保存的总结来显示结果区域
+    const resultDiv = document.getElementById('voiceCallSummaryResult');
+    if (record.summary) {
+        document.getElementById('voiceCallSummaryText').textContent = record.summary;
+        resultDiv.classList.add('active');
+    } else {
+        document.getElementById('voiceCallSummaryText').textContent = '';
+        resultDiv.classList.remove('active');
+    }
 
-        // 关闭语音通话详情
-        function closeVoiceCallDetail() {
-            document.getElementById('voiceCallDetailPage').classList.remove('active');
-            VoiceCallState.currentRecordId = null;
-        }
+    document.getElementById('voiceCallDetailPage').classList.add('active');
+}
 
         // 删除语音通话记录
         async function deleteVoiceCallRecord() {
