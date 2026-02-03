@@ -6047,28 +6047,22 @@ Important notes:
     // 显示等待界面
     document.getElementById('voiceCallWaitingOverlay').classList.add('active');
 
-    // 请求AI决定是否接听
-    requestAICallDecision(char);
-}
-
-    // 请求AI决定是否接听 - 带完整日志版本
+    // 请求AI决定是否接听 - 修复空响应问题
 async function requestAICallDecision(char) {
     addVoiceCallLog('=== 新的通话决策请求 ===', 'info');
-    addVoiceCallLog(`角色: ${char.name}`, 'info');
 
     if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
-        addVoiceCallLog('错误: API未配置', 'error');
-        showToast('API not configured', 'error');
+        addVoiceCallLog('API未配置', 'error');
         cancelVoiceCall();
         return;
     }
 
     try {
-        // 使用设置中的上下文长度
         const maxContext = App.settings.maxContextMessages || 200;
         const recentMessages = char.messages.slice(-maxContext);
-        addVoiceCallLog(`上下文消息数量: ${recentMessages.length} (设置最大: ${maxContext})`, 'info');
+        addVoiceCallLog(`读取 ${recentMessages.length} 条上下文消息`, 'info');
 
+        // 构建对话上下文
         let conversationContext = '';
         if (recentMessages.length > 0) {
             conversationContext = recentMessages.map(m => {
@@ -6078,62 +6072,49 @@ async function requestAICallDecision(char) {
                 if (m.type === 'voice-call-rejected') return `[${char.name} rejected the call]`;
                 if (m.type === 'voice-call-cancelled') return `[User cancelled the call]`;
                 if (m.type === 'voice-call-ended') return `[Voice call ended]`;
-                if (m.type === 'scene-image') content = `[Scene image: ${content}]`;
+                if (m.type === 'scene-image') content = `[Scene: ${content}]`;
                 if (m.type === 'voice') content = `[Voice: ${content}]`;
-                return `${sender}: ${content.substring(0, 200)}`;
+                return `${sender}: ${content.substring(0, 300)}`;
             }).join('\n');
         }
 
-        // 检测拒绝关键词
-        const rejectKeywords = [
-            '拒绝', '不要接', '别接', '不接', '挂掉', '不要接听', '测试拒绝',
-            'reject', 'decline', 'refuse', "don't answer", 'do not answer',
-            "don't pick up", 'ignore my call', 'not answer'
-        ];
-        const recentText = recentMessages.map(m => (m.content || '').toLowerCase()).join(' ');
-        const hasExplicitRejectRequest = rejectKeywords.some(kw => recentText.includes(kw.toLowerCase()));
+        // 简化的提示词 - 直接明确
+        const systemPrompt = `You are "${char.name}".
 
-        addVoiceCallLog(`检测到拒绝关键词: ${hasExplicitRejectRequest ? '是 ✓' : '否'}`, hasExplicitRejectRequest ? 'success' : 'info');
+Character Description:
+${char.description || 'No description provided.'}
 
-        // 构建系统提示词
-        const systemPrompt = `[VOICE CALL DECISION SYSTEM]
+${char.scenario ? `Current Scenario: ${char.scenario}` : ''}
 
-You are the decision-making module for character "${char.name}".
+Recent conversation:
+${conversationContext || '(No messages yet)'}
 
-=== CHARACTER INFO ===
-Name: ${char.name}
-Description: ${char.description || 'None'}
-${char.scenario ? `Scenario: ${char.scenario}` : ''}
-${char.systemPrompt ? `System: ${char.systemPrompt}` : ''}
+---
 
-=== CONVERSATION CONTEXT ===
-${conversationContext || 'No messages.'}
+The user is now calling you on the phone. Based on your character, the conversation context, and any requests the user may have made, decide whether to ACCEPT or REJECT this call.
 
-=== CURRENT SITUATION ===
-User is calling "${char.name}". Decide: answer or not?
+Think about:
+- Did the user ask you to reject the call?
+- Is there any reason your character wouldn't answer?
+- What would your character naturally do?
 
-${hasExplicitRejectRequest ? `
-⚠️⚠️⚠️ CRITICAL ALERT ⚠️⚠️⚠️
-DETECTED: User EXPLICITLY asked you to REJECT this call in recent messages!
-Keywords found: 拒绝/不要接/reject/decline etc.
-YOU MUST OUTPUT: {"decision": "reject"}
-THIS OVERRIDES ALL OTHER FACTORS.
-` : ''}
+You must respond with ONLY one word: either "ACCEPT" or "REJECT"
+Do not explain. Do not add anything else. Just one word.`;
 
-=== DECISION RULES ===
-1. If user explicitly asked to reject → {"decision": "reject"}
-2. Otherwise consider character personality and context
+        addVoiceCallLog('发送请求到API...', 'info');
+        addVoiceCallLog(`使用模型: ${App.settings.modelName}`, 'info');
 
-=== OUTPUT FORMAT ===
-ONLY output: {"decision": "accept"} OR {"decision": "reject"}
-Nothing else. Just the JSON.`;
+        const requestBody = {
+            model: App.settings.modelName,
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: 'Should you answer this phone call? Reply with only ACCEPT or REJECT.' }
+            ],
+            temperature: App.settings.temperature,
+            max_tokens: 200
+        };
 
-        addVoiceCallLog('发送API请求...', 'info');
-
-        const messages = [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: '{"request": "voice_call"}' }
-        ];
+        addVoiceCallLog(`请求体: ${JSON.stringify(requestBody).substring(0, 500)}...`, 'info');
 
         const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
             method: 'POST',
@@ -6141,107 +6122,119 @@ Nothing else. Just the JSON.`;
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${App.settings.apiKey}`
             },
-            body: JSON.stringify({
-                model: App.settings.modelName,
-                messages,
-                temperature: App.settings.temperature,
-                max_tokens: 100
-            })
+            body: JSON.stringify(requestBody)
         });
+
+        addVoiceCallLog(`HTTP状态: ${res.status}`, res.ok ? 'success' : 'error');
 
         if (!res.ok) {
             const errorText = await res.text();
-            addVoiceCallLog(`API错误: HTTP ${res.status}`, 'error');
-            addVoiceCallLog(`错误详情: ${errorText.substring(0, 200)}`, 'error');
+            addVoiceCallLog(`错误响应: ${errorText.substring(0, 300)}`, 'error');
             throw new Error(`HTTP ${res.status}`);
         }
 
         const data = await res.json();
-        const responseText = (data.choices?.[0]?.message?.content || '').trim();
 
-        // 关键日志：显示AI的原始回复
-        addVoiceCallLog('────────────────────', 'info');
-        addVoiceCallLog(`AI原始回复: "${responseText}"`, 'success');
-        addVoiceCallLog('────────────────────', 'info');
+        // 详细记录API返回的完整数据结构
+        addVoiceCallLog('API返回数据结构:', 'info');
+        addVoiceCallLog(`data.choices: ${JSON.stringify(data.choices)?.substring(0, 500)}`, 'info');
+
+        // 尝试多种方式获取响应内容
+        let responseText = '';
+
+        // 方式1: 标准OpenAI格式
+        if (data.choices?.[0]?.message?.content) {
+            responseText = data.choices[0].message.content;
+            addVoiceCallLog('使用标准OpenAI格式获取响应', 'success');
+        }
+        // 方式2: 某些API使用text字段
+        else if (data.choices?.[0]?.text) {
+            responseText = data.choices[0].text;
+            addVoiceCallLog('使用text字段获取响应', 'success');
+        }
+        // 方式3: Claude API格式
+        else if (data.content?.[0]?.text) {
+            responseText = data.content[0].text;
+            addVoiceCallLog('使用Claude格式获取响应', 'success');
+        }
+        // 方式4: 直接的response字段
+        else if (data.response) {
+            responseText = data.response;
+            addVoiceCallLog('使用response字段获取响应', 'success');
+        }
+        // 方式5: output字段
+        else if (data.output) {
+            responseText = data.output;
+            addVoiceCallLog('使用output字段获取响应', 'success');
+        }
+        else {
+            addVoiceCallLog(`无法识别的响应格式: ${JSON.stringify(data).substring(0, 500)}`, 'error');
+        }
+
+        responseText = (responseText || '').trim();
+
+        addVoiceCallLog('════════════════════', 'info');
+        addVoiceCallLog(`AI原始回复: "${responseText}"`, responseText ? 'success' : 'error');
+        addVoiceCallLog('════════════════════', 'info');
 
         if (!VoiceCallState.isWaiting) {
-            addVoiceCallLog('用户已取消等待，放弃处理', 'info');
+            addVoiceCallLog('用户已取消', 'info');
             return;
         }
 
-        // 解析决策
+        // 解析决策 - 简化版
         let decision = null;
-        let parseMethod = '';
+        const upperResponse = responseText.toUpperCase();
 
-        // 方法1：直接解析JSON
-        try {
-            const parsed = JSON.parse(responseText);
-            if (parsed.decision === 'accept' || parsed.decision === 'reject') {
-                decision = parsed.decision;
-                parseMethod = '直接JSON解析';
-            }
-        } catch {}
-
-        // 方法2：提取JSON片段
-        if (!decision) {
-            const jsonMatch = responseText.match(/\{\s*"decision"\s*:\s*"(accept|reject)"\s*\}/i);
-            if (jsonMatch) {
-                try {
-                    decision = JSON.parse(jsonMatch[0]).decision;
-                    parseMethod = 'JSON片段提取';
-                } catch {}
-            }
-        }
-
-        // 方法3：关键词检测
-        if (!decision) {
-            const lower = responseText.toLowerCase();
-            if (lower.includes('reject')) {
-                decision = 'reject';
-                parseMethod = '关键词检测(reject)';
-            } else if (lower.includes('accept')) {
-                decision = 'accept';
-                parseMethod = '关键词检测(accept)';
-            }
-        }
-
-        // 方法4：默认
-        if (!decision) {
+        if (upperResponse.includes('REJECT') || upperResponse.includes('拒绝') || upperResponse.includes('NO')) {
+            decision = 'reject';
+            addVoiceCallLog('检测到: REJECT', 'success');
+        } else if (upperResponse.includes('ACCEPT') || upperResponse.includes('接受') || upperResponse.includes('YES')) {
             decision = 'accept';
-            parseMethod = '无法解析，默认accept';
+            addVoiceCallLog('检测到: ACCEPT', 'info');
+        } else {
+            // 尝试解析JSON格式
+            try {
+                const jsonMatch = responseText.match(/\{[^}]+\}/);
+                if (jsonMatch) {
+                    const parsed = JSON.parse(jsonMatch[0]);
+                    if (parsed.decision) {
+                        decision = parsed.decision.toLowerCase();
+                        addVoiceCallLog(`从JSON解析: ${decision}`, 'success');
+                    }
+                }
+            } catch {}
         }
 
-        addVoiceCallLog(`解析方法: ${parseMethod}`, 'info');
-        addVoiceCallLog(`最终决策: ${decision.toUpperCase()}`, decision === 'reject' ? 'success' : 'error');
+        // 如果仍然无法解析
+        if (!decision) {
+            addVoiceCallLog('无法解析响应，默认accept', 'error');
+            decision = 'accept';
+        }
+
+        addVoiceCallLog(`最终决策: ${decision.toUpperCase()}`, decision === 'reject' ? 'success' : 'info');
 
         // 延迟
         await new Promise(r => setTimeout(r, 1000 + Math.random() * 1500));
 
         if (!VoiceCallState.isWaiting) return;
 
-        // 执行决策
         if (decision === 'reject') {
-            addVoiceCallLog('执行: 拒绝通话', 'success');
             await handleCallRejected(char);
         } else {
-            addVoiceCallLog('执行: 接受通话', 'info');
             await startActiveVoiceCall(char);
         }
 
     } catch (e) {
         addVoiceCallLog(`异常: ${e.message}`, 'error');
-        console.error('Voice call decision error:', e);
         if (VoiceCallState.isWaiting) {
             await new Promise(r => setTimeout(r, 1500));
-            if (VoiceCallState.isWaiting) {
-                addVoiceCallLog('异常后默认接受通话', 'error');
-                await startActiveVoiceCall(char);
-            }
+            if (VoiceCallState.isWaiting) await startActiveVoiceCall(char);
         }
     }
 }
-  
-        // AI拒绝通话
+      
+      // AI拒绝通话
         async function handleCallRejected(char) {
     VoiceCallState.isWaiting = false;
     document.getElementById('voiceCallWaitingOverlay').classList.remove('active');
