@@ -6006,15 +6006,16 @@ Important notes:
         
         // 语音通话状态
         const VoiceCallState = {
-            isInCall: false,
-            isWaiting: false,
-            isMinimized: false,
-            currentSession: null,
-            timer: null,
-            duration: 0,
-            currentRecordId: null,
-            currentSummary: null
-        };
+    isInCall: false,
+    isWaiting: false,
+    isMinimized: false,
+    currentSession: null,
+    timer: null,
+    duration: 0,
+    currentRecordId: null,
+    currentSummary: null,
+    charId: null  // 新增：保存当前通话的角色ID，解决离开聊天页面后的操作问题
+};
 
         // 初始化语音通话记录数组（存储在角色数据中）
         function getVoiceCallRecords(charId) {
@@ -6046,11 +6047,12 @@ async function startVoiceCallWaiting() {
     hideVoiceCallConfirm();
 
     // 完全重置所有状态
-    VoiceCallState.isWaiting = true;
-    VoiceCallState.isInCall = false;
-    VoiceCallState.isMinimized = false;
-    VoiceCallState.duration = 0;
-    VoiceCallState.currentSession = null;
+VoiceCallState.isWaiting = true;
+VoiceCallState.isInCall = false;
+VoiceCallState.isMinimized = false;
+VoiceCallState.duration = 0;
+VoiceCallState.currentSession = null;
+VoiceCallState.charId = App.currentCharId;  // 新增：保存当前角色ID，使语音通话操作不依赖当前页面
     if (VoiceCallState.timer) {
         clearInterval(VoiceCallState.timer);
         VoiceCallState.timer = null;
@@ -6273,11 +6275,12 @@ Reply with ONLY one word: ACCEPT or REJECT`
 // 静默取消语音通话（不添加消息到聊天记录，用于错误情况）
 async function cancelVoiceCallSilent() {
     // 完全重置所有状态
-    VoiceCallState.isWaiting = false;
-    VoiceCallState.isInCall = false;
-    VoiceCallState.isMinimized = false;
-    VoiceCallState.duration = 0;
-    VoiceCallState.currentSession = null;
+VoiceCallState.isWaiting = false;
+VoiceCallState.isInCall = false;
+VoiceCallState.isMinimized = false;
+VoiceCallState.duration = 0;
+VoiceCallState.currentSession = null;
+VoiceCallState.charId = null;  // 【修复】重置charId
 
     if (VoiceCallState.timer) {
         clearInterval(VoiceCallState.timer);
@@ -6294,10 +6297,14 @@ async function cancelVoiceCallSilent() {
 
         // AI拒绝通话
 async function handleCallRejected(char) {
+    // 【修复】保存charId用于后续判断
+    const charId = VoiceCallState.charId;
+
     // 完全重置状态
     VoiceCallState.isWaiting = false;
     VoiceCallState.isInCall = false;
     VoiceCallState.isMinimized = false;
+    VoiceCallState.charId = null;  // 【修复】重置charId
 
     // 隐藏所有界面
     document.getElementById('voiceCallWaitingOverlay').classList.remove('active');
@@ -6314,11 +6321,14 @@ async function handleCallRejected(char) {
             timestamp: Date.now()
         };
         char.messages.push(rejectedMsg);
-        renderMessages();
+        // 【修复】只有当前在该角色的聊天页面时才渲染消息
+        if (App.currentCharId === charId) {
+            renderMessages();
+        }
         await saveData();
     }
 
-    showToast(`${char.nickname || char.name} declined the call`, 'info');
+    showToast(`${char?.nickname || char?.name || 'Character'} declined the call`, 'info');
 }
 
         // 开始语音通话
@@ -6382,12 +6392,15 @@ async function handleCallRejected(char) {
 
         // 取消语音通话
 async function cancelVoiceCall() {
-    const char = App.characters.find(c => c.id === App.currentCharId);
+    // 【修复】使用VoiceCallState.charId而不是App.currentCharId
+    const charId = VoiceCallState.charId;
+    const char = App.characters.find(c => c.id === charId);
 
     // 完全重置状态
     VoiceCallState.isWaiting = false;
     VoiceCallState.isInCall = false;
     VoiceCallState.isMinimized = false;
+    VoiceCallState.charId = null;  // 【修复】重置charId
 
     // 隐藏所有界面
     document.getElementById('voiceCallWaitingOverlay').classList.remove('active');
@@ -6404,7 +6417,10 @@ async function cancelVoiceCall() {
             timestamp: Date.now()
         };
         char.messages.push(cancelledMsg);
-        renderMessages();
+        // 【修复】只有当前在该角色的聊天页面时才渲染消息
+        if (App.currentCharId === charId) {
+            renderMessages();
+        }
         await saveData();
     }
 
@@ -6495,7 +6511,7 @@ async function cancelVoiceCall() {
 
         // 触发AI语音通话回复
         async function triggerVoiceCallAIReply() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
+            const char = App.characters.find(c => c.id === VoiceCallState.charId);  // 【修复】使用VoiceCallState.charId
             if (!char || !VoiceCallState.isInCall) return;
 
             if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
@@ -6685,7 +6701,9 @@ const recentTexts = char.messages.slice(-maxMsgs);
 async function endVoiceCall(aiInitiated = false) {
     if (!VoiceCallState.isInCall) return;
 
-    const char = App.characters.find(c => c.id === App.currentCharId);
+    // 【修复】使用VoiceCallState.charId
+    const charId = VoiceCallState.charId;
+    const char = App.characters.find(c => c.id === charId);
 
     // 先保存通话时长
     const callDuration = VoiceCallState.duration;
@@ -6719,14 +6737,15 @@ async function endVoiceCall(aiInitiated = false) {
     VoiceCallState.isMinimized = false;
     VoiceCallState.duration = 0;
     VoiceCallState.currentSession = null;
+    VoiceCallState.charId = null;  // 【修复】重置charId
 
     // 【关键】先隐藏所有语音通话界面
     document.getElementById('voiceCallActiveOverlay').classList.remove('active');
     document.getElementById('voiceCallWaitingOverlay').classList.remove('active', 'minimized');
     document.getElementById('voiceCallMiniWindow').classList.remove('active');
 
-    // 【关键】隐藏overlay后再渲染消息
-    if (char) {
+    // 【修复】只有当前在该角色的聊天页面时才渲染消息
+    if (char && App.currentCharId === charId) {
         renderMessages();
     }
 
@@ -6739,7 +6758,7 @@ async function endVoiceCall(aiInitiated = false) {
 
         // 保存语音通话记录
         async function saveVoiceCallRecord() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
+            const char = App.characters.find(c => c.id === VoiceCallState.charId);  // 【修复】使用VoiceCallState.charId
             if (!char || !VoiceCallState.currentSession) return;
 
             if (!char.voiceCallRecords) char.voiceCallRecords = [];
@@ -6768,9 +6787,12 @@ function closeVoiceCallEndModal() {
     VoiceCallState.duration = 0;
     VoiceCallState.currentSession = null;
     VoiceCallState.timer = null;
+    VoiceCallState.charId = null;  // 【修复】重置charId
 
-    // 【关键】关闭弹窗后再次渲染消息确保显示
-    renderMessages();
+    // 【修复】只有当前在聊天页面时才渲染消息
+    if (App.currentCharId) {
+        renderMessages();
+    }
 }
 
         // 打开语音通话记录页面
