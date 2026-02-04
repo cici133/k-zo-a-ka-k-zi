@@ -2725,20 +2725,6 @@
                     <div class="log-container" id="debugLog"><div class="log-entry info">Waiting...</div></div>
                 </div>
 
-<!-- 在第373行 debugLog 的 </div> 后面添加以下内容 -->
-<div class="divider"></div>
-<p class="settings-group-title">Voice Call Decision Log</p>
-<div class="settings-group" style="padding:16px">
-    <div class="action-hint">
-        <span class="action-hint-icon">📞</span>
-        <span class="action-hint-text">Records AI's raw decision responses for voice calls</span>
-    </div>
-    <div class="log-container" id="voiceCallDecisionLog" style="max-height:200px">
-        <div class="log-entry info">Waiting for voice call decisions...</div>
-    </div>
-    <button class="btn btn-secondary btn-small" onclick="clearVoiceCallDecisionLog()" style="margin-top:10px">Clear Log</button>
-</div>
-
                 <p class="settings-group-title">Conversation</p>
                 <div class="settings-group" style="padding:16px">
                     <div class="input-group">
@@ -2764,6 +2750,17 @@
                         <input type="range" class="slider-input" id="maxTokens" min="256" max="8192" step="256" value="2048" oninput="document.getElementById('maxTokensValue').textContent=this.value">
                     </div>
                 </div>
+
+<p class="settings-group-title">Voice Call Decision Log</p>
+<div class="settings-group" style="padding:16px">
+    <div class="action-hint">
+        <span class="action-hint-icon">📞</span>
+        <span class="action-hint-text">Records AI's raw response when deciding to accept/reject calls</span>
+    </div>
+    <label class="input-label" style="margin-top:12px">Decision Log</label>
+    <div class="log-container" id="callDecisionLog" style="max-height:200px"><div class="log-entry info">Waiting for voice call activity...</div></div>
+    <button class="btn btn-secondary btn-small" onclick="clearCallDecisionLog()" style="margin-top:10px">Clear Log</button>
+</div>
 
                 <p class="settings-group-title">Cache & Storage</p>
                 <div class="settings-group">
@@ -4402,6 +4399,43 @@
             container.scrollTop = container.scrollHeight;
         }
 
+function addCallDecisionLog(msg, type = 'info') {
+    const container = document.getElementById('callDecisionLog');
+    if (!container) {
+        console.log(`[Voice Call Log - No Container] ${msg}`);
+        return;
+    }
+
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type}`;
+
+    // 根据类型添加前缀图标
+    let prefix = '';
+    if (type === 'success') prefix = '✓ ';
+    else if (type === 'error') prefix = '✗ ';
+    else if (type === 'warning') prefix = '⚠ ';
+
+    entry.textContent = `[${new Date().toLocaleTimeString()}] ${prefix}${msg}`;
+    container.appendChild(entry);
+    container.scrollTop = container.scrollHeight;
+
+    // 限制日志条目数量，防止过多
+    while (container.children.length > 100) {
+        container.removeChild(container.firstChild);
+    }
+
+    // 同时输出到控制台
+    console.log(`[Voice Call] [${type.toUpperCase()}] ${msg}`);
+}
+
+function clearCallDecisionLog() {
+    const container = document.getElementById('callDecisionLog');
+    if (container) {
+        container.innerHTML = '<div class="log-entry info">Log cleared at ' + new Date().toLocaleTimeString() + '</div>';
+    }
+}
+
+
         async function fetchModels() {
             const baseUrl = document.getElementById('apiBaseUrl').value.trim();
             const apiKey = document.getElementById('apiKey').value.trim();
@@ -4443,27 +4477,6 @@
                 updateConnectionUI();
             } catch (e) { addLog(`Test failed: ${e.message}`, 'error'); showToast('Connection failed', 'error'); }
         }
-
-// 在 addLog 函数后面添加（约第1653行后）
-function addVoiceCallLog(msg, type = 'info') {
-    const container = document.getElementById('voiceCallDecisionLog');
-    if (!container) return;
-    const entry = document.createElement('div');
-    entry.className = `log-entry ${type}`;
-    const timestamp = new Date().toLocaleTimeString();
-    entry.textContent = `[${timestamp}] ${msg}`;
-    container.appendChild(entry);
-    container.scrollTop = container.scrollHeight;
-    // 同时输出到控制台
-    console.log(`[VoiceCallDecision ${timestamp}] ${msg}`);
-}
-
-function clearVoiceCallDecisionLog() {
-    const container = document.getElementById('voiceCallDecisionLog');
-    if (container) {
-        container.innerHTML = '<div class="log-entry info">Log cleared</div>';
-    }
-}
 
         async function saveApiSettings() {
             App.settings.apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
@@ -6023,12 +6036,34 @@ Important notes:
         }
 
         // 开始等待接听
-        async function startVoiceCallWaiting() {
+async function startVoiceCallWaiting() {
     const char = App.characters.find(c => c.id === App.currentCharId);
     if (!char) return;
 
     hideVoiceCallConfirm();
+
+    // 完全重置所有状态
     VoiceCallState.isWaiting = true;
+    VoiceCallState.isInCall = false;
+    VoiceCallState.isMinimized = false;
+    VoiceCallState.duration = 0;
+    VoiceCallState.currentSession = null;
+    if (VoiceCallState.timer) {
+        clearInterval(VoiceCallState.timer);
+        VoiceCallState.timer = null;
+    }
+
+    // 确保所有相关overlay都先关闭再打开
+    const waitingOverlay = document.getElementById('voiceCallWaitingOverlay');
+    const activeOverlay = document.getElementById('voiceCallActiveOverlay');
+    const miniWindow = document.getElementById('voiceCallMiniWindow');
+    const endModal = document.getElementById('voiceCallEndModal');
+
+    // 先全部关闭
+    waitingOverlay.classList.remove('active', 'minimized');
+    activeOverlay.classList.remove('active');
+    miniWindow.classList.remove('active');
+    endModal.classList.remove('active');
 
     // 添加"用户发起语音通话"消息到聊天记录
     const initiatedMsg = {
@@ -6054,64 +6089,64 @@ Important notes:
     }
     document.getElementById('voiceCallWaitingName').textContent = char.nickname || char.name;
 
-    // 显示等待界面
-    document.getElementById('voiceCallWaitingOverlay').classList.add('active');
+    // 使用setTimeout确保DOM更新后再显示
+    setTimeout(() => {
+        waitingOverlay.classList.add('active');
+    }, 50);
 
     // 调用AI决定是否接听
     await requestAICallDecision(char);
 }
 
-        // 请求AI决定是否接听 - 完全重写版本
+        // 请求AI决定是否接听
 async function requestAICallDecision(char) {
     if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
+        addCallDecisionLog('ERROR: API not configured', 'error');
         showToast('API not configured', 'error');
-        addVoiceCallLog('API not configured, cancelling call', 'error');
-        cancelVoiceCall();
+        await cancelVoiceCallSilent();
         return;
     }
 
-    addVoiceCallLog(`Requesting AI decision for call to ${char.nickname || char.name}...`, 'info');
+    addCallDecisionLog('Voice call initiated, requesting AI decision...');
 
     try {
-        // 使用设置中的上下文长度，而不是固定的10条
-        const maxContext = App.settings.maxContextMessages || 200;
-        const recentMessages = char.messages.slice(-Math.min(maxContext, 20)); // 最多取20条用于决策
+        // 使用设置中的消息数量
+        const maxMsgs = App.settings.maxContextMessages || 200;
+        const recentMessages = char.messages.slice(-maxMsgs);
 
-        // 构建简洁的系统提示词
-        let systemPrompt = `You are ${char.name}.`;
-        if (char.description) {
-            systemPrompt += `\n\nCharacter Description:\n${char.description}`;
-        }
-        if (char.scenario) {
-            systemPrompt += `\n\nCurrent Scenario:\n${char.scenario}`;
-        }
+        addCallDecisionLog(`Context: ${recentMessages.length} messages`);
 
-        // 构建对话上下文
-        const contextMessages = recentMessages.map(m => ({
-            role: m.sender === 'user' ? 'user' : 'assistant',
-            content: (m.content || '').substring(0, 200) // 截取前200字符
-        })).filter(m => m.content);
+        // 构建系统提示词
+        let systemContent = `You are ${char.name}.`;
+        if (char.description) systemContent += `\n\n${char.description}`;
+        if (char.scenario) systemContent += `\n\n${char.scenario}`;
+        if (char.systemPrompt) systemContent += `\n\n${char.systemPrompt}`;
 
-        // 构建API请求消息
-        const messages = [
-            { role: 'system', content: systemPrompt },
-            ...contextMessages,
-            {
-                role: 'user',
-                content: `[PHONE CALL INCOMING]
+        const messages = [{ role: 'system', content: systemContent }];
 
-The user is calling you on the phone right now. Based on the conversation context, your character personality, current mood, and your relationship with the user, decide whether to answer this call.
-
-Consider:
-- Your character's personality and habits
-- The current context and mood of your recent conversation
-- Whether you would realistically want to talk right now
-
-You MUST reply with ONLY one single word - either ACCEPT or REJECT. Nothing else.`
+        // 添加对话历史
+        recentMessages.forEach(msg => {
+            if (msg.type?.startsWith('voice-call-')) return;
+            const role = msg.sender === 'user' ? 'user' : 'assistant';
+            let content = msg.content || '';
+            if (msg.type === 'scene-image') content = `[Scene: ${content}]`;
+            else if (msg.type === 'voice') content = `[Voice: ${content}]`;
+            if (content.trim()) {
+                messages.push({ role, content });
             }
-        ];
+        });
 
-        addVoiceCallLog(`Sending decision request to AI (temp: ${App.settings.temperature})...`, 'info');
+        // 决策请求
+        messages.push({
+            role: 'user',
+            content: `[PHONE CALL INCOMING]
+
+User is calling you now. Answer or reject?
+
+Say only: ACCEPT or REJECT`
+        });
+
+        addCallDecisionLog(`Model: ${App.settings.modelName}`);
 
         const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
             method: 'POST',
@@ -6122,94 +6157,153 @@ You MUST reply with ONLY one single word - either ACCEPT or REJECT. Nothing else
             body: JSON.stringify({
                 model: App.settings.modelName,
                 messages,
-                temperature: App.settings.temperature, // 使用设置中的温度
-                max_tokens: 20 // 只需要很短的回复
+                temperature: App.settings.temperature,
+                max_tokens: 1000  // 增大token数量，确保有足够空间
             })
         });
 
+        addCallDecisionLog(`HTTP: ${res.status}`);
+
         if (!res.ok) {
             const errorText = await res.text();
-            addVoiceCallLog(`API Error: HTTP ${res.status} - ${errorText.substring(0, 100)}`, 'error');
+            addCallDecisionLog(`API Error: ${errorText.substring(0, 100)}`, 'error');
             throw new Error(`HTTP ${res.status}`);
         }
 
         const data = await res.json();
-        const responseText = (data.choices?.[0]?.message?.content || '').trim();
 
-        // 记录AI的原始响应
-        addVoiceCallLog(`AI raw response: "${responseText}"`, 'info');
+        // 获取响应内容 - 同时检查content和reasoning_content
+        let responseText = data.choices?.[0]?.message?.content || '';
+        const reasoningContent = data.choices?.[0]?.message?.reasoning_content || '';
+        const finishReason = data.choices?.[0]?.finish_reason || 'unknown';
 
+        addCallDecisionLog(`Finish reason: ${finishReason}`);
+        addCallDecisionLog(`Content: "${responseText}"`);
+
+        if (reasoningContent) {
+            addCallDecisionLog(`Has reasoning_content (${reasoningContent.length} chars)`);
+        }
+
+        // 如果content为空但有reasoning_content，尝试从中提取决策
+        if (!responseText.trim() && reasoningContent) {
+            addCallDecisionLog('Content empty, extracting from reasoning...', 'warning');
+            const reasoningUpper = reasoningContent.toUpperCase();
+
+            // 在reasoning中查找明确的决策词
+            if (reasoningUpper.includes('I WILL REJECT') ||
+                reasoningUpper.includes('I REJECT') ||
+                reasoningUpper.includes('SHOULD REJECT') ||
+                reasoningUpper.includes('DECIDE TO REJECT') ||
+                reasoningUpper.includes('CHOOSING TO REJECT') ||
+                reasoningUpper.includes('MY ANSWER IS REJECT') ||
+                reasoningUpper.includes('ANSWER: REJECT')) {
+                responseText = 'REJECT';
+                addCallDecisionLog('Extracted REJECT from reasoning', 'success');
+            } else if (reasoningUpper.includes('I WILL ACCEPT') ||
+                       reasoningUpper.includes('I ACCEPT') ||
+                       reasoningUpper.includes('SHOULD ACCEPT') ||
+                       reasoningUpper.includes('DECIDE TO ACCEPT') ||
+                       reasoningUpper.includes('CHOOSING TO ACCEPT') ||
+                       reasoningUpper.includes('MY ANSWER IS ACCEPT') ||
+                       reasoningUpper.includes('ANSWER: ACCEPT')) {
+                responseText = 'ACCEPT';
+                addCallDecisionLog('Extracted ACCEPT from reasoning', 'success');
+            } else {
+                // 无法从reasoning中提取，记录详细信息
+                addCallDecisionLog('Cannot extract decision from reasoning', 'error');
+                addCallDecisionLog(`Reasoning preview: ${reasoningContent.substring(0, 300)}...`, 'error');
+            }
+        }
+
+        // 检查是否仍在等待
         if (!VoiceCallState.isWaiting) {
-            addVoiceCallLog('Call was cancelled while waiting for AI response', 'info');
+            addCallDecisionLog('Call was cancelled while waiting');
             return;
         }
 
-        // 解析AI的决策 - 更严格的判断
-        const upperResponse = responseText.toUpperCase();
+        // 如果仍然没有有效响应
+        if (!responseText.trim()) {
+            addCallDecisionLog('ERROR: No valid response from AI', 'error');
+            addCallDecisionLog('The model may need higher max_tokens or different prompting', 'error');
+            showToast('AI did not respond properly. Try again.', 'error');
+            await cancelVoiceCallSilent();
+            return;
+        }
 
-        // 检查是否明确拒绝
-        const isReject = upperResponse.includes('REJECT') ||
-                         upperResponse.includes('REFUSE') ||
-                         upperResponse.includes('DECLINE') ||
-                         upperResponse.includes('NO') ||
-                         upperResponse.includes('拒绝') ||
-                         upperResponse.includes('不接');
+        // 解析响应
+        const upperResponse = responseText.toUpperCase().trim();
+        addCallDecisionLog(`Parsed: "${upperResponse}"`);
 
-        // 检查是否明确接受
-        const isAccept = upperResponse.includes('ACCEPT') ||
-                         upperResponse.includes('ANSWER') ||
-                         upperResponse.includes('YES') ||
-                         upperResponse.includes('接受') ||
-                         upperResponse.includes('接听');
-
-        addVoiceCallLog(`Decision analysis: isReject=${isReject}, isAccept=${isAccept}`, 'info');
-
-        // 决策逻辑：如果明确拒绝且没有明确接受，则拒绝
-        if (isReject && !isAccept) {
-            addVoiceCallLog(`Decision: REJECTED`, 'error');
+        if (upperResponse.includes('REJECT') && !upperResponse.includes('ACCEPT')) {
+            addCallDecisionLog('>>> DECISION: REJECTED <<<', 'error');
             await handleCallRejected(char);
+        } else if (upperResponse.includes('ACCEPT')) {
+            addCallDecisionLog('>>> DECISION: ACCEPTED <<<', 'success');
+            await startActiveVoiceCall(char);
         } else {
-            // 其他情况（包括模糊回答）默认接受
-            addVoiceCallLog(`Decision: ACCEPTED`, 'success');
-            // 添加短暂延迟模拟响铃
-            await new Promise(r => setTimeout(r, 800 + Math.random() * 1200));
-            if (VoiceCallState.isWaiting) {
-                await startActiveVoiceCall(char);
-            }
+            addCallDecisionLog(`Cannot parse: "${upperResponse}"`, 'error');
+            showToast('AI response unclear. Try again.', 'error');
+            await cancelVoiceCallSilent();
         }
 
     } catch (e) {
-        addVoiceCallLog(`Error during decision: ${e.message}`, 'error');
         console.error('Voice call decision error:', e);
+        addCallDecisionLog(`EXCEPTION: ${e.message}`, 'error');
+        showToast('Call failed: ' + e.message, 'error');
 
-        // 出错时询问用户是否继续
         if (VoiceCallState.isWaiting) {
-            if (confirm('Failed to get AI decision. Start call anyway?')) {
-                await startActiveVoiceCall(char);
-            } else {
-                await cancelVoiceCall();
-            }
+            await cancelVoiceCallSilent();
         }
     }
 }
 
-        // AI拒绝通话
-        async function handleCallRejected(char) {
+// 静默取消语音通话（不添加消息到聊天记录，用于错误情况）
+async function cancelVoiceCallSilent() {
+    // 完全重置所有状态
     VoiceCallState.isWaiting = false;
+    VoiceCallState.isInCall = false;
+    VoiceCallState.isMinimized = false;
+    VoiceCallState.duration = 0;
+    VoiceCallState.currentSession = null;
+
+    if (VoiceCallState.timer) {
+        clearInterval(VoiceCallState.timer);
+        VoiceCallState.timer = null;
+    }
+
+    // 关闭所有语音通话相关界面
+    document.getElementById('voiceCallWaitingOverlay').classList.remove('active', 'minimized');
+    document.getElementById('voiceCallActiveOverlay').classList.remove('active');
+    document.getElementById('voiceCallMiniWindow').classList.remove('active');
+    document.getElementById('voiceCallConfirmModal').classList.remove('active');
+    document.getElementById('voiceCallEndModal').classList.remove('active');
+}
+
+        // AI拒绝通话
+async function handleCallRejected(char) {
+    // 完全重置状态
+    VoiceCallState.isWaiting = false;
+    VoiceCallState.isInCall = false;
+    VoiceCallState.isMinimized = false;
+
+    // 隐藏所有界面
     document.getElementById('voiceCallWaitingOverlay').classList.remove('active');
+    document.getElementById('voiceCallWaitingOverlay').classList.remove('minimized');
     document.getElementById('voiceCallMiniWindow').classList.remove('active');
 
     // 添加"已拒绝"消息到聊天记录
-    const rejectedMsg = {
-        id: 'msg-' + Date.now(),
-        sender: 'char',
-        type: 'voice-call-rejected',
-        content: '',
-        timestamp: Date.now()
-    };
-    char.messages.push(rejectedMsg);
-    renderMessages();
-    await saveData();
+    if (char) {
+        const rejectedMsg = {
+            id: 'msg-' + Date.now(),
+            sender: 'char',
+            type: 'voice-call-rejected',
+            content: '',
+            timestamp: Date.now()
+        };
+        char.messages.push(rejectedMsg);
+        renderMessages();
+        await saveData();
+    }
 
     showToast(`${char.nickname || char.name} declined the call`, 'info');
 }
@@ -6274,11 +6368,17 @@ You MUST reply with ONLY one single word - either ACCEPT or REJECT. Nothing else
         }
 
         // 取消语音通话
-        async function cancelVoiceCall() {
+async function cancelVoiceCall() {
     const char = App.characters.find(c => c.id === App.currentCharId);
 
+    // 完全重置状态
     VoiceCallState.isWaiting = false;
+    VoiceCallState.isInCall = false;
+    VoiceCallState.isMinimized = false;
+
+    // 隐藏所有界面
     document.getElementById('voiceCallWaitingOverlay').classList.remove('active');
+    document.getElementById('voiceCallWaitingOverlay').classList.remove('minimized');
     document.getElementById('voiceCallMiniWindow').classList.remove('active');
 
     // 添加"已取消"消息到聊天记录
@@ -6493,8 +6593,9 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
         function buildVoiceCallAPIMessages(char, systemPrompt) {
             const messages = [{ role: 'system', content: systemPrompt }];
             
-            // 添加最近的短信对话作为上下文
-            const recentTexts = char.messages.slice(-5);
+            // 添加短信对话作为上下文 - 使用设置中的消息数量
+const maxMsgs = App.settings.maxContextMessages || 200;
+const recentTexts = char.messages.slice(-maxMsgs);
             if (recentTexts.length > 0) {
                 let textContext = '[Recent text message context before this call]\n';
                 recentTexts.forEach(m => {
@@ -6568,12 +6669,13 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
         }
 
         // 结束语音通话
-        async function endVoiceCall(aiInitiated = false) {
+async function endVoiceCall(aiInitiated = false) {
     if (!VoiceCallState.isInCall) return;
 
     const char = App.characters.find(c => c.id === App.currentCharId);
 
-    VoiceCallState.isInCall = false;
+    // 先保存通话时长
+    const callDuration = VoiceCallState.duration;
 
     // 停止计时器
     if (VoiceCallState.timer) {
@@ -6591,27 +6693,35 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
             sender: 'system',
             type: 'voice-call-ended',
             content: '',
-            duration: VoiceCallState.duration,
+            duration: callDuration,
             timestamp: Date.now()
         };
         char.messages.push(endedMsg);
-        renderMessages();
         await saveData();
     }
 
-    // 隐藏通话界面
-    document.getElementById('voiceCallActiveOverlay').classList.remove('active');
-    document.getElementById('voiceCallMiniWindow').classList.remove('active');
-
-    // 显示结束弹窗
-    const mins = Math.floor(VoiceCallState.duration / 60).toString().padStart(2, '0');
-    const secs = (VoiceCallState.duration % 60).toString().padStart(2, '0');
-    document.getElementById('voiceCallEndDuration').textContent = `${mins}:${secs}`;
-    document.getElementById('voiceCallEndModal').classList.add('active');
-
-    // 重置状态
+    // 完全重置所有状态
+    VoiceCallState.isInCall = false;
+    VoiceCallState.isWaiting = false;
+    VoiceCallState.isMinimized = false;
     VoiceCallState.duration = 0;
     VoiceCallState.currentSession = null;
+
+    // 【关键】先隐藏所有语音通话界面
+    document.getElementById('voiceCallActiveOverlay').classList.remove('active');
+    document.getElementById('voiceCallWaitingOverlay').classList.remove('active', 'minimized');
+    document.getElementById('voiceCallMiniWindow').classList.remove('active');
+
+    // 【关键】隐藏overlay后再渲染消息
+    if (char) {
+        renderMessages();
+    }
+
+    // 显示结束弹窗
+    const mins = Math.floor(callDuration / 60).toString().padStart(2, '0');
+    const secs = (callDuration % 60).toString().padStart(2, '0');
+    document.getElementById('voiceCallEndDuration').textContent = `${mins}:${secs}`;
+    document.getElementById('voiceCallEndModal').classList.add('active');
 }
 
         // 保存语音通话记录
@@ -6635,9 +6745,20 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
         }
 
         // 关闭通话结束弹窗
-        function closeVoiceCallEndModal() {
-            document.getElementById('voiceCallEndModal').classList.remove('active');
-        }
+function closeVoiceCallEndModal() {
+    document.getElementById('voiceCallEndModal').classList.remove('active');
+
+    // 完全重置状态
+    VoiceCallState.isInCall = false;
+    VoiceCallState.isWaiting = false;
+    VoiceCallState.isMinimized = false;
+    VoiceCallState.duration = 0;
+    VoiceCallState.currentSession = null;
+    VoiceCallState.timer = null;
+
+    // 【关键】关闭弹窗后再次渲染消息确保显示
+    renderMessages();
+}
 
         // 打开语音通话记录页面
 function openVoiceCallRecords() {
