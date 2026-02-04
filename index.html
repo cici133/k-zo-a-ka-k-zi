@@ -6141,9 +6141,19 @@ async function requestAICallDecision(char) {
             role: 'user',
             content: `[PHONE CALL INCOMING]
 
-User is calling you now. Answer or reject?
+The user is calling you right now. You must decide whether to answer or reject this call.
 
-Say only: ACCEPT or REJECT`
+Consider the following before deciding:
+- Your personality and character traits
+- Your current mood based on recent conversations
+- Your relationship with the user at this moment
+- The context of your last interactions (were you arguing? flirting? ignoring each other?)
+- Whether your character typically enjoys phone calls or prefers texting
+- Any recent events that might affect your willingness to talk
+
+Make a decision that feels natural and authentic to who you are.
+
+Reply with ONLY one word: ACCEPT or REJECT`
         });
 
         addCallDecisionLog(`Model: ${App.settings.modelName}`);
