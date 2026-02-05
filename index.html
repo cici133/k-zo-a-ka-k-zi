@@ -7443,6 +7443,36 @@ Rules:
 ${char.scenario ? `\n[Current Scenario]\n${char.scenario}` : ''}
 ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`;
 
+
+    // ========== 新增：处理世界书 ==========
+    if (char.worldbookIds?.length > 0) {
+        // 收集语音通话的上下文（用于关键词匹配）
+        const voiceCallContext = VoiceCallState.currentSession?.messages?.map(m => m.content || '').join(' ').toLowerCase() || '';
+
+        // 收集最近的短信上下文
+        const recentTexts = char.messages.slice(-10).map(m => m.content || '').join(' ').toLowerCase();
+
+        // 合并上下文
+        const combinedContext = (voiceCallContext + ' ' + recentTexts).toLowerCase();
+
+        char.worldbookIds.forEach(wbId => {
+            const wb = App.worldbooks.find(w => w.id === wbId);
+            if (wb?.entries) {
+                wb.entries.forEach(entry => {
+                    if (entry.alwaysActive) {
+                        prompt += `\n\n[Lore: ${entry.name}]\n${entry.content}`;
+                    } else if (entry.keywords) {
+                        const keywords = entry.keywords.split(',').map(k => k.trim().toLowerCase());
+                        if (keywords.some(k => k && combinedContext.includes(k))) {
+                            prompt += `\n\n[Lore: ${entry.name}]\n${entry.content}`;
+                        }
+                    }
+                });
+            }
+        });
+    }
+    // ========== 世界书处理结束 ==========
+
             return prompt;
         }
 
@@ -7515,6 +7545,35 @@ Example 3 - Multiple messages:
 
 ${char.scenario ? `\n[Current Scenario]\n${char.scenario}` : ''}
 ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`;
+
+    // ========== 新增：处理世界书 ==========
+    if (char.worldbookIds?.length > 0) {
+        // 收集语音通话的上下文（用于关键词匹配）
+        const voiceCallContext = VoiceCallState.currentSession?.messages?.map(m => m.content || '').join(' ').toLowerCase() || '';
+
+        // 收集最近的短信上下文
+        const recentTexts = char.messages.slice(-10).map(m => m.content || '').join(' ').toLowerCase();
+
+        // 合并上下文
+        const combinedContext = (voiceCallContext + ' ' + recentTexts).toLowerCase();
+
+        char.worldbookIds.forEach(wbId => {
+            const wb = App.worldbooks.find(w => w.id === wbId);
+            if (wb?.entries) {
+                wb.entries.forEach(entry => {
+                    if (entry.alwaysActive) {
+                        prompt += `\n\n[Lore: ${entry.name}]\n${entry.content}`;
+                    } else if (entry.keywords) {
+                        const keywords = entry.keywords.split(',').map(k => k.trim().toLowerCase());
+                        if (keywords.some(k => k && combinedContext.includes(k))) {
+                            prompt += `\n\n[Lore: ${entry.name}]\n${entry.content}`;
+                        }
+                    }
+                });
+            }
+        });
+    }
+    // ========== 世界书处理结束 ==========
 
     return prompt;
 }
