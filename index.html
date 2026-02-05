@@ -1,9 +1,10 @@
 ```html
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="format-detection" content="telephone=no">
@@ -17,51 +18,49 @@
     <style id="globalFontSizeStyle"></style>
     <style id="bubbleStyleSheet"></style>
     <style>
-/* ========== iOS全屏真正解决方案 ========== */
-@supports (padding-top: env(safe-area-inset-top)) {
-    html {
-        background: #0a0a0a;
-        /* 让背景延伸到安全区域外 */
-    }
-
-    body {
-        background: #0a0a0a;
-    }
-
-    /* 壁纸层必须从屏幕最顶端开始 */
-    #wallpaperLayer {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        /* 关键：使用100vh而不是100% */
-    }
-
-    .phone-container {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-    }
-}
-
-/* 针对刘海屏iPhone的特殊处理 */
-@supports (padding-top: max(0px)) {
-    #wallpaperLayer {
-        /* 向上延伸覆盖状态栏区域 */
-        margin-top: calc(-1 * env(safe-area-inset-top, 0px));
-        padding-top: env(safe-area-inset-top, 0px);
-        height: calc(100vh + env(safe-area-inset-top, 0px));
-    }
-}
-
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap');
+
+/* iOS Standalone (添加到主屏幕) 模式的全屏修复 */
+@supports (padding-top: env(safe-area-inset-top)) {
+    html, body {
+        /* 确保背景色延伸到安全区域 */
+        background: #0a0a0a;
+    }
+
+    /* 让内容可以延伸到状态栏区域 */
+    body.ios-standalone {
+        padding: 0;
+        margin: 0;
+    }
+
+    body.ios-standalone #wallpaperLayer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        height: -webkit-fill-available;
+    }
+
+    body.ios-standalone .phone-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        height: -webkit-fill-available;
+    }
+}
+
+/* 使用新的动态视口单位（如果浏览器支持） */
+@supports (height: 100dvh) {
+    #wallpaperLayer,
+    .phone-container {
+        height: 100dvh;
+    }
+}
 
         :root {
             --bg-primary: #0a0a0a;
@@ -87,10 +86,10 @@
             --blur-heavy: 40px;
             --blur-medium: 25px;
             --blur-light: 15px;
-            --safe-top: constant(safe-area-inset-top, 0px);
             --safe-top: env(safe-area-inset-top, 0px);
-            --safe-bottom: constant(safe-area-inset-bottom, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
             --font-serif: 'Cormorant Garamond', 'Noto Serif SC', Georgia, serif;
             --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
             --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -107,12 +106,17 @@
 
 html {
     height: 100%;
+    height: 100vh;
     height: -webkit-fill-available;
     width: 100%;
     overflow: hidden;
     position: fixed;
-    /* iOS全屏适配 */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     -webkit-text-size-adjust: 100%;
+    background: #0a0a0a;
 }
 
 body {
@@ -122,20 +126,19 @@ body {
     width: 100%;
     overflow: hidden;
     font-family: var(--font-sans);
-    background: var(--bg-primary);
+    background: #0a0a0a;
     color: var(--text-primary);
     overscroll-behavior: none;
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
     letter-spacing: 0.02em;
     line-height: 1.5;
     font-size: calc(14px * var(--font-scale));
-    /* iOS全屏适配 - 关键代码 */
-    padding-top: constant(safe-area-inset-top); /* iOS 11.0 */
-    padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
-    padding-bottom: constant(safe-area-inset-bottom);
-    padding-bottom: env(safe-area-inset-bottom);
 }
 
         /* 使用JavaScript计算的真实视口高度 */
@@ -154,18 +157,16 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    /* iOS全屏适配 - 使用constant和env双重保险 */
-    height: calc(28px + constant(safe-area-inset-top));
-    height: calc(28px + env(safe-area-inset-top));
-    padding-top: constant(safe-area-inset-top);
-    padding-top: env(safe-area-inset-top);
+    height: calc(28px + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
     z-index: 1000;
     background: transparent;
+    box-sizing: border-box;
 }
         .status-bar.hidden { display: none !important; }
         .status-bar-time {
@@ -176,13 +177,21 @@ body {
         .status-bar-icons svg { width: 14px; height: 14px; fill: var(--text-tertiary); }
 
         .home-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding-top: calc(60px + var(--safe-top));
-            padding-bottom: calc(100px + var(--safe-bottom));
-            padding-left: 24px; padding-right: 24px;
-            display: flex; flex-direction: column;
-            overflow-y: auto; z-index: 1;
-        }
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding-top: calc(60px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+    padding-left: 24px;
+    padding-right: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 1;
+    box-sizing: border-box;
+}
         .home-screen.no-statusbar { padding-top: calc(40px + var(--safe-top)); }
 
         .home-header { margin-bottom: 40px; text-align: center; }
@@ -271,15 +280,21 @@ body {
         }
 
         .nav-bar {
-            display: flex; align-items: center; justify-content: space-between;
-            padding-top: calc(12px + var(--safe-top));
-            padding-bottom: 16px; padding-left: 16px; padding-right: 16px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 70%, transparent 100%);
-            backdrop-filter: blur(var(--blur-medium));
-            -webkit-backdrop-filter: blur(var(--blur-medium));
-            flex-shrink: 0; min-height: calc(56px + var(--safe-top));
-            border: none;
-        }
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    padding-bottom: 16px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 70%, transparent 100%);
+    backdrop-filter: blur(var(--blur-medium));
+    -webkit-backdrop-filter: blur(var(--blur-medium));
+    flex-shrink: 0;
+    min-height: calc(56px + env(safe-area-inset-top, 0px));
+    border: none;
+    box-sizing: border-box;
+}
 
         .nav-btn {
             display: flex; align-items: center; justify-content: center;
@@ -3212,7 +3227,7 @@ body {
     </style>
     <style id="customCssStyles"></style>
 </head>
-<body style="background: #0a0a0a;">
+<body style="background: #0a0a0a; margin: 0; padding: 0;">
     <div id="wallpaperLayer"></div>
 
     <div class="phone-container">
@@ -4215,28 +4230,66 @@ body {
     </audio>
 
     <script>
-// iOS全屏适配 - 动态修复
+// iOS全屏适配 - 完整修复
 (function() {
-    // 检测iOS设备
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone === true;
 
+    // 设置视口高度CSS变量
+    const setViewportHeight = () => {
+        // 使用 visualViewport 如果可用（更准确）
+        const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
+        document.documentElement.style.setProperty('--real-vh', `${vh}px`);
+        document.documentElement.style.setProperty('--app-height', `${vh}px`);
+    };
+
+    setViewportHeight();
+
+    // 监听多种事件以确保高度正确
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', () => {
+        setTimeout(setViewportHeight, 100);
+        setTimeout(setViewportHeight, 300);
+    });
+
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', setViewportHeight);
+    }
+
+    // iOS PWA 特殊处理
     if (isIOS) {
-        // 设置视口高度CSS变量
-        const setVH = () => {
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-            document.documentElement.style.setProperty('--real-vh', `${window.innerHeight}px`);
-        };
-
-        setVH();
-        window.addEventListener('resize', setVH);
-        window.addEventListener('orientationchange', () => {
-            setTimeout(setVH, 100);
-        });
-
-        // 强制背景延伸
+        // 强制背景色延伸到安全区域外
         document.documentElement.style.background = '#0a0a0a';
         document.body.style.background = '#0a0a0a';
+
+        // 防止橡皮筋效果
+        document.body.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.chat-messages, .page-content, .voice-call-messages')) {
+                return;
+            }
+            if (document.body.scrollTop === 0 ||
+                document.body.scrollTop + window.innerHeight >= document.body.scrollHeight) {
+                // 允许正常滚动的区域
+            }
+        }, { passive: true });
+
+        // 如果是独立模式（添加到主屏幕）
+        if (isStandalone) {
+            document.body.classList.add('ios-standalone');
+
+            // 确保 wallpaper 覆盖整个屏幕
+            const wallpaper = document.getElementById('wallpaperLayer');
+            if (wallpaper) {
+                wallpaper.style.position = 'fixed';
+                wallpaper.style.top = '0';
+                wallpaper.style.left = '0';
+                wallpaper.style.right = '0';
+                wallpaper.style.bottom = '0';
+                wallpaper.style.width = '100vw';
+                wallpaper.style.height = '100vh';
+            }
+        }
     }
 })();
 
