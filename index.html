@@ -1850,6 +1850,15 @@
             z-index: 10;
         }
 
+.voice-call-message-item {
+    cursor: pointer;  /* 新增：显示可点击的手型光标 */
+    user-select: none;  /* 新增：防止选中文字 */
+}
+
+.voice-call-message-item:active {
+    transform: scale(0.98);  /* 新增：点击时的反馈效果 */
+}
+
         /* 对话记录区域 - 歌词风格 */
         .voice-call-messages {
             flex: 1;
@@ -1863,41 +1872,50 @@
             -webkit-overflow-scrolling: touch;
         }
         .voice-call-message-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 16px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
         .voice-call-message-item.focused {
-            background: rgba(255, 255, 255, 0.05);
-            transform: scale(1.02);
-        }
-        .voice-call-message-item.dimmed {
-            opacity: 0.5;
-        }
-        .voice-call-message-item.user-msg {
-            flex-direction: row-reverse;
-            text-align: right;
-        }
+    background: rgba(255, 255, 255, 0.08);
+    transform: scale(1.02);
+}
+.voice-call-message-item.dimmed {
+    /* 保留类但移除opacity效果 */
+    opacity: 1;
+}
+        /* 用户消息右对齐 */
+.voice-call-message-item.user-msg {
+    align-items: flex-end;
+    text-align: right;
+}
         .voice-call-message-content {
-            flex: 1;
-            font-size: calc(15px * var(--font-scale));
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
+    font-size: calc(15px * var(--font-scale));
+    color: var(--text-primary);
+    line-height: 1.6;
+    word-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+}
         .voice-call-message-item.focused .voice-call-message-content {
-            font-size: calc(17px * var(--font-scale));
-        }
+    font-size: calc(17px * var(--font-scale));
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
+}
         .voice-call-message-item.sound-msg .voice-call-message-content {
-            color: var(--text-tertiary);
-            font-style: italic;
-            font-size: calc(13px * var(--font-scale));
-        }
+    color: rgba(255, 255, 255, 0.65);  /* 轻微变暗 */
+    font-style: italic;
+    font-size: calc(13px * var(--font-scale));
+}
         .voice-call-message-item.user-msg .voice-call-message-content {
-            color: var(--accent-blue);
+            color: rgba(200, 220, 255, 0.95);
         }
         .voice-call-focus-indicator {
             position: absolute;
@@ -2576,6 +2594,527 @@
             fill: none;
         }
 
+/* ========== 双语翻译功能样式 - 星雾风格 垂直布局 ========== */
+
+/* 语音通话消息项 - 确保垂直布局 */
+.voice-call-message-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 用户消息右对齐 */
+.voice-call-message-item.user-msg {
+    align-items: flex-end;
+    text-align: right;
+}
+
+/* 原文内容样式 */
+.voice-call-message-content {
+    font-size: calc(15px * var(--font-scale));
+    color: var(--text-primary);
+    line-height: 1.6;
+    word-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+}
+
+/* 语音通话消息中的翻译容器 - 星雾气泡 - 独立行显示 */
+.voice-call-translation {
+    display: block;
+    width: 100%;
+    max-width: 85%;
+    margin-top: 8px;
+    padding: 14px 18px;
+    background: radial-gradient(ellipse at 30% 20%, rgba(80, 70, 100, 0.35) 0%, rgba(40, 35, 55, 0.25) 50%, rgba(25, 22, 35, 0.3) 100%);
+    border: 1px solid rgba(180, 160, 220, 0.12);
+    border-radius: 20px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    position: relative;
+    overflow: visible;
+    box-shadow:
+        0 4px 20px rgba(100, 80, 150, 0.15),
+        0 0 40px rgba(139, 92, 246, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    box-sizing: border-box;
+}
+
+/* 星星容器 */
+.voice-call-translation::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    pointer-events: none;
+    background-image:
+        radial-gradient(1px 1px at 10% 15%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 85% 25%, rgba(200, 180, 255, 0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 25% 80%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+        radial-gradient(1.2px 1.2px at 70% 70%, rgba(180, 160, 220, 0.7) 0%, transparent 100%),
+        radial-gradient(0.8px 0.8px at 50% 10%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 85%, rgba(200, 180, 255, 0.5) 0%, transparent 100%);
+    animation: twinkleStars 3s ease-in-out infinite alternate;
+    border-radius: 28px;
+    z-index: -1;
+}
+
+@keyframes twinkleStars {
+    0% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.5; transform: scale(1.02); }
+}
+
+/* 气泡内部光晕效果 */
+.voice-call-translation::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 50%, rgba(139, 92, 246, 0.03) 100%);
+    pointer-events: none;
+}
+
+/* 翻译标签 - 更精致的设计 */
+.voice-call-translation-label {
+    font-size: calc(9px * var(--font-scale));
+    color: rgba(180, 160, 220, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.voice-call-translation-label svg {
+    width: 12px;
+    height: 12px;
+    stroke: rgba(180, 160, 220, 0.6);
+    stroke-width: 1.8;
+    fill: none;
+    filter: drop-shadow(0 0 3px rgba(139, 92, 246, 0.3));
+}
+
+/* 翻译文本 - 更柔和的呈现 */
+.voice-call-translation-text {
+    font-size: calc(14px * var(--font-scale));
+    color: rgba(240, 235, 255, 0.85);
+    line-height: 1.65;
+    font-style: normal;
+    letter-spacing: 0.3px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+/* 用户消息的翻译样式 - 蓝色调 + 右对齐 */
+.voice-call-message-item.user-msg .voice-call-translation {
+    margin-left: auto;
+    margin-right: 0;
+    background: radial-gradient(ellipse at 70% 20%, rgba(70, 90, 130, 0.35) 0%, rgba(40, 55, 85, 0.25) 50%, rgba(25, 35, 55, 0.3) 100%);
+    border-color: rgba(120, 160, 220, 0.15);
+    box-shadow:
+        0 4px 20px rgba(80, 120, 180, 0.15),
+        0 0 40px rgba(90, 125, 181, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.voice-call-message-item.user-msg .voice-call-translation::before {
+    background-image:
+        radial-gradient(1px 1px at 15% 20%, rgba(180, 200, 255, 0.7) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 80% 30%, rgba(160, 190, 255, 0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 75%, rgba(200, 220, 255, 0.5) 0%, transparent 100%),
+        radial-gradient(1.2px 1.2px at 65% 65%, rgba(150, 180, 240, 0.7) 0%, transparent 100%);
+}
+
+.voice-call-message-item.user-msg .voice-call-translation-label {
+    color: rgba(160, 190, 240, 0.7);
+    justify-content: flex-end;
+}
+
+.voice-call-message-item.user-msg .voice-call-translation-label svg {
+    stroke: rgba(160, 190, 240, 0.6);
+    filter: drop-shadow(0 0 3px rgba(90, 125, 181, 0.3));
+}
+
+.voice-call-message-item.user-msg .voice-call-translation-text {
+    color: rgba(230, 240, 255, 0.85);
+    text-align: right;
+}
+
+/* sound类型消息的翻译样式 - 更淡雅 */
+.voice-call-message-item.sound-msg .voice-call-translation {
+    background: radial-gradient(ellipse at 50% 30%, rgba(60, 60, 75, 0.3) 0%, rgba(35, 35, 50, 0.2) 50%, rgba(20, 20, 30, 0.25) 100%);
+    border-color: rgba(150, 150, 180, 0.1);
+    padding: 12px 16px;
+    box-shadow:
+        0 3px 15px rgba(80, 80, 100, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.voice-call-message-item.sound-msg .voice-call-translation::before {
+    background-image:
+        radial-gradient(0.8px 0.8px at 20% 30%, rgba(200, 200, 220, 0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 75% 60%, rgba(180, 180, 200, 0.3) 0%, transparent 100%);
+    animation: twinkleStars 4s ease-in-out infinite alternate;
+}
+
+.voice-call-message-item.sound-msg .voice-call-translation-text {
+    font-style: italic;
+    color: rgba(200, 195, 220, 0.75);
+    font-size: calc(13px * var(--font-scale));
+}
+
+.voice-call-message-item.sound-msg .voice-call-translation-label {
+    color: rgba(160, 155, 180, 0.6);
+}
+
+/* focused状态下的翻译样式 - 更突出 */
+.voice-call-message-item.focused .voice-call-message-content {
+    font-size: calc(17px * var(--font-scale));
+}
+
+.voice-call-message-item.focused .voice-call-translation {
+    background: radial-gradient(ellipse at 30% 20%, rgba(100, 85, 130, 0.45) 0%, rgba(60, 50, 80, 0.35) 50%, rgba(40, 35, 55, 0.4) 100%);
+    border-color: rgba(200, 180, 255, 0.2);
+    box-shadow:
+        0 6px 30px rgba(120, 100, 180, 0.25),
+        0 0 50px rgba(139, 92, 246, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transform: scale(1.02);
+    transition: all 0.3s ease;
+}
+
+.voice-call-message-item.focused .voice-call-translation::before {
+    opacity: 1;
+    animation: twinkleStarsFocused 2s ease-in-out infinite alternate;
+}
+
+@keyframes twinkleStarsFocused {
+    0% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; transform: scale(1.03); }
+}
+
+.voice-call-message-item.focused .voice-call-translation-text {
+    color: rgba(255, 250, 255, 0.95);
+    font-size: calc(15px * var(--font-scale));
+}
+
+.voice-call-message-item.focused .voice-call-translation-label {
+    color: rgba(200, 180, 240, 0.85);
+}
+
+/* dimmed状态 - 保持正常亮度，不再变暗 */
+.voice-call-message-item.dimmed .voice-call-message-content {
+    font-size: calc(15px * var(--font-scale));
+    color: var(--text-primary);
+}
+
+.voice-call-message-item.dimmed .voice-call-translation {
+    opacity: 1;  /* 保持正常不透明度 */
+    transform: scale(1);  /* 保持正常大小 */
+    transition: all 0.3s ease;
+}
+
+.voice-call-message-item.dimmed .voice-call-translation::before {
+    opacity: 0.4;  /* 保持正常星星效果 */
+}
+
+.voice-call-message-item.dimmed .voice-call-translation-text {
+    font-size: calc(14px * var(--font-scale));  /* 保持正常大小 */
+    color: rgba(240, 235, 255, 0.85);  /* 保持正常颜色 */
+}
+
+/* 焦点指示器调整 */
+.voice-call-focus-indicator {
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 10px solid rgba(255, 255, 255, 0.4);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.voice-call-message-item.focused .voice-call-focus-indicator {
+    opacity: 1;
+}
+
+.voice-call-message-item.user-msg .voice-call-focus-indicator {
+    right: auto;
+    left: -12px;
+    border-right: none;
+    border-left: 10px solid rgba(90, 125, 181, 0.4);
+}
+
+/* 语音通话详情页的双语样式 - 同样美化 */
+.voice-call-detail-msg {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.voice-call-detail-msg:last-child {
+    border-bottom: none;
+}
+
+.voice-call-detail-msg.user {
+    align-items: flex-end;
+    text-align: right;
+}
+
+.voice-call-detail-msg .voice-call-detail-translation {
+    display: block;
+    width: 100%;
+    max-width: 90%;
+    margin-top: 10px;
+    padding: 12px 16px;
+    background: radial-gradient(ellipse at 30% 30%, rgba(70, 60, 90, 0.3) 0%, rgba(35, 30, 50, 0.2) 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(160, 140, 200, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: relative;
+    overflow: visible;
+    box-shadow:
+        0 3px 15px rgba(90, 70, 130, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    box-sizing: border-box;
+}
+
+/* 详情页翻译的星星效果 */
+.voice-call-detail-msg .voice-call-detail-translation::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    pointer-events: none;
+    background-image:
+        radial-gradient(1px 1px at 15% 20%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+        radial-gradient(1.2px 1.2px at 80% 35%, rgba(180, 160, 220, 0.4) 0%, transparent 100%),
+        radial-gradient(0.8px 0.8px at 40% 75%, rgba(200, 180, 240, 0.4) 0%, transparent 100%);
+    animation: twinkleStars 3.5s ease-in-out infinite alternate;
+    border-radius: 20px;
+    z-index: -1;
+}
+
+.voice-call-detail-translation-label {
+    font-size: calc(9px * var(--font-scale));
+    color: rgba(170, 150, 210, 0.65);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.voice-call-detail-translation-text {
+    font-size: calc(13px * var(--font-scale));
+    color: rgba(235, 230, 250, 0.8);
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+/* 用户消息详情的翻译样式 */
+.voice-call-detail-msg.user .voice-call-detail-translation {
+    margin-left: auto;
+    margin-right: 0;
+    background: radial-gradient(ellipse at 70% 30%, rgba(60, 80, 120, 0.3) 0%, rgba(35, 50, 75, 0.2) 100%);
+    border-color: rgba(140, 170, 220, 0.1);
+}
+
+.voice-call-detail-msg.user .voice-call-detail-translation::before {
+    background-image:
+        radial-gradient(1px 1px at 20% 25%, rgba(180, 200, 255, 0.5) 0%, transparent 100%),
+        radial-gradient(1.2px 1.2px at 75% 40%, rgba(160, 185, 240, 0.4) 0%, transparent 100%);
+}
+
+.voice-call-detail-msg.user .voice-call-detail-translation-label {
+    color: rgba(150, 180, 230, 0.65);
+    text-align: right;
+}
+
+.voice-call-detail-msg.user .voice-call-detail-translation-text {
+    color: rgba(225, 235, 255, 0.8);
+    text-align: right;
+}
+
+/* sound类型详情的翻译样式 */
+.voice-call-detail-msg.sound .voice-call-detail-translation {
+    background: radial-gradient(ellipse at 50% 30%, rgba(55, 55, 70, 0.25) 0%, rgba(30, 30, 45, 0.15) 100%);
+    border-color: rgba(140, 140, 170, 0.08);
+}
+
+.voice-call-detail-msg.sound .voice-call-detail-translation-text {
+    font-style: italic;
+    color: rgba(190, 185, 210, 0.7);
+}
+
+/* ========== 双语设置区域样式 ========== */
+
+.bilingual-settings-container {
+    margin-top: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(40, 35, 55, 0.4), rgba(30, 28, 42, 0.3));
+    border: 1px solid rgba(160, 140, 200, 0.1);
+    border-radius: 16px;
+    display: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.bilingual-settings-container.active {
+    display: block;
+}
+
+.bilingual-language-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.bilingual-language-row:last-child {
+    margin-bottom: 0;
+}
+
+.bilingual-language-label {
+    font-size: calc(12px * var(--font-scale));
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bilingual-language-label svg {
+    width: 14px;
+    height: 14px;
+    stroke: var(--text-tertiary);
+    stroke-width: 1.5;
+    fill: none;
+}
+
+.bilingual-language-select {
+    flex: 1;
+    max-width: 160px;
+    padding: 10px 14px;
+    background: rgba(30, 28, 42, 0.6);
+    border: 1px solid rgba(160, 140, 200, 0.15);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: calc(13px * var(--font-scale));
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(180,160,220,0.5)' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.bilingual-language-select option {
+    background: var(--bg-primary);
+}
+
+.bilingual-arrow-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: rgba(160, 140, 200, 0.5);
+}
+
+.bilingual-arrow-icon svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+.bilingual-preview-box {
+    margin-top: 16px;
+    padding: 14px;
+    background: rgba(20, 18, 30, 0.5);
+    border-radius: 14px;
+    border: 1px solid rgba(140, 120, 180, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* 预览框的星星效果 */
+.bilingual-preview-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background-image:
+        radial-gradient(0.8px 0.8px at 10% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 85% 30%, rgba(180, 160, 220, 0.3) 0%, transparent 100%),
+        radial-gradient(0.6px 0.6px at 50% 80%, rgba(200, 180, 240, 0.3) 0%, transparent 100%);
+    animation: twinkleStars 4s ease-in-out infinite alternate;
+    z-index: 0;
+}
+
+.bilingual-preview-title {
+    font-size: calc(10px * var(--font-scale));
+    color: rgba(160, 140, 200, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.bilingual-preview-native {
+    font-size: calc(13px * var(--font-scale));
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.bilingual-preview-translation {
+    font-size: calc(12px * var(--font-scale));
+    color: rgba(220, 215, 240, 0.8);
+    padding: 10px 14px;
+    background: radial-gradient(ellipse at 30% 30%, rgba(80, 70, 100, 0.3) 0%, rgba(40, 35, 55, 0.2) 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(160, 140, 200, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
     </style>
     <style id="customCssStyles"></style>
 </head>
@@ -3064,6 +3603,55 @@
 
                 <p class="settings-group-title">Linked Worldbooks</p>
                 <div class="settings-group" style="padding:16px"><div class="worldbook-multi-select" id="worldbookMultiSelect"></div></div>
+
+<p class="settings-group-title">Voice Call Settings</p>
+<div class="settings-group" style="padding:16px">
+    <div class="settings-item" style="padding:0 0 12px 0">
+        <div class="settings-item-left">
+            <span class="settings-item-label">Bilingual Mode</span>
+            <div class="settings-item-desc">Enable translation during voice calls</div>
+        </div>
+        <div class="toggle-switch" id="bilingualToggle" onclick="toggleBilingualMode()"></div>
+    </div>
+
+    <div class="bilingual-settings-container" id="bilingualSettingsContainer">
+        <div class="bilingual-language-row">
+            <span class="bilingual-language-label">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                Character's Native Language
+            </span>
+        </div>
+        <div class="bilingual-language-row">
+            <select class="bilingual-language-select" id="nativeLanguageSelect" onchange="updateBilingualPreview()">
+                <!-- Will be populated by JavaScript -->
+            </select>
+        </div>
+
+        <div class="bilingual-language-row" style="justify-content:center;margin:16px 0">
+            <div class="bilingual-arrow-icon">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            </div>
+        </div>
+
+        <div class="bilingual-language-row">
+            <span class="bilingual-language-label">
+                <svg viewBox="0 0 24 24"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+                Translate To
+            </span>
+        </div>
+        <div class="bilingual-language-row">
+            <select class="bilingual-language-select" id="translationLanguageSelect" onchange="updateBilingualPreview()">
+                <!-- Will be populated by JavaScript -->
+            </select>
+        </div>
+
+        <div class="bilingual-preview-box">
+            <div class="bilingual-preview-title">Preview</div>
+            <div class="bilingual-preview-native" id="bilingualPreviewNative">"Hello, how are you today?"</div>
+            <div class="bilingual-preview-translation" id="bilingualPreviewTranslation">"你好，你今天怎么样？"</div>
+        </div>
+    </div>
+</div>
 
                 <p class="settings-group-title">Advanced</p>
                 <div class="settings-group" style="padding:16px">
@@ -3608,6 +4196,47 @@
             colorPickerDragging: null
         };
 
+// 语言选项列表
+const LANGUAGE_OPTIONS = [
+    { code: 'en', name: 'English', nativeName: '英语' },
+    { code: 'zh', name: 'Chinese', nativeName: '中文' },
+    { code: 'ja', name: 'Japanese', nativeName: '日语' },
+    { code: 'ko', name: 'Korean', nativeName: '韩语' },
+    { code: 'fr', name: 'French', nativeName: '法语' },
+    { code: 'de', name: 'German', nativeName: '德语' },
+    { code: 'es', name: 'Spanish', nativeName: '西班牙语' },
+    { code: 'ru', name: 'Russian', nativeName: '俄语' },
+    { code: 'pt', name: 'Portuguese', nativeName: '葡萄牙语' },
+    { code: 'it', name: 'Italian', nativeName: '意大利语' },
+    { code: 'ar', name: 'Arabic', nativeName: '阿拉伯语' },
+    { code: 'th', name: 'Thai', nativeName: '泰语' },
+    { code: 'vi', name: 'Vietnamese', nativeName: '越南语' },
+    { code: 'id', name: 'Indonesian', nativeName: '印尼语' },
+    { code: 'hi', name: 'Hindi', nativeName: '印地语' },
+    { code: 'tr', name: 'Turkish', nativeName: '土耳其语' },
+    { code: 'nl', name: 'Dutch', nativeName: '荷兰语' },
+    { code: 'pl', name: 'Polish', nativeName: '波兰语' },
+    { code: 'sv', name: 'Swedish', nativeName: '瑞典语' },
+    { code: 'da', name: 'Danish', nativeName: '丹麦语' },
+    { code: 'fi', name: 'Finnish', nativeName: '芬兰语' },
+    { code: 'no', name: 'Norwegian', nativeName: '挪威语' },
+    { code: 'el', name: 'Greek', nativeName: '希腊语' },
+    { code: 'he', name: 'Hebrew', nativeName: '希伯来语' },
+    { code: 'uk', name: 'Ukrainian', nativeName: '乌克兰语' },
+    { code: 'cs', name: 'Czech', nativeName: '捷克语' },
+    { code: 'ro', name: 'Romanian', nativeName: '罗马尼亚语' },
+    { code: 'hu', name: 'Hungarian', nativeName: '匈牙利语' },
+    { code: 'ms', name: 'Malay', nativeName: '马来语' },
+    { code: 'fil', name: 'Filipino', nativeName: '菲律宾语' }
+];
+
+// 获取语言显示名称的辅助函数
+function getLanguageName(code, useNative = false) {
+    const lang = LANGUAGE_OPTIONS.find(l => l.code === code);
+    if (!lang) return code;
+    return useNative ? lang.nativeName : lang.name;
+}
+
         const GRADIENTS = {
             gradient1: 'linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%)',
             gradient2: 'linear-gradient(135deg, #1a1520 0%, #0d1a15 100%)',
@@ -3719,8 +4348,15 @@
                     if (!c.bubbleColors) c.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
                     if (c.glassBorder === undefined) c.glassBorder = false;
                     if (c.glassBorderWidth === undefined) c.glassBorderWidth = 1;
-                });
-
+    // 新增：双语设置兼容性处理
+    if (!c.bilingualSettings) {
+        c.bilingualSettings = {
+            enabled: false,
+            nativeLanguage: 'en',
+            translationLanguage: 'zh'
+        };
+    }  // ✅ 添加这个闭合大括号
+});
                 loadSettingsUI();
                 if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
                 App.dataLoaded = true;
@@ -4599,6 +5235,11 @@ function clearCallDecisionLog() {
                 systemPrompt: '', userNick: '', messages: [], worldbookIds: [], avatarImage: null, userAvatar: null,
                 chatWallpaper: null, showAvatar: true, avatarShape: 'circle', showBorder: false, borderColor: '#ffffff',
                 customCss: '', timestampPosition: 'default', cssPresetId: null,
+                bilingualSettings: {
+        enabled: false,
+        nativeLanguage: 'en',
+        translationLanguage: 'zh'
+    },
                 bubbleStyle: 'none', bubbleColors: { ...DEFAULT_BUBBLE_COLORS }, glassBorder: false, glassBorderWidth: 1
             };
             App.characters.push(char);
@@ -5480,8 +6121,129 @@ Important notes:
             // Worldbook multi-select
             renderWorldbookMultiSelect(char);
 
+// 初始化双语设置
+initBilingualSettings(char);
+
             document.getElementById('characterSettingsPage').classList.add('active');
         }
+
+// 初始化双语设置UI
+function initBilingualSettings(char) {
+    // 确保角色有双语设置字段
+    if (!char.bilingualSettings) {
+        char.bilingualSettings = {
+            enabled: false,
+            nativeLanguage: 'en',
+            translationLanguage: 'zh'
+        };
+    }
+
+    // 设置toggle状态
+    const toggle = document.getElementById('bilingualToggle');
+    toggle.classList.toggle('active', char.bilingualSettings.enabled);
+
+    // 显示/隐藏设置容器
+    const container = document.getElementById('bilingualSettingsContainer');
+    container.classList.toggle('active', char.bilingualSettings.enabled);
+
+    // 填充语言选择器
+    const nativeSelect = document.getElementById('nativeLanguageSelect');
+    const translationSelect = document.getElementById('translationLanguageSelect');
+
+    // 生成语言选项HTML
+    const optionsHtml = LANGUAGE_OPTIONS.map(lang =>
+        `<option value="${lang.code}">${lang.name} (${lang.nativeName})</option>`
+    ).join('');
+
+    nativeSelect.innerHTML = optionsHtml;
+    translationSelect.innerHTML = optionsHtml;
+
+    // 设置当前选中的语言
+    nativeSelect.value = char.bilingualSettings.nativeLanguage || 'en';
+    translationSelect.value = char.bilingualSettings.translationLanguage || 'zh';
+
+    // 更新预览
+    updateBilingualPreview();
+}
+
+// 切换双语模式
+function toggleBilingualMode() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+
+    if (!char.bilingualSettings) {
+        char.bilingualSettings = {
+            enabled: false,
+            nativeLanguage: 'en',
+            translationLanguage: 'zh'
+        };
+    }
+
+    const toggle = document.getElementById('bilingualToggle');
+    toggle.classList.toggle('active');
+    char.bilingualSettings.enabled = toggle.classList.contains('active');
+
+    const container = document.getElementById('bilingualSettingsContainer');
+    container.classList.toggle('active', char.bilingualSettings.enabled);
+}
+
+// 更新双语预览
+function updateBilingualPreview() {
+    const nativeLang = document.getElementById('nativeLanguageSelect').value;
+    const translationLang = document.getElementById('translationLanguageSelect').value;
+
+    // 预设的示例文本
+    const examples = {
+        'en': { native: '"Hello, how are you today?"', translations: {
+            'zh': '"你好，你今天怎么样？"',
+            'ja': '"こんにちは、今日の調子はどうですか？"',
+            'ko': '"안녕, 오늘 어때?"',
+            'fr': '"Bonjour, comment allez-vous aujourd\'hui?"',
+            'de': '"Hallo, wie geht es dir heute?"',
+            'es': '"Hola, ¿cómo estás hoy?"',
+            'ru': '"Привет, как ты сегодня?"'
+        }},
+        'zh': { native: '"你好，今天过得怎么样？"', translations: {
+            'en': '"Hello, how was your day?"',
+            'ja': '"こんにちは、今日はどうでしたか？"',
+            'ko': '"안녕, 오늘 어땠어?"'
+        }},
+        'ja': { native: '"こんにちは、元気ですか？"', translations: {
+            'en': '"Hello, how are you?"',
+            'zh': '"你好，你好吗？"',
+            'ko': '"안녕, 잘 지내?"'
+        }},
+        'ko': { native: '"안녕, 잘 지내?"', translations: {
+            'en': '"Hey, how are you?"',
+            'zh': '"嗨，最近怎么样？"',
+            'ja': '"やあ、元気？"'
+        }},
+        'fr': { native: '"Bonjour, comment ça va?"', translations: {
+            'en': '"Hello, how are you?"',
+            'zh': '"你好，你好吗？"'
+        }},
+        'de': { native: '"Hallo, wie geht es dir?"', translations: {
+            'en': '"Hello, how are you?"',
+            'zh': '"你好，你好吗？"'
+        }},
+        'es': { native: '"Hola, ¿qué tal?"', translations: {
+            'en': '"Hello, how are you?"',
+            'zh': '"你好，最近怎么样？"'
+        }},
+        'ru': { native: '"Привет, как дела?"', translations: {
+            'en': '"Hi, how are you?"',
+            'zh': '"嗨，最近好吗？"'
+        }}
+    };
+
+    // 获取示例文本
+    const langData = examples[nativeLang] || examples['en'];
+    const nativeText = langData.native;
+    const translationText = langData.translations?.[translationLang] || `[${getLanguageName(translationLang)} translation]`;
+
+    document.getElementById('bilingualPreviewNative').textContent = nativeText;
+    document.getElementById('bilingualPreviewTranslation').textContent = translationText;
+}
 
         function updateCharCounter() {
             const val = document.getElementById('charGreeting').value;
@@ -5544,6 +6306,14 @@ Important notes:
             char.avatarShape = document.querySelector('#avatarShapeOptions .shape-option.selected')?.dataset.shape || 'circle';
             char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
             char.borderColor = document.getElementById('borderColorPicker').value;
+
+// 保存双语设置
+if (!char.bilingualSettings) {
+    char.bilingualSettings = { enabled: false, nativeLanguage: 'en', translationLanguage: 'zh' };
+}
+char.bilingualSettings.enabled = document.getElementById('bilingualToggle').classList.contains('active');
+char.bilingualSettings.nativeLanguage = document.getElementById('nativeLanguageSelect').value;
+char.bilingualSettings.translationLanguage = document.getElementById('translationLanguageSelect').value;
 
             document.getElementById('chatTitle').textContent = char.nickname || char.name;
 
@@ -6014,7 +6784,8 @@ Important notes:
     duration: 0,
     currentRecordId: null,
     currentSummary: null,
-    charId: null  // 新增：保存当前通话的角色ID，解决离开聊天页面后的操作问题
+    charId: null,
+    focusedMsgIndex: null  // 新增：用户点击选中的消息索引
 };
 
         // 初始化语音通话记录数组（存储在角色数据中）
@@ -6173,7 +6944,7 @@ Reply with ONLY one word: ACCEPT or REJECT`
                 model: App.settings.modelName,
                 messages,
                 temperature: App.settings.temperature,
-                max_tokens: 1000  // 增大token数量，确保有足够空间
+                max_tokens: 32000  // 增大token数量，确保有足够空间
             })
         });
 
@@ -6333,15 +7104,16 @@ async function handleCallRejected(char) {
 
         // 开始语音通话
         async function startActiveVoiceCall(char) {
-            VoiceCallState.isWaiting = false;
-            VoiceCallState.isInCall = true;
-            VoiceCallState.duration = 0;
-            VoiceCallState.currentSession = {
-                id: 'call-' + Date.now(),
-                charId: char.id,
-                startTime: Date.now(),
-                messages: []
-            };
+    VoiceCallState.isWaiting = false;
+    VoiceCallState.isInCall = true;
+    VoiceCallState.duration = 0;
+    VoiceCallState.focusedMsgIndex = null;  // 新增：重置选中状态
+    VoiceCallState.currentSession = {
+        id: 'call-' + Date.now(),
+        charId: char.id,
+        startTime: Date.now(),
+        messages: []
+    };
 
             // 隐藏等待界面
             document.getElementById('voiceCallWaitingOverlay').classList.remove('active');
@@ -6478,94 +7250,150 @@ async function cancelVoiceCall() {
             };
 
             VoiceCallState.currentSession.messages.push(msg);
-            input.value = '';
-            input.style.height = 'auto';
+input.value = '';
+input.style.height = 'auto';
 
-            renderVoiceCallMessages();
+VoiceCallState.focusedMsgIndex = VoiceCallState.currentSession.messages.length - 1;
+renderVoiceCallMessages(true);  // 用户发送时滚动到底部
         }
 
-        // 渲染语音通话消息
-        function renderVoiceCallMessages() {
-            const container = document.getElementById('voiceCallMessages');
-            const messages = VoiceCallState.currentSession?.messages || [];
-            
-            container.innerHTML = messages.map((msg, idx) => {
-                const isUser = msg.sender === 'user';
-                const isSound = msg.type === 'sound';
-                const isFocused = idx === messages.length - 1;
-                
-                let classes = 'voice-call-message-item';
-                if (isUser) classes += ' user-msg';
-                if (isSound) classes += ' sound-msg';
-                if (isFocused) classes += ' focused';
-                else if (idx < messages.length - 3) classes += ' dimmed';
+        // 渲染语音通话消息（支持点击选中）
+// scrollToBottom: true=滚动到底部, false=保持当前位置
+function renderVoiceCallMessages(scrollToBottom = false) {
+    const container = document.getElementById('voiceCallMessages');
+    const messages = VoiceCallState.currentSession?.messages || [];
+    const char = App.characters.find(c => c.id === VoiceCallState.charId);
+    const isBilingual = char?.bilingualSettings?.enabled;
+    const translationLang = char?.bilingualSettings?.translationLanguage || 'zh';
+    const translationLangName = getLanguageName(translationLang, true);
 
-                return `<div class="${classes}">
-                    <div class="voice-call-message-content">${escapeHtml(msg.content)}</div>
-                    <div class="voice-call-focus-indicator"></div>
-                </div>`;
-            }).join('');
+    // 保存当前滚动位置
+    const previousScrollTop = container.scrollTop;
 
-            container.scrollTop = container.scrollHeight;
+    // 如果没有手动选中任何消息，默认选中最新的消息
+    if (VoiceCallState.focusedMsgIndex === null && messages.length > 0) {
+        VoiceCallState.focusedMsgIndex = messages.length - 1;
+    }
+    // 确保索引在有效范围内
+    if (VoiceCallState.focusedMsgIndex >= messages.length) {
+        VoiceCallState.focusedMsgIndex = messages.length - 1;
+    }
+
+    container.innerHTML = messages.map((msg, idx) => {
+        const isUser = msg.sender === 'user';
+        const isSound = msg.type === 'sound';
+        const isFocused = idx === VoiceCallState.focusedMsgIndex;
+
+        let classes = 'voice-call-message-item';
+        if (isUser) classes += ' user-msg';
+        if (isSound) classes += ' sound-msg';
+        if (isFocused) classes += ' focused';
+
+        // 翻译内容HTML
+        let translationHtml = '';
+        if (isBilingual && msg.translation && !isUser) {
+            translationHtml = `
+                <div class="voice-call-translation">
+                    <div class="voice-call-translation-label">
+                        <svg viewBox="0 0 24 24"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+                        ${translationLangName}
+                    </div>
+                    <div class="voice-call-translation-text">${escapeHtml(msg.translation)}</div>
+                </div>
+            `;
         }
+
+        return `<div class="${classes}" onclick="selectVoiceCallMessage(${idx})">
+            <div class="voice-call-message-content">${escapeHtml(msg.content)}</div>
+            ${translationHtml}
+            <div class="voice-call-focus-indicator"></div>
+        </div>`;
+    }).join('');
+
+    // 根据参数决定是否滚动
+    if (scrollToBottom) {
+        container.scrollTop = container.scrollHeight;
+    } else {
+        // 恢复之前的滚动位置
+        container.scrollTop = previousScrollTop;
+    }
+}
+
+// 点击选中语音通话消息（不滚动）
+function selectVoiceCallMessage(index) {
+    VoiceCallState.focusedMsgIndex = index;
+    renderVoiceCallMessages(false);  // 传入false表示不滚动
+}
 
         // 触发AI语音通话回复
-        async function triggerVoiceCallAIReply() {
-            const char = App.characters.find(c => c.id === VoiceCallState.charId);  // 【修复】使用VoiceCallState.charId
-            if (!char || !VoiceCallState.isInCall) return;
+async function triggerVoiceCallAIReply() {
+    const char = App.characters.find(c => c.id === VoiceCallState.charId);
+    if (!char || !VoiceCallState.isInCall) return;
 
-            if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
-                showToast('API not configured', 'error');
+    if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
+        showToast('API not configured', 'error');
+        return;
+    }
+
+    try {
+        // 根据双语设置选择不同的系统提示词
+        const isBilingual = char.bilingualSettings?.enabled;
+        const systemPrompt = isBilingual
+            ? buildBilingualVoiceCallSystemPrompt(char)
+            : buildVoiceCallSystemPrompt(char);
+
+        const messages = buildVoiceCallAPIMessages(char, systemPrompt);
+
+        const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${App.settings.apiKey}` },
+            body: JSON.stringify({
+                model: App.settings.modelName,
+                messages,
+                temperature: App.settings.temperature,
+                max_tokens: App.settings.maxTokens
+            })
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const responseText = data.choices?.[0]?.message?.content || '';
+
+        if (!VoiceCallState.isInCall) return;
+
+        // 使用支持双语的解析函数
+        const parsed = parseVoiceCallResponse(responseText, isBilingual);
+
+        for (const item of parsed) {
+            if (item.type === 'hangup') {
+                await endVoiceCall(true);
                 return;
             }
 
-            try {
-                const systemPrompt = buildVoiceCallSystemPrompt(char);
-                const messages = buildVoiceCallAPIMessages(char, systemPrompt);
+            const msgData = {
+                sender: 'char',
+                type: item.type,
+                content: item.content,
+                timestamp: Date.now()
+            };
 
-                const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${App.settings.apiKey}` },
-                    body: JSON.stringify({
-                        model: App.settings.modelName,
-                        messages,
-                        temperature: App.settings.temperature,
-                        max_tokens: App.settings.maxTokens
-                    })
-                });
-
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                const responseText = data.choices?.[0]?.message?.content || '';
-
-                if (!VoiceCallState.isInCall) return;
-
-                // 解析响应
-                const parsed = parseVoiceCallResponse(responseText);
-                
-                for (const item of parsed) {
-                    if (item.type === 'hangup') {
-                        // AI挂断电话
-                        await endVoiceCall(true);
-                        return;
-                    }
-                    
-                    VoiceCallState.currentSession.messages.push({
-                        sender: 'char',
-                        type: item.type,
-                        content: item.content,
-                        timestamp: Date.now()
-                    });
-                    
-                    await new Promise(r => setTimeout(r, 300));
-                    renderVoiceCallMessages();
-                }
-
-            } catch (e) {
-                console.error('Voice call AI error:', e);
-                showToast('AI reply failed', 'error');
+            // 如果是双语模式，添加翻译内容
+            if (isBilingual && item.translation) {
+                msgData.translation = item.translation;
             }
+
+            VoiceCallState.currentSession.messages.push(msgData);
+VoiceCallState.focusedMsgIndex = VoiceCallState.currentSession.messages.length - 1;
+
+await new Promise(r => setTimeout(r, 300));
+renderVoiceCallMessages(true);  // 新消息时滚动到底部
         }
+
+    } catch (e) {
+        console.error('Voice call AI error:', e);
+        showToast('AI reply failed', 'error');
+    }
+}
 
         // 构建语音通话系统提示词
         function buildVoiceCallSystemPrompt(char) {
@@ -6618,84 +7446,182 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
             return prompt;
         }
 
+// 构建双语模式下的语音通话系统提示词
+function buildBilingualVoiceCallSystemPrompt(char) {
+    const settings = char.bilingualSettings || { nativeLanguage: 'en', translationLanguage: 'zh' };
+    const nativeLangName = getLanguageName(settings.nativeLanguage);
+    const translationLangName = getLanguageName(settings.translationLanguage);
+    const nativeLangNative = getLanguageName(settings.nativeLanguage, true);
+    const translationLangNative = getLanguageName(settings.translationLanguage, true);
+
+    let prompt = `You are ${char.name}. ${char.description || ''}
+
+[VOICE CALL IN PROGRESS - HIGHEST PRIORITY]
+You are currently in a [REAL-TIME] voice call with the user. This is real-time voice communication, not text messaging.
+
+[BILINGUAL MODE - ACTIVE]
+You are a native ${nativeLangName} speaker. During this voice call:
+- You MUST speak in ${nativeLangName} as your primary language
+- You MUST provide a ${translationLangName} translation for EVERY message
+
+[RESPONSE FORMAT - MANDATORY JSON]
+You [MUST] respond using ONLY the following JSON format, one JSON object per line:
+
+For speech (what you say out loud):
+{"type":"speech","content":"[${nativeLangName} text here]","translation":"[${translationLangName} translation here]"}
+
+For sound effects (background sounds/actions):
+{"type":"sound","content":"[${nativeLangName} description]","translation":"[${translationLangName} translation]"}
+
+For hanging up:
+{"type":"hangup"}
+
+[EXAMPLES]
+Example 1 - Speech:
+{"type":"speech","content":"Hey! So glad you called. How are you?","translation":"嘿！很高兴你打来电话。你好吗？"}
+
+Example 2 - Sound:
+{"type":"sound","content":"*rustling sounds as she adjusts position*","translation":"*她调整姿势时发出的沙沙声*"}
+
+Example 3 - Multiple messages:
+{"type":"speech","content":"Hello? Can you hear me?","translation":"喂？你能听到我吗？"}
+{"type":"sound","content":"*faint music playing in the background*","translation":"*背景中隐约传来音乐声*"}
+{"type":"speech","content":"Sorry, let me turn this down.","translation":"抱歉，让我把这个调小一点。"}
+
+[CRITICAL RULES]
+1. EVERY "speech" and "sound" message MUST include BOTH "content" AND "translation" fields
+2. The "content" field is in ${nativeLangName} (${nativeLangNative})
+3. The "translation" field is in ${translationLangName} (${translationLangNative})
+4. Translations must be accurate and natural, not robotic
+5. Sound descriptions should also be translated naturally
+6. "speech" = actual spoken words (most common)
+7. "sound" = environmental sounds/actions (use sparingly, ~1 in every 4-8 responses)
+8. "hangup" = only use when YOU want to end the call
+9. Multiple messages per response are allowed (one JSON per line)
+10. Stay completely in character
+11. [DO NOT] include any text outside of JSON format
+
+[TRANSLATION QUALITY]
+- Translations should capture the tone, emotion, and nuance of the original
+- Slang and idioms should be adapted naturally, not literally translated
+- Preserve the personality and speaking style in both languages
+- For sound descriptions, use culturally appropriate onomatopoeia
+
+[CALL BEHAVIOR]
+- Respond naturally to the user's speech
+- Message length should simulate natural phone conversation
+- You may hang up only when: conversation naturally ends, you have urgent matters, or your character personality dictates it
+- Do NOT abuse the hangup function
+
+${char.scenario ? `\n[Current Scenario]\n${char.scenario}` : ''}
+${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`;
+
+    return prompt;
+}
+
         // 构建语音通话API消息
-        function buildVoiceCallAPIMessages(char, systemPrompt) {
-            const messages = [{ role: 'system', content: systemPrompt }];
-            
-            // 添加短信对话作为上下文 - 使用设置中的消息数量
-const maxMsgs = App.settings.maxContextMessages || 200;
-const recentTexts = char.messages.slice(-maxMsgs);
-            if (recentTexts.length > 0) {
-                let textContext = '[Recent text message context before this call]\n';
-                recentTexts.forEach(m => {
-                    textContext += `${m.sender === 'user' ? 'User' : char.name}: ${m.content || ''}\n`;
-                });
-                messages.push({ role: 'system', content: textContext });
+function buildVoiceCallAPIMessages(char, systemPrompt) {
+    const messages = [{ role: 'system', content: systemPrompt }];
+    const isBilingual = char.bilingualSettings?.enabled;
+
+    // 添加短信对话作为上下文
+    const maxMsgs = App.settings.maxContextMessages || 200;
+    const recentTexts = char.messages.slice(-maxMsgs);
+    if (recentTexts.length > 0) {
+        let textContext = '[Recent text message context before this call]\n';
+        recentTexts.forEach(m => {
+            if (m.type?.startsWith('voice-call-')) return;
+            textContext += `${m.sender === 'user' ? 'User' : char.name}: ${m.content || ''}\n`;
+        });
+        messages.push({ role: 'system', content: textContext });
+    }
+
+    // 添加当前通话的对话
+    const callMessages = VoiceCallState.currentSession?.messages || [];
+    callMessages.forEach(msg => {
+        if (msg.sender === 'user') {
+            messages.push({ role: 'user', content: `[User speaks]: ${msg.content}` });
+        } else {
+            // 根据是否是双语模式构建不同的格式
+            let json;
+            if (isBilingual && msg.translation) {
+                json = msg.type === 'sound'
+                    ? `{"type":"sound","content":"${msg.content}","translation":"${msg.translation}"}`
+                    : `{"type":"speech","content":"${msg.content}","translation":"${msg.translation}"}`;
+            } else {
+                json = msg.type === 'sound'
+                    ? `{"type":"sound","content":"${msg.content}"}`
+                    : `{"type":"speech","content":"${msg.content}"}`;
             }
-
-            // 添加当前通话的对话
-            const callMessages = VoiceCallState.currentSession?.messages || [];
-            callMessages.forEach(msg => {
-                if (msg.sender === 'user') {
-                    messages.push({ role: 'user', content: `[User speaks]: ${msg.content}` });
-                } else {
-                    const json = msg.type === 'sound' 
-                        ? `{"type":"sound","content":"${msg.content}"}`
-                        : `{"type":"speech","content":"${msg.content}"}`;
-                    messages.push({ role: 'assistant', content: json });
-                }
-            });
-
-            return messages;
+            messages.push({ role: 'assistant', content: json });
         }
+    });
 
-        // 解析语音通话AI响应
-        function parseVoiceCallResponse(responseText) {
-            const results = [];
-            const lines = responseText.split('\n').filter(l => l.trim());
+    return messages;
+}
 
-            for (const line of lines) {
-                try {
-                    // 尝试解析JSON
-                    const trimmed = line.trim();
-                    if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
-                        const parsed = JSON.parse(trimmed);
-                        if (parsed.type && (parsed.content || parsed.type === 'hangup')) {
-                            results.push({
-                                type: parsed.type,
-                                content: parsed.content || ''
-                            });
-                        }
-                    }
-                } catch {
-                    // 尝试提取JSON
-                    const jsonMatch = line.match(/\{[^}]+\}/g);
-                    if (jsonMatch) {
-                        for (const json of jsonMatch) {
-                            try {
-                                const parsed = JSON.parse(json);
-                                if (parsed.type && (parsed.content || parsed.type === 'hangup')) {
-                                    results.push({
-                                        type: parsed.type,
-                                        content: parsed.content || ''
-                                    });
-                                }
-                            } catch {}
-                        }
+        // 解析语音通话AI响应（支持双语）
+function parseVoiceCallResponse(responseText, isBilingual = false) {
+    const results = [];
+    const lines = responseText.split('\n').filter(l => l.trim());
+
+    for (const line of lines) {
+        try {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+                const parsed = JSON.parse(trimmed);
+                if (parsed.type) {
+                    if (parsed.type === 'hangup') {
+                        results.push({ type: 'hangup', content: '', translation: '' });
+                    } else if (parsed.content) {
+                        results.push({
+                            type: parsed.type,
+                            content: parsed.content || '',
+                            translation: parsed.translation || ''
+                        });
                     }
                 }
             }
-
-            // 如果没有解析出任何内容，将整个响应作为speech
-            if (results.length === 0 && responseText.trim()) {
-                results.push({
-                    type: 'speech',
-                    content: responseText.trim()
-                });
+        } catch {
+            // 尝试提取所有JSON对象
+            const jsonMatches = line.match(/\{[^}]+\}/g);
+            if (jsonMatches) {
+                for (const json of jsonMatches) {
+                    try {
+                        const parsed = JSON.parse(json);
+                        if (parsed.type) {
+                            if (parsed.type === 'hangup') {
+                                results.push({ type: 'hangup', content: '', translation: '' });
+                            } else if (parsed.content) {
+                                results.push({
+                                    type: parsed.type,
+                                    content: parsed.content || '',
+                                    translation: parsed.translation || ''
+                                });
+                            }
+                        }
+                    } catch {}
+                }
             }
-
-            return results;
         }
+    }
+
+    // 如果没有解析出任何内容，将整个响应作为speech
+    if (results.length === 0 && responseText.trim()) {
+        // 尝试智能提取内容
+        const cleanText = responseText.trim()
+            .replace(/^["']|["']$/g, '')
+            .replace(/^\*|\*$/g, '');
+
+        results.push({
+            type: 'speech',
+            content: cleanText,
+            translation: ''
+        });
+    }
+
+    return results;
+}
 
         // 结束语音通话
 async function endVoiceCall(aiInitiated = false) {
@@ -6862,13 +7788,18 @@ function renderVoiceCallRecordsList() {
     container.innerHTML = recordsHtml + '<div style="height:20px"></div>';
 }
 
-        // 打开语音通话详情
+        // 打开语音通话详情（支持双语）
 function openVoiceCallDetail(recordId) {
     const char = App.characters.find(c => c.id === App.currentCharId);
     const record = char?.voiceCallRecords?.find(r => r.id === recordId);
     if (!record) return;
 
     VoiceCallState.currentRecordId = recordId;
+
+    // 检查是否有双语内容
+    const hasBilingual = record.messages.some(m => m.translation);
+    const translationLang = char?.bilingualSettings?.translationLanguage || 'zh';
+    const translationLangName = getLanguageName(translationLang, true);
 
     // 渲染详情内容
     const content = document.getElementById('voiceCallDetailContent');
@@ -6879,9 +7810,21 @@ function openVoiceCallDetail(recordId) {
         if (isUser) classes += ' user';
         if (isSound) classes += ' sound';
 
+        // 翻译内容HTML
+        let translationHtml = '';
+        if (hasBilingual && msg.translation && !isUser) {
+            translationHtml = `
+                <div class="voice-call-detail-translation">
+                    <div class="voice-call-detail-translation-label">${translationLangName}</div>
+                    <div class="voice-call-detail-translation-text">${escapeHtml(msg.translation)}</div>
+                </div>
+            `;
+        }
+
         return `<div class="${classes}">
             <div class="voice-call-detail-sender">${isUser ? 'You' : (char.nickname || char.name)}</div>
             <div class="voice-call-detail-text">${escapeHtml(msg.content)}</div>
+            ${translationHtml}
         </div>`;
     }).join('');
 
