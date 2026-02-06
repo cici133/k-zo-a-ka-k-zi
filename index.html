@@ -3,63 +3,18 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="format-detection" content="telephone=no">
-<meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTk9JUiIsInNob3J0X25hbWUiOiJOT0lSIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBhMGEwYSIsInRoZW1lX2NvbG9yIjoiIzBhMGEwYSIsInN0YXJ0X3VybCI6Ii4vIn0=">
     <meta name="apple-mobile-web-app-title" content="NOIR">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0a0a0a">
     <title>NOIR · Premium SMS v10</title>
     <style id="globalFontStyle"></style>
     <style id="globalFontSizeStyle"></style>
     <style id="bubbleStyleSheet"></style>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap');
-
-/* iOS Standalone (添加到主屏幕) 模式的全屏修复 */
-@supports (padding-top: env(safe-area-inset-top)) {
-    html, body {
-        /* 确保背景色延伸到安全区域 */
-        background: #0a0a0a;
-    }
-
-    /* 让内容可以延伸到状态栏区域 */
-    body.ios-standalone {
-        padding: 0;
-        margin: 0;
-    }
-
-    body.ios-standalone #wallpaperLayer {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        height: 100dvh;
-        height: -webkit-fill-available;
-    }
-
-    body.ios-standalone .phone-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        height: 100dvh;
-        height: -webkit-fill-available;
-    }
-}
-
-/* 使用新的动态视口单位（如果浏览器支持） */
-@supports (height: 100dvh) {
-    #wallpaperLayer,
-    .phone-container {
-        height: 100dvh;
-    }
-}
 
         :root {
             --bg-primary: #0a0a0a;
@@ -87,8 +42,6 @@
             --blur-light: 15px;
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
-            --safe-left: env(safe-area-inset-left, 0px);
-            --safe-right: env(safe-area-inset-right, 0px);
             --font-serif: 'Cormorant Garamond', 'Noto Serif SC', Georgia, serif;
             --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
             --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -96,77 +49,40 @@
             --font-scale: 1;
         }
 
-        * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html { height: 100%; height: -webkit-fill-available; }
+        body {
+            height: 100%; min-height: 100vh; min-height: -webkit-fill-available;
+            overflow: hidden; font-family: var(--font-sans);
+            background: var(--bg-primary); color: var(--text-primary);
+            background-color: transparent;
+            overscroll-behavior: none; position: fixed; width: 100%; top: 0; left: 0;
+            letter-spacing: 0.02em; line-height: 1.5;
+            font-size: calc(14px * var(--font-scale));
+        }
+
+        #wallpaperLayer {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    z-index: -1; /* 改为 -1，确保它在最底层且铺满全屏 */
+    background: linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%);
 }
 
-html {
-    height: 100%;
-    height: 100vh;
-    height: -webkit-fill-available;
-    width: 100%;
-    overflow: hidden;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    -webkit-text-size-adjust: 100%;
-    background: #0a0a0a;
-}
-
-body {
-    height: 100%;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    width: 100%;
-    overflow: hidden;
-    font-family: var(--font-sans);
-    background: #0a0a0a;
-    color: var(--text-primary);
-    overscroll-behavior: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: 0;
-    padding: 0;
-    letter-spacing: 0.02em;
-    line-height: 1.5;
-    font-size: calc(14px * var(--font-scale));
-}
-
-        /* 使用JavaScript计算的真实视口高度 */
-#wallpaperLayer {
-    height: 100vh;
-    height: var(--real-vh, 100vh);
-}
-
-.phone-container {
-    height: 100vh;
-    height: var(--real-vh, 100vh);
-}
+        .phone-container {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%; margin: 0; overflow: hidden; z-index: 1;
+        }
 
         .status-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: calc(28px + env(safe-area-inset-top, 0px));
-    padding-top: env(safe-area-inset-top, 0px);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-left: max(20px, env(safe-area-inset-left, 0px));
-    padding-right: max(20px, env(safe-area-inset-right, 0px));
-    z-index: 1000;
-    background: transparent;
-    box-sizing: border-box;
-}
+            position: absolute; top: 0; left: 0; right: 0;
+            height: calc(28px + var(--safe-top)); padding-top: var(--safe-top);
+            display: flex; justify-content: space-between; align-items: center;
+            padding-left: 20px; padding-right: 20px; z-index: 1000;
+            background: transparent;
+        }
         .status-bar.hidden { display: none !important; }
         .status-bar-time {
             font-size: calc(13px * var(--font-scale)); font-weight: 500; color: var(--text-secondary);
@@ -176,21 +92,13 @@ body {
         .status-bar-icons svg { width: 14px; height: 14px; fill: var(--text-tertiary); }
 
         .home-screen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding-top: calc(60px + env(safe-area-inset-top, 0px));
-    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
-    padding-left: 24px;
-    padding-right: 24px;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    z-index: 1;
-    box-sizing: border-box;
-}
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            padding-top: calc(60px + var(--safe-top));
+            padding-bottom: calc(100px + var(--safe-bottom));
+            padding-left: 24px; padding-right: 24px;
+            display: flex; flex-direction: column;
+            overflow-y: auto; z-index: 1;
+        }
         .home-screen.no-statusbar { padding-top: calc(40px + var(--safe-top)); }
 
         .home-header { margin-bottom: 40px; text-align: center; }
@@ -279,21 +187,15 @@ body {
         }
 
         .nav-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: calc(12px + env(safe-area-inset-top, 0px));
-    padding-bottom: 16px;
-    padding-left: max(16px, env(safe-area-inset-left, 0px));
-    padding-right: max(16px, env(safe-area-inset-right, 0px));
-    background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 70%, transparent 100%);
-    backdrop-filter: blur(var(--blur-medium));
-    -webkit-backdrop-filter: blur(var(--blur-medium));
-    flex-shrink: 0;
-    min-height: calc(56px + env(safe-area-inset-top, 0px));
-    border: none;
-    box-sizing: border-box;
-}
+            display: flex; align-items: center; justify-content: space-between;
+            padding-top: calc(12px + var(--safe-top));
+            padding-bottom: 16px; padding-left: 16px; padding-right: 16px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 70%, transparent 100%);
+            backdrop-filter: blur(var(--blur-medium));
+            -webkit-backdrop-filter: blur(var(--blur-medium));
+            flex-shrink: 0; min-height: calc(56px + var(--safe-top));
+            border: none;
+        }
 
         .nav-btn {
             display: flex; align-items: center; justify-content: center;
@@ -1680,8 +1582,6 @@ body {
             opacity: 0;
             visibility: hidden;
             transition: all 0.4s ease;
-            height: 100vh;
-            height: var(--real-vh, 100vh);
         }
         .voice-call-waiting-overlay.active {
             opacity: 1;
@@ -1871,8 +1771,6 @@ body {
             visibility: hidden;
             transition: all 0.4s ease;
             overflow: hidden;
-            height: 100vh;
-            height: var(--real-vh, 100vh);
         }
         .voice-call-active-overlay.active {
             opacity: 1;
@@ -3226,7 +3124,7 @@ body {
     </style>
     <style id="customCssStyles"></style>
 </head>
-<body style="background: #0a0a0a; margin: 0; padding: 0;">
+<body>
     <div id="wallpaperLayer"></div>
 
     <div class="phone-container">
@@ -4229,69 +4127,6 @@ body {
     </audio>
 
     <script>
-// iOS全屏适配 - 完整修复
-(function() {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const isStandalone = window.navigator.standalone === true;
-
-    // 设置视口高度CSS变量
-    const setViewportHeight = () => {
-        // 使用 visualViewport 如果可用（更准确）
-        const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-        document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
-        document.documentElement.style.setProperty('--real-vh', `${vh}px`);
-        document.documentElement.style.setProperty('--app-height', `${vh}px`);
-    };
-
-    setViewportHeight();
-
-    // 监听多种事件以确保高度正确
-    window.addEventListener('resize', setViewportHeight);
-    window.addEventListener('orientationchange', () => {
-        setTimeout(setViewportHeight, 100);
-        setTimeout(setViewportHeight, 300);
-    });
-
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', setViewportHeight);
-    }
-
-    // iOS PWA 特殊处理
-    if (isIOS) {
-        // 强制背景色延伸到安全区域外
-        document.documentElement.style.background = '#0a0a0a';
-        document.body.style.background = '#0a0a0a';
-
-        // 防止橡皮筋效果
-        document.body.addEventListener('touchmove', function(e) {
-            if (e.target.closest('.chat-messages, .page-content, .voice-call-messages')) {
-                return;
-            }
-            if (document.body.scrollTop === 0 ||
-                document.body.scrollTop + window.innerHeight >= document.body.scrollHeight) {
-                // 允许正常滚动的区域
-            }
-        }, { passive: true });
-
-        // 如果是独立模式（添加到主屏幕）
-        if (isStandalone) {
-            document.body.classList.add('ios-standalone');
-
-            // 确保 wallpaper 覆盖整个屏幕
-            const wallpaper = document.getElementById('wallpaperLayer');
-            if (wallpaper) {
-                wallpaper.style.position = 'fixed';
-                wallpaper.style.top = '0';
-                wallpaper.style.left = '0';
-                wallpaper.style.right = '0';
-                wallpaper.style.bottom = '0';
-                wallpaper.style.width = '100vw';
-                wallpaper.style.height = '100vh';
-            }
-        }
-    }
-})();
-
         const DB_NAME = 'NoirAppDB';
         const DB_VERSION = 7;
         let db = null;
