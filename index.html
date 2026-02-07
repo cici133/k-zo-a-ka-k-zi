@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NOIR">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0a0a">
     <title>NOIR · Premium SMS v10</title>
     <style id="globalFontStyle"></style>
     <style id="globalFontSizeStyle"></style>
@@ -55,21 +55,15 @@
             height: 100%; min-height: 100vh; min-height: -webkit-fill-available;
             overflow: hidden; font-family: var(--font-sans);
             background: var(--bg-primary); color: var(--text-primary);
-            background-color: transparent;
             overscroll-behavior: none; position: fixed; width: 100%; top: 0; left: 0;
             letter-spacing: 0.02em; line-height: 1.5;
             font-size: calc(14px * var(--font-scale));
         }
 
         #wallpaperLayer {
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    z-index: -1; /* 改为 -1，确保它在最底层且铺满全屏 */
-    background: linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%);
-}
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            background: linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%);
+        }
 
         .phone-container {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -796,19 +790,58 @@
         .chat-input-field::placeholder { color: var(--text-muted); }
 
         .extension-panel {
-            position: absolute;
-            bottom: calc(70px + var(--safe-bottom));
-            left: 16px; right: 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 20px; padding: 0; z-index: 50;
-            opacity: 0; visibility: hidden;
-            transform: translateY(16px);
-            transition: all 0.3s ease;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
+    position: absolute;
+    bottom: calc(70px + var(--safe-bottom));
+    left: 16px; right: 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 0;
+    z-index: 50;
+    opacity: 0; visibility: hidden;
+    transform: translateY(16px);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-height: 55vh;
+    display: flex;
+    flex-direction: column;
+}
         .extension-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
+
+.extension-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
+
+/* 新增：扩展面板头部固定 */
+.ext-panel-header {
+    flex-shrink: 0;
+}
+
+/* 新增：扩展面板按钮滚动容器 */
+.ext-panel-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.ext-panel-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.ext-panel-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ext-panel-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+}
+
+.ext-panel-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
 
         .ext-panel-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -3121,6 +3154,1229 @@
     z-index: 1;
 }
 
+/* ========== 表情包功能样式 - 科幻UI风格 ========== */
+
+/* 表情包键盘面板 - 主容器 */
+.sticker-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 320px;
+    background: linear-gradient(180deg, rgba(8, 12, 18, 0.98) 0%, rgba(4, 8, 14, 0.99) 100%);
+    border-top: 1px solid rgba(80, 140, 180, 0.2);
+    z-index: 2000;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(80, 140, 180, 0.1);
+}
+.sticker-panel.active {
+    transform: translateY(0);
+}
+
+/* 表情包面板头部 */
+.sticker-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(80, 140, 180, 0.15);
+    background: rgba(10, 20, 30, 0.6);
+    flex-shrink: 0;
+    gap: 10px;
+    min-height: 52px;
+}
+
+.sticker-panel-title {
+    font-family: var(--font-sans);
+    font-size: calc(11px * var(--font-scale));
+    font-weight: 500;
+    color: rgba(100, 180, 220, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sticker-panel-title::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: linear-gradient(180deg, rgba(80, 160, 200, 0.8), rgba(40, 100, 140, 0.4));
+    border-radius: 2px;
+}
+
+.sticker-panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex: 1;
+    padding: 4px 0;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+.sticker-panel-actions::-webkit-scrollbar {
+    display: none;
+}
+
+.sticker-action-btn {
+    padding: 8px 10px;
+    background: rgba(60, 100, 140, 0.2);
+    border: 1px solid rgba(80, 140, 180, 0.3);
+    border-radius: 8px;
+    color: rgba(140, 190, 220, 0.9);
+    font-size: calc(10px * var(--font-scale));
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.sticker-action-btn:hover {
+    background: rgba(80, 130, 170, 0.3);
+    border-color: rgba(100, 160, 200, 0.45);
+    color: rgba(180, 220, 255, 0.95);
+}
+.sticker-action-btn:active {
+    transform: scale(0.95);
+    background: rgba(90, 140, 180, 0.35);
+}
+.sticker-action-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+}
+
+.sticker-close-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    background: rgba(120, 60, 70, 0.3);
+    border: 1px solid rgba(200, 100, 120, 0.4);
+    border-radius: 10px;
+    color: rgba(255, 180, 190, 0.9);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+.sticker-close-btn:hover {
+    background: rgba(150, 70, 80, 0.4);
+    border-color: rgba(220, 120, 140, 0.5);
+    color: rgba(255, 200, 210, 1);
+}
+.sticker-close-btn:active {
+    transform: scale(0.92);
+    background: rgba(180, 80, 90, 0.5);
+}
+.sticker-close-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    fill: none;
+}
+
+/* 分类标签栏 */
+.sticker-category-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 16px;
+    overflow-x: auto;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(80, 140, 180, 0.1);
+    background: rgba(5, 15, 25, 0.4);
+    scrollbar-width: none;
+}
+.sticker-category-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.sticker-category-tab {
+    padding: 8px 16px;
+    background: rgba(40, 70, 100, 0.15);
+    border: 1px solid rgba(60, 110, 150, 0.2);
+    border-radius: 20px;
+    color: rgba(120, 170, 200, 0.75);
+    font-size: calc(11px * var(--font-scale));
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.sticker-category-tab:hover {
+    background: rgba(60, 100, 140, 0.25);
+    color: rgba(160, 200, 230, 0.9);
+}
+.sticker-category-tab.active {
+    background: linear-gradient(135deg, rgba(60, 120, 160, 0.35), rgba(40, 90, 130, 0.25));
+    border-color: rgba(80, 160, 200, 0.5);
+    color: rgba(200, 230, 255, 0.95);
+    box-shadow: 0 0 12px rgba(80, 160, 200, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.sticker-category-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 2px;
+    background: rgba(80, 160, 200, 0.6);
+    border-radius: 1px;
+}
+
+/* 表情包网格区域 */
+.sticker-grid-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.sticker-item {
+    aspect-ratio: 1;
+    background: rgba(30, 50, 70, 0.25);
+    border: 1px solid rgba(60, 100, 140, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.sticker-item:hover {
+    background: rgba(50, 80, 110, 0.35);
+    border-color: rgba(80, 140, 180, 0.4);
+    transform: scale(1.05);
+}
+.sticker-item:active {
+    transform: scale(0.95);
+}
+.sticker-item img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+.sticker-item.selected {
+    border-color: rgba(200, 100, 120, 0.6);
+    background: rgba(100, 50, 60, 0.2);
+    box-shadow: 0 0 10px rgba(200, 100, 120, 0.3);
+}
+.sticker-item.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 18px;
+    height: 18px;
+    background: rgba(200, 100, 120, 0.8);
+    border-radius: 50%;
+    color: white;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 添加表情包按钮 */
+.sticker-add-btn {
+    aspect-ratio: 1;
+    background: rgba(20, 40, 60, 0.3);
+    border: 2px dashed rgba(60, 110, 150, 0.35);
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    color: rgba(100, 160, 200, 0.6);
+}
+.sticker-add-btn:hover {
+    background: rgba(40, 70, 100, 0.35);
+    border-color: rgba(80, 140, 180, 0.5);
+    color: rgba(140, 200, 240, 0.85);
+}
+.sticker-add-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+}
+.sticker-add-btn span {
+    font-size: calc(9px * var(--font-scale));
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 空状态 */
+.sticker-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 40px 20px;
+    text-align: center;
+}
+.sticker-empty-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(40, 70, 100, 0.2);
+    border: 1px solid rgba(60, 110, 150, 0.2);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+.sticker-empty-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke: rgba(80, 140, 180, 0.5);
+    stroke-width: 1.5;
+    fill: none;
+}
+.sticker-empty-title {
+    font-size: calc(14px * var(--font-scale));
+    color: rgba(140, 180, 210, 0.8);
+    margin-bottom: 8px;
+}
+.sticker-empty-desc {
+    font-size: calc(11px * var(--font-scale));
+    color: rgba(100, 140, 170, 0.6);
+}
+
+/* 管理模式底部栏 */
+.sticker-manage-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(15, 25, 35, 0.9);
+    border-top: 1px solid rgba(80, 140, 180, 0.15);
+    flex-shrink: 0;
+}
+.sticker-manage-bar.active {
+    display: flex;
+}
+
+.sticker-manage-info {
+    font-size: calc(12px * var(--font-scale));
+    color: rgba(140, 180, 210, 0.8);
+}
+
+.sticker-manage-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.sticker-manage-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: calc(11px * var(--font-scale));
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.sticker-manage-btn.select-all {
+    background: rgba(60, 100, 140, 0.2);
+    border: 1px solid rgba(80, 140, 180, 0.3);
+    color: rgba(140, 190, 220, 0.9);
+}
+.sticker-manage-btn.move {
+    background: rgba(80, 140, 80, 0.2);
+    border: 1px solid rgba(100, 180, 100, 0.3);
+    color: rgba(140, 220, 140, 0.9);
+}
+.sticker-manage-btn.delete {
+    background: rgba(140, 60, 70, 0.2);
+    border: 1px solid rgba(200, 100, 110, 0.3);
+    color: rgba(220, 140, 150, 0.9);
+}
+.sticker-manage-btn.cancel {
+    background: rgba(60, 60, 70, 0.2);
+    border: 1px solid rgba(100, 100, 110, 0.3);
+    color: rgba(160, 160, 170, 0.9);
+}
+.sticker-manage-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+}
+
+/* ========== 表情包相关弹窗 ========== */
+
+/* 添加单个表情包弹窗 */
+.sticker-upload-modal .modal {
+    max-width: 340px;
+}
+
+.sticker-preview-area {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+    background: rgba(30, 50, 70, 0.3);
+    border: 2px dashed rgba(60, 110, 150, 0.35);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+.sticker-preview-area:hover {
+    border-color: rgba(80, 140, 180, 0.5);
+    background: rgba(40, 70, 100, 0.35);
+}
+.sticker-preview-area.has-image {
+    border-style: solid;
+    border-color: rgba(80, 160, 200, 0.5);
+}
+.sticker-preview-area img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+.sticker-preview-area svg {
+    width: 36px;
+    height: 36px;
+    stroke: rgba(80, 140, 180, 0.5);
+    stroke-width: 1.5;
+    fill: none;
+}
+
+/* 批量导入弹窗 */
+.sticker-batch-modal .modal {
+    max-width: 400px;
+}
+
+.sticker-batch-textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 14px;
+    background: rgba(20, 35, 50, 0.5);
+    border: 1px solid rgba(60, 110, 150, 0.25);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: calc(12px * var(--font-scale));
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+}
+.sticker-batch-textarea:focus {
+    border-color: rgba(80, 160, 200, 0.5);
+}
+.sticker-batch-textarea::placeholder {
+    color: rgba(100, 140, 170, 0.5);
+}
+
+.sticker-batch-hint {
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(60, 100, 140, 0.1);
+    border: 1px solid rgba(60, 110, 150, 0.15);
+    border-radius: 10px;
+    font-size: calc(10px * var(--font-scale));
+    color: rgba(120, 170, 200, 0.75);
+    line-height: 1.6;
+}
+.sticker-batch-hint code {
+    background: rgba(40, 70, 100, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', monospace;
+    color: rgba(160, 200, 230, 0.9);
+}
+
+/* 分类管理弹窗 */
+.sticker-category-modal .modal {
+    max-width: 360px;
+}
+
+.sticker-category-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+.sticker-category-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: rgba(30, 50, 70, 0.25);
+    border: 1px solid rgba(60, 100, 140, 0.2);
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+.sticker-category-item:last-child {
+    margin-bottom: 0;
+}
+.sticker-category-name {
+    font-size: calc(13px * var(--font-scale));
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sticker-category-name svg {
+    width: 16px;
+    height: 16px;
+    stroke: rgba(80, 140, 180, 0.6);
+    stroke-width: 1.5;
+    fill: none;
+}
+.sticker-category-count {
+    font-size: calc(10px * var(--font-scale));
+    color: rgba(100, 150, 180, 0.6);
+    margin-left: 6px;
+}
+.sticker-category-delete-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(100, 50, 60, 0.2);
+    border: 1px solid rgba(150, 80, 90, 0.25);
+    border-radius: 6px;
+    color: rgba(200, 120, 130, 0.8);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+.sticker-category-delete-btn:hover {
+    background: rgba(140, 60, 70, 0.3);
+    color: rgba(255, 150, 160, 0.95);
+}
+.sticker-category-delete-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+.sticker-new-category-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+.sticker-new-category-row input {
+    flex: 1;
+}
+.sticker-new-category-row button {
+    padding: 0 20px;
+}
+
+/* 移动到分类弹窗 */
+.sticker-move-modal .modal {
+    max-width: 320px;
+}
+
+.sticker-move-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.sticker-move-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(30, 50, 70, 0.2);
+    border: 1px solid rgba(60, 100, 140, 0.2);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.sticker-move-item:hover {
+    background: rgba(50, 80, 110, 0.3);
+    border-color: rgba(80, 140, 180, 0.35);
+}
+.sticker-move-item:last-child {
+    margin-bottom: 0;
+}
+.sticker-move-item svg {
+    width: 18px;
+    height: 18px;
+    stroke: rgba(80, 140, 180, 0.6);
+    stroke-width: 1.5;
+    fill: none;
+}
+.sticker-move-item span {
+    font-size: calc(13px * var(--font-scale));
+    color: var(--text-primary);
+}
+
+/* ========== 聊天中的表情包消息样式 ========== */
+
+.message-sticker {
+    max-width: 140px;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    animation: msgIn 0.25s ease-out;
+}
+.message-sticker img {
+    max-width: 100%;
+    max-height: 140px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+.message-sticker .message-time {
+    margin-top: 4px;
+    text-align: center;
+}
+
+/* 角色设置中的表情包设置区域 */
+.sticker-settings-section {
+    margin-top: 12px;
+}
+
+.sticker-settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.sticker-settings-row:last-child {
+    border-bottom: none;
+}
+
+.sticker-settings-label {
+    font-size: calc(13px * var(--font-scale));
+    color: var(--text-primary);
+}
+
+.sticker-settings-value {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sticker-count-input {
+    width: 70px;
+    padding: 8px 12px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: calc(13px * var(--font-scale));
+    text-align: center;
+    outline: none;
+}
+.sticker-count-input:focus {
+    border-color: rgba(80, 160, 200, 0.5);
+}
+
+.sticker-all-btn {
+    padding: 8px 14px;
+    background: rgba(60, 100, 140, 0.2);
+    border: 1px solid rgba(80, 140, 180, 0.3);
+    border-radius: 8px;
+    color: rgba(140, 190, 220, 0.9);
+    font-size: calc(11px * var(--font-scale));
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.sticker-all-btn:hover {
+    background: rgba(80, 130, 170, 0.3);
+}
+.sticker-all-btn.active {
+    background: rgba(80, 160, 200, 0.3);
+    border-color: rgba(100, 180, 220, 0.5);
+}
+
+/* ========== 表情包功能样式 ========== */
+
+.sticker-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 320px;
+    background: linear-gradient(180deg, rgba(8, 12, 18, 0.98) 0%, rgba(4, 8, 14, 0.99) 100%);
+    border-top: 1px solid rgba(80, 140, 180, 0.2);
+    z-index: 2000;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(80, 140, 180, 0.1);
+}
+.sticker-panel.active {
+    transform: translateY(0);
+}
+
+.sticker-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(80, 140, 180, 0.15);
+    background: rgba(10, 20, 30, 0.6);
+    flex-shrink: 0;
+}
+
+.sticker-panel-title {
+    font-family: var(--font-sans);
+    font-size: calc(11px * var(--font-scale));
+    font-weight: 500;
+    color: rgba(100, 180, 220, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sticker-panel-title::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: linear-gradient(180deg, rgba(80, 160, 200, 0.8), rgba(40, 100, 140, 0.4));
+    border-radius: 2px;
+}
+
+.sticker-panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sticker-action-btn {
+    padding: 6px 12px;
+    background: rgba(60, 100, 140, 0.15);
+    border: 1px solid rgba(80, 140, 180, 0.25);
+    border-radius: 6px;
+    color: rgba(140, 190, 220, 0.85);
+    font-size: calc(10px * var(--font-scale));
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.sticker-action-btn:hover {
+    background: rgba(80, 130, 170, 0.25);
+    border-color: rgba(100, 160, 200, 0.4);
+    color: rgba(180, 220, 255, 0.95);
+}
+.sticker-action-btn:active {
+    transform: scale(0.96);
+}
+.sticker-action-btn svg {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+.sticker-close-btn {
+    width: 32px;
+    height: 32px;
+    background: rgba(80, 60, 70, 0.2);
+    border: 1px solid rgba(180, 100, 120, 0.25);
+    border-radius: 8px;
+    color: rgba(200, 150, 160, 0.8);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+.sticker-close-btn:hover {
+    background: rgba(120, 80, 90, 0.3);
+    border-color: rgba(200, 120, 140, 0.4);
+    color: rgba(255, 180, 190, 0.95);
+}
+.sticker-close-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+.sticker-category-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 16px;
+    overflow-x: auto;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(80, 140, 180, 0.1);
+    background: rgba(5, 15, 25, 0.4);
+    scrollbar-width: none;
+}
+.sticker-category-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.sticker-category-tab {
+    padding: 8px 16px;
+    background: rgba(40, 70, 100, 0.15);
+    border: 1px solid rgba(60, 110, 150, 0.2);
+    border-radius: 20px;
+    color: rgba(120, 170, 200, 0.75);
+    font-size: calc(11px * var(--font-scale));
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.sticker-category-tab:hover {
+    background: rgba(60, 100, 140, 0.25);
+    color: rgba(160, 200, 230, 0.9);
+}
+.sticker-category-tab.active {
+    background: linear-gradient(135deg, rgba(60, 120, 160, 0.35), rgba(40, 90, 130, 0.25));
+    border-color: rgba(80, 160, 200, 0.5);
+    color: rgba(200, 230, 255, 0.95);
+    box-shadow: 0 0 12px rgba(80, 160, 200, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.sticker-grid-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.sticker-item {
+    aspect-ratio: 1;
+    background: rgba(30, 50, 70, 0.25);
+    border: 1px solid rgba(60, 100, 140, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.sticker-item:hover {
+    background: rgba(50, 80, 110, 0.35);
+    border-color: rgba(80, 140, 180, 0.4);
+    transform: scale(1.05);
+}
+.sticker-item:active {
+    transform: scale(0.95);
+}
+.sticker-item img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+.sticker-item.selected {
+    border-color: rgba(200, 100, 120, 0.6);
+    background: rgba(100, 50, 60, 0.2);
+    box-shadow: 0 0 10px rgba(200, 100, 120, 0.3);
+}
+.sticker-item.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 18px;
+    height: 18px;
+    background: rgba(200, 100, 120, 0.8);
+    border-radius: 50%;
+    color: white;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sticker-add-btn {
+    aspect-ratio: 1;
+    background: rgba(20, 40, 60, 0.3);
+    border: 2px dashed rgba(60, 110, 150, 0.35);
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    color: rgba(100, 160, 200, 0.6);
+}
+.sticker-add-btn:hover {
+    background: rgba(40, 70, 100, 0.35);
+    border-color: rgba(80, 140, 180, 0.5);
+    color: rgba(140, 200, 240, 0.85);
+}
+.sticker-add-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+}
+.sticker-add-btn span {
+    font-size: calc(9px * var(--font-scale));
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sticker-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 40px 20px;
+    text-align: center;
+}
+.sticker-empty-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(40, 70, 100, 0.2);
+    border: 1px solid rgba(60, 110, 150, 0.2);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+.sticker-empty-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke: rgba(80, 140, 180, 0.5);
+    stroke-width: 1.5;
+    fill: none;
+}
+.sticker-empty-title {
+    font-size: calc(14px * var(--font-scale));
+    color: rgba(140, 180, 210, 0.8);
+    margin-bottom: 8px;
+}
+.sticker-empty-desc {
+    font-size: calc(11px * var(--font-scale));
+    color: rgba(100, 140, 170, 0.6);
+}
+
+.sticker-manage-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(15, 25, 35, 0.9);
+    border-top: 1px solid rgba(80, 140, 180, 0.15);
+    flex-shrink: 0;
+}
+.sticker-manage-bar.active {
+    display: flex;
+}
+
+.sticker-manage-info {
+    font-size: calc(12px * var(--font-scale));
+    color: rgba(140, 180, 210, 0.8);
+}
+
+.sticker-manage-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.sticker-manage-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: calc(11px * var(--font-scale));
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.sticker-manage-btn.select-all {
+    background: rgba(60, 100, 140, 0.2);
+    border: 1px solid rgba(80, 140, 180, 0.3);
+    color: rgba(140, 190, 220, 0.9);
+}
+.sticker-manage-btn.move {
+    background: rgba(80, 140, 80, 0.2);
+    border: 1px solid rgba(100, 180, 100, 0.3);
+    color: rgba(140, 220, 140, 0.9);
+}
+.sticker-manage-btn.delete {
+    background: rgba(140, 60, 70, 0.2);
+    border: 1px solid rgba(200, 100, 110, 0.3);
+    color: rgba(220, 140, 150, 0.9);
+}
+.sticker-manage-btn.cancel {
+    background: rgba(60, 60, 70, 0.2);
+    border: 1px solid rgba(100, 100, 110, 0.3);
+    color: rgba(160, 160, 170, 0.9);
+}
+.sticker-manage-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+}
+
+.sticker-preview-area {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+    background: rgba(30, 50, 70, 0.3);
+    border: 2px dashed rgba(60, 110, 150, 0.35);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+.sticker-preview-area:hover {
+    border-color: rgba(80, 140, 180, 0.5);
+    background: rgba(40, 70, 100, 0.35);
+}
+.sticker-preview-area.has-image {
+    border-style: solid;
+    border-color: rgba(80, 160, 200, 0.5);
+}
+.sticker-preview-area img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+.sticker-preview-area svg {
+    width: 36px;
+    height: 36px;
+    stroke: rgba(80, 140, 180, 0.5);
+    stroke-width: 1.5;
+    fill: none;
+}
+
+.sticker-batch-textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 14px;
+    background: rgba(20, 35, 50, 0.5);
+    border: 1px solid rgba(60, 110, 150, 0.25);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: calc(12px * var(--font-scale));
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+}
+.sticker-batch-textarea:focus {
+    border-color: rgba(80, 160, 200, 0.5);
+}
+.sticker-batch-textarea::placeholder {
+    color: rgba(100, 140, 170, 0.5);
+}
+
+.sticker-batch-hint {
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(60, 100, 140, 0.1);
+    border: 1px solid rgba(60, 110, 150, 0.15);
+    border-radius: 10px;
+    font-size: calc(10px * var(--font-scale));
+    color: rgba(120, 170, 200, 0.75);
+    line-height: 1.6;
+}
+.sticker-batch-hint code {
+    background: rgba(40, 70, 100, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', monospace;
+    color: rgba(160, 200, 230, 0.9);
+}
+
+.sticker-category-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+.sticker-category-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: rgba(30, 50, 70, 0.25);
+    border: 1px solid rgba(60, 100, 140, 0.2);
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+.sticker-category-item:last-child {
+    margin-bottom: 0;
+}
+.sticker-category-name {
+    font-size: calc(13px * var(--font-scale));
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sticker-category-name svg {
+    width: 16px;
+    height: 16px;
+    stroke: rgba(80, 140, 180, 0.6);
+    stroke-width: 1.5;
+    fill: none;
+}
+.sticker-category-count {
+    font-size: calc(10px * var(--font-scale));
+    color: rgba(100, 150, 180, 0.6);
+    margin-left: 6px;
+}
+.sticker-category-delete-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(100, 50, 60, 0.2);
+    border: 1px solid rgba(150, 80, 90, 0.25);
+    border-radius: 6px;
+    color: rgba(200, 120, 130, 0.8);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+.sticker-category-delete-btn:hover {
+    background: rgba(140, 60, 70, 0.3);
+    color: rgba(255, 150, 160, 0.95);
+}
+.sticker-category-delete-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+.sticker-new-category-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+.sticker-new-category-row input {
+    flex: 1;
+}
+.sticker-new-category-row button {
+    padding: 0 20px;
+}
+
+.sticker-move-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.sticker-move-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(30, 50, 70, 0.2);
+    border: 1px solid rgba(60, 100, 140, 0.2);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.sticker-move-item:hover {
+    background: rgba(50, 80, 110, 0.3);
+    border-color: rgba(80, 140, 180, 0.35);
+}
+.sticker-move-item:last-child {
+    margin-bottom: 0;
+}
+.sticker-move-item svg {
+    width: 18px;
+    height: 18px;
+    stroke: rgba(80, 140, 180, 0.6);
+    stroke-width: 1.5;
+    fill: none;
+}
+.sticker-move-item span {
+    font-size: calc(13px * var(--font-scale));
+    color: var(--text-primary);
+}
+
+.message-sticker {
+    max-width: 140px;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    animation: msgIn 0.25s ease-out;
+}
+.message-sticker img {
+    max-width: 100%;
+    max-height: 140px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+.message-sticker .message-time {
+    margin-top: 4px;
+    text-align: center;
+}
+
     </style>
     <style id="customCssStyles"></style>
 </head>
@@ -3394,6 +4650,9 @@
                         <span class="ext-panel-title">Actions</span>
                         <button class="ext-panel-close" onclick="toggleExtensionPanel()">✕</button>
                     </div>
+
+<div class="ext-panel-content">
+
                     <button class="ext-btn" onclick="enterSelectMode()">
                         <div class="ext-btn-icon danger"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
                         <div class="ext-btn-text"><div class="ext-btn-title">Select & Delete</div><div class="ext-btn-desc">Batch delete messages</div></div>
@@ -3422,6 +4681,11 @@
                         <div class="ext-btn-icon gold"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z" fill="none"/><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg></div>
                         <div class="ext-btn-text"><div class="ext-btn-title">Call Records</div><div class="ext-btn-desc">View voice call history</div></div>
                     </button>
+<button class="ext-btn" onclick="openStickerPanel()">
+    <div class="ext-btn-icon purple"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+    <div class="ext-btn-text"><div class="ext-btn-title">Stickers</div><div class="ext-btn-desc">Send sticker packs</div></div>
+</button>
+</div>
                 </div>
 
                 <div class="chat-input-wrapper">
@@ -3655,6 +4919,36 @@
             <div class="bilingual-preview-title">Preview</div>
             <div class="bilingual-preview-native" id="bilingualPreviewNative">"Hello, how are you today?"</div>
             <div class="bilingual-preview-translation" id="bilingualPreviewTranslation">"你好，你今天怎么样？"</div>
+        </div>
+    </div>
+</div>
+
+<p class="settings-group-title">AI Sticker Settings</p>
+<div class="settings-group" style="padding:16px">
+    <div class="action-hint">
+        <span class="action-hint-icon">😊</span>
+        <span class="action-hint-text">Configure how AI uses stickers in chat</span>
+    </div>
+
+    <div class="sticker-settings-section">
+        <div class="sticker-settings-row">
+            <span class="sticker-settings-label">Sticker Category for AI</span>
+            <select class="select-field" id="aiStickerCategory" style="width:140px" onchange="updateAIStickerSettings()">
+                <option value="all">All Stickers</option>
+            </select>
+        </div>
+
+        <div class="sticker-settings-row">
+            <span class="sticker-settings-label">Max Stickers AI Can Use</span>
+            <div class="sticker-settings-value">
+                <input type="number" class="sticker-count-input" id="aiStickerCount" value="0" min="0" placeholder="0" onchange="updateAIStickerSettings()">
+                <button class="sticker-all-btn" id="aiStickerAllBtn" onclick="setAIStickerAll()">All</button>
+            </div>
+        </div>
+
+        <div class="action-hint" style="margin-top:12px;background:rgba(60,100,140,0.1);border-color:rgba(60,110,150,0.2)">
+            <span class="action-hint-icon">💡</span>
+            <span class="action-hint-text">Set to 0 to disable AI stickers. AI will randomly pick from available stickers.</span>
         </div>
     </div>
 </div>
@@ -3981,6 +5275,132 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
+<!-- ========== 表情包功能HTML ========== -->
+
+<!-- 表情包键盘面板 -->
+<div class="sticker-panel" id="stickerPanel">
+    <div class="sticker-panel-header">
+        <div class="sticker-panel-title">Stickers</div>
+        <div class="sticker-panel-actions">
+            <button class="sticker-action-btn" onclick="openStickerUploadModal()">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add
+            </button>
+            <button class="sticker-action-btn" onclick="openStickerBatchModal()">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Batch
+            </button>
+            <button class="sticker-action-btn" onclick="openStickerCategoryModal()">
+                <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                Category
+            </button>
+            <button class="sticker-action-btn" onclick="toggleStickerManageMode()">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1"/></svg>
+                Manage
+            </button>
+        </div>
+        <button class="sticker-close-btn" onclick="closeStickerPanel()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+    </div>
+
+    <div class="sticker-category-tabs" id="stickerCategoryTabs">
+        <div class="sticker-category-tab active" data-category="all" onclick="selectStickerCategory('all')">All</div>
+    </div>
+
+    <div class="sticker-grid-container" id="stickerGridContainer">
+        <div class="sticker-grid" id="stickerGrid"></div>
+    </div>
+
+    <div class="sticker-manage-bar" id="stickerManageBar">
+        <div class="sticker-manage-info">Selected: <span id="stickerSelectedCount">0</span></div>
+        <div class="sticker-manage-actions">
+            <button class="sticker-manage-btn select-all" onclick="selectAllStickers()">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="9 11 12 14 22 4"/></svg>
+                Select All
+            </button>
+            <button class="sticker-manage-btn move" onclick="openStickerMoveModal()">
+                <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></svg>
+                Move
+            </button>
+            <button class="sticker-manage-btn delete" onclick="deleteSelectedStickers()">
+                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Delete
+            </button>
+            <button class="sticker-manage-btn cancel" onclick="toggleStickerManageMode()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 添加单个表情包弹窗 -->
+<div class="modal-overlay sticker-upload-modal" id="stickerUploadModal">
+    <div class="modal">
+        <div class="modal-title">Add Sticker</div>
+        <div class="sticker-preview-area" id="stickerPreviewArea" onclick="document.getElementById('stickerFileInput').click()">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <input type="file" id="stickerFileInput" class="file-input-hidden" accept="image/*" onchange="handleStickerFileUpload(event)">
+        <div class="input-group">
+            <label class="input-label">Sticker Description (AI will see this)</label>
+            <input type="text" class="modal-input" id="stickerDescription" placeholder="e.g., A happy dancing cat" style="margin-bottom:0">
+        </div>
+        <div class="modal-btns" style="margin-top:20px">
+            <button class="modal-btn cancel" onclick="hideModal('stickerUploadModal')">Cancel</button>
+            <button class="modal-btn confirm" onclick="saveSingleSticker()">Add</button>
+        </div>
+    </div>
+</div>
+
+<!-- 批量导入表情包弹窗 -->
+<div class="modal-overlay sticker-batch-modal" id="stickerBatchModal">
+    <div class="modal">
+        <div class="modal-title">Batch Import Stickers</div>
+        <textarea class="sticker-batch-textarea" id="stickerBatchInput" placeholder="Enter one sticker per line:
+Happy cat: https://example.com/cat.gif
+Sad dog: https://example.com/dog.png
+https://example.com/other.jpg"></textarea>
+        <div class="sticker-batch-hint">
+            <strong>Format:</strong><br>
+            <code>description: URL</code> or just <code>URL</code><br>
+            One sticker per line. If no description, filename will be used.
+        </div>
+        <div class="modal-btns" style="margin-top:20px">
+            <button class="modal-btn cancel" onclick="hideModal('stickerBatchModal')">Cancel</button>
+            <button class="modal-btn confirm" onclick="processBatchStickers()">Import</button>
+        </div>
+    </div>
+</div>
+
+<!-- 分类管理弹窗 -->
+<div class="modal-overlay sticker-category-modal" id="stickerCategoryModal">
+    <div class="modal">
+        <div class="modal-title">Manage Categories</div>
+        <div class="sticker-category-list" id="stickerCategoryList"></div>
+        <div class="sticker-new-category-row">
+            <input type="text" class="modal-input" id="newCategoryName" placeholder="New category name..." style="margin-bottom:0">
+            <button class="modal-btn confirm" onclick="createStickerCategory()">Add</button>
+        </div>
+        <div class="modal-btns" style="margin-top:20px">
+            <button class="modal-btn cancel" onclick="hideModal('stickerCategoryModal')" style="flex:1">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- 移动到分类弹窗 -->
+<div class="modal-overlay sticker-move-modal" id="stickerMoveModal">
+    <div class="modal">
+        <div class="modal-title">Move to Category</div>
+        <div class="sticker-move-list" id="stickerMoveList"></div>
+        <div class="modal-btns" style="margin-top:20px">
+            <button class="modal-btn cancel" onclick="hideModal('stickerMoveModal')" style="flex:1">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========== 表情包功能HTML结束 ========== -->
+
     <!-- 语音通话确认弹窗 -->
     <div class="voice-call-confirm-modal" id="voiceCallConfirmModal">
         <div class="voice-call-confirm-box">
@@ -4126,6 +5546,130 @@
         <source src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYNBrT2AAAAAAAAAAAAAAAAAAAAAP/7UMQAA8AAAaQAAAAgAAA0gAAABExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//tQxB4DwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU=" type="audio/mp3">
     </audio>
 
+<!-- 表情包键盘面板 -->
+<div class="sticker-panel" id="stickerPanel">
+    <div class="sticker-panel-header">
+        <div class="sticker-panel-title">Stickers</div>
+        <div class="sticker-panel-actions">
+            <button class="sticker-action-btn" onclick="openStickerBatchModal()">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Batch
+            </button>
+            <button class="sticker-action-btn" onclick="openStickerCategoryModal()">
+                <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                Category
+            </button>
+            <button class="sticker-action-btn" onclick="toggleStickerManageMode()">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1"/></svg>
+                Manage
+            </button>
+            <button class="sticker-close-btn" onclick="closeStickerPanel()">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="sticker-category-tabs" id="stickerCategoryTabs">
+        <div class="sticker-category-tab active" data-category="all" onclick="selectStickerCategory('all')">All</div>
+    </div>
+
+    <div class="sticker-grid-container" id="stickerGridContainer">
+        <div class="sticker-grid" id="stickerGrid">
+            <!-- 表情包会动态渲染在这里 -->
+        </div>
+    </div>
+
+    <div class="sticker-manage-bar" id="stickerManageBar">
+        <div class="sticker-manage-info">Selected: <span id="stickerSelectedCount">0</span></div>
+        <div class="sticker-manage-actions">
+            <button class="sticker-manage-btn select-all" onclick="selectAllStickers()">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="9 11 12 14 22 4"/></svg>
+                Select All
+            </button>
+            <button class="sticker-manage-btn move" onclick="openStickerMoveModal()">
+                <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></svg>
+                Move
+            </button>
+            <button class="sticker-manage-btn delete" onclick="deleteSelectedStickers()">
+                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Delete
+            </button>
+            <button class="sticker-manage-btn cancel" onclick="toggleStickerManageMode()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 添加单个表情包弹窗 -->
+<div class="modal-overlay sticker-upload-modal" id="stickerUploadModal">
+    <div class="modal">
+        <div class="modal-title">Add Sticker</div>
+        <div class="sticker-preview-area" id="stickerPreviewArea" onclick="document.getElementById('stickerFileInput').click()">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <input type="file" id="stickerFileInput" class="file-input-hidden" accept="image/*" onchange="handleStickerFileUpload(event)">
+        <div class="input-group">
+            <label class="input-label">Sticker Description (AI will see this)</label>
+            <input type="text" class="modal-input" id="stickerDescription" placeholder="e.g., A happy dancing cat" style="margin-bottom:0">
+        </div>
+        <div class="modal-btns" style="margin-top:20px">
+            <button class="modal-btn cancel" onclick="hideModal('stickerUploadModal')">Cancel</button>
+            <button class="modal-btn confirm" onclick="saveSingleSticker()">Add</button>
+        </div>
+    </div>
+</div>
+
+<!-- 批量导入表情包弹窗 -->
+<div class="modal-overlay sticker-batch-modal" id="stickerBatchModal">
+    <div class="modal">
+        <div class="modal-title">Batch Import Stickers</div>
+        <textarea class="sticker-batch-textarea" id="stickerBatchInput" placeholder="Enter one sticker per line:
+Happy cat: https://example.com/cat.gif
+Sad dog: https://example.com/dog.png
+https://example.com/other.jpg"></textarea>
+        <div class="sticker-batch-hint">
+            <strong>Format:</strong><br>
+            <code>description: URL</code> or just <code>URL</code><br>
+            One sticker per line. If no description, filename will be used.
+        </div>
+        <div class="modal-btns" style="margin-top:20px">
+            <button class="modal-btn cancel" onclick="hideModal('stickerBatchModal')">Cancel</button>
+            <button class="modal-btn confirm" onclick="processBatchStickers()">Import</button>
+        </div>
+    </div>
+</div>
+
+<!-- 分类管理弹窗 -->
+<div class="modal-overlay sticker-category-modal" id="stickerCategoryModal">
+    <div class="modal">
+        <div class="modal-title">Manage Categories</div>
+        <div class="sticker-category-list" id="stickerCategoryList">
+            <!-- 分类列表会动态渲染 -->
+        </div>
+        <div class="sticker-new-category-row">
+            <input type="text" class="modal-input" id="newCategoryName" placeholder="New category name..." style="margin-bottom:0">
+            <button class="modal-btn confirm" onclick="createStickerCategory()">Add</button>
+        </div>
+        <div class="modal-btns" style="margin-top:20px">
+            <button class="modal-btn cancel" onclick="hideModal('stickerCategoryModal')" style="flex:1">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- 移动到分类弹窗 -->
+<div class="modal-overlay sticker-move-modal" id="stickerMoveModal">
+    <div class="modal">
+        <div class="modal-title">Move to Category</div>
+        <div class="sticker-move-list" id="stickerMoveList">
+            <!-- 分类选项会动态渲染 -->
+        </div>
+        <div class="modal-btns" style="margin-top:20px">
+            <button class="modal-btn cancel" onclick="hideModal('stickerMoveModal')" style="flex:1">Cancel</button>
+        </div>
+    </div>
+</div>
+
     <script>
         const DB_NAME = 'NoirAppDB';
         const DB_VERSION = 7;
@@ -4175,7 +5719,13 @@
             characters: [], worldbooks: [], currentCharId: null, currentWbId: null,
             currentEntryIndex: -1, pendingDeleteType: null, pendingDeleteId: null, models: [],
             connectionStatus: 'disconnected', isSelectMode: false, selectedMsgs: new Set(),
-            lastAIStart: -1, tempWallpaper: null, tempIcons: {},
+            lastAIStart: -1, tempWallpaper: null, tempIcons: {}, 
+stickers: [],
+stickerCategories: ['all'],
+currentStickerCategory: 'all',
+isStickerManageMode: false,
+selectedStickers: new Set(),
+tempStickerData: null,
             appIcons: { settings: null, messages: null, worldbook: null, photos: null, fonts: null },
             settings: {
     apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048,
@@ -4318,6 +5868,8 @@ function getLanguageName(code, useNative = false) {
                     saveToIDB('appData', 'settings', App.settings),
                     saveToIDB('appData', 'appIcons', App.appIcons),
                     saveToIDB('appData', 'globalCssPresets', App.globalCssPresets),
+              saveToIDB('appData', 'stickers', App.stickers),
+             saveToIDB('appData', 'stickerCategories', App.stickerCategories),
                     saveToIDB('appData', 'apiPresets', App.apiPresets),
                     saveToIDB('appData', 'fonts', App.fonts)
                 ]);
@@ -4326,49 +5878,52 @@ function getLanguageName(code, useNative = false) {
         }
 
         async function loadData() {
-            try {
-                const [characters, worldbooks, settings, icons, presets, apiPresets, fonts] = await Promise.all([
-                    loadFromIDB('appData', 'characters'),
-                    loadFromIDB('appData', 'worldbooks'),
-                    loadFromIDB('appData', 'settings'),
-                    loadFromIDB('appData', 'appIcons'),
-                    loadFromIDB('appData', 'globalCssPresets'),
-                    loadFromIDB('appData', 'apiPresets'),
-                    loadFromIDB('appData', 'fonts')
-                ]);
-                if (characters) App.characters = characters;
-                if (worldbooks) App.worldbooks = worldbooks;
-                if (settings) App.settings = { ...App.settings, ...settings };
-                if (icons) App.appIcons = { ...App.appIcons, ...icons };
-                if (presets) App.globalCssPresets = presets;
-                if (apiPresets) App.apiPresets = apiPresets;
-                if (fonts) App.fonts = fonts;
+    try {
+        const [characters, worldbooks, settings, icons, presets, apiPresets, fonts, stickers, stickerCategories] = await Promise.all([
+            loadFromIDB('appData', 'characters'),
+            loadFromIDB('appData', 'worldbooks'),
+            loadFromIDB('appData', 'settings'),
+            loadFromIDB('appData', 'appIcons'),
+            loadFromIDB('appData', 'globalCssPresets'),
+            loadFromIDB('appData', 'apiPresets'),
+            loadFromIDB('appData', 'fonts'),
+            loadFromIDB('appData', 'stickers'),
+            loadFromIDB('appData', 'stickerCategories')
+        ]);
+        if (characters) App.characters = characters;
+        if (worldbooks) App.worldbooks = worldbooks;
+        if (settings) App.settings = { ...App.settings, ...settings };
+        if (icons) App.appIcons = { ...App.appIcons, ...icons };
+        if (presets) App.globalCssPresets = presets;
+        if (apiPresets) App.apiPresets = apiPresets;
+        if (fonts) App.fonts = fonts;
+        if (stickers) App.stickers = stickers;
+        if (stickerCategories && stickerCategories.length > 0) App.stickerCategories = stickerCategories;
+        else App.stickerCategories = ['all'];
+        DEFAULT_FONTS.forEach(df => { if (!App.fonts.find(f => f.id === df.id)) App.fonts.push(df); });
 
-                DEFAULT_FONTS.forEach(df => { if (!App.fonts.find(f => f.id === df.id)) App.fonts.push(df); });
-
-                App.worldbooks.forEach(wb => { if (!wb.entries) wb.entries = [{ name: 'Default Entry', keywords: wb.keywords || '', content: wb.content || '', alwaysActive: wb.alwaysActive || false }]; });
-                App.characters.forEach(c => {
-                    if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId];
-                    if (!c.worldbookIds) c.worldbookIds = [];
-                    if (!c.bubbleStyle) c.bubbleStyle = 'none';
-                    if (!c.bubbleColors) c.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
-                    if (c.glassBorder === undefined) c.glassBorder = false;
-                    if (c.glassBorderWidth === undefined) c.glassBorderWidth = 1;
-    // 新增：双语设置兼容性处理
-    if (!c.bilingualSettings) {
-        c.bilingualSettings = {
-            enabled: false,
-            nativeLanguage: 'en',
-            translationLanguage: 'zh'
-        };
-    }  // ✅ 添加这个闭合大括号
-});
-                loadSettingsUI();
-                if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
-                App.dataLoaded = true;
-                return true;
-            } catch (e) { console.error('Load failed:', e); return false; }
-        }
+        App.worldbooks.forEach(wb => { if (!wb.entries) wb.entries = [{ name: 'Default Entry', keywords: wb.keywords || '', content: wb.content || '', alwaysActive: wb.alwaysActive || false }]; });
+        App.characters.forEach(c => {
+            if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId];
+            if (!c.worldbookIds) c.worldbookIds = [];
+            if (!c.bubbleStyle) c.bubbleStyle = 'none';
+            if (!c.bubbleColors) c.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
+            if (c.glassBorder === undefined) c.glassBorder = false;
+            if (c.glassBorderWidth === undefined) c.glassBorderWidth = 1;
+            if (!c.bilingualSettings) {
+                c.bilingualSettings = {
+                    enabled: false,
+                    nativeLanguage: 'en',
+                    translationLanguage: 'zh'
+                };
+            }
+        });
+        loadSettingsUI();
+        if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
+        App.dataLoaded = true;
+        return true;
+    } catch (e) { console.error('Load failed:', e); return false; }
+}
 
         async function forceSaveAll() { if (await saveData()) { await updateStorageDisplay(); showToast('Saved successfully', 'success'); } }
 
@@ -5351,6 +6906,12 @@ function clearCallDecisionLog() {
         let msgContent = msg.content || '';
         let quoteId = msg.quoteId;
 
+// 在 msgType 判断逻辑中添加表情包类型处理
+if (msgType === 'sticker' || msg.type === 'sticker') {
+    html += renderStickerMessage(msg, senderType, avatarHtml, time, timeClass);
+    return;
+}
+
         // 如果type不明确，尝试从内容中解析
         if (msgType === 'text' || !msgType) {
             // 检查是否是场景图片格式
@@ -5476,6 +7037,24 @@ function clearCallDecisionLog() {
                 <p>${escapeHtml(msg.content)}</p>
             </div>
             <div class="voice-message-time">${time}</div>
+        </div>
+        ${type === 'sent' ? avatarHtml : ''}
+    </div>`;
+}
+
+// 渲染表情包消息
+function renderStickerMessage(msg, type, avatarHtml, time, timeClass) {
+    const imgSrc = msg.stickerUrl || msg.data;
+    return `<div class="message-wrapper ${type}" data-id="${msg.id}">
+        ${type === 'received' ? avatarHtml : ''}
+        <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
+        <div class="message-sticker" data-id="${msg.id}"
+             oncontextmenu="showContextMenu(event, '${msg.id}')"
+             ontouchstart="startLongPress('${msg.id}')"
+             ontouchend="endLongPress()"
+             ontouchmove="endLongPress()">
+            <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(msg.content)}" onerror="this.parentElement.innerHTML='<div style=\\'padding:20px;color:var(--text-tertiary);font-size:12px\\'>Sticker not found</div>'">
+            <div class="message-time ${timeClass}">${time}</div>
         </div>
         ${type === 'sent' ? avatarHtml : ''}
     </div>`;
@@ -5846,6 +7425,28 @@ function renderVoiceCallStatusMessage(msg, statusType, text, senderType, avatarH
 
             if (char.userNick) systemContent += `\n\n[User's Name/Identity]\nThe user is called "${char.userNick}".`;
 
+// 在 systemContent 构建的最后，Response Format 部分之前添加：
+
+// 获取AI可用的表情包
+const aiStickers = getStickersForAI(char);
+if (aiStickers.length > 0) {
+    systemContent += `\n\n[Available Stickers]
+You have access to the following stickers that you can use in conversation. Use them sparingly and naturally - NOT every message needs a sticker.
+
+Sticker List:
+${aiStickers.map((s, i) => `${i + 1}. [STICKER:${s.description}] - ${s.id}`).join('\n')}
+
+To send a sticker, use this format: [STICKER:description:id]
+Example: "That's so funny! [STICKER:laughing cat:sticker-12345]"
+
+Important sticker rules:
+- Only use stickers when it feels natural for your character
+- Some characters rarely or never use stickers - stay true to your personality
+- Don't use stickers in every message - maybe 1 in 5-10 messages at most
+- Stickers should enhance the conversation, not replace words
+- If your character setting suggests they don't use stickers, ignore this list entirely`;
+}
+
             // Enhanced format instructions with scene image and voice message support
             systemContent += `\n\n[Response Format]
 You are communicating via SMS / a chat application. Please reply in ${char.name}’s natural messaging style.
@@ -5926,6 +7527,8 @@ Important notes:
         content = `[IMG:${msg.content}]`;
     } else if (msg.type === 'voice') {
         content = `[VOICE:${msg.content}]`;
+   } else if (msg.type === 'sticker') {
+       content = `[Sent sticker: ${msg.content || 'sticker'}]`;
     }
 
     if (msg.image) {
@@ -5965,6 +7568,48 @@ Important notes:
                 quoteId = recentMsgs[msgIndex].id;
             }
             content = content.replace(quoteMatch[0], '').trim();
+        }
+
+        // 2. 检查表情包格式 [STICKER:description:id]
+        const stickerMatch = content.match(/\[STICKER:([^:]+):([^\]]+)\]/i);
+        if (stickerMatch) {
+    const stickerDesc = stickerMatch[1].trim();
+    const stickerId = stickerMatch[2].trim();  // ← 添加 const
+
+            // 查找对应的表情包
+            const sticker = App.stickers.find(s => s.id === stickerId);
+            if (sticker) {
+                // 如果整个内容就是表情包，则类型为sticker
+                if (content.trim() === stickerMatch[0]) {
+                    return {
+                        content: sticker.description,
+                        quoteId,
+                        type: 'sticker',
+                        stickerId: sticker.id,
+                        stickerUrl: sticker.url || sticker.data
+                    };
+                } else {
+                    // 表情包是内容的一部分，需要分割
+                    // 先返回文本部分
+                    const textContent = content.replace(stickerMatch[0], '').trim();
+                    if (textContent) {
+                        // 这种情况需要返回两条消息，但我们只能返回一条
+                        // 所以把表情包信息附加到消息上
+                        return {
+                            content: textContent,
+                            quoteId,
+                            type: 'text',
+                            attachedSticker: {
+                                id: sticker.id,
+                                url: sticker.url || sticker.data,
+                                description: sticker.description
+                            }
+                        };
+                    }
+                }
+            }
+            // 如果找不到表情包，移除标记继续处理
+            content = content.replace(stickerMatch[0], '').trim();
         }
 
         // 2. 检查场景图片格式 [IMG:description] - 更宽松的匹配
@@ -6033,7 +7678,7 @@ Important notes:
 
                 const parsed = parseAIResponse(responseText, char);
                 for (const p of parsed) {
-                    if (!p.content) continue;
+                    if (!p.content && p.type !== 'sticker') continue;
                     const msg = {
                         id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
                         sender: 'char',
@@ -6042,7 +7687,29 @@ Important notes:
                         timestamp: Date.now(),
                         quoteId: p.quoteId
                     };
-                    char.messages.push(msg);
+
+    // 如果是表情包类型
+    if (p.type === 'sticker') {
+        msg.stickerId = p.stickerId;
+        msg.stickerUrl = p.stickerUrl;
+    }
+                    
+char.messages.push(msg);
+
+    // 如果有附加的表情包，额外发送一条表情包消息
+    if (p.attachedSticker) {
+        const stickerMsg = {
+            id: 'msg-' + Date.now() + '-sticker-' + Math.random().toString(36).substr(2, 5),
+            sender: 'char',
+            content: p.attachedSticker.description,
+            type: 'sticker',
+            stickerId: p.attachedSticker.id,
+            stickerUrl: p.attachedSticker.url,
+            timestamp: Date.now()
+        };
+        char.messages.push(stickerMsg);
+    }
+
                     await new Promise(r => setTimeout(r, 300));
                     renderMessages();
                 }
@@ -6130,6 +7797,8 @@ Important notes:
 // 初始化双语设置
 initBilingualSettings(char);
 
+// 初始化AI表情包设置
+initAIStickerSettingsUI(char);
             document.getElementById('characterSettingsPage').classList.add('active');
         }
 
@@ -6321,6 +7990,12 @@ char.bilingualSettings.enabled = document.getElementById('bilingualToggle').clas
 char.bilingualSettings.nativeLanguage = document.getElementById('nativeLanguageSelect').value;
 char.bilingualSettings.translationLanguage = document.getElementById('translationLanguageSelect').value;
 
+// 保存AI表情包设置
+if (!char.aiStickerSettings) {
+    char.aiStickerSettings = { category: 'all', count: 0, useAll: false };
+}
+char.aiStickerSettings.category = document.getElementById('aiStickerCategory')?.value || 'all';
+char.aiStickerSettings.count = parseInt(document.getElementById('aiStickerCount')?.value) || 0;
             document.getElementById('chatTitle').textContent = char.nickname || char.name;
 
             await saveData();
@@ -8186,6 +9861,839 @@ function toggleSummaryEdit() {
         showToast('Summary updated', 'success');
     }
 }
+
+// ========== 表情包功能 ==========
+
+// 打开表情包面板
+function openStickerPanel() {
+    toggleExtensionPanel();
+    renderStickerCategoryTabs();
+    renderStickerGrid();
+    document.getElementById('stickerPanel').classList.add('active');
+}
+
+// 关闭表情包面板
+function closeStickerPanel() {
+    document.getElementById('stickerPanel').classList.remove('active');
+    exitStickerManageMode();
+}
+
+// 渲染分类标签
+function renderStickerCategoryTabs() {
+    const container = document.getElementById('stickerCategoryTabs');
+    container.innerHTML = App.stickerCategories.map(cat => {
+        const isActive = cat === App.currentStickerCategory;
+        const displayName = cat === 'all' ? 'All' : cat;
+        const safeCat = cat.replace(/'/g, "\\'").replace(/"/g, '\\"');
+        return `<div class="sticker-category-tab ${isActive ? 'active' : ''}" data-category="${escapeHtml(cat)}" onclick="selectStickerCategory('${safeCat}')">${escapeHtml(displayName)}</div>`;
+    }).join('');
+}
+
+// 选择分类
+function selectStickerCategory(category) {
+    App.currentStickerCategory = category;
+    renderStickerCategoryTabs();
+    renderStickerGrid();
+    App.selectedStickers.clear();
+    updateStickerSelectedCount();
+}
+
+// 渲染表情包网格
+function renderStickerGrid() {
+    const container = document.getElementById('stickerGridContainer');
+    const stickers = getStickersForCategory(App.currentStickerCategory);
+
+    if (stickers.length === 0 && !App.isStickerManageMode) {
+        container.innerHTML = `
+            <div class="sticker-empty-state">
+                <div class="sticker-empty-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                </div>
+                <div class="sticker-empty-title">No Stickers Yet</div>
+                <div class="sticker-empty-desc">Use the Add button above to add stickers</div>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = '<div class="sticker-grid" id="stickerGrid"></div>';
+    const grid = document.getElementById('stickerGrid');
+
+    let html = '';
+
+    stickers.forEach(sticker => {
+        const isSelected = App.selectedStickers.has(sticker.id);
+        const selectedClass = App.isStickerManageMode && isSelected ? 'selected' : '';
+        const clickHandler = App.isStickerManageMode
+            ? `toggleStickerSelection('${sticker.id}')`
+            : `sendSticker('${sticker.id}')`;
+
+        html += `<div class="sticker-item ${selectedClass}" onclick="${clickHandler}" data-id="${sticker.id}">
+            <img src="${escapeHtml(sticker.url || sticker.data)}" alt="${escapeHtml(sticker.description)}" onerror="this.style.display='none'">
+        </div>`;
+    });
+
+    grid.innerHTML = html;
+}
+
+// 获取指定分类的表情包
+function getStickersForCategory(category) {
+    if (category === 'all') {
+        return App.stickers;
+    }
+    return App.stickers.filter(s => s.category === category);
+}
+
+// 打开添加单个表情包弹窗
+function openStickerUploadModal() {
+    App.tempStickerData = null;
+    document.getElementById('stickerDescription').value = '';
+    const previewArea = document.getElementById('stickerPreviewArea');
+    previewArea.innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+    previewArea.classList.remove('has-image');
+    showModal('stickerUploadModal');
+}
+
+// 处理表情包文件上传
+async function handleStickerFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        App.tempStickerData = e.target.result;
+        const previewArea = document.getElementById('stickerPreviewArea');
+        previewArea.innerHTML = `<img src="${App.tempStickerData}">`;
+        previewArea.classList.add('has-image');
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+}
+
+// 保存单个表情包
+async function saveSingleSticker() {
+    const description = document.getElementById('stickerDescription').value.trim();
+
+    if (!App.tempStickerData) {
+        showToast('Please select an image', 'error');
+        return;
+    }
+    if (!description) {
+        showToast('Please enter a description', 'error');
+        return;
+    }
+
+    const sticker = {
+        id: 'sticker-' + Date.now(),
+        data: App.tempStickerData,
+        url: null,
+        description: description,
+        category: App.currentStickerCategory === 'all' ? null : App.currentStickerCategory,
+        createdAt: Date.now()
+    };
+
+    App.stickers.push(sticker);
+    await saveData();
+
+    hideModal('stickerUploadModal');
+    renderStickerGrid();
+    showToast('Sticker added', 'success');
+}
+
+// 打开批量导入弹窗
+function openStickerBatchModal() {
+    document.getElementById('stickerBatchInput').value = '';
+    showModal('stickerBatchModal');
+}
+
+// 处理批量导入
+async function processBatchStickers() {
+    const input = document.getElementById('stickerBatchInput').value.trim();
+    if (!input) {
+        showToast('Please enter sticker data', 'error');
+        return;
+    }
+
+    const lines = input.split('\n').filter(l => l.trim());
+    let addedCount = 0;
+
+    for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+
+        let description = '';
+        let url = '';
+
+        // 尝试解析格式: "描述: URL" 或 "描述：URL"
+        const colonMatch = trimmed.match(/^(.+?)[：:]\s*(https?:\/\/.+)$/i);
+        if (colonMatch) {
+            description = colonMatch[1].trim();
+            url = colonMatch[2].trim();
+        } else if (trimmed.match(/^https?:\/\//i)) {
+            // 只有URL的情况
+            url = trimmed;
+            // 从URL中提取文件名作为描述
+            const urlParts = url.split('/');
+            const filename = urlParts[urlParts.length - 1].split('?')[0];
+            description = filename.replace(/\.[^.]+$/, '') || 'Sticker';
+        } else {
+            continue; // 无效行，跳过
+        }
+
+        if (url) {
+            const sticker = {
+                id: 'sticker-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+                data: null,
+                url: url,
+                description: description,
+                category: App.currentStickerCategory === 'all' ? null : App.currentStickerCategory,
+                createdAt: Date.now()
+            };
+            App.stickers.push(sticker);
+            addedCount++;
+        }
+    }
+
+    if (addedCount > 0) {
+        await saveData();
+        hideModal('stickerBatchModal');
+        renderStickerGrid();
+        showToast(`${addedCount} stickers imported`, 'success');
+    } else {
+        showToast('No valid stickers found', 'error');
+    }
+}
+
+// 打开分类管理弹窗
+function openStickerCategoryModal() {
+    renderStickerCategoryList();
+    showModal('stickerCategoryModal');
+}
+
+// 渲染分类列表
+function renderStickerCategoryList() {
+    const container = document.getElementById('stickerCategoryList');
+    const customCategories = App.stickerCategories.filter(c => c !== 'all');
+
+    if (customCategories.length === 0) {
+        container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-tertiary)">No custom categories yet</div>';
+        return;
+    }
+
+    container.innerHTML = customCategories.map(cat => {
+        const count = App.stickers.filter(s => s.category === cat).length;
+        return `<div class="sticker-category-item">
+            <span class="sticker-category-name">
+                <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                ${escapeHtml(cat)}
+                <span class="sticker-category-count">(${count})</span>
+            </span>
+            <button class="sticker-category-delete-btn" onclick="deleteStickerCategory('${escapeHtml(cat)}')">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>`;
+    }).join('');
+}
+
+// 创建新分类
+async function createStickerCategory() {
+    const name = document.getElementById('newCategoryName').value.trim();
+    if (!name) {
+        showToast('Enter category name', 'error');
+        return;
+    }
+    if (App.stickerCategories.includes(name)) {
+        showToast('Category already exists', 'error');
+        return;
+    }
+
+    App.stickerCategories.push(name);
+    await saveData();
+    document.getElementById('newCategoryName').value = '';
+    renderStickerCategoryList();
+    renderStickerCategoryTabs();
+    showToast('Category created', 'success');
+}
+
+// 删除分类
+async function deleteStickerCategory(category) {
+    if (!confirm(`Delete "${category}" and all stickers in it?`)) return;
+
+    // 删除该分类下的所有表情包
+    App.stickers = App.stickers.filter(s => s.category !== category);
+    // 从分类列表中移除
+    App.stickerCategories = App.stickerCategories.filter(c => c !== category);
+
+    if (App.currentStickerCategory === category) {
+        App.currentStickerCategory = 'all';
+    }
+
+    await saveData();
+    renderStickerCategoryList();
+    renderStickerCategoryTabs();
+    renderStickerGrid();
+    showToast('Category deleted', 'success');
+}
+
+// 切换管理模式
+function toggleStickerManageMode() {
+    App.isStickerManageMode = !App.isStickerManageMode;
+    App.selectedStickers.clear();
+
+    document.getElementById('stickerManageBar').classList.toggle('active', App.isStickerManageMode);
+    renderStickerGrid();
+    updateStickerSelectedCount();
+}
+
+// 退出管理模式
+function exitStickerManageMode() {
+    App.isStickerManageMode = false;
+    App.selectedStickers.clear();
+    document.getElementById('stickerManageBar').classList.remove('active');
+}
+
+// 切换选中状态
+function toggleStickerSelection(id) {
+    if (App.selectedStickers.has(id)) {
+        App.selectedStickers.delete(id);
+    } else {
+        App.selectedStickers.add(id);
+    }
+    renderStickerGrid();
+    updateStickerSelectedCount();
+}
+
+// 全选
+function selectAllStickers() {
+    const stickers = getStickersForCategory(App.currentStickerCategory);
+    if (App.selectedStickers.size === stickers.length) {
+        App.selectedStickers.clear();
+    } else {
+        stickers.forEach(s => App.selectedStickers.add(s.id));
+    }
+    renderStickerGrid();
+    updateStickerSelectedCount();
+}
+
+// 更新选中数量
+function updateStickerSelectedCount() {
+    document.getElementById('stickerSelectedCount').textContent = App.selectedStickers.size;
+}
+
+// 删除选中的表情包
+async function deleteSelectedStickers() {
+    if (App.selectedStickers.size === 0) {
+        showToast('No stickers selected', 'error');
+        return;
+    }
+
+    if (!confirm(`Delete ${App.selectedStickers.size} sticker(s)?`)) return;
+
+    App.stickers = App.stickers.filter(s => !App.selectedStickers.has(s.id));
+    App.selectedStickers.clear();
+    await saveData();
+    renderStickerGrid();
+    updateStickerSelectedCount();
+    showToast('Stickers deleted', 'success');
+}
+
+// 打开移动弹窗
+function openStickerMoveModal() {
+    if (App.selectedStickers.size === 0) {
+        showToast('No stickers selected', 'error');
+        return;
+    }
+
+    const customCategories = App.stickerCategories.filter(c => c !== 'all' && c !== App.currentStickerCategory);
+
+    if (customCategories.length === 0) {
+        showToast('Create a category first', 'error');
+        return;
+    }
+
+    const container = document.getElementById('stickerMoveList');
+    container.innerHTML = customCategories.map(cat => {
+        return `<div class="sticker-move-item" onclick="moveStickersToCategory('${escapeHtml(cat)}')">
+            <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span>${escapeHtml(cat)}</span>
+        </div>`;
+    }).join('');
+
+    showModal('stickerMoveModal');
+}
+
+// 移动表情包到指定分类
+async function moveStickersToCategory(category) {
+    App.stickers.forEach(sticker => {
+        if (App.selectedStickers.has(sticker.id)) {
+            sticker.category = category;
+        }
+    });
+
+    App.selectedStickers.clear();
+    await saveData();
+    hideModal('stickerMoveModal');
+    renderStickerGrid();
+    updateStickerSelectedCount();
+    showToast(`Moved to ${category}`, 'success');
+}
+
+// 发送表情包
+async function sendSticker(id) {
+    const sticker = App.stickers.find(s => s.id === id);
+    if (!sticker) return;
+
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+
+    const msg = {
+        id: 'msg-' + Date.now(),
+        sender: 'user',
+        type: 'sticker',
+        content: sticker.description,
+        stickerUrl: sticker.url || sticker.data,
+        stickerId: sticker.id,
+        timestamp: Date.now()
+    };
+
+    char.messages.push(msg);
+    closeStickerPanel();
+    renderMessages();
+    await saveData();
+    playClickSound();
+}
+
+// 更新AI表情包设置下拉框
+function updateAIStickerCategorySelect() {
+    const select = document.getElementById('aiStickerCategory');
+    if (!select) return;
+
+    select.innerHTML = '<option value="all">All Stickers</option>' +
+        App.stickerCategories.filter(c => c !== 'all').map(cat =>
+            `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`
+        ).join('');
+}
+
+// 更新AI表情包设置
+function updateAIStickerSettings() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+
+    if (!char.aiStickerSettings) {
+        char.aiStickerSettings = { category: 'all', count: 0, useAll: false };
+    }
+
+    char.aiStickerSettings.category = document.getElementById('aiStickerCategory')?.value || 'all';
+    char.aiStickerSettings.count = parseInt(document.getElementById('aiStickerCount')?.value) || 0;
+    char.aiStickerSettings.useAll = false;
+
+    document.getElementById('aiStickerAllBtn')?.classList.remove('active');
+}
+
+// 设置AI使用全部表情包
+function setAIStickerAll() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+
+    const stickers = getStickersForAI(char);
+    if (!char.aiStickerSettings) {
+        char.aiStickerSettings = { category: 'all', count: 0, useAll: false };
+    }
+
+    char.aiStickerSettings.useAll = !char.aiStickerSettings.useAll;
+
+    const allBtn = document.getElementById('aiStickerAllBtn');
+    const countInput = document.getElementById('aiStickerCount');
+
+    if (char.aiStickerSettings.useAll) {
+        allBtn?.classList.add('active');
+        if (countInput) countInput.value = stickers.length;
+        char.aiStickerSettings.count = stickers.length;
+    } else {
+        allBtn?.classList.remove('active');
+    }
+}
+
+// 获取AI可用的表情包
+function getStickersForAI(char) {
+    if (!char.aiStickerSettings) return [];
+
+    const category = char.aiStickerSettings.category || 'all';
+    let stickers = category === 'all'
+        ? App.stickers
+        : App.stickers.filter(s => s.category === category);
+
+    const count = char.aiStickerSettings.useAll
+        ? stickers.length
+        : (char.aiStickerSettings.count || 0);
+
+    if (count <= 0) return [];
+
+    // 随机选取
+    const shuffled = [...stickers].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, Math.min(count, stickers.length));
+}
+
+// 初始化角色设置中的表情包设置
+function initAIStickerSettingsUI(char) {
+    updateAIStickerCategorySelect();
+
+    if (!char.aiStickerSettings) {
+        char.aiStickerSettings = { category: 'all', count: 0, useAll: false };
+    }
+
+    const categorySelect = document.getElementById('aiStickerCategory');
+    const countInput = document.getElementById('aiStickerCount');
+    const allBtn = document.getElementById('aiStickerAllBtn');
+
+    if (categorySelect) categorySelect.value = char.aiStickerSettings.category || 'all';
+    if (countInput) countInput.value = char.aiStickerSettings.count || 0;
+    if (allBtn) allBtn.classList.toggle('active', char.aiStickerSettings.useAll);
+}
+
+// ========== 表情包功能 ==========
+
+function openStickerPanel() {
+    toggleExtensionPanel();
+    renderStickerCategoryTabs();
+    renderStickerGrid();
+    document.getElementById('stickerPanel').classList.add('active');
+}
+
+function closeStickerPanel() {
+    document.getElementById('stickerPanel').classList.remove('active');
+    exitStickerManageMode();
+}
+
+function renderStickerCategoryTabs() {
+    const container = document.getElementById('stickerCategoryTabs');
+    container.innerHTML = App.stickerCategories.map(cat => {
+        const isActive = cat === App.currentStickerCategory;
+        const displayName = cat === 'all' ? 'All' : cat;
+        return `<div class="sticker-category-tab ${isActive ? 'active' : ''}" data-category="${escapeHtml(cat)}" onclick="selectStickerCategory('${escapeHtml(cat)}')">${escapeHtml(displayName)}</div>`;
+    }).join('');
+}
+
+function selectStickerCategory(category) {
+    App.currentStickerCategory = category;
+    renderStickerCategoryTabs();
+    renderStickerGrid();
+    App.selectedStickers.clear();
+    updateStickerSelectedCount();
+}
+
+function renderStickerGrid() {
+    const container = document.getElementById('stickerGridContainer');
+    const stickers = getStickersForCategory(App.currentStickerCategory);
+
+    if (stickers.length === 0 && !App.isStickerManageMode) {
+        container.innerHTML = `
+            <div class="sticker-empty-state">
+                <div class="sticker-empty-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                </div>
+                <div class="sticker-empty-title">No Stickers Yet</div>
+                <div class="sticker-empty-desc">Tap + to add your first sticker</div>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = '<div class="sticker-grid" id="stickerGrid"></div>';
+    const grid = document.getElementById('stickerGrid');
+
+    let html = '';
+
+    if (!App.isStickerManageMode) {
+        html += `<div class="sticker-add-btn" onclick="openStickerUploadModal()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Add</span>
+        </div>`;
+    }
+
+    stickers.forEach(sticker => {
+        const isSelected = App.selectedStickers.has(sticker.id);
+        const selectedClass = App.isStickerManageMode && isSelected ? 'selected' : '';
+        const clickHandler = App.isStickerManageMode
+            ? `toggleStickerSelection('${sticker.id}')`
+            : `sendSticker('${sticker.id}')`;
+
+        html += `<div class="sticker-item ${selectedClass}" onclick="${clickHandler}" data-id="${sticker.id}">
+            <img src="${escapeHtml(sticker.url || sticker.data)}" alt="${escapeHtml(sticker.description)}" onerror="this.style.display='none'">
+        </div>`;
+    });
+
+    grid.innerHTML = html;
+}
+
+function getStickersForCategory(category) {
+    if (category === 'all') return App.stickers;
+    return App.stickers.filter(s => s.category === category);
+}
+
+function openStickerUploadModal() {
+    App.tempStickerData = null;
+    document.getElementById('stickerDescription').value = '';
+    const previewArea = document.getElementById('stickerPreviewArea');
+    previewArea.innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+    previewArea.classList.remove('has-image');
+    showModal('stickerUploadModal');
+}
+
+function handleStickerFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        App.tempStickerData = e.target.result;
+        const previewArea = document.getElementById('stickerPreviewArea');
+        previewArea.innerHTML = `<img src="${App.tempStickerData}">`;
+        previewArea.classList.add('has-image');
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+}
+
+async function saveSingleSticker() {
+    const description = document.getElementById('stickerDescription').value.trim();
+    if (!App.tempStickerData) { showToast('Please select an image', 'error'); return; }
+    if (!description) { showToast('Please enter a description', 'error'); return; }
+
+    const sticker = {
+        id: 'sticker-' + Date.now(),
+        data: App.tempStickerData,
+        url: null,
+        description: description,
+        category: App.currentStickerCategory === 'all' ? null : App.currentStickerCategory,
+        createdAt: Date.now()
+    };
+
+    App.stickers.push(sticker);
+    await saveData();
+    hideModal('stickerUploadModal');
+    renderStickerGrid();
+    showToast('Sticker added', 'success');
+}
+
+function openStickerBatchModal() {
+    document.getElementById('stickerBatchInput').value = '';
+    showModal('stickerBatchModal');
+}
+
+async function processBatchStickers() {
+    const input = document.getElementById('stickerBatchInput').value.trim();
+    if (!input) { showToast('Please enter sticker data', 'error'); return; }
+
+    const lines = input.split('\n').filter(l => l.trim());
+    let addedCount = 0;
+
+    for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+
+        let description = '';
+        let url = '';
+
+        const colonMatch = trimmed.match(/^(.+?)[：:]\s*(https?:\/\/.+)$/i);
+        if (colonMatch) {
+            description = colonMatch[1].trim();
+            url = colonMatch[2].trim();
+        } else if (trimmed.match(/^https?:\/\//i)) {
+            url = trimmed;
+            const urlParts = url.split('/');
+            const filename = urlParts[urlParts.length - 1].split('?')[0];
+            description = filename.replace(/\.[^.]+$/, '') || 'Sticker';
+        } else {
+            continue;
+        }
+
+        if (url) {
+            const sticker = {
+                id: 'sticker-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+                data: null,
+                url: url,
+                description: description,
+                category: App.currentStickerCategory === 'all' ? null : App.currentStickerCategory,
+                createdAt: Date.now()
+            };
+            App.stickers.push(sticker);
+            addedCount++;
+        }
+    }
+
+    if (addedCount > 0) {
+        await saveData();
+        hideModal('stickerBatchModal');
+        renderStickerGrid();
+        showToast(`${addedCount} stickers imported`, 'success');
+    } else {
+        showToast('No valid stickers found', 'error');
+    }
+}
+
+function openStickerCategoryModal() {
+    renderStickerCategoryList();
+    showModal('stickerCategoryModal');
+}
+
+function renderStickerCategoryList() {
+    const container = document.getElementById('stickerCategoryList');
+    const customCategories = App.stickerCategories.filter(c => c !== 'all');
+
+    if (customCategories.length === 0) {
+        container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-tertiary)">No custom categories yet</div>';
+        return;
+    }
+
+    container.innerHTML = customCategories.map(cat => {
+        const count = App.stickers.filter(s => s.category === cat).length;
+        return `<div class="sticker-category-item">
+            <span class="sticker-category-name">
+                <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                ${escapeHtml(cat)}
+                <span class="sticker-category-count">(${count})</span>
+            </span>
+            <button class="sticker-category-delete-btn" onclick="deleteStickerCategory('${escapeHtml(cat)}')">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>`;
+    }).join('');
+}
+
+async function createStickerCategory() {
+    const name = document.getElementById('newCategoryName').value.trim();
+    if (!name) { showToast('Enter category name', 'error'); return; }
+    if (App.stickerCategories.includes(name)) { showToast('Category already exists', 'error'); return; }
+
+    App.stickerCategories.push(name);
+    await saveData();
+    document.getElementById('newCategoryName').value = '';
+    renderStickerCategoryList();
+    renderStickerCategoryTabs();
+    showToast('Category created', 'success');
+}
+
+async function deleteStickerCategory(category) {
+    if (!confirm(`Delete "${category}" and all stickers in it?`)) return;
+
+    App.stickers = App.stickers.filter(s => s.category !== category);
+    App.stickerCategories = App.stickerCategories.filter(c => c !== category);
+
+    if (App.currentStickerCategory === category) {
+        App.currentStickerCategory = 'all';
+    }
+
+    await saveData();
+    renderStickerCategoryList();
+    renderStickerCategoryTabs();
+    renderStickerGrid();
+    showToast('Category deleted', 'success');
+}
+
+function toggleStickerManageMode() {
+    App.isStickerManageMode = !App.isStickerManageMode;
+    App.selectedStickers.clear();
+    document.getElementById('stickerManageBar').classList.toggle('active', App.isStickerManageMode);
+    renderStickerGrid();
+    updateStickerSelectedCount();
+}
+
+function exitStickerManageMode() {
+    App.isStickerManageMode = false;
+    App.selectedStickers.clear();
+    document.getElementById('stickerManageBar').classList.remove('active');
+}
+
+function toggleStickerSelection(id) {
+    if (App.selectedStickers.has(id)) App.selectedStickers.delete(id);
+    else App.selectedStickers.add(id);
+    renderStickerGrid();
+    updateStickerSelectedCount();
+}
+
+function selectAllStickers() {
+    const stickers = getStickersForCategory(App.currentStickerCategory);
+    if (App.selectedStickers.size === stickers.length) {
+        App.selectedStickers.clear();
+    } else {
+        stickers.forEach(s => App.selectedStickers.add(s.id));
+    }
+    renderStickerGrid();
+    updateStickerSelectedCount();
+}
+
+function updateStickerSelectedCount() {
+    document.getElementById('stickerSelectedCount').textContent = App.selectedStickers.size;
+}
+
+async function deleteSelectedStickers() {
+    if (App.selectedStickers.size === 0) { showToast('No stickers selected', 'error'); return; }
+    if (!confirm(`Delete ${App.selectedStickers.size} sticker(s)?`)) return;
+
+    App.stickers = App.stickers.filter(s => !App.selectedStickers.has(s.id));
+    App.selectedStickers.clear();
+    await saveData();
+    renderStickerGrid();
+    updateStickerSelectedCount();
+    showToast('Stickers deleted', 'success');
+}
+
+function openStickerMoveModal() {
+    if (App.selectedStickers.size === 0) { showToast('No stickers selected', 'error'); return; }
+
+    const customCategories = App.stickerCategories.filter(c => c !== 'all' && c !== App.currentStickerCategory);
+    if (customCategories.length === 0) { showToast('Create a category first', 'error'); return; }
+
+    const container = document.getElementById('stickerMoveList');
+    container.innerHTML = customCategories.map(cat => {
+        return `<div class="sticker-move-item" onclick="moveStickersToCategory('${escapeHtml(cat)}')">
+            <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span>${escapeHtml(cat)}</span>
+        </div>`;
+    }).join('');
+
+    showModal('stickerMoveModal');
+}
+
+async function moveStickersToCategory(category) {
+    App.stickers.forEach(sticker => {
+        if (App.selectedStickers.has(sticker.id)) {
+            sticker.category = category;
+        }
+    });
+
+    App.selectedStickers.clear();
+    await saveData();
+    hideModal('stickerMoveModal');
+    renderStickerGrid();
+    updateStickerSelectedCount();
+    showToast(`Moved to ${category}`, 'success');
+}
+
+async function sendSticker(id) {
+    const sticker = App.stickers.find(s => s.id === id);
+    if (!sticker) return;
+
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+
+    const msg = {
+        id: 'msg-' + Date.now(),
+        sender: 'user',
+        type: 'sticker',
+        content: sticker.description,
+        stickerUrl: sticker.url || sticker.data,
+        stickerId: sticker.id,
+        timestamp: Date.now()
+    };
+
+    char.messages.push(msg);
+    closeStickerPanel();
+    renderMessages();
+    await saveData();
+    playClickSound();
+}
+
     </script>
 </body>
 </html>
