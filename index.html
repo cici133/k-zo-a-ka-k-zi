@@ -7554,12 +7554,20 @@ Important notes:
 
         function parseAIResponse(responseText, char) {
     const parts = responseText.split('|||').map(p => p.trim()).filter(p => p);
-    return parts.map(part => {
+    const results = [];
+
+    for (const part of parts) {
         let content = part.trim();
         let quoteId = null;
         let type = 'text';
 
-        // 1. 检查引用格式 [Q:#N] - 可以出现在开头，后面可能跟其他内容
+        // ===== 第1步：先清理 #N: 前缀（最优先处理）=====
+        content = content.replace(/^#\d+:\s*/, '');
+
+        // 如果清理后为空就跳过
+        if (!content) continue;
+
+        // ===== 第2步：检查引用格式 [Q:#N] =====
         const quoteMatch = content.match(/^\[Q:#(\d+)\]\s*/i);
         if (quoteMatch) {
             const msgIndex = parseInt(quoteMatch[1]) - 1;
@@ -7568,74 +7576,89 @@ Important notes:
                 quoteId = recentMsgs[msgIndex].id;
             }
             content = content.replace(quoteMatch[0], '').trim();
+            if (!content) continue;
         }
 
-        // 2. 检查表情包格式 [STICKER:description:id]
+        // ===== 第3步：再次清理可能残留的 #N: 前缀 =====
+        content = content.replace(/^#\d+:\s*/, '');
+        if (!content) continue;
+
+        // ===== 第4步：检查表情包格式 [STICKER:description:id] =====
         const stickerMatch = content.match(/\[STICKER:([^:]+):([^\]]+)\]/i);
         if (stickerMatch) {
-    const stickerDesc = stickerMatch[1].trim();
-    const stickerId = stickerMatch[2].trim();  // ← 添加 const
-
-            // 查找对应的表情包
+            const stickerId = stickerMatch[2].trim();
             const sticker = App.stickers.find(s => s.id === stickerId);
+
             if (sticker) {
-                // 如果整个内容就是表情包，则类型为sticker
-                if (content.trim() === stickerMatch[0]) {
-                    return {
+                // 移除表情包标记后看还剩什么
+                const remainingText = content.replace(stickerMatch[0], '').trim();
+                // 再次清理可能残留的编号或引号
+                const cleanedRemaining = remainingText.replace(/^#\d+:\s*/, '').replace(/^["']|["']$/g, '').replace(/^:\d+\s*/, '').trim();
+
+                if (!cleanedRemaining) {
+                    // 整条内容就是一个表情包
+                    results.push({
                         content: sticker.description,
                         quoteId,
                         type: 'sticker',
                         stickerId: sticker.id,
                         stickerUrl: sticker.url || sticker.data
-                    };
+                    });
+                    continue;
                 } else {
-                    // 表情包是内容的一部分，需要分割
-                    // 先返回文本部分
-                    const textContent = content.replace(stickerMatch[0], '').trim();
-                    if (textContent) {
-                        // 这种情况需要返回两条消息，但我们只能返回一条
-                        // 所以把表情包信息附加到消息上
-                        return {
-                            content: textContent,
-                            quoteId,
-                            type: 'text',
-                            attachedSticker: {
-                                id: sticker.id,
-                                url: sticker.url || sticker.data,
-                                description: sticker.description
-                            }
-                        };
-                    }
+                    // 有文字内容 + 表情包
+                    results.push({
+                        content: cleanedRemaining,
+                        quoteId,
+                        type: 'text'
+                    });
+                    results.push({
+                        content: sticker.description,
+                        quoteId: null,
+                        type: 'sticker',
+                        stickerId: sticker.id,
+                        stickerUrl: sticker.url || sticker.data
+                    });
+                    continue;
                 }
             }
-            // 如果找不到表情包，移除标记继续处理
+            // 如果找不到对应表情包，移除标记当普通文本处理
             content = content.replace(stickerMatch[0], '').trim();
+            if (!content) continue;
         }
 
-        // 2. 检查场景图片格式 [IMG:description] - 更宽松的匹配
+        // ===== 第5步：检查场景图片格式 [IMG:description] =====
         const imgMatch = content.match(/^\[IMG:\s*(.+?)\s*\]$/is);
         if (imgMatch) {
-            type = 'scene-image';
-            content = imgMatch[1].trim();
-            return { content, quoteId, type };
+            results.push({ content: imgMatch[1].trim(), quoteId, type: 'scene-image' });
+            continue;
         }
 
-        // 3. 检查语音消息格式 [VOICE:content] - 更宽松的匹配
+        // ===== 第6步：检查语音消息格式 [VOICE:content] =====
         const voiceMatch = content.match(/^\[VOICE:\s*(.+?)\s*\]$/is);
         if (voiceMatch) {
-            type = 'voice';
-            content = voiceMatch[1].trim();
-            return { content, quoteId, type };
+            results.push({ content: voiceMatch[1].trim(), quoteId, type: 'voice' });
+            continue;
         }
 
-        // 4. 清理普通文本
+        // ===== 第7步：最终清理普通文本 =====
+        // 清理所有可能残留的编号格式
         content = content.replace(/^#\d+:\s*/, '');
+        content = content.replace(/^:\d+\s*/, '');
+        content = content.replace(/^\d+:\s*$/, '');
         content = content.replace(/^["']|["']$/g, '');
+        content = content.trim();
 
-        return { content: content.trim(), quoteId, type };
-    });
+        // 如果清理后只剩数字或冒号+数字这种垃圾内容，直接丢弃
+        if (!content || /^[:#]?\d+[:#]?$/.test(content) || /^:\d+$/.test(content)) {
+            continue;
+        }
+
+        results.push({ content, quoteId, type: 'text' });
+    }
+
+    return results;
 }
-
 
         async function triggerAIReply() {
             const char = App.characters.find(c => c.id === App.currentCharId);
@@ -7676,9 +7699,10 @@ Important notes:
 
                 document.getElementById('typingIndicator')?.remove();
 
-                const parsed = parseAIResponse(responseText, char);
+                                const parsed = parseAIResponse(responseText, char);
                 for (const p of parsed) {
                     if (!p.content && p.type !== 'sticker') continue;
+
                     const msg = {
                         id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
                         sender: 'char',
@@ -7688,28 +7712,13 @@ Important notes:
                         quoteId: p.quoteId
                     };
 
-    // 如果是表情包类型
-    if (p.type === 'sticker') {
-        msg.stickerId = p.stickerId;
-        msg.stickerUrl = p.stickerUrl;
-    }
-                    
-char.messages.push(msg);
+                    // 表情包类型需要附加url信息
+                    if (p.type === 'sticker') {
+                        msg.stickerId = p.stickerId;
+                        msg.stickerUrl = p.stickerUrl;
+                    }
 
-    // 如果有附加的表情包，额外发送一条表情包消息
-    if (p.attachedSticker) {
-        const stickerMsg = {
-            id: 'msg-' + Date.now() + '-sticker-' + Math.random().toString(36).substr(2, 5),
-            sender: 'char',
-            content: p.attachedSticker.description,
-            type: 'sticker',
-            stickerId: p.attachedSticker.id,
-            stickerUrl: p.attachedSticker.url,
-            timestamp: Date.now()
-        };
-        char.messages.push(stickerMsg);
-    }
-
+                    char.messages.push(msg);
                     await new Promise(r => setTimeout(r, 300));
                     renderMessages();
                 }
