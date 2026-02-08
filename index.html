@@ -436,6 +436,18 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
+/* Fade bubble style enhancement */
+.message.sent[style*="radial-gradient"],
+.message.received[style*="radial-gradient"] {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Clear glass style - subtle shadow for depth */
+.message.sent[style*="0.25"],
+.message.received[style*="0.25"] {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
         .message.sent {
             background: rgba(60, 60, 65, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -5014,12 +5026,12 @@
                         <div class="bubble-style-option" data-style="solid" onclick="selectBubbleStyle('solid')">
                             <div class="bubble-style-option-name">纯色</div>
                         </div>
-                        <div class="bubble-style-option" data-style="neon" onclick="selectBubbleStyle('neon')">
-                            <div class="bubble-style-option-name">霓虹</div>
-                        </div>
-                        <div class="bubble-style-option" data-style="gradient" onclick="selectBubbleStyle('gradient')">
-                            <div class="bubble-style-option-name">极光</div>
-                        </div>
+                        <div class="bubble-style-option" data-style="fade" onclick="selectBubbleStyle('fade')">
+    <div class="bubble-style-option-name">渐隐</div>
+</div>
+<div class="bubble-style-option" data-style="clearGlass" onclick="selectBubbleStyle('clearGlass')">
+    <div class="bubble-style-option-name">宝石</div>
+</div>
                     </div>
 
                     <div id="bubbleStyleOptions" style="display:none">
@@ -5081,8 +5093,103 @@
                                 <input type="range" class="slider-input" id="glassBorderWidth" min="0.5" max="3" step="0.5" value="1" oninput="updateGlassBorderWidth()">
                             </div>
                         </div>
+
+<!-- Fade Style Border Options -->
+<div id="fadeBorderOptions" style="display:none">
+    <div class="color-section-title" style="margin-top:16px">边框设置</div>
+
+    <!-- User Bubble Border -->
+    <div class="settings-item" style="padding:12px 0">
+        <span class="settings-item-label">用户气泡边框</span>
+        <div class="toggle-switch" id="fadeUserBorderToggle" onclick="toggleFadeUserBorder()"></div>
+    </div>
+    <div id="fadeUserBorderSettings" style="display:none">
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">边框宽度</span>
+                <span class="slider-value" id="fadeUserBorderWidthValue">1px</span>
+            </div>
+            <input type="range" class="slider-input" id="fadeUserBorderWidth" min="0.5" max="3" step="0.5" value="1" oninput="updateFadeBorderPreview()">
+        </div>
+        <div class="color-btn-row">
+            <div class="color-btn" onclick="openColorPicker('fadeUserBorderColor')">
+                <div class="color-swatch" id="swatchFadeUserBorderColor" style="background:rgba(255,255,255,0.3)"></div>
+                <span class="color-btn-label">边框颜色</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Char Bubble Border -->
+    <div class="settings-item" style="padding:12px 0">
+        <span class="settings-item-label">角色气泡边框</span>
+        <div class="toggle-switch" id="fadeCharBorderToggle" onclick="toggleFadeCharBorder()"></div>
+    </div>
+    <div id="fadeCharBorderSettings" style="display:none">
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">边框宽度</span>
+                <span class="slider-value" id="fadeCharBorderWidthValue">1px</span>
+            </div>
+            <input type="range" class="slider-input" id="fadeCharBorderWidth" min="0.5" max="3" step="0.5" value="1" oninput="updateFadeBorderPreview()">
+        </div>
+        <div class="color-btn-row">
+            <div class="color-btn" onclick="openColorPicker('fadeCharBorderColor')">
+                <div class="color-swatch" id="swatchFadeCharBorderColor" style="background:rgba(255,255,255,0.3)"></div>
+                <span class="color-btn-label">边框颜色</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Solid Style Border Options -->
+<div id="solidBorderOptions" style="display:none">
+    <div class="color-section-title" style="margin-top:16px">边框设置</div>
+
+    <!-- User Bubble Border -->
+    <div class="settings-item" style="padding:12px 0">
+        <span class="settings-item-label">用户气泡边框</span>
+        <div class="toggle-switch" id="solidUserBorderToggle" onclick="toggleSolidUserBorder()"></div>
+    </div>
+    <div id="solidUserBorderSettings" style="display:none">
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">边框宽度</span>
+                <span class="slider-value" id="solidUserBorderWidthValue">1px</span>
+            </div>
+            <input type="range" class="slider-input" id="solidUserBorderWidth" min="0.5" max="3" step="0.5" value="1" oninput="updateSolidBorderPreview()">
+        </div>
+        <div class="color-btn-row">
+            <div class="color-btn" onclick="openColorPicker('solidUserBorderColor')">
+                <div class="color-swatch" id="swatchSolidUserBorderColor" style="background:rgba(255,255,255,0.15)"></div>
+                <span class="color-btn-label">边框颜色</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Char Bubble Border -->
+    <div class="settings-item" style="padding:12px 0">
+        <span class="settings-item-label">角色气泡边框</span>
+        <div class="toggle-switch" id="solidCharBorderToggle" onclick="toggleSolidCharBorder()"></div>
+    </div>
+    <div id="solidCharBorderSettings" style="display:none">
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">边框宽度</span>
+                <span class="slider-value" id="solidCharBorderWidthValue">1px</span>
+            </div>
+            <input type="range" class="slider-input" id="solidCharBorderWidth" min="0.5" max="3" step="0.5" value="1" oninput="updateSolidBorderPreview()">
+        </div>
+        <div class="color-btn-row">
+            <div class="color-btn" onclick="openColorPicker('solidCharBorderColor')">
+                <div class="color-swatch" id="swatchSolidCharBorderColor" style="background:rgba(255,255,255,0.15)"></div>
+                <span class="color-btn-label">边框颜色</span>
+            </div>
+        </div>
+    </div>
+</div>
+
                     </div>
-                </div>
+
 
                 <p class="settings-group-title">聊天壁纸</p>
                 <div class="settings-group" style="padding:16px">
@@ -6097,9 +6204,15 @@ function getLanguageName(code, useNative = false) {
         ];
 
         const DEFAULT_BUBBLE_COLORS = {
-            userBg1: '#3c3c41', userBg2: '#2d2d32', userText: '#ffffff',
-            charBg1: '#2d2d32', charBg2: '#232328', charText: '#ffffff'
-        };
+    userBg1: '#3c3c41', userBg2: '#2d2d32', userText: '#ffffff',
+    charBg1: '#2d2d32', charBg2: '#232328', charText: '#ffffff',
+    // Fade style borders
+    fadeUserBorderColor: 'rgba(255,255,255,0.3)',
+    fadeCharBorderColor: 'rgba(255,255,255,0.3)',
+    // Solid style borders
+    solidUserBorderColor: 'rgba(255,255,255,0.15)',
+    solidCharBorderColor: 'rgba(255,255,255,0.15)'
+};
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -6196,6 +6309,25 @@ function getLanguageName(code, useNative = false) {
             if (!c.bubbleColors) c.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
             if (c.glassBorder === undefined) c.glassBorder = false;
             if (c.glassBorderWidth === undefined) c.glassBorderWidth = 1;
+    // 新增：迁移旧的neon/gradient样式
+    if (c.bubbleStyle === 'neon') c.bubbleStyle = 'fade';
+    if (c.bubbleStyle === 'gradient') c.bubbleStyle = 'clearGlass';
+
+    // 新增：初始化新的边框设置字段
+    if (c.fadeUserBorder === undefined) c.fadeUserBorder = false;
+    if (c.fadeUserBorderWidth === undefined) c.fadeUserBorderWidth = 1;
+    if (c.fadeCharBorder === undefined) c.fadeCharBorder = false;
+    if (c.fadeCharBorderWidth === undefined) c.fadeCharBorderWidth = 1;
+    if (c.solidUserBorder === undefined) c.solidUserBorder = false;
+    if (c.solidUserBorderWidth === undefined) c.solidUserBorderWidth = 1;
+    if (c.solidCharBorder === undefined) c.solidCharBorder = false;
+    if (c.solidCharBorderWidth === undefined) c.solidCharBorderWidth = 1;
+
+    // 确保bubbleColors包含新的边框颜色
+    if (!c.bubbleColors.fadeUserBorderColor) c.bubbleColors.fadeUserBorderColor = 'rgba(255,255,255,0.3)';
+    if (!c.bubbleColors.fadeCharBorderColor) c.bubbleColors.fadeCharBorderColor = 'rgba(255,255,255,0.3)';
+    if (!c.bubbleColors.solidUserBorderColor) c.bubbleColors.solidUserBorderColor = 'rgba(255,255,255,0.15)';
+    if (!c.bubbleColors.solidCharBorderColor) c.bubbleColors.solidCharBorderColor = 'rgba(255,255,255,0.15)';
             if (!c.bilingualSettings) {
                 c.bilingualSettings = {
                     enabled: false,
@@ -6234,34 +6366,70 @@ function getLanguageName(code, useNative = false) {
 
         // ========== 气泡样式相关 ==========
         function initBubbleStyleUI(char) {
-            if (!char) return;
-            const style = char.bubbleStyle || 'none';
-            document.querySelectorAll('#bubbleStyleGrid .bubble-style-option').forEach(el => {
-                el.classList.toggle('selected', el.dataset.style === style);
-            });
-            document.getElementById('bubbleStyleOptions').style.display = style === 'none' ? 'none' : 'block';
-            document.getElementById('glassBorderOptions').style.display = style === 'glass' ? 'block' : 'none';
-            if (style === 'glass') {
-                document.getElementById('glassBorderToggle').classList.toggle('active', char.glassBorder);
-                document.getElementById('glassBorderWidthContainer').style.display = char.glassBorder ? 'block' : 'none';
-                document.getElementById('glassBorderWidth').value = char.glassBorderWidth || 1;
-                document.getElementById('glassBorderWidthValue').textContent = (char.glassBorderWidth || 1) + 'px';
-            }
-            updateColorSwatches(char);
-            updateBubblePreview(char);
-        }
+    if (!char) return;
+    const style = char.bubbleStyle || 'none';
+    document.querySelectorAll('#bubbleStyleGrid .bubble-style-option').forEach(el => {
+        el.classList.toggle('selected', el.dataset.style === style);
+    });
+    document.getElementById('bubbleStyleOptions').style.display = style === 'none' ? 'none' : 'block';
+
+    // Glass border options
+    document.getElementById('glassBorderOptions').style.display = style === 'glass' ? 'block' : 'none';
+    if (style === 'glass') {
+        document.getElementById('glassBorderToggle').classList.toggle('active', char.glassBorder);
+        document.getElementById('glassBorderWidthContainer').style.display = char.glassBorder ? 'block' : 'none';
+        document.getElementById('glassBorderWidth').value = char.glassBorderWidth || 1;
+        document.getElementById('glassBorderWidthValue').textContent = (char.glassBorderWidth || 1) + 'px';
+    }
+
+    // Fade border options
+    document.getElementById('fadeBorderOptions').style.display = style === 'fade' ? 'block' : 'none';
+    if (style === 'fade') {
+        document.getElementById('fadeUserBorderToggle').classList.toggle('active', char.fadeUserBorder);
+        document.getElementById('fadeUserBorderSettings').style.display = char.fadeUserBorder ? 'block' : 'none';
+        document.getElementById('fadeUserBorderWidth').value = char.fadeUserBorderWidth || 1;
+        document.getElementById('fadeUserBorderWidthValue').textContent = (char.fadeUserBorderWidth || 1) + 'px';
+
+        document.getElementById('fadeCharBorderToggle').classList.toggle('active', char.fadeCharBorder);
+        document.getElementById('fadeCharBorderSettings').style.display = char.fadeCharBorder ? 'block' : 'none';
+        document.getElementById('fadeCharBorderWidth').value = char.fadeCharBorderWidth || 1;
+        document.getElementById('fadeCharBorderWidthValue').textContent = (char.fadeCharBorderWidth || 1) + 'px';
+    }
+
+    // Solid border options
+    document.getElementById('solidBorderOptions').style.display = style === 'solid' ? 'block' : 'none';
+    if (style === 'solid') {
+        document.getElementById('solidUserBorderToggle').classList.toggle('active', char.solidUserBorder);
+        document.getElementById('solidUserBorderSettings').style.display = char.solidUserBorder ? 'block' : 'none';
+        document.getElementById('solidUserBorderWidth').value = char.solidUserBorderWidth || 1;
+        document.getElementById('solidUserBorderWidthValue').textContent = (char.solidUserBorderWidth || 1) + 'px';
+
+        document.getElementById('solidCharBorderToggle').classList.toggle('active', char.solidCharBorder);
+        document.getElementById('solidCharBorderSettings').style.display = char.solidCharBorder ? 'block' : 'none';
+        document.getElementById('solidCharBorderWidth').value = char.solidCharBorderWidth || 1;
+        document.getElementById('solidCharBorderWidthValue').textContent = (char.solidCharBorderWidth || 1) + 'px';
+    }
+
+    updateColorSwatches(char);
+    updateBubblePreview(char);
+}
 
         function selectBubbleStyle(style) {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            char.bubbleStyle = style;
-            document.querySelectorAll('#bubbleStyleGrid .bubble-style-option').forEach(el => {
-                el.classList.toggle('selected', el.dataset.style === style);
-            });
-            document.getElementById('bubbleStyleOptions').style.display = style === 'none' ? 'none' : 'block';
-            document.getElementById('glassBorderOptions').style.display = style === 'glass' ? 'block' : 'none';
-            updateBubblePreview(char);
-        }
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    char.bubbleStyle = style;
+    document.querySelectorAll('#bubbleStyleGrid .bubble-style-option').forEach(el => {
+        el.classList.toggle('selected', el.dataset.style === style);
+    });
+    document.getElementById('bubbleStyleOptions').style.display = style === 'none' ? 'none' : 'block';
+
+    // 控制不同样式的边框选项显示
+    document.getElementById('glassBorderOptions').style.display = style === 'glass' ? 'block' : 'none';
+    document.getElementById('fadeBorderOptions').style.display = style === 'fade' ? 'block' : 'none';
+    document.getElementById('solidBorderOptions').style.display = style === 'solid' ? 'block' : 'none';
+
+    updateBubblePreview(char);
+}
 
         function toggleGlassBorder() {
             const char = App.characters.find(c => c.id === App.currentCharId);
@@ -6282,56 +6450,168 @@ function getLanguageName(code, useNative = false) {
             updateBubblePreview(char);
         }
 
+// ========== Fade Style Border Functions ==========
+function toggleFadeUserBorder() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    const toggle = document.getElementById('fadeUserBorderToggle');
+    toggle.classList.toggle('active');
+    char.fadeUserBorder = toggle.classList.contains('active');
+    document.getElementById('fadeUserBorderSettings').style.display = char.fadeUserBorder ? 'block' : 'none';
+    updateBubblePreview(char);
+}
+
+function toggleFadeCharBorder() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    const toggle = document.getElementById('fadeCharBorderToggle');
+    toggle.classList.toggle('active');
+    char.fadeCharBorder = toggle.classList.contains('active');
+    document.getElementById('fadeCharBorderSettings').style.display = char.fadeCharBorder ? 'block' : 'none';
+    updateBubblePreview(char);
+}
+
+function updateFadeBorderPreview() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    const userWidth = parseFloat(document.getElementById('fadeUserBorderWidth').value);
+    const charWidth = parseFloat(document.getElementById('fadeCharBorderWidth').value);
+    document.getElementById('fadeUserBorderWidthValue').textContent = userWidth + 'px';
+    document.getElementById('fadeCharBorderWidthValue').textContent = charWidth + 'px';
+    char.fadeUserBorderWidth = userWidth;
+    char.fadeCharBorderWidth = charWidth;
+    updateBubblePreview(char);
+}
+
+// ========== Solid Style Border Functions ==========
+function toggleSolidUserBorder() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    const toggle = document.getElementById('solidUserBorderToggle');
+    toggle.classList.toggle('active');
+    char.solidUserBorder = toggle.classList.contains('active');
+    document.getElementById('solidUserBorderSettings').style.display = char.solidUserBorder ? 'block' : 'none';
+    updateBubblePreview(char);
+}
+
+function toggleSolidCharBorder() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    const toggle = document.getElementById('solidCharBorderToggle');
+    toggle.classList.toggle('active');
+    char.solidCharBorder = toggle.classList.contains('active');
+    document.getElementById('solidCharBorderSettings').style.display = char.solidCharBorder ? 'block' : 'none';
+    updateBubblePreview(char);
+}
+
+function updateSolidBorderPreview() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    const userWidth = parseFloat(document.getElementById('solidUserBorderWidth').value);
+    const charWidth = parseFloat(document.getElementById('solidCharBorderWidth').value);
+    document.getElementById('solidUserBorderWidthValue').textContent = userWidth + 'px';
+    document.getElementById('solidCharBorderWidthValue').textContent = charWidth + 'px';
+    char.solidUserBorderWidth = userWidth;
+    char.solidCharBorderWidth = charWidth;
+    updateBubblePreview(char);
+}
+
         function updateColorSwatches(char) {
-            if (!char || !char.bubbleColors) return;
-            const c = char.bubbleColors;
-            document.getElementById('swatchUserBg1').style.background = c.userBg1;
-            document.getElementById('swatchUserBg2').style.background = c.userBg2;
-            document.getElementById('swatchUserText').style.background = c.userText;
-            document.getElementById('swatchCharBg1').style.background = c.charBg1;
-            document.getElementById('swatchCharBg2').style.background = c.charBg2;
-            document.getElementById('swatchCharText').style.background = c.charText;
-        }
+    if (!char || !char.bubbleColors) return;
+    const c = char.bubbleColors;
+    document.getElementById('swatchUserBg1').style.background = c.userBg1;
+    document.getElementById('swatchUserBg2').style.background = c.userBg2;
+    document.getElementById('swatchUserText').style.background = c.userText;
+    document.getElementById('swatchCharBg1').style.background = c.charBg1;
+    document.getElementById('swatchCharBg2').style.background = c.charBg2;
+    document.getElementById('swatchCharText').style.background = c.charText;
+
+    // Fade border color swatches
+    const fadeUserBorderSwatch = document.getElementById('swatchFadeUserBorderColor');
+    const fadeCharBorderSwatch = document.getElementById('swatchFadeCharBorderColor');
+    if (fadeUserBorderSwatch) fadeUserBorderSwatch.style.background = c.fadeUserBorderColor || 'rgba(255,255,255,0.3)';
+    if (fadeCharBorderSwatch) fadeCharBorderSwatch.style.background = c.fadeCharBorderColor || 'rgba(255,255,255,0.3)';
+
+    // Solid border color swatches
+    const solidUserBorderSwatch = document.getElementById('swatchSolidUserBorderColor');
+    const solidCharBorderSwatch = document.getElementById('swatchSolidCharBorderColor');
+    if (solidUserBorderSwatch) solidUserBorderSwatch.style.background = c.solidUserBorderColor || 'rgba(255,255,255,0.15)';
+    if (solidCharBorderSwatch) solidCharBorderSwatch.style.background = c.solidCharBorderColor || 'rgba(255,255,255,0.15)';
+}
 
         function updateBubblePreview(char) {
-            if (!char) return;
-            const style = char.bubbleStyle || 'none';
-            const c = char.bubbleColors || DEFAULT_BUBBLE_COLORS;
-            const sent = document.getElementById('previewSent');
-            const recv = document.getElementById('previewReceived');
-            if (!sent || !recv) return;
+    if (!char) return;
+    const style = char.bubbleStyle || 'none';
+    const c = char.bubbleColors || DEFAULT_BUBBLE_COLORS;
+    const sent = document.getElementById('previewSent');
+    const recv = document.getElementById('previewReceived');
+    if (!sent || !recv) return;
 
-            let sentStyle = '', recvStyle = '';
-            const glassBorder = char.glassBorder ? `${char.glassBorderWidth || 1}px solid rgba(255,255,255,0.15)` : 'none';
+    let sentStyle = '', recvStyle = '';
+    const glassBorder = char.glassBorder ? `${char.glassBorderWidth || 1}px solid rgba(255,255,255,0.15)` : 'none';
 
-            switch(style) {
-                case 'glass':
-                    sentStyle = `background:linear-gradient(135deg,${hexToRgba(c.userBg1,0.5)},${hexToRgba(c.userBg2,0.4)});backdrop-filter:blur(12px);border:${glassBorder};color:${c.userText};border-radius:14px 14px 4px 14px`;
-                    recvStyle = `background:linear-gradient(135deg,${hexToRgba(c.charBg1,0.5)},${hexToRgba(c.charBg2,0.4)});backdrop-filter:blur(12px);border:${glassBorder};color:${c.charText};border-radius:14px 14px 14px 4px`;
-                    break;
-                case 'metal':
-                    sentStyle = `background:linear-gradient(145deg,${c.userBg1},${c.userBg2});box-shadow:inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.3);color:${c.userText};border-radius:14px 14px 4px 14px;border:1px solid rgba(255,255,255,0.1)`;
-                    recvStyle = `background:linear-gradient(145deg,${c.charBg1},${c.charBg2});box-shadow:inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.3);color:${c.charText};border-radius:14px 14px 14px 4px;border:1px solid rgba(255,255,255,0.1)`;
-                    break;
-                case 'solid':
-                    sentStyle = `background:${c.userBg1};color:${c.userText};border-radius:14px 14px 4px 14px`;
-                    recvStyle = `background:${c.charBg1};color:${c.charText};border-radius:14px 14px 14px 4px`;
-                    break;
-                case 'neon':
-                    sentStyle = `background:${hexToRgba(c.userBg1,0.3)};border:1px solid ${c.userBg1};box-shadow:0 0 10px ${hexToRgba(c.userBg1,0.5)},inset 0 0 20px ${hexToRgba(c.userBg1,0.1)};color:${c.userText};border-radius:14px 14px 4px 14px`;
-                    recvStyle = `background:${hexToRgba(c.charBg1,0.3)};border:1px solid ${c.charBg1};box-shadow:0 0 10px ${hexToRgba(c.charBg1,0.5)},inset 0 0 20px ${hexToRgba(c.charBg1,0.1)};color:${c.charText};border-radius:14px 14px 14px 4px`;
-                    break;
-                case 'gradient':
-                    sentStyle = `background:linear-gradient(135deg,${c.userBg1},${c.userBg2});color:${c.userText};border-radius:14px 14px 4px 14px;border:1px solid rgba(255,255,255,0.1)`;
-                    recvStyle = `background:linear-gradient(135deg,${c.charBg1},${c.charBg2});color:${c.charText};border-radius:14px 14px 14px 4px;border:1px solid rgba(255,255,255,0.1)`;
-                    break;
-                default:
-                    sentStyle = 'background:rgba(60,60,65,0.6);color:#fff;border-radius:14px 14px 4px 14px';
-                    recvStyle = 'background:rgba(45,45,50,0.6);color:#fff;border-radius:14px 14px 14px 4px';
-            }
-            sent.style.cssText = sentStyle;
-            recv.style.cssText = recvStyle;
-        }
+    // Fade borders
+    const fadeUserBorder = char.fadeUserBorder ? `${char.fadeUserBorderWidth || 1}px solid ${c.fadeUserBorderColor || 'rgba(255,255,255,0.3)'}` : 'none';
+    const fadeCharBorder = char.fadeCharBorder ? `${char.fadeCharBorderWidth || 1}px solid ${c.fadeCharBorderColor || 'rgba(255,255,255,0.3)'}` : 'none';
+
+    // Solid borders
+    const solidUserBorder = char.solidUserBorder ? `${char.solidUserBorderWidth || 1}px solid ${c.solidUserBorderColor || 'rgba(255,255,255,0.15)'}` : 'none';
+    const solidCharBorder = char.solidCharBorder ? `${char.solidCharBorderWidth || 1}px solid ${c.solidCharBorderColor || 'rgba(255,255,255,0.15)'}` : 'none';
+
+    switch(style) {
+        case 'glass':
+            sentStyle = `background:linear-gradient(135deg,${hexToRgba(c.userBg1,0.5)},${hexToRgba(c.userBg2,0.4)});backdrop-filter:blur(12px);border:${glassBorder};color:${c.userText};border-radius:14px 14px 4px 14px`;
+            recvStyle = `background:linear-gradient(135deg,${hexToRgba(c.charBg1,0.5)},${hexToRgba(c.charBg2,0.4)});backdrop-filter:blur(12px);border:${glassBorder};color:${c.charText};border-radius:14px 14px 14px 4px`;
+            break;
+        case 'metal':
+            sentStyle = `background:linear-gradient(145deg,${c.userBg1},${c.userBg2});box-shadow:inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.3);color:${c.userText};border-radius:14px 14px 4px 14px;border:1px solid rgba(255,255,255,0.1)`;
+            recvStyle = `background:linear-gradient(145deg,${c.charBg1},${c.charBg2});box-shadow:inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.3);color:${c.charText};border-radius:14px 14px 14px 4px;border:1px solid rgba(255,255,255,0.1)`;
+            break;
+        case 'solid':
+            sentStyle = `background:${c.userBg1};color:${c.userText};border-radius:14px 14px 4px 14px;border:${solidUserBorder}`;
+            recvStyle = `background:${c.charBg1};color:${c.charText};border-radius:14px 14px 14px 4px;border:${solidCharBorder}`;
+            break;
+        case 'fade':
+            // 渐隐效果：中心实色，向边缘渐变透明（使用radial-gradient模拟）
+            sentStyle = `background:radial-gradient(ellipse at center,${c.userBg1} 0%,${c.userBg1} 40%,${hexToRgba(c.userBg1,0.6)} 70%,${hexToRgba(c.userBg1,0.2)} 100%);color:${c.userText};border-radius:14px 14px 4px 14px;border:${fadeUserBorder}`;
+            recvStyle = `background:radial-gradient(ellipse at center,${c.charBg1} 0%,${c.charBg1} 40%,${hexToRgba(c.charBg1,0.6)} 70%,${hexToRgba(c.charBg1,0.2)} 100%);color:${c.charText};border-radius:14px 14px 14px 4px;border:${fadeCharBorder}`;
+            break;
+        case 'clearGlass':
+    // 宝石质感效果 - 立体高光、水润反光
+    sentStyle = `
+        background: linear-gradient(145deg, ${hexToRgba(c.userBg1, 0.85)} 0%, ${hexToRgba(c.userBg2, 0.7)} 100%);
+        box-shadow:
+            inset 0 1px 1px rgba(255,255,255,0.6),
+            inset 0 -1px 2px rgba(0,0,0,0.15),
+            inset 2px 0 3px rgba(255,255,255,0.1),
+            0 2px 8px rgba(0,0,0,0.25),
+            0 4px 12px ${hexToRgba(c.userBg1, 0.3)};
+        border: 1px solid rgba(255,255,255,0.25);
+        color: ${c.userText};
+        border-radius: 14px 14px 4px 14px;
+        position: relative;
+    `;
+    recvStyle = `
+        background: linear-gradient(145deg, ${hexToRgba(c.charBg1, 0.85)} 0%, ${hexToRgba(c.charBg2, 0.7)} 100%);
+        box-shadow:
+            inset 0 1px 1px rgba(255,255,255,0.6),
+            inset 0 -1px 2px rgba(0,0,0,0.15),
+            inset 2px 0 3px rgba(255,255,255,0.1),
+            0 2px 8px rgba(0,0,0,0.25),
+            0 4px 12px ${hexToRgba(c.charBg1, 0.3)};
+        border: 1px solid rgba(255,255,255,0.25);
+        color: ${c.charText};
+        border-radius: 14px 14px 14px 4px;
+        position: relative;
+    `;
+    break;
+        default:
+            sentStyle = 'background:rgba(60,60,65,0.6);color:#fff;border-radius:14px 14px 4px 14px';
+            recvStyle = 'background:rgba(45,45,50,0.6);color:#fff;border-radius:14px 14px 14px 4px';
+    }
+    sent.style.cssText = sentStyle;
+    recv.style.cssText = recvStyle;
+}
 
         function hexToRgba(hex, alpha) {
             if (!hex || hex.length < 7) return `rgba(128,128,128,${alpha})`;
@@ -6368,34 +6648,108 @@ function getLanguageName(code, useNative = false) {
         }
 
         function applyBubbleStyles(char) {
-            const styleEl = document.getElementById('bubbleStyleSheet');
-            if (!char) { styleEl.textContent = ''; return; }
-            const style = char.bubbleStyle || 'none';
-            if (style === 'none') { styleEl.textContent = ''; return; }
+    const styleEl = document.getElementById('bubbleStyleSheet');
+    if (!char) { styleEl.textContent = ''; return; }
+    const style = char.bubbleStyle || 'none';
+    if (style === 'none') { styleEl.textContent = ''; return; }
 
-            const c = char.bubbleColors || DEFAULT_BUBBLE_COLORS;
-            const glassBorder = char.glassBorder ? `${char.glassBorderWidth || 1}px solid rgba(255,255,255,0.15)` : '1px solid rgba(255,255,255,0.06)';
-            let css = '';
+    const c = char.bubbleColors || DEFAULT_BUBBLE_COLORS;
+    const glassBorder = char.glassBorder ? `${char.glassBorderWidth || 1}px solid rgba(255,255,255,0.15)` : '1px solid rgba(255,255,255,0.06)';
 
-            switch(style) {
-                case 'glass':
-                    css = `.message.sent{background:linear-gradient(135deg,${hexToRgba(c.userBg1,0.5)},${hexToRgba(c.userBg2,0.4)})!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;border:${glassBorder}!important;color:${c.userText}!important}.message.received{background:linear-gradient(135deg,${hexToRgba(c.charBg1,0.5)},${hexToRgba(c.charBg2,0.4)})!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;border:${glassBorder}!important;color:${c.charText}!important}.voice-message.sent{background:linear-gradient(135deg,${hexToRgba(c.userBg1,0.6)},${hexToRgba(c.userBg2,0.5)})!important;border:${glassBorder}!important}.voice-message.received{background:linear-gradient(135deg,${hexToRgba(c.charBg1,0.6)},${hexToRgba(c.charBg2,0.5)})!important;border:${glassBorder}!important}`;
-                    break;
-                case 'metal':
-                    css = `.message.sent{background:linear-gradient(145deg,${c.userBg1},${c.userBg2})!important;box-shadow:inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.3)!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.userText}!important}.message.received{background:linear-gradient(145deg,${c.charBg1},${c.charBg2})!important;box-shadow:inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.3)!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.charText}!important}.voice-message.sent{background:linear-gradient(145deg,${c.userBg1},${c.userBg2})!important}.voice-message.received{background:linear-gradient(145deg,${c.charBg1},${c.charBg2})!important}`;
-                    break;
-                case 'solid':
-                    css = `.message.sent{background:${c.userBg1}!important;border:none!important;color:${c.userText}!important}.message.received{background:${c.charBg1}!important;border:none!important;color:${c.charText}!important}.voice-message.sent{background:${c.userBg1}!important}.voice-message.received{background:${c.charBg1}!important}`;
-                    break;
-                case 'neon':
-                    css = `.message.sent{background:${hexToRgba(c.userBg1,0.3)}!important;border:1px solid ${c.userBg1}!important;box-shadow:0 0 10px ${hexToRgba(c.userBg1,0.5)},inset 0 0 20px ${hexToRgba(c.userBg1,0.1)}!important;color:${c.userText}!important}.message.received{background:${hexToRgba(c.charBg1,0.3)}!important;border:1px solid ${c.charBg1}!important;box-shadow:0 0 10px ${hexToRgba(c.charBg1,0.5)},inset 0 0 20px ${hexToRgba(c.charBg1,0.1)}!important;color:${c.charText}!important}.voice-message.sent{background:${hexToRgba(c.userBg1,0.4)}!important;border:1px solid ${c.userBg1}!important;box-shadow:0 0 8px ${hexToRgba(c.userBg1,0.4)}!important}.voice-message.received{background:${hexToRgba(c.charBg1,0.4)}!important;border:1px solid ${c.charBg1}!important;box-shadow:0 0 8px ${hexToRgba(c.charBg1,0.4)}!important}`;
-                    break;
-                case 'gradient':
-                    css = `.message.sent{background:linear-gradient(135deg,${c.userBg1},${c.userBg2})!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.userText}!important}.message.received{background:linear-gradient(135deg,${c.charBg1},${c.charBg2})!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.charText}!important}.voice-message.sent{background:linear-gradient(135deg,${c.userBg1},${c.userBg2})!important}.voice-message.received{background:linear-gradient(135deg,${c.charBg1},${c.charBg2})!important}`;
-                    break;
-            }
-            styleEl.textContent = css;
+    // Fade borders
+    const fadeUserBorder = char.fadeUserBorder ? `${char.fadeUserBorderWidth || 1}px solid ${c.fadeUserBorderColor || 'rgba(255,255,255,0.3)'}` : 'none';
+    const fadeCharBorder = char.fadeCharBorder ? `${char.fadeCharBorderWidth || 1}px solid ${c.fadeCharBorderColor || 'rgba(255,255,255,0.3)'}` : 'none';
+
+    // Solid borders
+    const solidUserBorder = char.solidUserBorder ? `${char.solidUserBorderWidth || 1}px solid ${c.solidUserBorderColor || 'rgba(255,255,255,0.15)'}` : 'none';
+    const solidCharBorder = char.solidCharBorder ? `${char.solidCharBorderWidth || 1}px solid ${c.solidCharBorderColor || 'rgba(255,255,255,0.15)'}` : 'none';
+
+    let css = '';
+
+    switch(style) {
+        case 'glass':
+            css = `.message.sent{background:linear-gradient(135deg,${hexToRgba(c.userBg1,0.5)},${hexToRgba(c.userBg2,0.4)})!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;border:${glassBorder}!important;color:${c.userText}!important}.message.received{background:linear-gradient(135deg,${hexToRgba(c.charBg1,0.5)},${hexToRgba(c.charBg2,0.4)})!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;border:${glassBorder}!important;color:${c.charText}!important}.voice-message.sent{background:linear-gradient(135deg,${hexToRgba(c.userBg1,0.6)},${hexToRgba(c.userBg2,0.5)})!important;border:${glassBorder}!important}.voice-message.received{background:linear-gradient(135deg,${hexToRgba(c.charBg1,0.6)},${hexToRgba(c.charBg2,0.5)})!important;border:${glassBorder}!important}`;
+            break;
+        case 'metal':
+            css = `.message.sent{background:linear-gradient(145deg,${c.userBg1},${c.userBg2})!important;box-shadow:inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.3)!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.userText}!important}.message.received{background:linear-gradient(145deg,${c.charBg1},${c.charBg2})!important;box-shadow:inset 2px 2px 4px rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.3),0 4px 8px rgba(0,0,0,0.3)!important;border:1px solid rgba(255,255,255,0.1)!important;color:${c.charText}!important}.voice-message.sent{background:linear-gradient(145deg,${c.userBg1},${c.userBg2})!important}.voice-message.received{background:linear-gradient(145deg,${c.charBg1},${c.charBg2})!important}`;
+            break;
+        case 'solid':
+            css = `.message.sent{background:${c.userBg1}!important;border:${solidUserBorder}!important;color:${c.userText}!important}.message.received{background:${c.charBg1}!important;border:${solidCharBorder}!important;color:${c.charText}!important}.voice-message.sent{background:${c.userBg1}!important;border:${solidUserBorder}!important}.voice-message.received{background:${c.charBg1}!important;border:${solidCharBorder}!important}`;
+            break;
+        case 'fade':
+            // 渐隐效果
+            css = `.message.sent{background:radial-gradient(ellipse at center,${c.userBg1} 0%,${c.userBg1} 40%,${hexToRgba(c.userBg1,0.6)} 70%,${hexToRgba(c.userBg1,0.2)} 100%)!important;border:${fadeUserBorder}!important;color:${c.userText}!important}.message.received{background:radial-gradient(ellipse at center,${c.charBg1} 0%,${c.charBg1} 40%,${hexToRgba(c.charBg1,0.6)} 70%,${hexToRgba(c.charBg1,0.2)} 100%)!important;border:${fadeCharBorder}!important;color:${c.charText}!important}.voice-message.sent{background:radial-gradient(ellipse at center,${c.userBg1} 0%,${c.userBg1} 40%,${hexToRgba(c.userBg1,0.6)} 70%,${hexToRgba(c.userBg1,0.2)} 100%)!important;border:${fadeUserBorder}!important}.voice-message.received{background:radial-gradient(ellipse at center,${c.charBg1} 0%,${c.charBg1} 40%,${hexToRgba(c.charBg1,0.6)} 70%,${hexToRgba(c.charBg1,0.2)} 100%)!important;border:${fadeCharBorder}!important}`;
+            break;
+        case 'clearGlass':
+    // 宝石质感效果 - 高光反射、立体水润
+    css = `
+        .message.sent {
+            background: linear-gradient(145deg, ${hexToRgba(c.userBg1, 0.85)} 0%, ${hexToRgba(c.userBg2, 0.7)} 100%) !important;
+            box-shadow:
+                inset 0 1px 1px rgba(255,255,255,0.6),
+                inset 0 -1px 2px rgba(0,0,0,0.15),
+                inset 2px 0 3px rgba(255,255,255,0.1),
+                0 2px 8px rgba(0,0,0,0.25),
+                0 4px 12px ${hexToRgba(c.userBg1, 0.3)} !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+            color: ${c.userText} !important;
+            position: relative;
         }
+        .message.sent::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 45%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 17px 17px 50% 50%;
+            pointer-events: none;
+        }
+        .message.received {
+            background: linear-gradient(145deg, ${hexToRgba(c.charBg1, 0.85)} 0%, ${hexToRgba(c.charBg2, 0.7)} 100%) !important;
+            box-shadow:
+                inset 0 1px 1px rgba(255,255,255,0.6),
+                inset 0 -1px 2px rgba(0,0,0,0.15),
+                inset 2px 0 3px rgba(255,255,255,0.1),
+                0 2px 8px rgba(0,0,0,0.25),
+                0 4px 12px ${hexToRgba(c.charBg1, 0.3)} !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+            color: ${c.charText} !important;
+            position: relative;
+        }
+        .message.received::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 45%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 17px 17px 50% 50%;
+            pointer-events: none;
+        }
+        .voice-message.sent {
+            background: linear-gradient(145deg, ${hexToRgba(c.userBg1, 0.85)} 0%, ${hexToRgba(c.userBg2, 0.7)} 100%) !important;
+            box-shadow:
+                inset 0 1px 1px rgba(255,255,255,0.5),
+                inset 0 -1px 2px rgba(0,0,0,0.15),
+                0 2px 8px rgba(0,0,0,0.25) !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+        }
+        .voice-message.received {
+            background: linear-gradient(145deg, ${hexToRgba(c.charBg1, 0.85)} 0%, ${hexToRgba(c.charBg2, 0.7)} 100%) !important;
+            box-shadow:
+                inset 0 1px 1px rgba(255,255,255,0.5),
+                inset 0 -1px 2px rgba(0,0,0,0.15),
+                0 2px 8px rgba(0,0,0,0.25) !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+        }
+    `;
+    break;
+    }
+    styleEl.textContent = css;
+}
 
         // ========== 颜色选择器 ==========
         function initColorPicker() {
@@ -6659,38 +7013,57 @@ function getLanguageName(code, useNative = false) {
         }
 
         function openColorPicker(target) {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            App.currentColorTarget = target;
-            const currentColor = (char.bubbleColors && char.bubbleColors[target]) || '#ffffff';
-            App.selectedColor = currentColor;
-            document.getElementById('colorHexInput').value = currentColor.toUpperCase();
-            document.getElementById('colorPickerPreview').style.background = currentColor;
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    App.currentColorTarget = target;
 
-            const rgb = hexToRgbArray(currentColor);
-            const hsv = rgbToHsv(rgb[0], rgb[1], rgb[2]);
-            App.currentHue = hsv.h;
-            App.saturation = hsv.s;
-            App.brightness = hsv.v;
-
-            drawColorSquare(hsv.h);
-            positionRingHandle(hsv.h);
-            positionSquareHandle(hsv.s, hsv.v);
-
-            showModal('colorPickerModal');
+    // 获取当前颜色，对于边框颜色需要特殊处理
+    let currentColor = '#ffffff';
+    if (char.bubbleColors && char.bubbleColors[target]) {
+        currentColor = char.bubbleColors[target];
+        // 如果是rgba格式，转换为hex（简化处理，取主色调）
+        if (currentColor.startsWith('rgba')) {
+            const match = currentColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+            if (match) {
+                const r = parseInt(match[1]).toString(16).padStart(2, '0');
+                const g = parseInt(match[2]).toString(16).padStart(2, '0');
+                const b = parseInt(match[3]).toString(16).padStart(2, '0');
+                currentColor = '#' + r + g + b;
+            }
         }
+    }
+
+    App.selectedColor = currentColor;
+    document.getElementById('colorHexInput').value = currentColor.toUpperCase();
+    document.getElementById('colorPickerPreview').style.background = currentColor;
+
+    const rgb = hexToRgbArray(currentColor);
+    const hsv = rgbToHsv(rgb[0], rgb[1], rgb[2]);
+    App.currentHue = hsv.h;
+    App.saturation = hsv.s;
+    App.brightness = hsv.v;
+
+    drawColorSquare(hsv.h);
+    positionRingHandle(hsv.h);
+    positionSquareHandle(hsv.s, hsv.v);
+
+    showModal('colorPickerModal');
+}
 
         function applySelectedColor() {
-            const char = App.characters.find(c => c.id === App.currentCharId);
-            if (!char) return;
-            if (App.currentColorTarget && App.selectedColor) {
-                if (!char.bubbleColors) char.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
-                char.bubbleColors[App.currentColorTarget] = App.selectedColor;
-                updateColorSwatches(char);
-                updateBubblePreview(char);
-            }
-            hideModal('colorPickerModal');
-        }
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    if (App.currentColorTarget && App.selectedColor) {
+        if (!char.bubbleColors) char.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
+
+        // 所有颜色（包括边框）都直接使用用户选择的颜色，不做透明度处理
+        char.bubbleColors[App.currentColorTarget] = App.selectedColor;
+
+        updateColorSwatches(char);
+        updateBubblePreview(char);
+    }
+    hideModal('colorPickerModal');
+}
 
         // ========== 音效 ==========
         function playClickSound() {
@@ -7087,7 +7460,15 @@ function clearCallDecisionLog() {
         nativeLanguage: 'en',
         translationLanguage: 'zh'
     },
-                bubbleStyle: 'none', bubbleColors: { ...DEFAULT_BUBBLE_COLORS }, glassBorder: false, glassBorderWidth: 1
+                bubbleStyle: 'none', bubbleColors: { ...DEFAULT_BUBBLE_COLORS }, glassBorder: false, glassBorderWidth: 1,
+fadeUserBorder: false,
+fadeUserBorderWidth: 1,
+fadeCharBorder: false,
+fadeCharBorderWidth: 1,
+solidUserBorder: false,
+solidUserBorderWidth: 1,
+solidCharBorder: false,
+solidCharBorderWidth: 1
             };
             App.characters.push(char);
             await saveData();
@@ -7708,6 +8089,23 @@ function renderVoiceCallStatusMessage(msg, statusType, text, senderType, avatarH
                     }
                 });
             }
+
+    // ========== 【新增】注入聊天总结 ==========
+    if (char.chatSummaries?.length > 0) {
+        systemContent += `\n\n[Previous Conversation Summaries]\nThe following are summaries of earlier conversations that happened before the current message history. Use this information to maintain continuity and remember past events:\n`;
+
+        // 按时间顺序排列（旧的在前）
+        const sortedSummaries = [...char.chatSummaries].sort((a, b) => a.timestamp - b.timestamp);
+
+        sortedSummaries.forEach((summary, idx) => {
+            const date = new Date(summary.timestamp);
+            const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            systemContent += `\n--- Summary ${idx + 1} (${dateStr}) ---\n${summary.content}\n`;
+        });
+
+        systemContent += `\n[End of Summaries]\nThe above summaries provide context for events that occurred before the current conversation history. Refer to them naturally when relevant.`;
+    }
+    // ========== 总结注入结束 ==========
 
             if (char.userNick) systemContent += `\n\n[User's Name/Identity]\nThe user is called "${char.userNick}".`;
 
@@ -9540,6 +9938,22 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
     }
     // ========== 世界书处理结束 ==========
 
+    // ========== 【新增】注入聊天总结到语音通话 ==========
+    if (char.chatSummaries?.length > 0) {
+        prompt += `\n\n[Previous Conversation Summaries - For Context]\nThese summaries describe past conversations. Use this information to maintain character consistency and remember shared history:\n`;
+
+        const sortedSummaries = [...char.chatSummaries].sort((a, b) => a.timestamp - b.timestamp);
+
+        sortedSummaries.forEach((summary, idx) => {
+            const date = new Date(summary.timestamp);
+            const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            prompt += `\n--- Summary ${idx + 1} (${dateStr}) ---\n${summary.content}\n`;
+        });
+
+        prompt += `\n[End of Summaries]`;
+    }
+    // ========== 总结注入结束 ==========
+
     // 防止混用短信格式的强化提示
     prompt += `
 
@@ -9652,6 +10066,22 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
         });
     }
     // ========== 世界书处理结束 ==========
+
+    // ========== 【新增】注入聊天总结到双语语音通话 ==========
+    if (char.chatSummaries?.length > 0) {
+        prompt += `\n\n[Previous Conversation Summaries - For Context]\nThese summaries describe past conversations. Use this information to maintain character consistency and remember shared history:\n`;
+
+        const sortedSummaries = [...char.chatSummaries].sort((a, b) => a.timestamp - b.timestamp);
+
+        sortedSummaries.forEach((summary, idx) => {
+            const date = new Date(summary.timestamp);
+            const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            prompt += `\n--- Summary ${idx + 1} (${dateStr}) ---\n${summary.content}\n`;
+        });
+
+        prompt += `\n[End of Summaries]`;
+    }
+    // ========== 总结注入结束 ==========
 
     // 防止混用短信格式的强化提示
     prompt += `
