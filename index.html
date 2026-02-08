@@ -9540,24 +9540,16 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
     }
     // ========== 世界书处理结束 ==========
 
-    // 强化语音通话模式提示，防止混用短信格式
+    // 防止混用短信格式的强化提示
     prompt += `
 
-[ABSOLUTE FORMAT RULES - NEVER VIOLATE]
-This is a VOICE CALL, not a text message conversation.
-You MUST NEVER use these text message formats during this call:
-- NEVER use "|||" to separate messages (that's for SMS only)
-- NEVER use [STICKER:...] (stickers cannot be sent during voice calls)
-- NEVER use [IMG:...] (images cannot be sent during voice calls)
-- NEVER use [Q:#...] (quoting is a text feature)
-- NEVER mention "sending" anything - you are SPEAKING on the phone
-
-You can ONLY output these JSON formats:
-{"type":"speech","content":"what you say"}
-{"type":"sound","content":"environmental sounds or actions"}
-{"type":"hangup"}
-
-If you feel like sending a sticker or image, instead DESCRIBE your emotion verbally or use a {"type":"sound"} for your physical reaction.`;
+[CRITICAL - DO NOT USE TEXT MESSAGE FORMATS]
+You are in a VOICE CALL. Never use these text-only formats:
+- No "|||" separators
+- No [STICKER:...] or [Sent sticker:...]
+- No [IMG:...] or [VOICE:...]
+- No [Q:#...]
+Only use: {"type":"speech","content":"..."} or {"type":"sound","content":"..."} or {"type":"hangup"}`;
 
             return prompt;
         }
@@ -9661,24 +9653,16 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
     }
     // ========== 世界书处理结束 ==========
 
-    // 强化语音通话模式提示，防止混用短信格式
+    // 防止混用短信格式的强化提示
     prompt += `
 
-[ABSOLUTE FORMAT RULES - NEVER VIOLATE]
-This is a VOICE CALL, not a text message conversation.
-You MUST NEVER use these text message formats during this call:
-- NEVER use "|||" to separate messages (that's for SMS only)
-- NEVER use [STICKER:...] (stickers cannot be sent during voice calls)
-- NEVER use [IMG:...] (images cannot be sent during voice calls)
-- NEVER use [Q:#...] (quoting is a text feature)
-- NEVER mention "sending" anything - you are SPEAKING on the phone
-
-You can ONLY output these JSON formats (with translations for bilingual mode):
-{"type":"speech","content":"...","translation":"..."}
-{"type":"sound","content":"...","translation":"..."}
-{"type":"hangup"}
-
-If you feel like sending a sticker or image, instead DESCRIBE your emotion verbally or use a {"type":"sound"} for your physical reaction.`;
+[CRITICAL - DO NOT USE TEXT MESSAGE FORMATS]
+You are in a VOICE CALL. Never use these text-only formats:
+- No "|||" separators
+- No [STICKER:...] or [Sent sticker:...]
+- No [IMG:...] or [VOICE:...]
+- No [Q:#...]
+Only use the bilingual JSON format specified above.`;
 
     return prompt;
 }
@@ -9704,9 +9688,9 @@ function buildVoiceCallAPIMessages(char, systemPrompt) {
             const sender = m.sender === 'user' ? 'User' : (char.nickname || char.name);
             let textContent = m.content || '';
 
-            // 简化消息内容描述，移除格式标记
+                        // 根据消息类型格式化文本内容（简化格式避免AI模仿）
             if (m.type === 'sticker') {
-                textContent = `(sent a sticker expressing: ${m.content || 'emotion'})`;
+                textContent = `(expressed emotion: ${m.content || 'sticker'})`;
             } else if (m.type === 'scene-image') {
                 textContent = `(shared a scene: ${m.content || ''})`;
             } else if (m.type === 'voice') {
@@ -9740,6 +9724,14 @@ DO NOT use ANY text message formats during this call:
 ONLY use the JSON format specified in your instructions: {"type":"speech","content":"..."} or {"type":"sound","content":"..."}`
     });
 
+    // 添加上下文切换提示，防止AI混用短信格式
+    if (recentTexts.length > 0) {
+        messages.push({
+            role: 'system',
+            content: '[The text messages above are HISTORY ONLY. You are NOW in a LIVE VOICE CALL. Respond ONLY with JSON format: {"type":"speech/sound","content":"..."}. Do NOT use ||| or [STICKER] or any text message formats.]'
+        });
+    }
+
     // 添加当前语音通话的对话
     const callMessages = VoiceCallState.currentSession?.messages || [];
     callMessages.forEach(msg => {
@@ -9767,16 +9759,15 @@ ONLY use the JSON format specified in your instructions: {"type":"speech","conte
 function parseVoiceCallResponse(responseText, isBilingual = false) {
     const results = [];
 
-    // 预处理：移除任何短信格式的污染
-    let cleanedResponse = responseText
-        .replace(/\|\|\|/g, '\n')  // 将短信分隔符转为换行
-        .replace(/\[STICKER:[^\]]*\]/gi, '')  // 移除表情包标记
-        .replace(/\[IMG:[^\]]*\]/gi, '')  // 移除场景图片标记
-        .replace(/\[Q:#\d+\]\s*/gi, '')  // 移除引用标记
-        .replace(/\[Sent sticker[：:][^\]]*\]/gi, '')  // 移除发送表情包标记
-        .trim();
+    // 预处理：清理可能混入的短信格式
+    let cleanedText = responseText
+        .replace(/\|\|\|/g, '\n')
+        .replace(/\[STICKER:[^\]]*\]/gi, '')
+        .replace(/\[Sent sticker[：:][^\]]*\]/gi, '')
+        .replace(/\[IMG:[^\]]*\]/gi, '')
+        .replace(/\[Q:#\d+\]\s*/gi, '');
 
-    const lines = cleanedResponse.split('\n').filter(l => l.trim());
+    const lines = cleanedText.split('\n').filter(l => l.trim());
 
     for (const line of lines) {
         try {
