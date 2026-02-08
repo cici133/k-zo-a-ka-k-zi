@@ -7431,20 +7431,31 @@ function renderVoiceCallStatusMessage(msg, statusType, text, senderType, avatarH
 const aiStickers = getStickersForAI(char);
 if (aiStickers.length > 0) {
     systemContent += `\n\n[Available Stickers]
-You have access to the following stickers that you can use in conversation. Use them sparingly and naturally - NOT every message needs a sticker.
+You can use these stickers in your messages. Use them sparingly and naturally.
 
-Sticker List:
-${aiStickers.map((s, i) => `${i + 1}. [STICKER:${s.description}] - ${s.id}`).join('\n')}
+Sticker List (use EXACT format):
+${aiStickers.map((s, i) => `• "${s.description}" → [STICKER:${s.description}:${s.id}]`).join('\n')}
 
-To send a sticker, use this format: [STICKER:description:id]
-Example: "That's so funny! [STICKER:laughing cat:sticker-12345]"
+[CRITICAL FORMAT RULES]
+When sending a sticker, you MUST use this EXACT format:
+[STICKER:description:id]
 
-Important sticker rules:
-- Only use stickers when it feels natural for your character
-- Some characters rarely or never use stickers - stay true to your personality
-- Don't use stickers in every message - maybe 1 in 5-10 messages at most
-- Stickers should enhance the conversation, not replace words
-- If your character setting suggests they don't use stickers, ignore this list entirely`;
+CORRECT examples:
+- 好吧好吧|||[STICKER:可怜兮兮:sticker-1234567890]
+- [STICKER:开心猫咪:sticker-9876543210]|||看在你这么诚恳的份上
+
+WRONG formats (DO NOT USE):
+- [Sent sticker: xxx] ← WRONG
+- [发送表情包: xxx] ← WRONG
+- [表情包: xxx] ← WRONG
+- Just typing the description without brackets ← WRONG
+
+Rules:
+- Copy the EXACT sticker ID from the list above
+- Only use stickers when natural for your character
+- Maybe 1 sticker per 5-10 messages at most
+- Some characters never use stickers - that's okay
+- Stickers enhance conversation, don't replace words`;
 }
 
             // Enhanced format instructions with scene image and voice message support
@@ -7561,10 +7572,8 @@ Important notes:
         let quoteId = null;
         let type = 'text';
 
-        // ===== 第1步：先清理 #N: 前缀（最优先处理）=====
+        // ===== 第1步：先清理 #N: 前缀 =====
         content = content.replace(/^#\d+:\s*/, '');
-
-        // 如果清理后为空就跳过
         if (!content) continue;
 
         // ===== 第2步：检查引用格式 [Q:#N] =====
@@ -7583,20 +7592,20 @@ Important notes:
         content = content.replace(/^#\d+:\s*/, '');
         if (!content) continue;
 
-        // ===== 第4步：检查表情包格式 [STICKER:description:id] =====
-        const stickerMatch = content.match(/\[STICKER:([^:]+):([^\]]+)\]/i);
-        if (stickerMatch) {
-            const stickerId = stickerMatch[2].trim();
+        // ===== 第4步：检查表情包格式（支持多种格式）=====
+        let stickerFound = false;
+
+        // 格式1: [STICKER:description:id]
+        const stickerMatch1 = content.match(/\[STICKER:([^:]+):([^\]]+)\]/i);
+        if (stickerMatch1) {
+            const stickerId = stickerMatch1[2].trim();
+            const stickerDesc = stickerMatch1[1].trim();
             const sticker = App.stickers.find(s => s.id === stickerId);
 
             if (sticker) {
-                // 移除表情包标记后看还剩什么
-                const remainingText = content.replace(stickerMatch[0], '').trim();
-                // 再次清理可能残留的编号或引号
-                const cleanedRemaining = remainingText.replace(/^#\d+:\s*/, '').replace(/^["']|["']$/g, '').replace(/^:\d+\s*/, '').trim();
+                const remainingText = content.replace(stickerMatch1[0], '').replace(/^#\d+:\s*/, '').replace(/^["']|["']$/g, '').trim();
 
-                if (!cleanedRemaining) {
-                    // 整条内容就是一个表情包
+                if (!remainingText) {
                     results.push({
                         content: sticker.description,
                         quoteId,
@@ -7604,14 +7613,9 @@ Important notes:
                         stickerId: sticker.id,
                         stickerUrl: sticker.url || sticker.data
                     });
-                    continue;
+                    stickerFound = true;
                 } else {
-                    // 有文字内容 + 表情包
-                    results.push({
-                        content: cleanedRemaining,
-                        quoteId,
-                        type: 'text'
-                    });
+                    results.push({ content: remainingText, quoteId, type: 'text' });
                     results.push({
                         content: sticker.description,
                         quoteId: null,
@@ -7619,13 +7623,72 @@ Important notes:
                         stickerId: sticker.id,
                         stickerUrl: sticker.url || sticker.data
                     });
-                    continue;
+                    stickerFound = true;
                 }
             }
-            // 如果找不到对应表情包，移除标记当普通文本处理
-            content = content.replace(stickerMatch[0], '').trim();
-            if (!content) continue;
         }
+
+        // 格式2: [Sent sticker: description] 或 [发送表情包: description] - 通过描述匹配
+        if (!stickerFound) {
+            const stickerMatch2 = content.match(/\[(?:Sent sticker|发送表情包|表情包|sticker)[：:]\s*([^\]]+)\]/i);
+            if (stickerMatch2) {
+                const stickerDesc = stickerMatch2[1].trim();
+                // 通过描述模糊匹配表情包
+                const sticker = App.stickers.find(s =>
+                    s.description.toLowerCase().includes(stickerDesc.toLowerCase()) ||
+                    stickerDesc.toLowerCase().includes(s.description.toLowerCase())
+                );
+
+                if (sticker) {
+                    const remainingText = content.replace(stickerMatch2[0], '').replace(/^#\d+:\s*/, '').replace(/^["']|["']$/g, '').trim();
+
+                    if (!remainingText) {
+                        results.push({
+                            content: sticker.description,
+                            quoteId,
+                            type: 'sticker',
+                            stickerId: sticker.id,
+                            stickerUrl: sticker.url || sticker.data
+                        });
+                        stickerFound = true;
+                    } else {
+                        results.push({ content: remainingText, quoteId, type: 'text' });
+                        results.push({
+                            content: sticker.description,
+                            quoteId: null,
+                            type: 'sticker',
+                            stickerId: sticker.id,
+                            stickerUrl: sticker.url || sticker.data
+                        });
+                        stickerFound = true;
+                    }
+                } else {
+                    // 找不到匹配的表情包，移除标记当普通文本
+                    content = content.replace(stickerMatch2[0], '').trim();
+                }
+            }
+        }
+
+        // 格式3: 直接是表情包描述文本（精确匹配）
+        if (!stickerFound && App.stickers.length > 0) {
+            const cleanContent = content.replace(/^["'\[【]|["'\]】]$/g, '').trim();
+            const exactMatchSticker = App.stickers.find(s =>
+                s.description === cleanContent ||
+                s.description === content
+            );
+            if (exactMatchSticker) {
+                results.push({
+                    content: exactMatchSticker.description,
+                    quoteId,
+                    type: 'sticker',
+                    stickerId: exactMatchSticker.id,
+                    stickerUrl: exactMatchSticker.url || exactMatchSticker.data
+                });
+                stickerFound = true;
+            }
+        }
+
+        if (stickerFound) continue;
 
         // ===== 第5步：检查场景图片格式 [IMG:description] =====
         const imgMatch = content.match(/^\[IMG:\s*(.+?)\s*\]$/is);
@@ -7642,14 +7705,14 @@ Important notes:
         }
 
         // ===== 第7步：最终清理普通文本 =====
-        // 清理所有可能残留的编号格式
         content = content.replace(/^#\d+:\s*/, '');
         content = content.replace(/^:\d+\s*/, '');
         content = content.replace(/^\d+:\s*$/, '');
         content = content.replace(/^["']|["']$/g, '');
+        // 清理可能残留的表情包格式标记
+        content = content.replace(/\[(?:Sent sticker|发送表情包|表情包|sticker)[：:][^\]]*\]/gi, '').trim();
         content = content.trim();
 
-        // 如果清理后只剩数字或冒号+数字这种垃圾内容，直接丢弃
         if (!content || /^[:#]?\d+[:#]?$/.test(content) || /^:\d+$/.test(content)) {
             continue;
         }
