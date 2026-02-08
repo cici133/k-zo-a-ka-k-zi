@@ -9307,7 +9307,21 @@ function buildVoiceCallAPIMessages(char, systemPrompt) {
         let textContext = '[Recent text message context before this call]\n';
         recentTexts.forEach(m => {
             if (m.type?.startsWith('voice-call-')) return;
-            textContext += `${m.sender === 'user' ? 'User' : char.name}: ${m.content || ''}\n`;
+            const sender = m.sender === 'user' ? 'User' : char.name;
+            let content = m.content || '';
+
+            // 根据消息类型格式化内容
+            if (m.type === 'sticker') {
+                content = `[Sent sticker: ${m.content || 'sticker'}]`;
+            } else if (m.type === 'scene-image') {
+                content = `[Scene image: ${m.content || ''}]`;
+            } else if (m.type === 'voice') {
+                content = `[Voice message: ${m.content || ''}]`;
+            }
+
+            if (content.trim()) {
+                textContext += `${sender}: ${content}\n`;
+            }
         });
         messages.push({ role: 'system', content: textContext });
     }
