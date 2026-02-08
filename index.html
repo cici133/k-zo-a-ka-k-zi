@@ -9690,7 +9690,7 @@ function buildVoiceCallAPIMessages(char, systemPrompt) {
 
                         // 根据消息类型格式化文本内容（简化格式避免AI模仿）
             if (m.type === 'sticker') {
-                textContent = `(expressed emotion: ${m.content || 'sticker'})`;
+                textContent = `(Sent sticker: ${m.content || 'sticker'})`;
             } else if (m.type === 'scene-image') {
                 textContent = `(shared a scene: ${m.content || ''})`;
             } else if (m.type === 'voice') {
