@@ -3381,6 +3381,269 @@
     z-index: 1;
 }
 
+/* ========== 时间感知功能样式 ========== */
+
+.time-perception-section {
+    margin-top: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(201, 169, 98, 0.08), rgba(201, 169, 98, 0.03));
+    border: 1px solid rgba(201, 169, 98, 0.15);
+    border-radius: 16px;
+    display: none;
+}
+.time-perception-section.active {
+    display: block;
+}
+
+.time-mode-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.time-mode-option {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+.time-mode-option:hover {
+    background: var(--bg-glass-hover);
+    border-color: var(--border-accent);
+}
+.time-mode-option.selected {
+    background: rgba(201, 169, 98, 0.1);
+    border-color: rgba(201, 169, 98, 0.4);
+}
+.time-mode-option.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.time-mode-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.time-mode-radio {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: var(--transition-fast);
+}
+.time-mode-option.selected .time-mode-radio {
+    border-color: var(--accent-gold);
+}
+.time-mode-option.selected .time-mode-radio::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: var(--accent-gold);
+    border-radius: 50%;
+}
+
+.time-mode-info {
+    flex: 1;
+}
+.time-mode-title {
+    font-size: calc(14px * var(--font-scale));
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+.time-mode-desc {
+    font-size: calc(11px * var(--font-scale));
+    color: var(--text-tertiary);
+}
+
+.time-mode-details {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-subtle);
+    display: none;
+}
+.time-mode-option.selected .time-mode-details {
+    display: block;
+}
+
+/* 时区选择器 */
+.timezone-selector-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.timezone-selector-row select {
+    flex: 1;
+}
+.timezone-map-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+    flex-shrink: 0;
+}
+.timezone-map-btn:hover {
+    background: var(--bg-glass-hover);
+    color: var(--text-primary);
+}
+.timezone-map-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+}
+
+/* 自定义年月日覆盖 */
+.date-override-section {
+    margin-top: 14px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    border: 1px solid var(--border-subtle);
+}
+.date-override-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.date-override-label {
+    font-size: calc(12px * var(--font-scale));
+    color: var(--text-secondary);
+}
+.date-override-fields {
+    display: none;
+}
+.date-override-section.active .date-override-fields {
+    display: block;
+}
+
+.date-input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.date-input-group {
+    flex: 1;
+}
+.date-input-group label {
+    display: block;
+    font-size: calc(10px * var(--font-scale));
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.date-input-group input,
+.date-input-group select {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: calc(13px * var(--font-scale));
+    outline: none;
+}
+.date-input-group input:focus,
+.date-input-group select:focus {
+    border-color: rgba(201, 169, 98, 0.5);
+}
+
+/* 完全自定义时间 */
+.custom-time-display {
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(201, 169, 98, 0.08);
+    border-radius: 10px;
+    text-align: center;
+}
+.custom-time-current {
+    font-size: calc(11px * var(--font-scale));
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+}
+.custom-time-value {
+    font-size: calc(16px * var(--font-scale));
+    color: var(--accent-gold);
+    font-family: 'SF Mono', monospace;
+}
+
+/* 地图搜索弹窗 */
+.timezone-search-modal .modal {
+    max-width: 400px;
+}
+.timezone-search-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: calc(14px * var(--font-scale));
+    outline: none;
+    margin-bottom: 12px;
+}
+.timezone-search-input:focus {
+    border-color: rgba(201, 169, 98, 0.5);
+}
+.timezone-search-results {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    background: var(--bg-glass);
+}
+.timezone-search-result {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+.timezone-search-result:last-child {
+    border-bottom: none;
+}
+.timezone-search-result:hover {
+    background: var(--bg-glass-hover);
+}
+.timezone-result-name {
+    font-size: calc(14px * var(--font-scale));
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+.timezone-result-info {
+    font-size: calc(11px * var(--font-scale));
+    color: var(--text-tertiary);
+}
+.timezone-search-loading {
+    padding: 30px;
+    text-align: center;
+    color: var(--text-tertiary);
+}
+.timezone-search-empty {
+    padding: 30px;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: calc(13px * var(--font-scale));
+}
+
 /* ========== 表情包功能样式 - 科幻UI风格 ========== */
 
 /* 表情包键盘面板 - 主容器 */
@@ -5316,6 +5579,240 @@
     </div>
 </div>
 
+<p class="settings-group-title">时间感知</p>
+<div class="settings-group" style="padding:16px">
+    <div class="action-hint">
+        <span class="action-hint-icon">🕐</span>
+        <span class="action-hint-text">让AI感知当前时间，增强对话真实感</span>
+    </div>
+
+    <div class="settings-item" style="padding:0 0 12px 0">
+        <div class="settings-item-left">
+            <span class="settings-item-label">启用时间感知</span>
+        </div>
+        <div class="toggle-switch" id="timePerceptionToggle" onclick="toggleTimePerception()"></div>
+    </div>
+
+    <div class="time-perception-section" id="timePerceptionSection">
+        <div class="time-mode-options">
+            <!-- 选项1：跟随系统时间 -->
+            <div class="time-mode-option selected" id="timeModeSystem" onclick="selectTimeMode('system')">
+                <div class="time-mode-header">
+                    <div class="time-mode-radio"></div>
+                    <div class="time-mode-info">
+                        <div class="time-mode-title">跟随系统时间</div>
+                        <div class="time-mode-desc">使用你设备当前的系统时间和时区</div>
+                    </div>
+                </div>
+                <div class="time-mode-details">
+                    <div class="date-override-section" id="systemDateOverride">
+                        <div class="date-override-header">
+                            <span class="date-override-label">自定义年月日（可选）</span>
+                            <div class="toggle-switch" id="systemDateOverrideToggle" onclick="toggleDateOverride('system', event)"></div>
+                        </div>
+                        <div class="date-override-fields">
+                            <div class="date-input-row">
+                                <div class="date-input-group">
+                                    <label>年份</label>
+                                    <input type="number" id="systemOverrideYear" min="1" max="9999" placeholder="2024">
+                                </div>
+                                <div class="date-input-group">
+                                    <label>月份</label>
+                                    <select id="systemOverrideMonth">
+                                        <option value="1">1月</option>
+                                        <option value="2">2月</option>
+                                        <option value="3">3月</option>
+                                        <option value="4">4月</option>
+                                        <option value="5">5月</option>
+                                        <option value="6">6月</option>
+                                        <option value="7">7月</option>
+                                        <option value="8">8月</option>
+                                        <option value="9">9月</option>
+                                        <option value="10">10月</option>
+                                        <option value="11">11月</option>
+                                        <option value="12">12月</option>
+                                    </select>
+                                </div>
+                                <div class="date-input-group">
+                                    <label>日期</label>
+                                    <input type="number" id="systemOverrideDay" min="1" max="31" placeholder="15">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 选项2：自定义时区 -->
+            <div class="time-mode-option" id="timeModeTimezone" onclick="selectTimeMode('timezone')">
+                <div class="time-mode-header">
+                    <div class="time-mode-radio"></div>
+                    <div class="time-mode-info">
+                        <div class="time-mode-title">自定义时区</div>
+                        <div class="time-mode-desc">选择特定时区或通过地点搜索</div>
+                    </div>
+                </div>
+                <div class="time-mode-details">
+                    <div class="timezone-selector-row">
+                        <select class="select-field" id="timezoneSelect" onchange="updateTimezonePreview()">
+                            <optgroup label="亚洲">
+                                <option value="Asia/Shanghai">中国标准时间 (UTC+8)</option>
+                                <option value="Asia/Tokyo">日本标准时间 (UTC+9)</option>
+                                <option value="Asia/Seoul">韩国标准时间 (UTC+9)</option>
+                                <option value="Asia/Singapore">新加坡时间 (UTC+8)</option>
+                                <option value="Asia/Hong_Kong">香港时间 (UTC+8)</option>
+                                <option value="Asia/Taipei">台北时间 (UTC+8)</option>
+                                <option value="Asia/Bangkok">曼谷时间 (UTC+7)</option>
+                                <option value="Asia/Jakarta">雅加达时间 (UTC+7)</option>
+                                <option value="Asia/Manila">马尼拉时间 (UTC+8)</option>
+                                <option value="Asia/Kolkata">印度标准时间 (UTC+5:30)</option>
+                                <option value="Asia/Dubai">迪拜时间 (UTC+4)</option>
+                            </optgroup>
+                            <optgroup label="欧洲">
+                                <option value="Europe/London">伦敦时间 (UTC+0/+1)</option>
+                                <option value="Europe/Paris">巴黎时间 (UTC+1/+2)</option>
+                                <option value="Europe/Berlin">柏林时间 (UTC+1/+2)</option>
+                                <option value="Europe/Rome">罗马时间 (UTC+1/+2)</option>
+                                <option value="Europe/Madrid">马德里时间 (UTC+1/+2)</option>
+                                <option value="Europe/Amsterdam">阿姆斯特丹时间 (UTC+1/+2)</option>
+                                <option value="Europe/Moscow">莫斯科时间 (UTC+3)</option>
+                                <option value="Europe/Istanbul">伊斯坦布尔时间 (UTC+3)</option>
+                            </optgroup>
+                            <optgroup label="美洲">
+                                <option value="America/New_York">纽约/东部时间 (UTC-5/-4)</option>
+                                <option value="America/Chicago">芝加哥/中部时间 (UTC-6/-5)</option>
+                                <option value="America/Denver">丹佛/山地时间 (UTC-7/-6)</option>
+                                <option value="America/Los_Angeles">洛杉矶/太平洋时间 (UTC-8/-7)</option>
+                                <option value="America/Toronto">多伦多时间 (UTC-5/-4)</option>
+                                <option value="America/Vancouver">温哥华时间 (UTC-8/-7)</option>
+                                <option value="America/Mexico_City">墨西哥城时间 (UTC-6/-5)</option>
+                                <option value="America/Sao_Paulo">圣保罗时间 (UTC-3)</option>
+                                <option value="America/Buenos_Aires">布宜诺斯艾利斯时间 (UTC-3)</option>
+                            </optgroup>
+                            <optgroup label="大洋洲">
+                                <option value="Australia/Sydney">悉尼时间 (UTC+10/+11)</option>
+                                <option value="Australia/Melbourne">墨尔本时间 (UTC+10/+11)</option>
+                                <option value="Australia/Brisbane">布里斯班时间 (UTC+10)</option>
+                                <option value="Australia/Perth">珀斯时间 (UTC+8)</option>
+                                <option value="Pacific/Auckland">奥克兰时间 (UTC+12/+13)</option>
+                                <option value="Pacific/Fiji">斐济时间 (UTC+12)</option>
+                                <option value="Pacific/Honolulu">夏威夷时间 (UTC-10)</option>
+                            </optgroup>
+                            <optgroup label="非洲/中东">
+                                <option value="Africa/Cairo">开罗时间 (UTC+2)</option>
+                                <option value="Africa/Johannesburg">约翰内斯堡时间 (UTC+2)</option>
+                                <option value="Africa/Lagos">拉各斯时间 (UTC+1)</option>
+                                <option value="Africa/Nairobi">内罗毕时间 (UTC+3)</option>
+                            </optgroup>
+                        </select>
+                        <button class="timezone-map-btn" onclick="openTimezoneSearch(event)" title="搜索地点">
+                            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </button>
+                    </div>
+                    <div class="custom-time-display" id="timezonePreview">
+                        <div class="custom-time-current">当前时区时间</div>
+                        <div class="custom-time-value" id="timezonePreviewValue">--:--:--</div>
+                    </div>
+                    <div class="date-override-section" id="timezoneDataOverride" style="margin-top:14px">
+                        <div class="date-override-header">
+                            <span class="date-override-label">自定义年月日（可选）</span>
+                            <div class="toggle-switch" id="timezoneDateOverrideToggle" onclick="toggleDateOverride('timezone', event)"></div>
+                        </div>
+                        <div class="date-override-fields">
+                            <div class="date-input-row">
+                                <div class="date-input-group">
+                                    <label>年份</label>
+                                    <input type="number" id="timezoneOverrideYear" min="1" max="9999" placeholder="2024">
+                                </div>
+                                <div class="date-input-group">
+                                    <label>月份</label>
+                                    <select id="timezoneOverrideMonth">
+                                        <option value="1">1月</option>
+                                        <option value="2">2月</option>
+                                        <option value="3">3月</option>
+                                        <option value="4">4月</option>
+                                        <option value="5">5月</option>
+                                        <option value="6">6月</option>
+                                        <option value="7">7月</option>
+                                        <option value="8">8月</option>
+                                        <option value="9">9月</option>
+                                        <option value="10">10月</option>
+                                        <option value="11">11月</option>
+                                        <option value="12">12月</option>
+                                    </select>
+                                </div>
+                                <div class="date-input-group">
+                                    <label>日期</label>
+                                    <input type="number" id="timezoneOverrideDay" min="1" max="31" placeholder="15">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 选项3：完全自定义时间 -->
+            <div class="time-mode-option" id="timeModeCustom" onclick="selectTimeMode('custom')">
+                <div class="time-mode-header">
+                    <div class="time-mode-radio"></div>
+                    <div class="time-mode-info">
+                        <div class="time-mode-title">完全自定义时间</div>
+                        <div class="time-mode-desc">设定任意年月日和时分，时间会正常流逝</div>
+                    </div>
+                </div>
+                <div class="time-mode-details">
+                    <div class="date-input-row">
+                        <div class="date-input-group">
+                            <label>年份</label>
+                            <input type="number" id="customYear" min="1" max="9999" value="2024">
+                        </div>
+                        <div class="date-input-group">
+                            <label>月份</label>
+                            <select id="customMonth">
+                                <option value="1">1月</option>
+                                <option value="2">2月</option>
+                                <option value="3">3月</option>
+                                <option value="4">4月</option>
+                                <option value="5">5月</option>
+                                <option value="6">6月</option>
+                                <option value="7">7月</option>
+                                <option value="8">8月</option>
+                                <option value="9">9月</option>
+                                <option value="10">10月</option>
+                                <option value="11">11月</option>
+                                <option value="12">12月</option>
+                            </select>
+                        </div>
+                        <div class="date-input-group">
+                            <label>日期</label>
+                            <input type="number" id="customDay" min="1" max="31" value="15">
+                        </div>
+                    </div>
+                    <div class="date-input-row">
+                        <div class="date-input-group">
+                            <label>小时</label>
+                            <input type="number" id="customHour" min="0" max="23" value="12">
+                        </div>
+                        <div class="date-input-group">
+                            <label>分钟</label>
+                            <input type="number" id="customMinute" min="0" max="59" value="0">
+                        </div>
+                        <div class="date-input-group">
+                            <label>秒</label>
+                            <input type="number" id="customSecond" min="0" max="59" value="0">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-small" onclick="setCustomTimeNow()" style="margin-top:10px">设定为起始时间</button>
+                    <div class="custom-time-display" id="customTimeDisplay" style="margin-top:12px">
+                        <div class="custom-time-current">当前虚拟时间（持续流逝中）</div>
+                        <div class="custom-time-value" id="customTimeValue">--:--:--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <p class="settings-group-title">AI表情包设置</p>
 <div class="settings-group" style="padding:16px">
     <div class="action-hint">
@@ -5665,6 +6162,20 @@
             <div class="modal-btns" style="margin-top:16px"><button class="modal-btn cancel" onclick="hideModal('voiceMessageModal')">取消</button><button class="modal-btn confirm" onclick="sendVoiceMessage()">发送</button></div>
         </div>
     </div>
+
+<!-- 时区地点搜索弹窗 -->
+<div class="modal-overlay timezone-search-modal" id="timezoneSearchModal">
+    <div class="modal">
+        <div class="modal-title">搜索地点</div>
+        <input type="text" class="timezone-search-input" id="timezoneSearchInput" placeholder="输入城市名称..." oninput="searchTimezoneDebounced()">
+        <div class="timezone-search-results" id="timezoneSearchResults">
+            <div class="timezone-search-empty">输入城市名称以搜索时区</div>
+        </div>
+        <div class="modal-btns" style="margin-top:16px">
+            <button class="modal-btn cancel" onclick="hideModal('timezoneSearchModal')" style="flex:1">取消</button>
+        </div>
+    </div>
+</div>
 
     <div class="toast-container" id="toastContainer"></div>
 
@@ -6335,6 +6846,18 @@ function getLanguageName(code, useNative = false) {
                     translationLanguage: 'zh'
                 };
             }
+// 初始化时间感知设置
+if (!c.timePerception) {
+    c.timePerception = {
+        enabled: false,
+        mode: 'system',
+        timezone: 'Asia/Shanghai',
+        systemDateOverride: false,
+        timezoneDateOverride: false,
+        customTimeStart: null,
+        customTimeVirtual: null
+    };
+}
         });
         loadSettingsUI();
         if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
@@ -7494,6 +8017,13 @@ solidCharBorderWidth: 1
             applyBubbleStyles(char);
             if (char.customCss) document.getElementById('customCssStyles').textContent = char.customCss;
             else document.getElementById('customCssStyles').textContent = '';
+
+// 如果有自定义时间模式且正在进行中，恢复计时
+if (char.timePerception?.enabled && char.timePerception.mode === 'custom' && char.timePerception.customTimeStart) {
+    customTimeStartReal = char.timePerception.customTimeStart;
+    customTimeStartVirtual = char.timePerception.customTimeVirtual;
+}
+
             renderMessages();
             chatPage.classList.add('active');
         }
@@ -7505,6 +8035,13 @@ solidCharBorderWidth: 1
             App.currentCharId = null;
             App.currentQuote = null;
             exitSelectMode();
+
+// 停止时间相关的更新
+stopCustomTimeUpdate();
+if (timezonePreviewInterval) {
+    clearInterval(timezonePreviewInterval);
+    timezonePreviewInterval = null;
+}
             renderContactList();
         }
 
@@ -8109,6 +8646,12 @@ function renderVoiceCallStatusMessage(msg, statusType, text, senderType, avatarH
 
             if (char.userNick) systemContent += `\n\n[User's Name/Identity]\nThe user is called "${char.userNick}".`;
 
+// 注入时间感知信息
+const timePerceptionPrompt = buildTimePerceptionPrompt(char);
+if (timePerceptionPrompt) {
+    systemContent += timePerceptionPrompt;
+}
+
 // 在 systemContent 构建的最后，Response Format 部分之前添加：
 
 // 获取AI可用的表情包
@@ -8554,6 +9097,9 @@ Important notes:
 // 初始化双语设置
 initBilingualSettings(char);
 
+// 初始化时间感知设置
+initTimePerceptionUI(char);
+
 // 初始化AI表情包设置
 initAIStickerSettingsUI(char);
             document.getElementById('characterSettingsPage').classList.add('active');
@@ -8746,6 +9292,29 @@ if (!char.bilingualSettings) {
 char.bilingualSettings.enabled = document.getElementById('bilingualToggle').classList.contains('active');
 char.bilingualSettings.nativeLanguage = document.getElementById('nativeLanguageSelect').value;
 char.bilingualSettings.translationLanguage = document.getElementById('translationLanguageSelect').value;
+
+// 保存时间感知设置
+if (!char.timePerception) {
+    char.timePerception = { enabled: false, mode: 'system', timezone: 'Asia/Shanghai' };
+}
+char.timePerception.enabled = document.getElementById('timePerceptionToggle').classList.contains('active');
+char.timePerception.timezone = document.getElementById('timezoneSelect').value;
+
+// 系统时间日期覆盖
+char.timePerception.systemDateOverride = document.getElementById('systemDateOverrideToggle').classList.contains('active');
+if (char.timePerception.systemDateOverride) {
+    char.timePerception.systemOverrideYear = parseInt(document.getElementById('systemOverrideYear').value) || null;
+    char.timePerception.systemOverrideMonth = parseInt(document.getElementById('systemOverrideMonth').value) || null;
+    char.timePerception.systemOverrideDay = parseInt(document.getElementById('systemOverrideDay').value) || null;
+}
+
+// 时区日期覆盖
+char.timePerception.timezoneDateOverride = document.getElementById('timezoneDateOverrideToggle').classList.contains('active');
+if (char.timePerception.timezoneDateOverride) {
+    char.timePerception.timezoneOverrideYear = parseInt(document.getElementById('timezoneOverrideYear').value) || null;
+    char.timePerception.timezoneOverrideMonth = parseInt(document.getElementById('timezoneOverrideMonth').value) || null;
+    char.timePerception.timezoneOverrideDay = parseInt(document.getElementById('timezoneOverrideDay').value) || null;
+}
 
 // 保存AI表情包设置
 if (!char.aiStickerSettings) {
@@ -9862,8 +10431,15 @@ renderVoiceCallMessages(true);  // 新消息时滚动到底部
 
         // 构建语音通话系统提示词
         function buildVoiceCallSystemPrompt(char) {
-            let prompt = `You are ${char.name}. ${char.description || ''}
+            let prompt = `You are ${char.name}. ${char.description || ''}`;
 
+// 注入时间感知信息（如果启用）
+const timePerceptionPrompt = buildTimePerceptionPrompt(char);
+if (timePerceptionPrompt) {
+    prompt += timePerceptionPrompt;
+}
+
+prompt += `
 [VOICE CALL IN PROGRESS - HIGHEST PRIORITY]
 You are currently in a [REAL-TIME] voice call with the user. This is real-time voice communication, not text messaging.
 
@@ -9976,8 +10552,15 @@ function buildBilingualVoiceCallSystemPrompt(char) {
     const nativeLangNative = getLanguageName(settings.nativeLanguage, true);
     const translationLangNative = getLanguageName(settings.translationLanguage, true);
 
-    let prompt = `You are ${char.name}. ${char.description || ''}
+    let prompt = `You are ${char.name}. ${char.description || ''}`;
 
+// 注入时间感知信息（如果启用）
+const timePerceptionPrompt = buildTimePerceptionPrompt(char);
+if (timePerceptionPrompt) {
+    prompt += timePerceptionPrompt;
+}
+
+prompt += `
 [VOICE CALL IN PROGRESS - HIGHEST PRIORITY]
 You are currently in a [REAL-TIME] voice call with the user. This is real-time voice communication, not text messaging.
 
@@ -12033,6 +12616,486 @@ triggerAIReply = async function() {
         await checkAutoSummary(char);
     }
 };
+
+// ========== 时间感知功能 ==========
+
+// 时区搜索防抖计时器
+let timezoneSearchTimer = null;
+
+// 自定义时间起始点和更新间隔
+let customTimeStartReal = null;
+let customTimeStartVirtual = null;
+let customTimeInterval = null;
+
+// 预设的城市-时区映射表（用于搜索）
+const CITY_TIMEZONE_MAP = [
+    { city: '北京', country: '中国', timezone: 'Asia/Shanghai' },
+    { city: '上海', country: '中国', timezone: 'Asia/Shanghai' },
+    { city: '广州', country: '中国', timezone: 'Asia/Shanghai' },
+    { city: '深圳', country: '中国', timezone: 'Asia/Shanghai' },
+    { city: '香港', country: '中国', timezone: 'Asia/Hong_Kong' },
+    { city: '台北', country: '台湾', timezone: 'Asia/Taipei' },
+    { city: '东京', country: '日本', timezone: 'Asia/Tokyo' },
+    { city: '大阪', country: '日本', timezone: 'Asia/Tokyo' },
+    { city: '首尔', country: '韩国', timezone: 'Asia/Seoul' },
+    { city: '新加坡', country: '新加坡', timezone: 'Asia/Singapore' },
+    { city: '曼谷', country: '泰国', timezone: 'Asia/Bangkok' },
+    { city: '雅加达', country: '印尼', timezone: 'Asia/Jakarta' },
+    { city: '马尼拉', country: '菲律宾', timezone: 'Asia/Manila' },
+    { city: '孟买', country: '印度', timezone: 'Asia/Kolkata' },
+    { city: '新德里', country: '印度', timezone: 'Asia/Kolkata' },
+    { city: '迪拜', country: '阿联酋', timezone: 'Asia/Dubai' },
+    { city: '伦敦', country: '英国', timezone: 'Europe/London' },
+    { city: '巴黎', country: '法国', timezone: 'Europe/Paris' },
+    { city: '柏林', country: '德国', timezone: 'Europe/Berlin' },
+    { city: '罗马', country: '意大利', timezone: 'Europe/Rome' },
+    { city: '马德里', country: '西班牙', timezone: 'Europe/Madrid' },
+    { city: '阿姆斯特丹', country: '荷兰', timezone: 'Europe/Amsterdam' },
+    { city: '莫斯科', country: '俄罗斯', timezone: 'Europe/Moscow' },
+    { city: '伊斯坦布尔', country: '土耳其', timezone: 'Europe/Istanbul' },
+    { city: '纽约', country: '美国', timezone: 'America/New_York' },
+    { city: '洛杉矶', country: '美国', timezone: 'America/Los_Angeles' },
+    { city: '芝加哥', country: '美国', timezone: 'America/Chicago' },
+    { city: '旧金山', country: '美国', timezone: 'America/Los_Angeles' },
+    { city: '西雅图', country: '美国', timezone: 'America/Los_Angeles' },
+    { city: '华盛顿', country: '美国', timezone: 'America/New_York' },
+    { city: '多伦多', country: '加拿大', timezone: 'America/Toronto' },
+    { city: '温哥华', country: '加拿大', timezone: 'America/Vancouver' },
+    { city: '墨西哥城', country: '墨西哥', timezone: 'America/Mexico_City' },
+    { city: '圣保罗', country: '巴西', timezone: 'America/Sao_Paulo' },
+    { city: '布宜诺斯艾利斯', country: '阿根廷', timezone: 'America/Buenos_Aires' },
+    { city: '悉尼', country: '澳大利亚', timezone: 'Australia/Sydney' },
+    { city: '墨尔本', country: '澳大利亚', timezone: 'Australia/Melbourne' },
+    { city: '布里斯班', country: '澳大利亚', timezone: 'Australia/Brisbane' },
+    { city: '珀斯', country: '澳大利亚', timezone: 'Australia/Perth' },
+    { city: '奥克兰', country: '新西兰', timezone: 'Pacific/Auckland' },
+    { city: '开罗', country: '埃及', timezone: 'Africa/Cairo' },
+    { city: '约翰内斯堡', country: '南非', timezone: 'Africa/Johannesburg' },
+    // 拼音支持
+    { city: 'Beijing', country: 'China', timezone: 'Asia/Shanghai' },
+    { city: 'Shanghai', country: 'China', timezone: 'Asia/Shanghai' },
+    { city: 'Tokyo', country: 'Japan', timezone: 'Asia/Tokyo' },
+    { city: 'Seoul', country: 'Korea', timezone: 'Asia/Seoul' },
+    { city: 'Singapore', country: 'Singapore', timezone: 'Asia/Singapore' },
+    { city: 'London', country: 'UK', timezone: 'Europe/London' },
+    { city: 'Paris', country: 'France', timezone: 'Europe/Paris' },
+    { city: 'New York', country: 'USA', timezone: 'America/New_York' },
+    { city: 'Los Angeles', country: 'USA', timezone: 'America/Los_Angeles' },
+    { city: 'Sydney', country: 'Australia', timezone: 'Australia/Sydney' },
+];
+
+// 切换时间感知开关
+function toggleTimePerception() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+
+    const toggle = document.getElementById('timePerceptionToggle');
+    toggle.classList.toggle('active');
+
+    if (!char.timePerception) {
+        char.timePerception = {
+            enabled: false,
+            mode: 'system', // 'system', 'timezone', 'custom'
+            timezone: 'Asia/Shanghai',
+            systemDateOverride: false,
+            systemOverrideYear: null,
+            systemOverrideMonth: null,
+            systemOverrideDay: null,
+            timezoneDateOverride: false,
+            timezoneOverrideYear: null,
+            timezoneOverrideMonth: null,
+            timezoneOverrideDay: null,
+            customTimeStart: null, // 用户设定时的真实时间戳
+            customTimeVirtual: null // 用户设定的虚拟时间戳
+        };
+    }
+
+    char.timePerception.enabled = toggle.classList.contains('active');
+
+    const section = document.getElementById('timePerceptionSection');
+    section.classList.toggle('active', char.timePerception.enabled);
+
+    if (char.timePerception.enabled) {
+        startTimezonePreviewUpdate();
+        if (char.timePerception.mode === 'custom') {
+            startCustomTimeUpdate(char);
+        }
+    } else {
+        stopCustomTimeUpdate();
+    }
+}
+
+// 选择时间模式（三选一互斥）
+function selectTimeMode(mode) {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char || !char.timePerception) return;
+
+    // 取消之前的选中状态
+    document.querySelectorAll('.time-mode-option').forEach(el => {
+        el.classList.remove('selected');
+    });
+
+    // 选中新的模式
+    const targetOption = document.getElementById('timeMode' + mode.charAt(0).toUpperCase() + mode.slice(1));
+    if (targetOption) {
+        targetOption.classList.add('selected');
+    }
+
+    char.timePerception.mode = mode;
+
+    // 根据模式启动相应的更新
+    stopCustomTimeUpdate();
+    if (mode === 'custom') {
+        startCustomTimeUpdate(char);
+    }
+}
+
+// 切换年月日覆盖
+function toggleDateOverride(type, event) {
+    event.stopPropagation();
+
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char || !char.timePerception) return;
+
+    const toggleId = type + 'DateOverrideToggle';
+    const sectionId = type === 'system' ? 'systemDateOverride' : 'timezoneDataOverride';
+
+    const toggle = document.getElementById(toggleId);
+    toggle.classList.toggle('active');
+
+    const section = document.getElementById(sectionId);
+    section.classList.toggle('active', toggle.classList.contains('active'));
+
+    if (type === 'system') {
+        char.timePerception.systemDateOverride = toggle.classList.contains('active');
+    } else {
+        char.timePerception.timezoneDateOverride = toggle.classList.contains('active');
+    }
+}
+
+// 更新时区预览
+function updateTimezonePreview() {
+    const timezone = document.getElementById('timezoneSelect').value;
+    const previewEl = document.getElementById('timezonePreviewValue');
+
+    try {
+        const now = new Date();
+        const options = {
+            timeZone: timezone,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+        previewEl.textContent = now.toLocaleTimeString('zh-CN', options);
+    } catch (e) {
+        previewEl.textContent = '--:--:--';
+    }
+}
+
+// 开始时区预览更新
+let timezonePreviewInterval = null;
+function startTimezonePreviewUpdate() {
+    updateTimezonePreview();
+    if (timezonePreviewInterval) clearInterval(timezonePreviewInterval);
+    timezonePreviewInterval = setInterval(updateTimezonePreview, 1000);
+}
+
+// 设置自定义时间为起始时间
+function setCustomTimeNow() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char || !char.timePerception) return;
+
+    const year = parseInt(document.getElementById('customYear').value) || 2024;
+    const month = parseInt(document.getElementById('customMonth').value) || 1;
+    const day = parseInt(document.getElementById('customDay').value) || 1;
+    const hour = parseInt(document.getElementById('customHour').value) || 0;
+    const minute = parseInt(document.getElementById('customMinute').value) || 0;
+    const second = parseInt(document.getElementById('customSecond').value) || 0;
+
+    // 验证日期有效性
+    const maxDay = new Date(year, month, 0).getDate();
+    const validDay = Math.min(day, maxDay);
+
+    const virtualDate = new Date(year, month - 1, validDay, hour, minute, second);
+
+    char.timePerception.customTimeStart = Date.now();
+    char.timePerception.customTimeVirtual = virtualDate.getTime();
+
+    startCustomTimeUpdate(char);
+    showToast('Custom time set', 'success');
+}
+
+// 开始自定义时间更新
+function startCustomTimeUpdate(char) {
+    stopCustomTimeUpdate();
+
+    if (!char.timePerception?.customTimeStart || !char.timePerception?.customTimeVirtual) {
+        document.getElementById('customTimeValue').textContent = 'Not set';
+        return;
+    }
+
+    customTimeStartReal = char.timePerception.customTimeStart;
+    customTimeStartVirtual = char.timePerception.customTimeVirtual;
+
+    updateCustomTimeDisplay();
+    customTimeInterval = setInterval(updateCustomTimeDisplay, 1000);
+}
+
+// 停止自定义时间更新
+function stopCustomTimeUpdate() {
+    if (customTimeInterval) {
+        clearInterval(customTimeInterval);
+        customTimeInterval = null;
+    }
+}
+
+// 更新自定义时间显示
+function updateCustomTimeDisplay() {
+    if (!customTimeStartReal || !customTimeStartVirtual) return;
+
+    const elapsed = Date.now() - customTimeStartReal;
+    const currentVirtual = new Date(customTimeStartVirtual + elapsed);
+
+    const displayEl = document.getElementById('customTimeValue');
+    if (displayEl) {
+        const dateStr = `${currentVirtual.getFullYear()}/${(currentVirtual.getMonth() + 1).toString().padStart(2, '0')}/${currentVirtual.getDate().toString().padStart(2, '0')}`;
+        const timeStr = currentVirtual.toLocaleTimeString('zh-CN', { hour12: false });
+        displayEl.textContent = `${dateStr} ${timeStr}`;
+    }
+}
+
+// 打开时区搜索弹窗
+function openTimezoneSearch(event) {
+    event.stopPropagation();
+    document.getElementById('timezoneSearchInput').value = '';
+    document.getElementById('timezoneSearchResults').innerHTML = '<div class="timezone-search-empty">输入城市名称以搜索时区</div>';
+    showModal('timezoneSearchModal');
+    setTimeout(() => document.getElementById('timezoneSearchInput').focus(), 100);
+}
+
+// 防抖搜索时区
+function searchTimezoneDebounced() {
+    if (timezoneSearchTimer) clearTimeout(timezoneSearchTimer);
+    timezoneSearchTimer = setTimeout(searchTimezone, 300);
+}
+
+// 搜索时区
+function searchTimezone() {
+    const query = document.getElementById('timezoneSearchInput').value.trim().toLowerCase();
+    const resultsEl = document.getElementById('timezoneSearchResults');
+
+    if (!query) {
+        resultsEl.innerHTML = '<div class="timezone-search-empty">输入城市名称以搜索时区</div>';
+        return;
+    }
+
+    // 本地搜索
+    const results = CITY_TIMEZONE_MAP.filter(item =>
+        item.city.toLowerCase().includes(query) ||
+        item.country.toLowerCase().includes(query)
+    );
+
+    if (results.length === 0) {
+        resultsEl.innerHTML = '<div class="timezone-search-empty">未找到匹配的城市</div>';
+        return;
+    }
+
+    resultsEl.innerHTML = results.slice(0, 10).map(item => {
+        const now = new Date();
+        let timeStr = '--:--';
+        try {
+            timeStr = now.toLocaleTimeString('zh-CN', { timeZone: item.timezone, hour: '2-digit', minute: '2-digit', hour12: false });
+        } catch (e) {}
+
+        return `<div class="timezone-search-result" onclick="selectSearchedTimezone('${item.timezone}')">
+            <div class="timezone-result-name">${escapeHtml(item.city)}, ${escapeHtml(item.country)}</div>
+            <div class="timezone-result-info">当前时间: ${timeStr}</div>
+        </div>`;
+    }).join('');
+}
+
+// 选择搜索到的时区
+function selectSearchedTimezone(timezone) {
+    document.getElementById('timezoneSelect').value = timezone;
+    updateTimezonePreview();
+    hideModal('timezoneSearchModal');
+    showToast('Timezone selected', 'success');
+}
+
+// 初始化时间感知设置UI
+function initTimePerceptionUI(char) {
+    if (!char.timePerception) {
+        char.timePerception = {
+            enabled: false,
+            mode: 'system',
+            timezone: 'Asia/Shanghai',
+            systemDateOverride: false,
+            timezoneDateOverride: false,
+            customTimeStart: null,
+            customTimeVirtual: null
+        };
+    }
+
+    const tp = char.timePerception;
+
+    // 主开关
+    document.getElementById('timePerceptionToggle').classList.toggle('active', tp.enabled);
+    document.getElementById('timePerceptionSection').classList.toggle('active', tp.enabled);
+
+    // 模式选择
+    document.querySelectorAll('.time-mode-option').forEach(el => el.classList.remove('selected'));
+    const modeEl = document.getElementById('timeMode' + tp.mode.charAt(0).toUpperCase() + tp.mode.slice(1));
+    if (modeEl) modeEl.classList.add('selected');
+
+    // 时区选择
+    document.getElementById('timezoneSelect').value = tp.timezone || 'Asia/Shanghai';
+
+    // 系统时间日期覆盖
+    document.getElementById('systemDateOverrideToggle').classList.toggle('active', tp.systemDateOverride);
+    document.getElementById('systemDateOverride').classList.toggle('active', tp.systemDateOverride);
+    if (tp.systemOverrideYear) document.getElementById('systemOverrideYear').value = tp.systemOverrideYear;
+    if (tp.systemOverrideMonth) document.getElementById('systemOverrideMonth').value = tp.systemOverrideMonth;
+    if (tp.systemOverrideDay) document.getElementById('systemOverrideDay').value = tp.systemOverrideDay;
+
+    // 时区日期覆盖
+    document.getElementById('timezoneDateOverrideToggle').classList.toggle('active', tp.timezoneDateOverride);
+    document.getElementById('timezoneDataOverride').classList.toggle('active', tp.timezoneDateOverride);
+    if (tp.timezoneOverrideYear) document.getElementById('timezoneOverrideYear').value = tp.timezoneOverrideYear;
+    if (tp.timezoneOverrideMonth) document.getElementById('timezoneOverrideMonth').value = tp.timezoneOverrideMonth;
+    if (tp.timezoneOverrideDay) document.getElementById('timezoneOverrideDay').value = tp.timezoneOverrideDay;
+
+    // 自定义时间
+    if (tp.customTimeVirtual) {
+        const vd = new Date(tp.customTimeVirtual);
+        document.getElementById('customYear').value = vd.getFullYear();
+        document.getElementById('customMonth').value = vd.getMonth() + 1;
+        document.getElementById('customDay').value = vd.getDate();
+        document.getElementById('customHour').value = vd.getHours();
+        document.getElementById('customMinute').value = vd.getMinutes();
+        document.getElementById('customSecond').value = vd.getSeconds();
+    }
+
+    if (tp.enabled) {
+        startTimezonePreviewUpdate();
+        if (tp.mode === 'custom' && tp.customTimeStart) {
+            startCustomTimeUpdate(char);
+        }
+    }
+}
+
+// 获取角色当前感知的时间（供AI使用）
+function getPerceivedTime(char) {
+    if (!char.timePerception?.enabled) return null;
+
+    const tp = char.timePerception;
+    let result = { year: null, month: null, day: null, hour: null, minute: null, second: null, dayOfWeek: null, period: null };
+
+    if (tp.mode === 'system') {
+        // 使用系统时间
+        const now = new Date();
+        result.year = now.getFullYear();
+        result.month = now.getMonth() + 1;
+        result.day = now.getDate();
+        result.hour = now.getHours();
+        result.minute = now.getMinutes();
+        result.second = now.getSeconds();
+        result.dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][now.getDay()];
+
+        // 检查日期覆盖
+        if (tp.systemDateOverride) {
+            if (tp.systemOverrideYear) result.year = tp.systemOverrideYear;
+            if (tp.systemOverrideMonth) result.month = tp.systemOverrideMonth;
+            if (tp.systemOverrideDay) result.day = tp.systemOverrideDay;
+        }
+
+    } else if (tp.mode === 'timezone') {
+        // 使用自定义时区
+        const timezone = tp.timezone || 'Asia/Shanghai';
+        try {
+            const now = new Date();
+            const options = { timeZone: timezone };
+            const formatted = now.toLocaleString('en-US', { ...options, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false, weekday: 'long' });
+
+            // 解析格式化的字符串
+            const tzDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+            result.year = tzDate.getFullYear();
+            result.month = tzDate.getMonth() + 1;
+            result.day = tzDate.getDate();
+            result.hour = tzDate.getHours();
+            result.minute = tzDate.getMinutes();
+            result.second = tzDate.getSeconds();
+            result.dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][tzDate.getDay()];
+        } catch (e) {
+            // 回退到系统时间
+            const now = new Date();
+            result.year = now.getFullYear();
+            result.month = now.getMonth() + 1;
+            result.day = now.getDate();
+            result.hour = now.getHours();
+            result.minute = now.getMinutes();
+        }
+
+        // 检查日期覆盖
+        if (tp.timezoneDateOverride) {
+            if (tp.timezoneOverrideYear) result.year = tp.timezoneOverrideYear;
+            if (tp.timezoneOverrideMonth) result.month = tp.timezoneOverrideMonth;
+            if (tp.timezoneOverrideDay) result.day = tp.timezoneOverrideDay;
+        }
+
+    } else if (tp.mode === 'custom') {
+        // 使用完全自定义时间
+        if (tp.customTimeStart && tp.customTimeVirtual) {
+            const elapsed = Date.now() - tp.customTimeStart;
+            const virtualNow = new Date(tp.customTimeVirtual + elapsed);
+            result.year = virtualNow.getFullYear();
+            result.month = virtualNow.getMonth() + 1;
+            result.day = virtualNow.getDate();
+            result.hour = virtualNow.getHours();
+            result.minute = virtualNow.getMinutes();
+            result.second = virtualNow.getSeconds();
+            result.dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][virtualNow.getDay()];
+        }
+    }
+
+    // 确定时段
+    if (result.hour !== null) {
+        if (result.hour >= 5 && result.hour < 9) result.period = 'early morning';
+        else if (result.hour >= 9 && result.hour < 12) result.period = 'morning';
+        else if (result.hour >= 12 && result.hour < 14) result.period = 'noon';
+        else if (result.hour >= 14 && result.hour < 18) result.period = 'afternoon';
+        else if (result.hour >= 18 && result.hour < 21) result.period = 'evening';
+        else if (result.hour >= 21 || result.hour < 1) result.period = 'night';
+        else result.period = 'late night/early morning';
+    }
+
+    return result;
+}
+
+// 生成时间感知提示词
+function buildTimePerceptionPrompt(char) {
+    const time = getPerceivedTime(char);
+    if (!time) return '';
+
+    let prompt = `\n\n[Current Time Awareness]
+The current date and time when the user sent this message:
+- Year: ${time.year}
+- Month: ${time.month}
+- Day: ${time.day}
+- Day of Week: ${time.dayOfWeek || 'Unknown'}
+- Time: ${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}
+- Time Period: ${time.period}
+
+You are aware of this time context. Respond naturally based on the time of day. For example:
+- If it's late at night, you might ask why they're still awake
+- If it's morning, appropriate greetings
+- If it's a weekend vs weekday, your activities might differ
+- Consider the time when reacting to conversations
+
+Do NOT explicitly mention that you "received time information" or "know the current time" - just naturally incorporate this awareness into your responses as a real person would.`;
+
+    return prompt;
+}
 
     </script>
 </body>
