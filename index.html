@@ -5611,34 +5611,40 @@
                             <div class="toggle-switch" id="systemDateOverrideToggle" onclick="toggleDateOverride('system', event)"></div>
                         </div>
                         <div class="date-override-fields">
-                            <div class="date-input-row">
-                                <div class="date-input-group">
-                                    <label>年份</label>
-                                    <input type="number" id="systemOverrideYear" min="1" max="9999" placeholder="2024">
-                                </div>
-                                <div class="date-input-group">
-                                    <label>月份</label>
-                                    <select id="systemOverrideMonth">
-                                        <option value="1">1月</option>
-                                        <option value="2">2月</option>
-                                        <option value="3">3月</option>
-                                        <option value="4">4月</option>
-                                        <option value="5">5月</option>
-                                        <option value="6">6月</option>
-                                        <option value="7">7月</option>
-                                        <option value="8">8月</option>
-                                        <option value="9">9月</option>
-                                        <option value="10">10月</option>
-                                        <option value="11">11月</option>
-                                        <option value="12">12月</option>
-                                    </select>
-                                </div>
-                                <div class="date-input-group">
-                                    <label>日期</label>
-                                    <input type="number" id="systemOverrideDay" min="1" max="31" placeholder="15">
-                                </div>
-                            </div>
-                        </div>
+    <div class="date-input-row">
+        <div class="date-input-group">
+            <label>年份</label>
+            <input type="number" id="systemOverrideYear" min="1" max="9999" placeholder="2024">
+        </div>
+        <div class="date-input-group">
+            <label>月份</label>
+            <select id="systemOverrideMonth">
+                <option value="1">1月</option>
+                <option value="2">2月</option>
+                <option value="3">3月</option>
+                <option value="4">4月</option>
+                <option value="5">5月</option>
+                <option value="6">6月</option>
+                <option value="7">7月</option>
+                <option value="8">8月</option>
+                <option value="9">9月</option>
+                <option value="10">10月</option>
+                <option value="11">11月</option>
+                <option value="12">12月</option>
+            </select>
+        </div>
+        <div class="date-input-group">
+            <label>日期</label>
+            <input type="number" id="systemOverrideDay" min="1" max="31" placeholder="15">
+        </div>
+    </div>
+    <button class="btn btn-secondary btn-small" id="setSystemDateStartBtn" onclick="setSystemDateStart()" style="margin-top:10px">设定为起始日期</button>
+    <div class="custom-time-display" id="systemOverrideDatePreview" style="margin-top:10px;display:none">
+        <div class="custom-time-current">当前虚拟日期（持续流逝中）</div>
+        <div class="custom-time-value" id="systemOverrideDateValue">--</div>
+    </div>
+    <button class="btn btn-secondary btn-small" id="updateSystemDateBtn" onclick="updateSystemDateFromCurrent()" style="margin-top:8px;display:none">更新为当前流逝日期</button>
+</div>
                     </div>
                 </div>
             </div>
@@ -5719,34 +5725,40 @@
                             <div class="toggle-switch" id="timezoneDateOverrideToggle" onclick="toggleDateOverride('timezone', event)"></div>
                         </div>
                         <div class="date-override-fields">
-                            <div class="date-input-row">
-                                <div class="date-input-group">
-                                    <label>年份</label>
-                                    <input type="number" id="timezoneOverrideYear" min="1" max="9999" placeholder="2024">
-                                </div>
-                                <div class="date-input-group">
-                                    <label>月份</label>
-                                    <select id="timezoneOverrideMonth">
-                                        <option value="1">1月</option>
-                                        <option value="2">2月</option>
-                                        <option value="3">3月</option>
-                                        <option value="4">4月</option>
-                                        <option value="5">5月</option>
-                                        <option value="6">6月</option>
-                                        <option value="7">7月</option>
-                                        <option value="8">8月</option>
-                                        <option value="9">9月</option>
-                                        <option value="10">10月</option>
-                                        <option value="11">11月</option>
-                                        <option value="12">12月</option>
-                                    </select>
-                                </div>
-                                <div class="date-input-group">
-                                    <label>日期</label>
-                                    <input type="number" id="timezoneOverrideDay" min="1" max="31" placeholder="15">
-                                </div>
-                            </div>
-                        </div>
+    <div class="date-input-row">
+        <div class="date-input-group">
+            <label>年份</label>
+            <input type="number" id="timezoneOverrideYear" min="1" max="9999" placeholder="2024">
+        </div>
+        <div class="date-input-group">
+            <label>月份</label>
+            <select id="timezoneOverrideMonth">
+                <option value="1">1月</option>
+                <option value="2">2月</option>
+                <option value="3">3月</option>
+                <option value="4">4月</option>
+                <option value="5">5月</option>
+                <option value="6">6月</option>
+                <option value="7">7月</option>
+                <option value="8">8月</option>
+                <option value="9">9月</option>
+                <option value="10">10月</option>
+                <option value="11">11月</option>
+                <option value="12">12月</option>
+            </select>
+        </div>
+        <div class="date-input-group">
+            <label>日期</label>
+            <input type="number" id="timezoneOverrideDay" min="1" max="31" placeholder="15">
+        </div>
+    </div>
+    <button class="btn btn-secondary btn-small" id="setTimezoneDateStartBtn" onclick="setTimezoneDateStart()" style="margin-top:10px">设定为起始日期</button>
+    <div class="custom-time-display" id="timezoneOverrideDatePreview" style="margin-top:10px;display:none">
+        <div class="custom-time-current">当前虚拟日期（持续流逝中）</div>
+        <div class="custom-time-value" id="timezoneOverrideDateValue">--</div>
+    </div>
+    <button class="btn btn-secondary btn-small" id="updateTimezoneDateBtn" onclick="updateTimezoneDateFromCurrent()" style="margin-top:8px;display:none">更新为当前流逝日期</button>
+</div>
                     </div>
                 </div>
             </div>
@@ -5803,7 +5815,8 @@
                         </div>
                     </div>
                     <button class="btn btn-secondary btn-small" onclick="setCustomTimeNow()" style="margin-top:10px">设定为起始时间</button>
-                    <div class="custom-time-display" id="customTimeDisplay" style="margin-top:12px">
+<button class="btn btn-secondary btn-small" id="updateCustomTimeBtn" onclick="updateCustomTimeFromCurrent()" style="margin-top:8px;display:none">更新为当前流逝时间</button>
+<div class="custom-time-display" id="customTimeDisplay" style="margin-top:12px">
                         <div class="custom-time-current">当前虚拟时间（持续流逝中）</div>
                         <div class="custom-time-value" id="customTimeValue">--:--:--</div>
                     </div>
@@ -6846,6 +6859,36 @@ function getLanguageName(code, useNative = false) {
                     translationLanguage: 'zh'
                 };
             }
+
+// 在 loadData 中的 timePerception 初始化部分添加：
+if (!c.timePerception) {
+    c.timePerception = {
+        enabled: false,
+        mode: 'system',
+        timezone: 'Asia/Shanghai',
+        systemDateOverride: false,
+        systemDateOverrideSetAt: null,
+        timezoneDateOverride: false,
+        timezoneDateOverrideSetAt: null,
+        customTimeStart: null,
+        customTimeVirtual: null
+    };
+}
+// 迁移旧数据：如果已有日期覆盖但没有setAt时间戳
+if (c.timePerception.systemDateOverride && !c.timePerception.systemDateOverrideSetAt) {
+    c.timePerception.systemDateOverrideSetAt = Date.now();
+}
+if (c.timePerception.timezoneDateOverride && !c.timePerception.timezoneDateOverrideSetAt) {
+    c.timePerception.timezoneDateOverrideSetAt = Date.now();
+}
+// 迁移旧数据：如果已有覆盖但没有setAt时间戳，补一个
+if (c.timePerception.systemDateOverride && !c.timePerception.systemDateOverrideSetAt) {
+    c.timePerception.systemDateOverrideSetAt = Date.now();
+}
+if (c.timePerception.timezoneDateOverride && !c.timePerception.timezoneDateOverrideSetAt) {
+    c.timePerception.timezoneDateOverrideSetAt = Date.now();
+}
+
 // 初始化时间感知设置
 if (!c.timePerception) {
     c.timePerception = {
@@ -8054,11 +8097,12 @@ if (timezonePreviewInterval) {
     let lastDate = '';
 
     char.messages.forEach((msg, idx) => {
-        const msgDate = new Date(msg.timestamp).toDateString();
-        if (msgDate !== lastDate) {
-            html += `<div class="date-separator"><span class="date-separator-text">${new Date(msg.timestamp).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span></div>`;
-            lastDate = msgDate;
-        }
+        const displayTs = getMessageDisplayTime(msg, char);
+const msgDate = new Date(displayTs).toDateString();
+if (msgDate !== lastDate) {
+    html += `<div class="date-separator"><span class="date-separator-text">${new Date(displayTs).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span></div>`;
+    lastDate = msgDate;
+}
 
         const senderType = msg.sender === 'user' ? 'sent' : 'received';
         const showAvatar = char.showAvatar !== false;
@@ -8075,7 +8119,8 @@ if (timezonePreviewInterval) {
         }
 
         const timeClass = timestampPos === 'hidden' ? 'time-hidden' : timestampPos === 'side' ? 'time-side' : '';
-        const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        const displayTimestamp = getMessageDisplayTime(msg, char);
+const time = new Date(displayTimestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
         // 处理语音通话状态消息
         if (msg.type === 'voice-call-initiated') {
@@ -8310,12 +8355,13 @@ function renderStickerMessage(msg, type, avatarHtml, time, timeClass) {
             if (!char) return;
 
             const msg = {
-                id: 'msg-' + Date.now(),
-                sender: 'user',
-                content,
-                timestamp: Date.now(),
-                quoteId: App.currentQuote?.id || null
-            };
+    id: 'msg-' + Date.now(),
+    sender: 'user',
+    content,
+    timestamp: Date.now(),
+    virtualTimestamp: getVirtualTimestamp(char),
+    quoteId: App.currentQuote?.id || null
+};
             char.messages.push(msg);
             input.value = '';
             input.style.height = 'auto';
@@ -8360,7 +8406,7 @@ function renderVoiceCallStatusMessage(msg, statusType, text, senderType, avatarH
                 const char = App.characters.find(c => c.id === App.currentCharId);
                 if (!char) return;
                 const compressed = await compressImage(ev.target.result, 400, 0.8);
-                const msg = { id: 'msg-' + Date.now(), sender: 'user', content: '', image: compressed, timestamp: Date.now() };
+                const msg = { id: 'msg-' + Date.now(), sender: 'user', content: '', image: compressed, timestamp: Date.now(), virtualTimestamp: getVirtualTimestamp(char) };
                 char.messages.push(msg);
                 renderMessages();
                 await saveData();
@@ -8386,7 +8432,8 @@ function renderVoiceCallStatusMessage(msg, statusType, text, senderType, avatarH
                 sender: 'user',
                 type: 'scene-image',
                 content: desc,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+virtualTimestamp: getVirtualTimestamp(char)
             };
             char.messages.push(msg);
             hideModal('sceneImageModal');
@@ -8411,7 +8458,8 @@ function renderVoiceCallStatusMessage(msg, statusType, text, senderType, avatarH
                 sender: 'user',
                 type: 'voice',
                 content: text,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+virtualTimestamp: getVirtualTimestamp(char)
             };
             char.messages.push(msg);
             hideModal('voiceMessageModal');
@@ -8732,7 +8780,17 @@ Important notes:
     let role = msg.sender === 'user' ? 'user' : 'assistant';
     let content = msg.content || '';
 
-    // 处理语音通话状态消息 - 添加解释说明
+    // 构建时间标记（如果启用了时间感知）
+    let timePrefix = '';
+    if (char.timePerception?.enabled) {
+        const displayTs = getMessageDisplayTime(msg, char);
+        const d = new Date(displayTs);
+        const dateStr = `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}`;
+        const timeStr = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+        timePrefix = `[${dateStr} ${timeStr}] `;
+    }
+
+    // 处理语音通话状态消息
     if (msg.type === 'voice-call-initiated') {
         const userName = char.userNick || 'User';
         content = `[System: ${userName} initiated a voice call request]`;
@@ -8747,31 +8805,28 @@ Important notes:
         const mins = Math.floor(msg.duration / 60);
         const secs = msg.duration % 60;
         content = `[System: Voice call ended. Duration: ${mins}:${secs.toString().padStart(2, '0')}]`;
-        // 系统消息可以作为user消息发送
         role = 'user';
     } else if (msg.type === 'scene-image') {
-        // Handle special message types in history
         content = `[IMG:${msg.content}]`;
     } else if (msg.type === 'voice') {
         content = `[VOICE:${msg.content}]`;
-   } else if (msg.type === 'sticker') {
-       content = `[Sent sticker: ${msg.content || 'sticker'}]`;
+    } else if (msg.type === 'sticker') {
+        content = `[Sent sticker: ${msg.content || 'sticker'}]`;
     }
 
     if (msg.image) {
         messages.push({
             role, content: [
-                { type: 'text', text: `#${msgNum}: ${content}` },
+                { type: 'text', text: `${timePrefix}#${msgNum}: ${content}` },
                 { type: 'image_url', image_url: { url: msg.image } }
             ]
         });
     } else {
-        // Merge consecutive same-role messages
         const lastMsg = messages[messages.length - 1];
         if (lastMsg && lastMsg.role === role && typeof lastMsg.content === 'string') {
-            lastMsg.content += `|||#${msgNum}: ${content}`;
+            lastMsg.content += `|||${timePrefix}#${msgNum}: ${content}`;
         } else {
-            messages.push({ role, content: `#${msgNum}: ${content}` });
+            messages.push({ role, content: `${timePrefix}#${msgNum}: ${content}` });
         }
     }
 });
@@ -9000,6 +9055,7 @@ Important notes:
                         content: p.content,
                         type: p.type || 'text',
                         timestamp: Date.now(),
+        virtualTimestamp: getVirtualTimestamp(char),
                         quoteId: p.quoteId
                     };
 
@@ -9303,9 +9359,11 @@ char.timePerception.timezone = document.getElementById('timezoneSelect').value;
 // 系统时间日期覆盖
 char.timePerception.systemDateOverride = document.getElementById('systemDateOverrideToggle').classList.contains('active');
 if (char.timePerception.systemDateOverride) {
+    // 只更新年月日值，不自动设置setAt（setAt由「设定为起始日期」按钮控制）
     char.timePerception.systemOverrideYear = parseInt(document.getElementById('systemOverrideYear').value) || null;
     char.timePerception.systemOverrideMonth = parseInt(document.getElementById('systemOverrideMonth').value) || null;
     char.timePerception.systemOverrideDay = parseInt(document.getElementById('systemOverrideDay').value) || null;
+    // 注意：不再在此处自动设置 systemDateOverrideSetAt
 }
 
 // 时区日期覆盖
@@ -9314,6 +9372,7 @@ if (char.timePerception.timezoneDateOverride) {
     char.timePerception.timezoneOverrideYear = parseInt(document.getElementById('timezoneOverrideYear').value) || null;
     char.timePerception.timezoneOverrideMonth = parseInt(document.getElementById('timezoneOverrideMonth').value) || null;
     char.timePerception.timezoneOverrideDay = parseInt(document.getElementById('timezoneOverrideDay').value) || null;
+    // 注意：不再在此处自动设置 timezoneDateOverrideSetAt
 }
 
 // 保存AI表情包设置
@@ -9333,8 +9392,9 @@ char.aiStickerSettings.count = parseInt(document.getElementById('aiStickerCount'
         }
 
         function closeCharacterSettings() {
-            document.getElementById('characterSettingsPage').classList.remove('active');
-        }
+    document.getElementById('characterSettingsPage').classList.remove('active');
+    stopDateOverridePreview();
+}
 
         async function handleCharAvatarUpload(e) {
             const file = e.target.files[0];
@@ -9850,12 +9910,13 @@ VoiceCallState.charId = App.currentCharId;  // 新增：保存当前角色ID，�
 
     // 添加"用户发起语音通话"消息到聊天记录
     const initiatedMsg = {
-        id: 'msg-' + Date.now(),
-        sender: 'user',
-        type: 'voice-call-initiated',
-        content: '',
-        timestamp: Date.now()
-    };
+    id: 'msg-' + Date.now(),
+    sender: 'user',
+    type: 'voice-call-initiated',
+    content: '',
+    timestamp: Date.now(),
+    virtualTimestamp: getVirtualTimestamp(char)
+};
     char.messages.push(initiatedMsg);
     renderMessages();
     await saveData();
@@ -10119,12 +10180,13 @@ async function handleCallRejected(char) {
     // 添加"已拒绝"消息到聊天记录
     if (char) {
         const rejectedMsg = {
-            id: 'msg-' + Date.now(),
-            sender: 'char',
-            type: 'voice-call-rejected',
-            content: '',
-            timestamp: Date.now()
-        };
+    id: 'msg-' + Date.now(),
+    sender: 'char',
+    type: 'voice-call-rejected',
+    content: '',
+    timestamp: Date.now(),
+    virtualTimestamp: getVirtualTimestamp(char)
+};
         char.messages.push(rejectedMsg);
         // 【修复】只有当前在该角色的聊天页面时才渲染消息
         if (App.currentCharId === charId) {
@@ -10216,12 +10278,13 @@ async function cancelVoiceCall() {
     // 添加"已取消"消息到聊天记录
     if (char) {
         const cancelledMsg = {
-            id: 'msg-' + Date.now(),
-            sender: 'user',
-            type: 'voice-call-cancelled',
-            content: '',
-            timestamp: Date.now()
-        };
+    id: 'msg-' + Date.now(),
+    sender: 'user',
+    type: 'voice-call-cancelled',
+    content: '',
+    timestamp: Date.now(),
+    virtualTimestamp: getVirtualTimestamp(char)
+};
         char.messages.push(cancelledMsg);
         // 【修复】只有当前在该角色的聊天页面时才渲染消息
         if (App.currentCharId === charId) {
@@ -10695,27 +10758,36 @@ function buildVoiceCallAPIMessages(char, systemPrompt) {
         let textSummary = '[TEXT MESSAGE HISTORY BEFORE THIS CALL - For context only, do NOT use text message format during voice call]\n';
 
         recentTexts.forEach(m => {
-            // 跳过语音通话状态消息
-            if (m.type?.startsWith('voice-call-')) return;
+    // 跳过语音通话状态消息
+    if (m.type?.startsWith('voice-call-')) return;
 
-            const sender = m.sender === 'user' ? 'User' : (char.nickname || char.name);
-            let textContent = m.content || '';
+    const sender = m.sender === 'user' ? 'User' : (char.nickname || char.name);
+    let textContent = m.content || '';
 
-                        // 根据消息类型格式化文本内容（简化格式避免AI模仿）
-            if (m.type === 'sticker') {
-                textContent = `(Sent sticker: ${m.content || 'sticker'})`;
-            } else if (m.type === 'scene-image') {
-                textContent = `(shared a scene: ${m.content || ''})`;
-            } else if (m.type === 'voice') {
-                textContent = `(voice message: ${m.content || ''})`;
-            } else if (m.image && !m.content) {
-                textContent = '(shared an image)';
-            }
+    // 根据消息类型格式化文本内容（简化格式避免AI模仿）
+    if (m.type === 'sticker') {
+        textContent = `(Sent sticker: ${m.content || 'sticker'})`;
+    } else if (m.type === 'scene-image') {
+        textContent = `(shared a scene: ${m.content || ''})`;
+    } else if (m.type === 'voice') {
+        textContent = `(voice message: ${m.content || ''})`;
+    } else if (m.image && !m.content) {
+        textContent = '(shared an image)';
+    }
 
-            if (textContent.trim()) {
-                textSummary += `${sender}: ${textContent}\n`;
-            }
-        });
+    if (textContent.trim()) {
+        // 【修复】如果启用了时间感知，给短信历史加时间标记
+        let timePrefix = '';
+        if (char.timePerception?.enabled) {
+            const displayTs = getMessageDisplayTime(m, char);
+            const d = new Date(displayTs);
+            const dateStr = `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}`;
+            const timeStr = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+            timePrefix = `[${dateStr} ${timeStr}] `;
+        }
+        textSummary += `${timePrefix}${sender}: ${textContent}\n`;
+    }
+});
 
         // 作为单条系统消息添加
         messages.push({
@@ -10890,13 +10962,14 @@ async function endVoiceCall(aiInitiated = false) {
     // 添加通话结束系统消息
     if (char) {
         const endedMsg = {
-            id: 'msg-' + Date.now(),
-            sender: 'system',
-            type: 'voice-call-ended',
-            content: '',
-            duration: callDuration,
-            timestamp: Date.now()
-        };
+    id: 'msg-' + Date.now(),
+    sender: 'system',
+    type: 'voice-call-ended',
+    content: '',
+    duration: callDuration,
+    timestamp: Date.now(),
+    virtualTimestamp: getVirtualTimestamp(char)
+};
         char.messages.push(endedMsg);
         await saveData();
     }
@@ -11730,7 +11803,8 @@ async function sendSticker(id) {
         content: sticker.description,
         stickerUrl: sticker.url || sticker.data,
         stickerId: sticker.id,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+virtualTimestamp: getVirtualTimestamp(char)
     };
 
     char.messages.push(msg);
@@ -12730,12 +12804,10 @@ function selectTimeMode(mode) {
     const char = App.characters.find(c => c.id === App.currentCharId);
     if (!char || !char.timePerception) return;
 
-    // 取消之前的选中状态
     document.querySelectorAll('.time-mode-option').forEach(el => {
         el.classList.remove('selected');
     });
 
-    // 选中新的模式
     const targetOption = document.getElementById('timeMode' + mode.charAt(0).toUpperCase() + mode.slice(1));
     if (targetOption) {
         targetOption.classList.add('selected');
@@ -12743,11 +12815,13 @@ function selectTimeMode(mode) {
 
     char.timePerception.mode = mode;
 
-    // 根据模式启动相应的更新
     stopCustomTimeUpdate();
     if (mode === 'custom') {
         startCustomTimeUpdate(char);
     }
+
+    // 刷新所有预览按钮的显示状态
+    updateDateOverridePreview();
 }
 
 // 切换年月日覆盖
@@ -12768,9 +12842,23 @@ function toggleDateOverride(type, event) {
 
     if (type === 'system') {
         char.timePerception.systemDateOverride = toggle.classList.contains('active');
+        // 不再在这里自动设置 setAt，由用户点击「设定为起始日期」按钮来设置
+        if (!char.timePerception.systemDateOverride) {
+            // 关闭时清除setAt和预览
+            char.timePerception.systemDateOverrideSetAt = null;
+            document.getElementById('systemOverrideDatePreview').style.display = 'none';
+            document.getElementById('updateSystemDateBtn').style.display = 'none';
+        }
     } else {
         char.timePerception.timezoneDateOverride = toggle.classList.contains('active');
+        if (!char.timePerception.timezoneDateOverride) {
+            char.timePerception.timezoneDateOverrideSetAt = null;
+            document.getElementById('timezoneOverrideDatePreview').style.display = 'none';
+            document.getElementById('updateTimezoneDateBtn').style.display = 'none';
+        }
     }
+
+    updateDateOverridePreview();
 }
 
 // 更新时区预览
@@ -12801,6 +12889,200 @@ function startTimezonePreviewUpdate() {
     timezonePreviewInterval = setInterval(updateTimezonePreview, 1000);
 }
 
+// ===== 模式3：更新自定义起始时间为当前流逝时间 =====
+function updateCustomTimeFromCurrent() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char || !char.timePerception) return;
+    const tp = char.timePerception;
+
+    if (!tp.customTimeStart || !tp.customTimeVirtual) {
+        showToast('Please set a start time first', 'error');
+        return;
+    }
+
+    // 计算当前虚拟时间
+    const elapsed = Date.now() - tp.customTimeStart;
+    const currentVirtual = new Date(tp.customTimeVirtual + elapsed);
+
+    // 把当前虚拟时间回填到输入框
+    document.getElementById('customYear').value = currentVirtual.getFullYear();
+    document.getElementById('customMonth').value = currentVirtual.getMonth() + 1;
+    document.getElementById('customDay').value = currentVirtual.getDate();
+    document.getElementById('customHour').value = currentVirtual.getHours();
+    document.getElementById('customMinute').value = currentVirtual.getMinutes();
+    document.getElementById('customSecond').value = currentVirtual.getSeconds();
+
+    // 以当前流逝时间为新的起点，重新开始计时
+    tp.customTimeStart = Date.now();
+    tp.customTimeVirtual = currentVirtual.getTime();
+
+    // 重新启动更新
+    startCustomTimeUpdate(char);
+
+    showToast('Start time updated to current elapsed time', 'success');
+}
+
+// ===== 模式1：设定系统日期覆盖的起始日期 =====
+function setSystemDateStart() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char || !char.timePerception) return;
+    const tp = char.timePerception;
+
+    const year = parseInt(document.getElementById('systemOverrideYear').value);
+    const month = parseInt(document.getElementById('systemOverrideMonth').value);
+    const day = parseInt(document.getElementById('systemOverrideDay').value);
+
+    if (!year || !month || !day) {
+        showToast('Please fill in year, month and day', 'error');
+        return;
+    }
+
+    // 验证日期有效性
+    const maxDay = new Date(year, month, 0).getDate();
+    if (day > maxDay) {
+        showToast(`${month}月最多只有${maxDay}天`, 'error');
+        return;
+    }
+
+    // 保存数据并记录设定时间点
+    tp.systemOverrideYear = year;
+    tp.systemOverrideMonth = month;
+    tp.systemOverrideDay = Math.min(day, maxDay);
+    tp.systemDateOverrideSetAt = Date.now();
+
+    // 显示预览和更新按钮
+    document.getElementById('systemOverrideDatePreview').style.display = 'block';
+    document.getElementById('updateSystemDateBtn').style.display = 'block';
+
+    // 启动预览更新
+    startDateOverridePreview();
+
+    showToast('Start date set, time is now flowing', 'success');
+}
+
+// ===== 模式2：设定时区日期覆盖的起始日期 =====
+function setTimezoneDateStart() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char || !char.timePerception) return;
+    const tp = char.timePerception;
+
+    const year = parseInt(document.getElementById('timezoneOverrideYear').value);
+    const month = parseInt(document.getElementById('timezoneOverrideMonth').value);
+    const day = parseInt(document.getElementById('timezoneOverrideDay').value);
+
+    if (!year || !month || !day) {
+        showToast('Please fill in year, month and day', 'error');
+        return;
+    }
+
+    // 验证日期有效性
+    const maxDay = new Date(year, month, 0).getDate();
+    if (day > maxDay) {
+        showToast(`${month}月最多只有${maxDay}天`, 'error');
+        return;
+    }
+
+    // 保存数据并记录设定时间点
+    tp.timezoneOverrideYear = year;
+    tp.timezoneOverrideMonth = month;
+    tp.timezoneOverrideDay = Math.min(day, maxDay);
+    tp.timezoneDateOverrideSetAt = Date.now();
+
+    // 显示预览和更新按钮
+    document.getElementById('timezoneOverrideDatePreview').style.display = 'block';
+    document.getElementById('updateTimezoneDateBtn').style.display = 'block';
+
+    // 启动预览更新
+    startDateOverridePreview();
+
+    showToast('Start date set, time is now flowing', 'success');
+}
+
+// ===== 模式1：更新系统时间日期覆盖为当前流逝日期 =====
+function updateSystemDateFromCurrent() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char || !char.timePerception) return;
+    const tp = char.timePerception;
+
+    if (!tp.systemDateOverride || !tp.systemDateOverrideSetAt) {
+        showToast('Date override not active', 'error');
+        return;
+    }
+
+    // 计算当前虚拟日期
+    const now = new Date();
+    const baseYear = tp.systemOverrideYear || now.getFullYear();
+    const baseMonth = (tp.systemOverrideMonth || (now.getMonth() + 1)) - 1;
+    const baseDay = tp.systemOverrideDay || now.getDate();
+
+    const setAt = tp.systemDateOverrideSetAt;
+    const elapsedMs = Date.now() - setAt;
+
+    const setAtDate = new Date(setAt);
+    const baseDate = new Date(baseYear, baseMonth, baseDay,
+        setAtDate.getHours(), setAtDate.getMinutes(), setAtDate.getSeconds());
+    const virtualNow = new Date(baseDate.getTime() + elapsedMs);
+
+    // 回填到输入框
+    document.getElementById('systemOverrideYear').value = virtualNow.getFullYear();
+    document.getElementById('systemOverrideMonth').value = virtualNow.getMonth() + 1;
+    document.getElementById('systemOverrideDay').value = virtualNow.getDate();
+
+    // 更新数据并重置setAt
+    tp.systemOverrideYear = virtualNow.getFullYear();
+    tp.systemOverrideMonth = virtualNow.getMonth() + 1;
+    tp.systemOverrideDay = virtualNow.getDate();
+    tp.systemDateOverrideSetAt = Date.now();
+
+    showToast('Date updated to current elapsed date', 'success');
+}
+
+// ===== 模式2：更新时区日期覆盖为当前流逝日期 =====
+function updateTimezoneDateFromCurrent() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char || !char.timePerception) return;
+    const tp = char.timePerception;
+
+    if (!tp.timezoneDateOverride || !tp.timezoneDateOverrideSetAt) {
+        showToast('Date override not active', 'error');
+        return;
+    }
+
+    const timezone = tp.timezone || 'Asia/Shanghai';
+
+    try {
+        const now = new Date();
+        const tzDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+
+        const baseYear = tp.timezoneOverrideYear || tzDate.getFullYear();
+        const baseMonth = (tp.timezoneOverrideMonth || (tzDate.getMonth() + 1)) - 1;
+        const baseDay = tp.timezoneOverrideDay || tzDate.getDate();
+
+        const setAt = tp.timezoneDateOverrideSetAt;
+        const elapsedMs = Date.now() - setAt;
+
+        const setAtTzDate = new Date(new Date(setAt).toLocaleString('en-US', { timeZone: timezone }));
+        const baseDate = new Date(baseYear, baseMonth, baseDay,
+            setAtTzDate.getHours(), setAtTzDate.getMinutes(), setAtTzDate.getSeconds());
+        const virtualNow = new Date(baseDate.getTime() + elapsedMs);
+
+        // 回填到输入框
+        document.getElementById('timezoneOverrideYear').value = virtualNow.getFullYear();
+        document.getElementById('timezoneOverrideMonth').value = virtualNow.getMonth() + 1;
+        document.getElementById('timezoneOverrideDay').value = virtualNow.getDate();
+
+        // 更新数据并重置setAt
+        tp.timezoneOverrideYear = virtualNow.getFullYear();
+        tp.timezoneOverrideMonth = virtualNow.getMonth() + 1;
+        tp.timezoneOverrideDay = virtualNow.getDate();
+        tp.timezoneDateOverrideSetAt = Date.now();
+
+        showToast('Date updated to current elapsed date', 'success');
+    } catch (e) {
+        showToast('Failed to update date', 'error');
+    }
+}
+
 // 设置自定义时间为起始时间
 function setCustomTimeNow() {
     const char = App.characters.find(c => c.id === App.currentCharId);
@@ -12813,7 +13095,6 @@ function setCustomTimeNow() {
     const minute = parseInt(document.getElementById('customMinute').value) || 0;
     const second = parseInt(document.getElementById('customSecond').value) || 0;
 
-    // 验证日期有效性
     const maxDay = new Date(year, month, 0).getDate();
     const validDay = Math.min(day, maxDay);
 
@@ -12823,6 +13104,11 @@ function setCustomTimeNow() {
     char.timePerception.customTimeVirtual = virtualDate.getTime();
 
     startCustomTimeUpdate(char);
+
+    // 显示"更新起始时间"按钮
+    const updateBtn = document.getElementById('updateCustomTimeBtn');
+    if (updateBtn) updateBtn.style.display = 'block';
+
     showToast('Custom time set', 'success');
 }
 
@@ -12847,6 +13133,98 @@ function stopCustomTimeUpdate() {
     if (customTimeInterval) {
         clearInterval(customTimeInterval);
         customTimeInterval = null;
+    }
+}
+
+let dateOverridePreviewInterval = null;
+
+function startDateOverridePreview() {
+    stopDateOverridePreview();
+    updateDateOverridePreview();
+    dateOverridePreviewInterval = setInterval(updateDateOverridePreview, 1000);
+}
+
+function stopDateOverridePreview() {
+    if (dateOverridePreviewInterval) {
+        clearInterval(dateOverridePreviewInterval);
+        dateOverridePreviewInterval = null;
+    }
+}
+
+function updateDateOverridePreview() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char || !char.timePerception) return;
+    const tp = char.timePerception;
+
+    // 模式1 系统时间日期覆盖预览
+    const systemPreviewEl = document.getElementById('systemOverrideDateValue');
+    const systemPreviewContainer = document.getElementById('systemOverrideDatePreview');
+    const systemUpdateBtn = document.getElementById('updateSystemDateBtn');
+
+    if (tp.mode === 'system' && tp.systemDateOverride && tp.systemDateOverrideSetAt) {
+        const now = new Date();
+        const baseYear = tp.systemOverrideYear || now.getFullYear();
+        const baseMonth = (tp.systemOverrideMonth || (now.getMonth() + 1)) - 1;
+        const baseDay = tp.systemOverrideDay || now.getDate();
+
+        const setAt = tp.systemDateOverrideSetAt;
+        const elapsedMs = Date.now() - setAt;
+
+        const setAtDate = new Date(setAt);
+        const baseDate = new Date(baseYear, baseMonth, baseDay,
+            setAtDate.getHours(), setAtDate.getMinutes(), setAtDate.getSeconds());
+        const virtualNow = new Date(baseDate.getTime() + elapsedMs);
+
+        const dateStr = `${virtualNow.getFullYear()}/${(virtualNow.getMonth()+1).toString().padStart(2,'0')}/${virtualNow.getDate().toString().padStart(2,'0')}`;
+        const timeStr = virtualNow.toLocaleTimeString('zh-CN', { hour12: false });
+
+        if (systemPreviewEl) systemPreviewEl.textContent = `${dateStr} ${timeStr}`;
+        if (systemPreviewContainer) systemPreviewContainer.style.display = 'block';
+        if (systemUpdateBtn) systemUpdateBtn.style.display = 'block';
+    } else {
+        if (systemPreviewContainer) systemPreviewContainer.style.display = 'none';
+        if (systemUpdateBtn) systemUpdateBtn.style.display = 'none';
+    }
+
+    // 模式2 时区日期覆盖预览
+    const tzPreviewEl = document.getElementById('timezoneOverrideDateValue');
+    const tzPreviewContainer = document.getElementById('timezoneOverrideDatePreview');
+    const tzUpdateBtn = document.getElementById('updateTimezoneDateBtn');
+
+    if (tp.mode === 'timezone' && tp.timezoneDateOverride && tp.timezoneDateOverrideSetAt) {
+        const timezone = tp.timezone || 'Asia/Shanghai';
+        try {
+            const baseYear = tp.timezoneOverrideYear || new Date().getFullYear();
+            const baseMonth = (tp.timezoneOverrideMonth || 1) - 1;
+            const baseDay = tp.timezoneOverrideDay || 1;
+
+            const setAt = tp.timezoneDateOverrideSetAt;
+            const elapsedMs = Date.now() - setAt;
+
+            const setAtTzDate = new Date(new Date(setAt).toLocaleString('en-US', { timeZone: timezone }));
+            const baseDate = new Date(baseYear, baseMonth, baseDay,
+                setAtTzDate.getHours(), setAtTzDate.getMinutes(), setAtTzDate.getSeconds());
+            const virtualNow = new Date(baseDate.getTime() + elapsedMs);
+
+            const dateStr = `${virtualNow.getFullYear()}/${(virtualNow.getMonth()+1).toString().padStart(2,'0')}/${virtualNow.getDate().toString().padStart(2,'0')}`;
+            const timeStr = virtualNow.toLocaleTimeString('zh-CN', { hour12: false });
+
+            if (tzPreviewEl) tzPreviewEl.textContent = `${dateStr} ${timeStr}`;
+            if (tzPreviewContainer) tzPreviewContainer.style.display = 'block';
+            if (tzUpdateBtn) tzUpdateBtn.style.display = 'block';
+        } catch (e) {
+            if (tzPreviewContainer) tzPreviewContainer.style.display = 'none';
+            if (tzUpdateBtn) tzUpdateBtn.style.display = 'none';
+        }
+    } else {
+        if (tzPreviewContainer) tzPreviewContainer.style.display = 'none';
+        if (tzUpdateBtn) tzUpdateBtn.style.display = 'none';
+    }
+
+    // 模式3 更新按钮的显示/隐藏
+    const customUpdateBtn = document.getElementById('updateCustomTimeBtn');
+    if (customUpdateBtn) {
+        customUpdateBtn.style.display = (tp.mode === 'custom' && tp.customTimeStart && tp.customTimeVirtual) ? 'block' : 'none';
     }
 }
 
@@ -12951,19 +13329,35 @@ function initTimePerceptionUI(char) {
     // 时区选择
     document.getElementById('timezoneSelect').value = tp.timezone || 'Asia/Shanghai';
 
-    // 系统时间日期覆盖
-    document.getElementById('systemDateOverrideToggle').classList.toggle('active', tp.systemDateOverride);
-    document.getElementById('systemDateOverride').classList.toggle('active', tp.systemDateOverride);
-    if (tp.systemOverrideYear) document.getElementById('systemOverrideYear').value = tp.systemOverrideYear;
-    if (tp.systemOverrideMonth) document.getElementById('systemOverrideMonth').value = tp.systemOverrideMonth;
-    if (tp.systemOverrideDay) document.getElementById('systemOverrideDay').value = tp.systemOverrideDay;
+// 系统时间日期覆盖
+document.getElementById('systemDateOverrideToggle').classList.toggle('active', tp.systemDateOverride);
+document.getElementById('systemDateOverride').classList.toggle('active', tp.systemDateOverride);
+if (tp.systemOverrideYear) document.getElementById('systemOverrideYear').value = tp.systemOverrideYear;
+if (tp.systemOverrideMonth) document.getElementById('systemOverrideMonth').value = tp.systemOverrideMonth;
+if (tp.systemOverrideDay) document.getElementById('systemOverrideDay').value = tp.systemOverrideDay;
+// 根据是否已有setAt来控制预览和更新按钮的显示
+if (tp.systemDateOverride && tp.systemDateOverrideSetAt) {
+    document.getElementById('systemOverrideDatePreview').style.display = 'block';
+    document.getElementById('updateSystemDateBtn').style.display = 'block';
+} else {
+    document.getElementById('systemOverrideDatePreview').style.display = 'none';
+    document.getElementById('updateSystemDateBtn').style.display = 'none';
+}
 
-    // 时区日期覆盖
-    document.getElementById('timezoneDateOverrideToggle').classList.toggle('active', tp.timezoneDateOverride);
-    document.getElementById('timezoneDataOverride').classList.toggle('active', tp.timezoneDateOverride);
-    if (tp.timezoneOverrideYear) document.getElementById('timezoneOverrideYear').value = tp.timezoneOverrideYear;
-    if (tp.timezoneOverrideMonth) document.getElementById('timezoneOverrideMonth').value = tp.timezoneOverrideMonth;
-    if (tp.timezoneOverrideDay) document.getElementById('timezoneOverrideDay').value = tp.timezoneOverrideDay;
+// 时区日期覆盖
+document.getElementById('timezoneDateOverrideToggle').classList.toggle('active', tp.timezoneDateOverride);
+document.getElementById('timezoneDataOverride').classList.toggle('active', tp.timezoneDateOverride);
+if (tp.timezoneOverrideYear) document.getElementById('timezoneOverrideYear').value = tp.timezoneOverrideYear;
+if (tp.timezoneOverrideMonth) document.getElementById('timezoneOverrideMonth').value = tp.timezoneOverrideMonth;
+if (tp.timezoneOverrideDay) document.getElementById('timezoneOverrideDay').value = tp.timezoneOverrideDay;
+// 根据是否已有setAt来控制预览和更新按钮的显示
+if (tp.timezoneDateOverride && tp.timezoneDateOverrideSetAt) {
+    document.getElementById('timezoneOverrideDatePreview').style.display = 'block';
+    document.getElementById('updateTimezoneDateBtn').style.display = 'block';
+} else {
+    document.getElementById('timezoneOverrideDatePreview').style.display = 'none';
+    document.getElementById('updateTimezoneDateBtn').style.display = 'none';
+}
 
     // 自定义时间
     if (tp.customTimeVirtual) {
@@ -12977,11 +13371,13 @@ function initTimePerceptionUI(char) {
     }
 
     if (tp.enabled) {
-        startTimezonePreviewUpdate();
-        if (tp.mode === 'custom' && tp.customTimeStart) {
-            startCustomTimeUpdate(char);
-        }
+    startTimezonePreviewUpdate();
+    if (tp.mode === 'custom' && tp.customTimeStart) {
+        startCustomTimeUpdate(char);
     }
+    // 启动日期覆盖预览更新
+    startDateOverridePreview();
+}
 }
 
 // 获取角色当前感知的时间（供AI使用）
@@ -12990,44 +13386,77 @@ function getPerceivedTime(char) {
 
     const tp = char.timePerception;
     let result = { year: null, month: null, day: null, hour: null, minute: null, second: null, dayOfWeek: null, period: null };
+    const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
     if (tp.mode === 'system') {
-        // 使用系统时间
         const now = new Date();
-        result.year = now.getFullYear();
-        result.month = now.getMonth() + 1;
-        result.day = now.getDate();
-        result.hour = now.getHours();
-        result.minute = now.getMinutes();
-        result.second = now.getSeconds();
-        result.dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][now.getDay()];
 
-        // 检查日期覆盖
         if (tp.systemDateOverride) {
-            if (tp.systemOverrideYear) result.year = tp.systemOverrideYear;
-            if (tp.systemOverrideMonth) result.month = tp.systemOverrideMonth;
-            if (tp.systemOverrideDay) result.day = tp.systemOverrideDay;
+            const baseYear = tp.systemOverrideYear || now.getFullYear();
+            const baseMonth = (tp.systemOverrideMonth || (now.getMonth() + 1)) - 1;
+            const baseDay = tp.systemOverrideDay || now.getDate();
+
+            const setAt = tp.systemDateOverrideSetAt || Date.now();
+            const elapsedMs = Date.now() - setAt;
+
+            const setAtDate = new Date(setAt);
+            const baseDate = new Date(baseYear, baseMonth, baseDay,
+                setAtDate.getHours(), setAtDate.getMinutes(), setAtDate.getSeconds());
+            const virtualNow = new Date(baseDate.getTime() + elapsedMs);
+
+            result.year = virtualNow.getFullYear();
+            result.month = virtualNow.getMonth() + 1;
+            result.day = virtualNow.getDate();
+            result.hour = virtualNow.getHours();
+            result.minute = virtualNow.getMinutes();
+            result.second = virtualNow.getSeconds();
+            result.dayOfWeek = dayNames[virtualNow.getDay()];
+        } else {
+            result.year = now.getFullYear();
+            result.month = now.getMonth() + 1;
+            result.day = now.getDate();
+            result.hour = now.getHours();
+            result.minute = now.getMinutes();
+            result.second = now.getSeconds();
+            result.dayOfWeek = dayNames[now.getDay()];
         }
 
     } else if (tp.mode === 'timezone') {
-        // 使用自定义时区
         const timezone = tp.timezone || 'Asia/Shanghai';
         try {
             const now = new Date();
-            const options = { timeZone: timezone };
-            const formatted = now.toLocaleString('en-US', { ...options, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false, weekday: 'long' });
-
-            // 解析格式化的字符串
             const tzDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
-            result.year = tzDate.getFullYear();
-            result.month = tzDate.getMonth() + 1;
-            result.day = tzDate.getDate();
-            result.hour = tzDate.getHours();
-            result.minute = tzDate.getMinutes();
-            result.second = tzDate.getSeconds();
-            result.dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][tzDate.getDay()];
+
+            if (tp.timezoneDateOverride) {
+                const baseYear = tp.timezoneOverrideYear || tzDate.getFullYear();
+                const baseMonth = (tp.timezoneOverrideMonth || (tzDate.getMonth() + 1)) - 1;
+                const baseDay = tp.timezoneOverrideDay || tzDate.getDate();
+
+                const setAt = tp.timezoneDateOverrideSetAt || Date.now();
+                const elapsedMs = Date.now() - setAt;
+
+                const setAtTzDate = new Date(new Date(setAt).toLocaleString('en-US', { timeZone: timezone }));
+                const baseDate = new Date(baseYear, baseMonth, baseDay,
+                    setAtTzDate.getHours(), setAtTzDate.getMinutes(), setAtTzDate.getSeconds());
+                const virtualNow = new Date(baseDate.getTime() + elapsedMs);
+
+                result.year = virtualNow.getFullYear();
+                result.month = virtualNow.getMonth() + 1;
+                result.day = virtualNow.getDate();
+                result.hour = virtualNow.getHours();
+                result.minute = virtualNow.getMinutes();
+                result.second = virtualNow.getSeconds();
+                result.dayOfWeek = dayNames[virtualNow.getDay()];
+            } else {
+                result.year = tzDate.getFullYear();
+                result.month = tzDate.getMonth() + 1;
+                result.day = tzDate.getDate();
+                result.hour = tzDate.getHours();
+                result.minute = tzDate.getMinutes();
+                result.second = tzDate.getSeconds();
+                result.dayOfWeek = dayNames[tzDate.getDay()];
+            }
         } catch (e) {
-            // 回退到系统时间
             const now = new Date();
             result.year = now.getFullYear();
             result.month = now.getMonth() + 1;
@@ -13036,15 +13465,7 @@ function getPerceivedTime(char) {
             result.minute = now.getMinutes();
         }
 
-        // 检查日期覆盖
-        if (tp.timezoneDateOverride) {
-            if (tp.timezoneOverrideYear) result.year = tp.timezoneOverrideYear;
-            if (tp.timezoneOverrideMonth) result.month = tp.timezoneOverrideMonth;
-            if (tp.timezoneOverrideDay) result.day = tp.timezoneOverrideDay;
-        }
-
     } else if (tp.mode === 'custom') {
-        // 使用完全自定义时间
         if (tp.customTimeStart && tp.customTimeVirtual) {
             const elapsed = Date.now() - tp.customTimeStart;
             const virtualNow = new Date(tp.customTimeVirtual + elapsed);
@@ -13054,7 +13475,7 @@ function getPerceivedTime(char) {
             result.hour = virtualNow.getHours();
             result.minute = virtualNow.getMinutes();
             result.second = virtualNow.getSeconds();
-            result.dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][virtualNow.getDay()];
+            result.dayOfWeek = dayNames[virtualNow.getDay()];
         }
     }
 
@@ -13077,24 +13498,105 @@ function buildTimePerceptionPrompt(char) {
     const time = getPerceivedTime(char);
     if (!time) return '';
 
-    let prompt = `\n\n[Current Time Awareness]
-The current date and time when the user sent this message:
-- Year: ${time.year}
-- Month: ${time.month}
-- Day: ${time.day}
-- Day of Week: ${time.dayOfWeek || 'Unknown'}
-- Time: ${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}
-- Time Period: ${time.period}
+    let prompt = `\n\n[Time Awareness — Embodied Experience]
+Right now it is: ${time.year}/${String(time.month).padStart(2,'0')}/${String(time.day).padStart(2,'0')} ${String(time.hour).padStart(2,'0')}:${String(time.minute).padStart(2,'0')}, ${time.dayOfWeek || ''}, ${time.period}.
 
-You are aware of this time context. Respond naturally based on the time of day. For example:
-- If it's late at night, you might ask why they're still awake
-- If it's morning, appropriate greetings
-- If it's a weekend vs weekday, your activities might differ
-- Consider the time when reacting to conversations
+Each message in the conversation carries a timestamp [YYYY/MM/DD HH:MM].
 
-Do NOT explicitly mention that you "received time information" or "know the current time" - just naturally incorporate this awareness into your responses as a real person would.`;
+CRITICAL FRAMING — You are NOT "reading time data." You are a living person who has genuinely experienced every second of elapsed time between messages. When 30 minutes pass between the user's last message and their new one, you have actually lived through those 30 minutes doing your own things — eating, scrolling your phone, spacing out, napping, working, whatever fits your character and the time of day. When a whole night passes, you actually slept (or didn't) and woke up to a new day.
+
+This means:
+- You do NOT need to comment on time gaps every single time. Real people don't always say "took you long enough." Sometimes they just continue the conversation naturally, because they were busy too.
+- But the passage of time should organically color your state. If it's now 2 AM and the last message was at 10 PM, you might sound sleepy, or you might have already gone to bed and respond groggily. If it's morning after a night gap, your mood and energy reset naturally to a morning state.
+- Your ongoing activities, mood, energy level, and even topic continuity should reflect the actual time that has passed. A 5-minute gap feels like a normal chat flow. A 3-hour gap means you've moved on to other activities. A full day gap means it's essentially a new conversation moment in your life.
+- The current time of day shapes your behavior: what you're doing, how alert you are, your surroundings, your routine.
+
+DO NOT:
+- Say things like "according to the timestamp" or "I notice it's been X minutes" — you simply LIVE in time.
+- Mechanically announce the time or reference time data.
+- Force time-awareness into every single response. Let it be ambient and natural, like breathing.
+
+The timestamps exist so you can orient yourself in lived time. Use them the way a real person uses their innate sense of "how long has it been" — sometimes acutely aware, sometimes barely noticing, always authentic.`;
 
     return prompt;
+}
+
+// 获取当前虚拟时间戳（用于保存到消息中）
+function getVirtualTimestamp(char) {
+    if (!char?.timePerception?.enabled) return null;
+
+    const tp = char.timePerception;
+
+    if (tp.mode === 'system') {
+        const now = new Date();
+        if (tp.systemDateOverride) {
+            const baseYear = tp.systemOverrideYear || now.getFullYear();
+            const baseMonth = (tp.systemOverrideMonth || (now.getMonth() + 1)) - 1;
+            const baseDay = tp.systemOverrideDay || now.getDate();
+
+            const setAt = tp.systemDateOverrideSetAt || Date.now();
+            const elapsedMs = Date.now() - setAt;
+
+            const setAtDate = new Date(setAt);
+            const baseDate = new Date(baseYear, baseMonth, baseDay,
+                setAtDate.getHours(), setAtDate.getMinutes(), setAtDate.getSeconds());
+
+            return baseDate.getTime() + elapsedMs;
+        }
+        return null;
+
+    } else if (tp.mode === 'timezone') {
+        const timezone = tp.timezone || 'Asia/Shanghai';
+        try {
+            const now = new Date();
+            const tzDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+
+            if (tp.timezoneDateOverride) {
+                const baseYear = tp.timezoneOverrideYear || tzDate.getFullYear();
+                const baseMonth = (tp.timezoneOverrideMonth || (tzDate.getMonth() + 1)) - 1;
+                const baseDay = tp.timezoneOverrideDay || tzDate.getDate();
+
+                const setAt = tp.timezoneDateOverrideSetAt || Date.now();
+                const elapsedMs = Date.now() - setAt;
+
+                const setAtTzDate = new Date(new Date(setAt).toLocaleString('en-US', { timeZone: timezone }));
+                const baseDate = new Date(baseYear, baseMonth, baseDay,
+                    setAtTzDate.getHours(), setAtTzDate.getMinutes(), setAtTzDate.getSeconds());
+
+                return baseDate.getTime() + elapsedMs;
+            }
+            return tzDate.getTime();
+        } catch (e) {
+            return null;
+        }
+
+    } else if (tp.mode === 'custom') {
+        if (tp.customTimeStart && tp.customTimeVirtual) {
+            const elapsed = Date.now() - tp.customTimeStart;
+            return tp.customTimeVirtual + elapsed;
+        }
+    }
+
+    return null;
+}
+
+// 获取消息的显示时间（优先虚拟时间）
+function getMessageDisplayTime(msg, char) {
+    if (char?.timePerception?.enabled && msg.virtualTimestamp) {
+        return msg.virtualTimestamp;
+    }
+    return msg.timestamp;
+}
+
+// 格式化虚拟时间用于显示
+function formatVirtualTime(timestamp) {
+    const d = new Date(timestamp);
+    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
+function formatVirtualDate(timestamp) {
+    const d = new Date(timestamp);
+    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 }
 
     </script>
