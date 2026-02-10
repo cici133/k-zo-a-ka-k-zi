@@ -12386,18 +12386,25 @@ function getSummaryApiConfig() {
 
 // ========== 聊天总结功能 ==========
 
-// 打开总结记录页面
+// 打开总结记录页面 - 修复版
 function openSummaryRecords() {
     document.getElementById('extensionPanel').classList.remove('active');
-    renderSummaryRecordsList();
-    // 确保页面存在再打开
+
+    // 1. 先检查页面是否存在，不存在则立即创建！
     let summaryPage = document.getElementById('summaryRecordsPage');
     if (!summaryPage) {
         createSummaryRecordsPage();
         summaryPage = document.getElementById('summaryRecordsPage');
     }
+
+    // 2. 只有当页面元素确保存在后，再去渲染列表数据
+    // 这样 getElementById('summaryRecordsList') 就能百分百找到东西了
+    renderSummaryRecordsList();
+
+    // 3. 最后显示出来
     summaryPage.classList.add('active');
 }
+
 
 // 动态创建总结记录页面
 function createSummaryRecordsPage() {
