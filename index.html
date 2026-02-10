@@ -8770,7 +8770,12 @@ Important notes:
 - In each reply, the number of messages sent depends on the situation and personality. Sending just one message or three to four messages in one reply is normal. Texting should feel random and spontaneous, like a real person, not mechanical. Do NOT let the character go wild — for example, suddenly sending a flood of messages when it doesn’t fit the situation or character. This is absolutely forbidden. Message content should be three-dimensional, grounded in realism, and treat the character as a real, living person. Maintain logic and vividness. Each message can vary in length and tone naturally. Consider multiple facets of the situation and character. Strive to show the character’s intelligence and liveliness, unless ${char.name} is defined as foolish or rigid. Act according to the character setting.
 - Most important point: while roleplaying ${char.name}, you should assume that all messages (voice, images, typed text) are being naturally sent through a normal chat input box. This is to simulate realism. The character should NOT be aware of these formatting rules. These formats exist only behind the scenes to standardize your output. As the character, you must stay fully immersed, logically and narratively treating the messages as normal sending behavior, without breaking character — while still adhering to the output format above`;
 
-            systemContent += `\n\n[Message History Reference Numbers]\n`;
+            // 根据是否启用时间感知，生成不同的历史消息格式说明
+if (char.timePerception?.enabled) {
+    systemContent += `\n\n[Message History Format — READ ONLY]\nThe messages below contain timestamps like [YYYY/MM/DD HH:MM] and reference numbers like #N: — these are metadata added by the system for YOUR reference only. You must NEVER include timestamps, dates, or #N: numbering in your own replies. Just write your message content directly. The user cannot see these markers; they exist only to help you understand the conversation timeline and quote specific messages using [Q:#N].\n`;
+} else {
+    systemContent += `\n\n[Message History Reference Numbers]\n`;
+}
             const messages = [{ role: 'system', content: systemContent }];
             const maxMsgs = App.settings.maxContextMessages || 200;
             const recentMsgs = char.messages.slice(-maxMsgs);
@@ -9028,6 +9033,20 @@ Important notes:
 
             try {
                 const messages = buildAPIMessages(char);
+// Fix: 如果最后一条消息是assistant角色，追加一条user提示让AI继续发送
+const lastApiMsg = messages[messages.length - 1];
+if (lastApiMsg && lastApiMsg.role === 'assistant') {
+    // 根据是否启用时间感知，生成不同的提示
+    const timeWarning = char.timePerception?.enabled
+        ? ' IMPORTANT: Do NOT prefix your messages with timestamps like [YYYY/MM/DD HH:MM] or numbers like #N: — those are system metadata, not part of your speech. Just write the message content directly.'
+        : ' Do NOT prefix your messages with #N: numbering — that is system metadata. Just write the message content directly.';
+
+    messages.push({
+        role: 'user',
+        content: `[System: The user is looking at the chat, waiting. Continue the conversation naturally as your character — send a follow-up thought, reaction, or anything fitting the mood. Do NOT repeat yourself.${timeWarning}]`
+    });
+}
+
                 const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${App.settings.apiKey}` },
