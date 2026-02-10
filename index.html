@@ -8772,7 +8772,7 @@ Important notes:
 
             // 根据是否启用时间感知，生成不同的历史消息格式说明
 if (char.timePerception?.enabled) {
-    systemContent += `\n\n[Message History Format — READ ONLY]\nThe messages below contain timestamps like [YYYY/MM/DD HH:MM] and reference numbers like #N: — these are metadata added by the system for YOUR reference only. You must NEVER include timestamps, dates, or #N: numbering in your own replies. Just write your message content directly. The user cannot see these markers; they exist only to help you understand the conversation timeline and quote specific messages using [Q:#N].\n`;
+    systemContent += `\n\n[Message History Format — READ ONLY]\nThe messages below contain timestamps like [YYYY/MM/DD HH:MM] and reference numbers like #N: — these are metadata added by the system for YOUR reference only. You must NEVER include timestamps, dates, or #N: numbering in your own replies. Just write your message content directly. The user cannot see these markers; they exist only to help you understand the conversation timeline.\n`;
 } else {
     systemContent += `\n\n[Message History Reference Numbers]\n`;
 }
