@@ -12388,20 +12388,22 @@ function getSummaryApiConfig() {
 
 // 打开总结记录页面 - 修复版
 function openSummaryRecords() {
+    // 1. 关闭扩展面板
     document.getElementById('extensionPanel').classList.remove('active');
 
-    // 1. 先检查页面是否存在，不存在则立即创建！
+    // 2. 无得如何，先检查页面是否存在，不存在则立即创建
+    // 这一点至关重要：容器必须先存在于DOM中，渲染函数才能找到它
     let summaryPage = document.getElementById('summaryRecordsPage');
     if (!summaryPage) {
         createSummaryRecordsPage();
-        summaryPage = document.getElementById('summaryRecordsPage');
+        summaryPage = document.getElementById('summaryRecordsPage'); // 获取新创建的元素引用
     }
 
-    // 2. 只有当页面元素确保存在后，再去渲染列表数据
-    // 这样 getElementById('summaryRecordsList') 就能百分百找到东西了
+    // 3. 页面容器也就绪了，现在执行渲染
+    // 这样 'summaryRecordsList' ID 一定能被找到
     renderSummaryRecordsList();
 
-    // 3. 最后显示出来
+    // 4. 显示页面
     summaryPage.classList.add('active');
 }
 
