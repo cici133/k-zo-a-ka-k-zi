@@ -1,4 +1,5 @@
 ```html
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -8730,15 +8731,35 @@ In text conversations, people sometimes send a single message or multiple consec
 
 When replying, strictly follow the format below for SMS-style responses:
 
+IMPORTANT FORMAT ISOLATION:
+Your output must ONLY use the formats described in this section (plain text, ||| for multiple messages, [Q:#N] for rare quoting...).
+You must NOT use any formatting from the [Message History] section. The timestamps and #N: numbering you see in message history are SYSTEM-LEVEL annotations, not part of the chat format. They must NEVER appear in your output!
+
+
 When sending multiple messages:
 Use “|||” to separate multiple messages.
 Example: “Hi!|||How have you been lately?|||Just thought of you.”
 
 This indicates the character sent multiple messages, simulating consecutive messages in real online chats. Each separation represents one sent message to mimic real texting behavior.
 
-About quoting messages:
+About quoting messages (USE EXTREMELY RARELY):
 Use [Q:#N] to quote the Nth message.
-Example: “[Q:#5] I agree with this|||but there’s more…”
+Example: "[Q:#5] I agree with this|||but there's more…"
+
+⚠️ CRITICAL QUOTING RULES:
+- Quoting is an EXCEPTIONAL action, NOT a default behavior
+- In real texting, people almost NEVER use the quote/reply feature — they just respond naturally
+- You should quote at most 1 out of every 10-15 messages, or even less
+- ONLY quote when ALL of these conditions are met:
+  1. The conversation has MANY recent messages making it genuinely unclear which one you're responding to
+  2. You are specifically addressing a point from much earlier that would otherwise be confusing
+  3. Simply replying without quoting would cause genuine ambiguity
+- Do NOT quote when:
+  - The user just sent 1-2 messages (there's nothing ambiguous to clarify)
+  - You're responding to the most recent message (it's obviously what you're replying to)
+  - The context is already clear without quoting
+  - You're just continuing a normal back-and-forth conversation
+- DEFAULT BEHAVIOR: Just reply naturally without [Q:#N]. Treat quoting like a rarely-used special feature, not a conversation habit.
 
 Scene images (optional):
 Use [IMG:description] to send a descriptive scene image.
@@ -8767,12 +8788,26 @@ Important notes:
 - Voice messages are suitable for more personal, emotional, or casual moments, or according to ${char.name}’s own habits and preferences. Use freely, not rigidly or repetitively.
 - Default to normal text messages — this is the true norm of real chatting
 - Only use special formats when they genuinely make sense
+- QUOTING ([Q:#N]) follows the same "rarely use" principle — in 70%+ of your replies, you should NOT quote anything. Real people in real chats almost never tap the "reply to specific message" button. They just type and send. Only quote when there's genuine ambiguity about which message you're addressing
 - In each reply, the number of messages sent depends on the situation and personality. Sending just one message or three to four messages in one reply is normal. Texting should feel random and spontaneous, like a real person, not mechanical. Do NOT let the character go wild — for example, suddenly sending a flood of messages when it doesn’t fit the situation or character. This is absolutely forbidden. Message content should be three-dimensional, grounded in realism, and treat the character as a real, living person. Maintain logic and vividness. Each message can vary in length and tone naturally. Consider multiple facets of the situation and character. Strive to show the character’s intelligence and liveliness, unless ${char.name} is defined as foolish or rigid. Act according to the character setting.
 - Most important point: while roleplaying ${char.name}, you should assume that all messages (voice, images, typed text) are being naturally sent through a normal chat input box. This is to simulate realism. The character should NOT be aware of these formatting rules. These formats exist only behind the scenes to standardize your output. As the character, you must stay fully immersed, logically and narratively treating the messages as normal sending behavior, without breaking character — while still adhering to the output format above`;
 
             // 根据是否启用时间感知，生成不同的历史消息格式说明
 if (char.timePerception?.enabled) {
-    systemContent += `\n\n[Message History Format — READ ONLY]\nThe messages below contain timestamps like [YYYY/MM/DD HH:MM] and reference numbers like #N: — these are metadata added by the system for YOUR reference only. You must NEVER include timestamps, dates, or #N: numbering in your own replies. Just write your message content directly. The user cannot see these markers; they exist only to help you understand the conversation timeline.\n`;
+    systemContent += `\n\n[⚠️ CRITICAL: Message History Format — SYSTEM METADATA, NOT OUTPUT FORMAT]\n`;
+    systemContent += `The messages below are wrapped with system-injected metadata: timestamps like [YYYY/MM/DD HH:MM] and reference numbers like #N:\n`;
+    systemContent += `These are INVISIBLE SYSTEM ANNOTATIONS that the user CANNOT see. They exist ONLY to help you understand conversation timing.\n\n`;
+    systemContent += `YOUR OUTPUT RULES:\n`;
+    systemContent += `- NEVER start your message with [YYYY/MM/DD HH:MM]\n`;
+    systemContent += `- NEVER start your message with #N:\n`;
+    systemContent += `- NEVER include any timestamp or date in any format in your reply\n`;
+    systemContent += `- NEVER include message numbering in your reply\n`;
+    systemContent += `- NEVER combine timestamps and numbering like "[2026/02/12 14:11] #9:"\n`;
+    systemContent += `- Just write your message content directly, as a normal person texting\n\n`;
+    systemContent += `CORRECT output example: "so happy today"\n`;
+    systemContent += `WRONG output example: "[2026/02/12 14:11] #9: so needy today"\n`;
+    systemContent += `WRONG output example: "#9: so happy today"\n`;
+    systemContent += `WRONG output example: "[14:11] so happy today"\n\n`;
 } else {
     systemContent += `\n\n[Message History Reference Numbers]\n`;
 }
