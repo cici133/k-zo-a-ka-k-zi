@@ -1,5 +1,4 @@
-```html
-<!DOCTYPE html>
+```html<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -8730,11 +8729,6 @@ In text conversations, people sometimes send a single message or multiple consec
 
 When replying, strictly follow the format below for SMS-style responses:
 
-IMPORTANT FORMAT ISOLATION:
-Your output must ONLY use the formats described in this section (plain text, ||| for multiple messages, [Q:#N] for rare quoting...).
-You must NOT use any formatting from the [Message History] section. The timestamps and #N: numbering you see in message history are SYSTEM-LEVEL annotations, not part of the chat format. They must NEVER appear in your output!
-
-
 When sending multiple messages:
 Use “|||” to separate multiple messages.
 Example: “Hi!|||How have you been lately?|||Just thought of you.”
@@ -8793,20 +8787,26 @@ Important notes:
 
             // 根据是否启用时间感知，生成不同的历史消息格式说明
 if (char.timePerception?.enabled) {
-    systemContent += `\n\n[⚠️ CRITICAL: Message History Format — SYSTEM METADATA, NOT OUTPUT FORMAT]\n`;
-    systemContent += `The messages below are wrapped with system-injected metadata: timestamps like [YYYY/MM/DD HH:MM] and reference numbers like #N:\n`;
-    systemContent += `These are INVISIBLE SYSTEM ANNOTATIONS that the user CANNOT see. They exist ONLY to help you understand conversation timing.\n\n`;
-    systemContent += `YOUR OUTPUT RULES:\n`;
-    systemContent += `- NEVER start your message with [YYYY/MM/DD HH:MM]\n`;
-    systemContent += `- NEVER start your message with #N:\n`;
-    systemContent += `- NEVER include any timestamp or date in any format in your reply\n`;
-    systemContent += `- NEVER include message numbering in your reply\n`;
-    systemContent += `- NEVER combine timestamps and numbering like "[2026/02/12 14:11] #9:"\n`;
-    systemContent += `- Just write your message content directly, as a normal person texting\n\n`;
-    systemContent += `CORRECT output example: "so happy today"\n`;
-    systemContent += `WRONG output example: "[2026/02/12 14:11] #9: so needy today"\n`;
-    systemContent += `WRONG output example: "#9: so happy today"\n`;
-    systemContent += `WRONG output example: "[14:11] so happy today"\n\n`;
+    systemContent += `\n\n[CRITICAL OUTPUT RULE — READ THIS CAREFULLY]
+The messages below contain timestamps like [YYYY/MM/DD HH:MM] and reference numbers like #N: — these are SYSTEM METADATA that ONLY exist in the input. They are INVISIBLE to both you and the user in the actual chat interface.
+
+⛔ You must ABSOLUTELY NEVER include ANY of the following in your output:
+- Timestamps like [2024/01/15 09:30] or any [YYYY/MM/DD HH:MM] pattern
+- Reference numbers like #1: #2: #3: or any #N: pattern
+- Any metadata markers from the message history
+
+✅ Your output must contain ONLY:
+- Pure message text (what you actually type/say)
+- ||| separators between multiple messages
+- Optional format tags: [Q:#N], [IMG:...], [VOICE:...], [STICKER:...]
+
+WRONG OUTPUT: "[2024/01/15 14:30] #5: hey what's up"
+CORRECT OUTPUT: "hey what's up"
+
+WRONG OUTPUT: "#3: Are you okay?|||#4: I'm worried about you"
+CORRECT OUTPUT: "Are you okay?|||I'm worried about you"
+
+The timestamps and #N: numbers are ONLY for helping you understand conversation timing. They are NOT part of the message format. NEVER reproduce them.`;
 } else {
     systemContent += `\n\n[Message History Reference Numbers]\n`;
 }
@@ -8869,6 +8869,29 @@ if (char.timePerception?.enabled) {
         }
     }
 });
+
+           // ========== 【新增】末尾格式强化注入 - 利用近因效应 ==========
+            // 这段代码在所有历史消息之后、return之前插入
+            // LLM 对最后几条消息的注意力最强，所以格式提醒放在这里效果最好
+            if (char.timePerception?.enabled) {
+                // 检查最后一条消息的角色，决定用什么角色插入提醒
+                const lastMsg = messages[messages.length - 1];
+
+                // 如果最后一条是 assistant，我们需要先加一条 user 消息
+                // 如果最后一条是 user，直接在其内容后追加提醒
+                if (lastMsg && lastMsg.role === 'assistant' && typeof lastMsg.content === 'string') {
+                    messages.push({
+                        role: 'user',
+                        content: `[System: Continue the conversation naturally as your character. REMINDER: Your reply must contain ONLY the message text itself. Do NOT include timestamps [YYYY/MM/DD HH:MM] or #N: numbering — those are system-internal metadata that you must never output. Just write what you would type in a chat app.]`
+                    });
+                } else if (lastMsg && lastMsg.role === 'user' && typeof lastMsg.content === 'string') {
+                    // 在最后的user消息后追加一个system级提醒（作为新的system消息）
+                    messages.push({
+                        role: 'system',
+                        content: `[FINAL REMINDER BEFORE YOUR RESPONSE] Output ONLY pure message content. NEVER prefix with [YYYY/MM/DD HH:MM] timestamps or #N: numbers. Those are input-only metadata. Your messages go directly into the chat UI — write ONLY what ${char.name} would actually type.`
+                    });
+                }
+            }
 
             return messages;
         }
