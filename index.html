@@ -1,4 +1,5 @@
-```html<!DOCTYPE html>
+```html
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -8798,7 +8799,7 @@ The messages below contain timestamps like [YYYY/MM/DD HH:MM] and reference numb
 ✅ Your output must contain ONLY:
 - Pure message text (what you actually type/say)
 - ||| separators between multiple messages
-- Optional format tags: [Q:#N], [IMG:...], [VOICE:...], [STICKER:...]
+- Optional format tags: [Q:#N], [IMG:...], [VOICE:...]${aiStickers.length > 0 ? ', [STICKER:...]' : ''}
 
 WRONG OUTPUT: "[2024/01/15 14:30] #5: hey what's up"
 CORRECT OUTPUT: "hey what's up"
@@ -9090,18 +9091,24 @@ The timestamps and #N: numbers are ONLY for helping you understand conversation 
 
             try {
                 const messages = buildAPIMessages(char);
-// Fix: 如果最后一条消息是assistant角色，追加一条user提示让AI继续发送
-const lastApiMsg = messages[messages.length - 1];
-if (lastApiMsg && lastApiMsg.role === 'assistant') {
-    // 根据是否启用时间感知，生成不同的提示
-    const timeWarning = char.timePerception?.enabled
-        ? ' IMPORTANT: Do NOT prefix your messages with timestamps like [YYYY/MM/DD HH:MM] or numbers like #N: — those are system metadata, not part of your speech. Just write the message content directly.'
-        : ' Do NOT prefix your messages with #N: numbering — that is system metadata. Just write the message content directly.';
+// Fix: 格式提醒注入（仅在时间感知关闭时）
+// 时间感知开启时的格式提醒已由 buildAPIMessages 末尾处理，这里不重复
+if (!char.timePerception?.enabled) {
+    const lastApiMsg = messages[messages.length - 1];
 
-    messages.push({
-        role: 'user',
-        content: `[System: The user is looking at the chat, waiting. Continue the conversation naturally as your character — send a follow-up thought, reaction, or anything fitting the mood. Do NOT repeat yourself.${timeWarning}]`
-    });
+    if (lastApiMsg && lastApiMsg.role === 'assistant') {
+        // 末尾是AI回复 → 需要让AI继续发送 + 格式提醒
+        messages.push({
+            role: 'user',
+            content: `[System: The user is looking at the chat, waiting. Continue the conversation naturally as your character — send a follow-up thought, reaction, or anything fitting the mood. Do NOT repeat yourself. Do NOT prefix your messages with #N: numbering — that is system metadata. Just write the message content directly.]`
+        });
+    } else if (lastApiMsg && lastApiMsg.role === 'user') {
+        // 末尾是用户回复 → 只需格式提醒
+        messages.push({
+            role: 'system',
+            content: `[REMINDER] Output ONLY pure message content. Do NOT prefix with #N: numbers — those are input-only metadata. Just write what ${char.name} would actually type.`
+        });
+    }
 }
 
                 const res = await fetch(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
