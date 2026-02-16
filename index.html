@@ -375,6 +375,537 @@
         }
         .contact-time { font-size: calc(11px * var(--font-scale)); color: var(--text-muted); flex-shrink: 0; }
 
+        .messages-bottom-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 10px 16px 12px;
+            border-top: 1px solid var(--border-subtle);
+            background: rgba(8, 8, 10, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .messages-tab-btn {
+            flex: 1;
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            background: var(--bg-glass);
+            color: var(--text-secondary);
+            padding: 10px 12px;
+            font-size: calc(13px * var(--font-scale));
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        .messages-tab-btn.active {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: var(--border-accent);
+            color: var(--text-primary);
+        }
+
+        .wallet-page-content { padding-bottom: 16px; }
+        .wallet-group-strip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 2px 2px 8px;
+        }
+        .wallet-group-chip {
+            width: 74px;
+            flex-shrink: 0;
+            cursor: pointer;
+            text-align: center;
+        }
+        .wallet-group-chip.active .wallet-group-avatar {
+            border-color: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.14);
+        }
+        .wallet-group-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            border: 1px solid var(--border-subtle);
+            background: rgba(255, 255, 255, 0.04);
+            overflow: hidden;
+            display: grid;
+            gap: 1px;
+            margin: 0 auto 6px;
+            transition: var(--transition-fast);
+        }
+        .wallet-group-avatar.grid-1 { grid-template-columns: 1fr; }
+        .wallet-group-avatar.grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .wallet-group-avatar.grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .wallet-group-avatar-cell {
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 10px;
+            overflow: hidden;
+        }
+        .wallet-group-avatar-cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .wallet-group-name {
+            font-size: calc(10px * var(--font-scale));
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .wallet-group-add {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            border: 1px dashed var(--border-accent);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            font-size: 28px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .wallet-balance-card {
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            background: linear-gradient(150deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+        .wallet-balance-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .wallet-balance-title {
+            font-size: calc(12px * var(--font-scale));
+            color: var(--text-secondary);
+            letter-spacing: 0.6px;
+        }
+        .wallet-currency-select {
+            border: 1px solid var(--border-subtle);
+            background: rgba(0, 0, 0, 0.25);
+            color: var(--text-primary);
+            border-radius: 10px;
+            padding: 6px 8px;
+            font-size: calc(11px * var(--font-scale));
+        }
+        .wallet-balance-value {
+            font-size: calc(28px * var(--font-scale));
+            font-weight: 600;
+            letter-spacing: 0.6px;
+            color: var(--text-primary);
+        }
+        .wallet-balance-desc {
+            margin-top: 4px;
+            font-size: calc(11px * var(--font-scale));
+            color: var(--text-tertiary);
+        }
+        .wallet-action-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .wallet-action-btn {
+            flex: 1;
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            font-size: calc(12px * var(--font-scale));
+            cursor: pointer;
+        }
+        .wallet-section {
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            background: var(--bg-card);
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .wallet-section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .wallet-section-title {
+            color: var(--text-primary);
+            font-size: calc(13px * var(--font-scale));
+        }
+        .wallet-inline-btn {
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-secondary);
+            font-size: calc(11px * var(--font-scale));
+            padding: 6px 9px;
+            cursor: pointer;
+        }
+        .wallet-inline-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        .wallet-tx-head-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .wallet-tx-limit-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .wallet-tx-limit-label {
+            color: var(--text-secondary);
+            font-size: calc(11px * var(--font-scale));
+        }
+        .wallet-tx-limit-input {
+            width: 90px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            padding: 6px 8px;
+            font-size: calc(12px * var(--font-scale));
+        }
+        .wallet-tx-limit-presets {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .wallet-tx-preset {
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            font-size: calc(11px * var(--font-scale));
+            padding: 5px 8px;
+            cursor: pointer;
+        }
+        .wallet-tx-manage-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 8px 10px;
+            margin-bottom: 8px;
+        }
+        .wallet-tx-manage-info {
+            color: var(--text-secondary);
+            font-size: calc(11px * var(--font-scale));
+        }
+        .wallet-tx-manage-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .wallet-cards-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .wallet-card-item {
+            min-width: 230px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 12px;
+            cursor: pointer;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.28);
+        }
+        .wallet-card-item::after {
+            content: '';
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            right: -80px;
+            top: -80px;
+            background: rgba(255, 255, 255, 0.13);
+        }
+        .wallet-card-network {
+            font-size: calc(11px * var(--font-scale));
+            opacity: 0.9;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+        .wallet-card-number {
+            margin-top: 22px;
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: calc(14px * var(--font-scale));
+            letter-spacing: 2px;
+        }
+        .wallet-card-footer {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: calc(10px * var(--font-scale));
+            opacity: 0.92;
+        }
+
+        .wallet-transactions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .wallet-tx-item {
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 10px;
+        }
+        .wallet-tx-item.manage {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .wallet-tx-item.selected {
+            border-color: rgba(103, 209, 148, 0.7);
+            background: rgba(103, 209, 148, 0.12);
+        }
+        .wallet-tx-main {
+            flex: 1;
+            min-width: 0;
+        }
+        .wallet-tx-check {
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            background: rgba(255, 255, 255, 0.04);
+            margin-top: 1px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .wallet-tx-check.checked {
+            border-color: rgba(103, 209, 148, 0.85);
+            background: rgba(103, 209, 148, 0.3);
+        }
+        .wallet-tx-check.checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 2px;
+            width: 5px;
+            height: 9px;
+            border: solid #f4fff7;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .wallet-tx-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .wallet-tx-title {
+            color: var(--text-primary);
+            font-size: calc(12px * var(--font-scale));
+        }
+        .wallet-tx-amount {
+            font-size: calc(12px * var(--font-scale));
+            font-weight: 600;
+        }
+        .wallet-tx-amount.in { color: #67d194; }
+        .wallet-tx-amount.out { color: #f18686; }
+        .wallet-tx-meta {
+            margin-top: 4px;
+            color: var(--text-tertiary);
+            font-size: calc(10px * var(--font-scale));
+        }
+        .wallet-empty-line {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: calc(12px * var(--font-scale));
+            padding: 16px;
+        }
+
+        .wallet-tip-text {
+            margin-top: 10px;
+            color: var(--text-tertiary);
+            font-size: calc(11px * var(--font-scale));
+            line-height: 1.5;
+        }
+        .wallet-role-picker {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 260px;
+            overflow-y: auto;
+            margin-top: 12px;
+            padding-right: 2px;
+        }
+        .wallet-role-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 8px 10px;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+        .wallet-role-item.disabled {
+            opacity: 0.42;
+            cursor: not-allowed;
+        }
+        .wallet-role-item input { pointer-events: none; }
+        .wallet-delete-group-btn {
+            width: 100%;
+            margin-top: 10px;
+            border: 1px solid rgba(199, 80, 80, 0.45);
+            border-radius: 10px;
+            background: rgba(199, 80, 80, 0.14);
+            color: #ef9f9f;
+            padding: 10px;
+            cursor: pointer;
+            font-size: calc(12px * var(--font-scale));
+        }
+        .wallet-card-template-list {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+        }
+        .wallet-card-template {
+            min-width: 196px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 10px;
+            color: #fff;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .wallet-card-template.selected {
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.24);
+        }
+        .wallet-card-template-name {
+            font-size: calc(12px * var(--font-scale));
+            font-weight: 500;
+        }
+        .wallet-card-template-network {
+            margin-top: 8px;
+            font-size: calc(10px * var(--font-scale));
+            opacity: 0.86;
+        }
+        .wallet-card-meta-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+        }
+        .wallet-transfer-decision-amount {
+            text-align: center;
+            font-size: calc(24px * var(--font-scale));
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        .wallet-transfer-decision-note,
+        .wallet-transfer-decision-extra {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: calc(12px * var(--font-scale));
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        .transfer-bubble {
+            min-width: 184px;
+            max-width: 270px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: linear-gradient(150deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
+            color: var(--text-primary);
+            padding: 12px;
+            animation: msgIn 0.25s ease-out;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .transfer-bubble.status-accepted { border-color: rgba(104, 207, 154, 0.45); }
+        .transfer-bubble.status-rejected { border-color: rgba(222, 106, 106, 0.48); }
+        .transfer-bubble.clickable { cursor: pointer; }
+        .transfer-bubble-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .transfer-bubble-label {
+            font-size: calc(10px * var(--font-scale));
+            letter-spacing: 0.8px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+        .transfer-bubble-amount {
+            font-size: calc(17px * var(--font-scale));
+            font-weight: 600;
+        }
+        .transfer-bubble-note {
+            margin-top: 8px;
+            font-size: calc(12px * var(--font-scale));
+            color: var(--text-secondary);
+            line-height: 1.45;
+        }
+        .transfer-bubble-extra {
+            margin-top: 6px;
+            font-size: calc(11px * var(--font-scale));
+            color: var(--text-tertiary);
+        }
+        .transfer-bubble-foot {
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        .transfer-badge {
+            font-size: calc(10px * var(--font-scale));
+            border-radius: 999px;
+            padding: 3px 8px;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .transfer-badge.accepted {
+            border-color: rgba(104, 207, 154, 0.45);
+            color: #8de1b3;
+        }
+        .transfer-badge.rejected {
+            border-color: rgba(222, 106, 106, 0.45);
+            color: #f0a3a3;
+        }
+        .transfer-id-text {
+            font-size: calc(10px * var(--font-scale));
+            color: var(--text-muted);
+            letter-spacing: 0.4px;
+        }
+
         .empty-state {
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
@@ -5146,7 +5677,7 @@
                 <span class="nav-title">消息</span>
                 <button class="nav-btn" onclick="showModal('createCharacterModal')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
             </div>
-            <div style="padding:0 16px 14px">
+            <div id="messagesSearchContainer" style="padding:0 16px 14px">
                 <input type="text" class="search-field" id="contactSearch" placeholder="搜索..." oninput="filterContacts()">
             </div>
             <div class="page-content" id="contactListContainer" style="padding-top:0">
@@ -5156,6 +5687,65 @@
                     <div class="empty-state-desc">点击 + 创建新角色</div>
                 </div>
                 <div class="contact-list" id="contactList" style="display:none"></div>
+            </div>
+            <div class="page-content wallet-page-content" id="walletPageContainer" style="padding-top:0;display:none">
+                <div class="wallet-group-strip" id="walletGroupStrip"></div>
+                <div class="wallet-balance-card" id="walletBalanceCard">
+                    <div class="wallet-balance-head">
+                        <div class="wallet-balance-title">钱包余额</div>
+                        <select class="wallet-currency-select" id="walletDisplayCurrency" onchange="changeWalletDisplayCurrency(this.value)"></select>
+                    </div>
+                    <div class="wallet-balance-value" id="walletBalanceValue">0.00 USD</div>
+                    <div class="wallet-balance-desc" id="walletBalanceDesc">未分组角色钱包</div>
+                    <div class="wallet-action-row">
+                        <button class="wallet-action-btn" onclick="openWalletTopupModal('balance')">充值余额</button>
+                        <button class="wallet-action-btn" onclick="openCreateCurrencyModal()">创建货币</button>
+                    </div>
+                </div>
+                <div class="wallet-section">
+                    <div class="wallet-section-head">
+                        <span class="wallet-section-title">银行卡</span>
+                        <button class="wallet-inline-btn" onclick="openAddBankCardModal()">添加银行卡</button>
+                    </div>
+                    <div class="wallet-cards-scroll" id="walletCardsScroll"></div>
+                </div>
+                <div class="wallet-section">
+                    <div class="wallet-section-head">
+                        <span class="wallet-section-title">交易记录</span>
+                        <div class="wallet-tx-head-actions">
+                            <button class="wallet-inline-btn" id="walletTxManageBtn" onclick="toggleWalletTransactionManageMode()">管理</button>
+                            <button class="wallet-inline-btn" id="walletTxClearBtn" onclick="clearWalletTransactionsForActiveGroup()">全部删除</button>
+                        </div>
+                    </div>
+                    <div class="wallet-tx-limit-row">
+                        <span class="wallet-tx-limit-label">保留条数（0 为无限制）</span>
+                        <input type="number" min="0" step="1" class="wallet-tx-limit-input" id="walletTxLimitInput" placeholder="0" onkeydown="if(event.key==='Enter') applyWalletTransactionLimitFromInput()">
+                        <button class="wallet-inline-btn" onclick="applyWalletTransactionLimitFromInput()">应用</button>
+                    </div>
+                    <div class="wallet-tx-limit-presets">
+                        <button class="wallet-tx-preset" onclick="setWalletTransactionLimitPreset(30)">30</button>
+                        <button class="wallet-tx-preset" onclick="setWalletTransactionLimitPreset(50)">50</button>
+                        <button class="wallet-tx-preset" onclick="setWalletTransactionLimitPreset(100)">100</button>
+                        <button class="wallet-tx-preset" onclick="setWalletTransactionLimitPreset(0)">无限制</button>
+                    </div>
+                    <div class="wallet-tx-manage-bar" id="walletTxManageBar" style="display:none">
+                        <span class="wallet-tx-manage-info" id="walletTxManageInfo">已选 0 条</span>
+                        <div class="wallet-tx-manage-actions">
+                            <button class="wallet-inline-btn" onclick="deleteSelectedWalletTransactions()">删除选中</button>
+                            <button class="wallet-inline-btn" onclick="toggleWalletTransactionManageMode(false)">完成</button>
+                        </div>
+                    </div>
+                    <div class="wallet-transactions" id="walletTransactionsList"></div>
+                </div>
+                <div style="height:80px"></div>
+            </div>
+            <div class="messages-bottom-tabs">
+                <button class="messages-tab-btn active" id="messagesTabContacts" onclick="switchMessagesTab('contacts')">
+                    <span>通讯录</span>
+                </button>
+                <button class="messages-tab-btn" id="messagesTabWallet" onclick="switchMessagesTab('wallet')">
+                    <span>钱包</span>
+                </button>
             </div>
         </div>
 
@@ -5203,6 +5793,10 @@
                     <button class="ext-btn" onclick="openVoiceMessageInput()">
                         <div class="ext-btn-icon rose"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
                         <div class="ext-btn-text"><div class="ext-btn-title">语音消息</div><div class="ext-btn-desc">以语音格式发送</div></div>
+                    </button>
+                    <button class="ext-btn" onclick="openTransferModal()">
+                        <div class="ext-btn-icon gold"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="8" cy="12" r="2.5"/><path d="M14 9h5a2 2 0 0 1 0 4h-5a2 2 0 0 1 0-4z"/></svg></div>
+                        <div class="ext-btn-text"><div class="ext-btn-title">转账</div><div class="ext-btn-desc">发送金额给角色</div></div>
                     </button>
                     <button class="ext-btn" onclick="initiateVoiceCall()">
                         <div class="ext-btn-icon emerald"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
@@ -6176,6 +6770,160 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="transferModal">
+        <div class="modal">
+            <div class="modal-title">发起转账</div>
+            <div class="input-group">
+                <label class="input-label">金额</label>
+                <input type="number" min="0" step="0.01" class="modal-input" id="transferAmountInput" placeholder="0.00" style="margin-bottom:0">
+            </div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">币种</label>
+                <select class="select-field" id="transferCurrencySelect"></select>
+            </div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">支付方式</label>
+                <select class="select-field" id="transferPaymentSelect"></select>
+            </div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">备注（30字符内）</label>
+                <input type="text" class="modal-input" id="transferNoteInput" maxlength="30" placeholder="例如：今天的晚餐AA" style="margin-bottom:0">
+            </div>
+            <div class="wallet-tip-text" id="transferBalanceHint"></div>
+            <div class="modal-btns" style="margin-top:16px">
+                <button class="modal-btn cancel" onclick="hideModal('transferModal')">取消</button>
+                <button class="modal-btn confirm" onclick="submitTransferRequest()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="incomingTransferDecisionModal">
+        <div class="modal">
+            <div class="modal-title">接收转账</div>
+            <div class="wallet-transfer-decision-amount" id="incomingTransferDecisionAmount">0.00 USD</div>
+            <div class="wallet-transfer-decision-note" id="incomingTransferDecisionNote"></div>
+            <div class="wallet-transfer-decision-extra" id="incomingTransferDecisionExtra"></div>
+            <div class="modal-btns" style="margin-top:16px">
+                <button class="modal-btn cancel" onclick="decideIncomingTransfer('reject')">拒绝</button>
+                <button class="modal-btn confirm" onclick="decideIncomingTransfer('accept')">接受</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="walletGroupModal">
+        <div class="modal">
+            <div class="modal-title" id="walletGroupModalTitle">创建钱包分组</div>
+            <div class="input-group">
+                <label class="input-label">分组名称</label>
+                <input type="text" class="modal-input" id="walletGroupNameInput" placeholder="例如：主线角色组" maxlength="20" style="margin-bottom:0">
+            </div>
+            <div class="wallet-role-picker" id="walletGroupRolePicker"></div>
+            <div class="wallet-tip-text">至少选择 1 个角色。已被其他分组选中的角色不可再选。</div>
+            <button class="wallet-delete-group-btn" id="walletDeleteGroupBtn" style="display:none" onclick="deleteWalletGroup()">删除该分组</button>
+            <div class="modal-btns" style="margin-top:16px">
+                <button class="modal-btn cancel" onclick="hideModal('walletGroupModal')">取消</button>
+                <button class="modal-btn confirm" onclick="confirmWalletGroup()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="walletTopupModal">
+        <div class="modal">
+            <div class="modal-title" id="walletTopupTitle">充值</div>
+            <div class="wallet-tip-text" id="walletTopupTarget"></div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">充值金额</label>
+                <input type="number" min="0" step="0.01" class="modal-input" id="walletTopupAmountInput" placeholder="0.00" style="margin-bottom:0">
+            </div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">充值币种</label>
+                <select class="select-field" id="walletTopupCurrencySelect"></select>
+            </div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">来源</label>
+                <select class="select-field" id="walletTopupSourceSelect" onchange="onWalletTopupSourceChange()">
+                    <option value="manual">直接充值</option>
+                    <option value="card">银行卡转入</option>
+                </select>
+            </div>
+            <div class="input-group" id="walletTopupCardWrap" style="margin-top:12px;display:none">
+                <label class="input-label">银行卡</label>
+                <select class="select-field" id="walletTopupCardSelect"></select>
+            </div>
+            <div class="modal-btns" style="margin-top:16px">
+                <button class="modal-btn cancel" onclick="hideModal('walletTopupModal')">取消</button>
+                <button class="modal-btn confirm" onclick="confirmWalletTopup()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="walletCurrencyModal">
+        <div class="modal">
+            <div class="modal-title">创建自定义货币</div>
+            <div class="input-group">
+                <label class="input-label">货币代码</label>
+                <input type="text" class="modal-input" id="walletCurrencyCodeInput" placeholder="例如：GOLD" maxlength="10" style="margin-bottom:0">
+            </div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">货币名称</label>
+                <input type="text" class="modal-input" id="walletCurrencyNameInput" placeholder="例如：王国金币" maxlength="20" style="margin-bottom:0">
+            </div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">汇率（1 单位该货币 = 多少 USD）</label>
+                <input type="number" class="modal-input" id="walletCurrencyRateInput" min="0.000001" step="0.000001" placeholder="1.0" style="margin-bottom:0">
+            </div>
+            <div class="modal-btns" style="margin-top:16px">
+                <button class="modal-btn cancel" onclick="hideModal('walletCurrencyModal')">取消</button>
+                <button class="modal-btn confirm" onclick="createWalletCurrency()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="addBankCardModal">
+        <div class="modal">
+            <div class="modal-title">添加银行卡</div>
+            <div class="wallet-card-template-list" id="walletCardTemplateList"></div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">卡片显示名称</label>
+                <input type="text" class="modal-input" id="walletCardAliasInput" placeholder="例如：主卡 / 旅行卡" maxlength="24" style="margin-bottom:0">
+            </div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">持卡人</label>
+                <input type="text" class="modal-input" id="walletCardHolderInput" placeholder="YOUR NAME" maxlength="24" style="margin-bottom:0">
+            </div>
+            <div class="wallet-card-meta-row">
+                <div class="input-group" style="margin-top:12px">
+                    <label class="input-label">有效期（月）</label>
+                    <input type="number" class="modal-input" id="walletCardExpMonth" min="1" max="12" placeholder="12" style="margin-bottom:0">
+                </div>
+                <div class="input-group" style="margin-top:12px">
+                    <label class="input-label">有效期（年）</label>
+                    <input type="number" class="modal-input" id="walletCardExpYear" min="2026" max="2099" placeholder="2032" style="margin-bottom:0">
+                </div>
+                <div class="input-group" style="margin-top:12px">
+                    <label class="input-label">CVC</label>
+                    <input type="number" class="modal-input" id="walletCardCvcInput" min="100" max="999" placeholder="123" style="margin-bottom:0">
+                </div>
+            </div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">自定义信息</label>
+                <input type="text" class="modal-input" id="walletCardExtraInput" placeholder="备注 / 标签（可选）" maxlength="30" style="margin-bottom:0">
+            </div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">初始余额（可选）</label>
+                <input type="number" class="modal-input" id="walletCardInitialAmountInput" min="0" step="0.01" placeholder="0.00" style="margin-bottom:0">
+            </div>
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">初始余额币种</label>
+                <select class="select-field" id="walletCardInitialCurrencySelect"></select>
+            </div>
+            <div class="modal-btns" style="margin-top:16px">
+                <button class="modal-btn cancel" onclick="hideModal('addBankCardModal')">取消</button>
+                <button class="modal-btn confirm" onclick="confirmAddBankCard()">确定</button>
+            </div>
+        </div>
+    </div>
+
 <!-- 时区地点搜索弹窗 -->
 <div class="modal-overlay timezone-search-modal" id="timezoneSearchModal">
     <div class="modal">
@@ -6643,6 +7391,7 @@ currentStickerCategory: 'all',
 isStickerManageMode: false,
 selectedStickers: new Set(),
 tempStickerData: null,
+            wallet: null,
             appIcons: { settings: null, messages: null, worldbook: null, photos: null, fonts: null },
             settings: {
     apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048,
@@ -6794,7 +7543,8 @@ function getLanguageName(code, useNative = false) {
               saveToIDB('appData', 'stickers', App.stickers),
              saveToIDB('appData', 'stickerCategories', App.stickerCategories),
                     saveToIDB('appData', 'apiPresets', App.apiPresets),
-                    saveToIDB('appData', 'fonts', App.fonts)
+                    saveToIDB('appData', 'fonts', App.fonts),
+                    saveToIDB('appData', 'wallet', App.wallet)
                 ]);
                 return true;
             } catch (e) { console.error('Save failed:', e); return false; }
@@ -6802,7 +7552,7 @@ function getLanguageName(code, useNative = false) {
 
         async function loadData() {
     try {
-        const [characters, worldbooks, settings, icons, presets, apiPresets, fonts, stickers, stickerCategories] = await Promise.all([
+        const [characters, worldbooks, settings, icons, presets, apiPresets, fonts, stickers, stickerCategories, wallet] = await Promise.all([
             loadFromIDB('appData', 'characters'),
             loadFromIDB('appData', 'worldbooks'),
             loadFromIDB('appData', 'settings'),
@@ -6811,7 +7561,8 @@ function getLanguageName(code, useNative = false) {
             loadFromIDB('appData', 'apiPresets'),
             loadFromIDB('appData', 'fonts'),
             loadFromIDB('appData', 'stickers'),
-            loadFromIDB('appData', 'stickerCategories')
+            loadFromIDB('appData', 'stickerCategories'),
+            loadFromIDB('appData', 'wallet')
         ]);
         if (characters) App.characters = characters;
         if (worldbooks) App.worldbooks = worldbooks;
@@ -6823,6 +7574,7 @@ function getLanguageName(code, useNative = false) {
         if (stickers) App.stickers = stickers;
         if (stickerCategories && stickerCategories.length > 0) App.stickerCategories = stickerCategories;
         else App.stickerCategories = ['all'];
+        if (wallet) App.wallet = wallet;
         DEFAULT_FONTS.forEach(df => { if (!App.fonts.find(f => f.id === df.id)) App.fonts.push(df); });
 
         App.worldbooks.forEach(wb => { if (!wb.entries) wb.entries = [{ name: 'Default Entry', keywords: wb.keywords || '', content: wb.content || '', alwaysActive: wb.alwaysActive || false }]; });
@@ -9878,7 +10630,8 @@ char.aiStickerSettings.count = parseInt(document.getElementById('aiStickerCount'
                 version: 1, exportDate: new Date().toISOString(),
                 characters: App.characters, worldbooks: App.worldbooks,
                 settings: App.settings, appIcons: App.appIcons,
-                globalCssPresets: App.globalCssPresets, apiPresets: App.apiPresets, fonts: App.fonts
+                globalCssPresets: App.globalCssPresets, apiPresets: App.apiPresets, fonts: App.fonts,
+                wallet: App.wallet
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -9904,6 +10657,7 @@ char.aiStickerSettings.count = parseInt(document.getElementById('aiStickerCount'
                     if (data.globalCssPresets) App.globalCssPresets = data.globalCssPresets;
                     if (data.apiPresets) App.apiPresets = data.apiPresets;
                     if (data.fonts) App.fonts = data.fonts;
+                    if (data.wallet) App.wallet = data.wallet;
                     await saveData();
                     location.reload();
                 } catch (err) { showToast('Import failed: ' + err.message, 'error'); }
@@ -9918,6 +10672,7 @@ char.aiStickerSettings.count = parseInt(document.getElementById('aiStickerCount'
             App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null, fontScale: 1 };
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null };
             App.globalCssPresets = []; App.apiPresets = []; App.fonts = [...DEFAULT_FONTS];
+            App.wallet = null;
             await saveData();
             location.reload();
         }
@@ -13690,6 +14445,1507 @@ function formatVirtualDate(timestamp) {
     const d = new Date(timestamp);
     return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 }
+
+// ========== 钱包与转账系统 ==========
+const BUILTIN_WALLET_CURRENCIES = [
+    { code: 'USD', name: 'US Dollar', symbol: '$', usdRate: 1 },
+    { code: 'EUR', name: 'Euro', symbol: '€', usdRate: 1.08 },
+    { code: 'GBP', name: 'Pound Sterling', symbol: '£', usdRate: 1.27 },
+    { code: 'JPY', name: 'Japanese Yen', symbol: '¥', usdRate: 0.0068 },
+    { code: 'CNY', name: 'Chinese Yuan', symbol: '¥', usdRate: 0.14 },
+    { code: 'RUB', name: 'Russian Ruble', symbol: '₽', usdRate: 0.011 },
+    { code: 'KRW', name: 'Korean Won', symbol: '₩', usdRate: 0.00074 },
+    { code: 'HKD', name: 'Hong Kong Dollar', symbol: 'HK$', usdRate: 0.128 },
+    { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$', usdRate: 0.74 },
+    { code: 'AUD', name: 'Australian Dollar', symbol: 'A$', usdRate: 0.66 },
+    { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF', usdRate: 1.11 },
+    { code: 'INR', name: 'Indian Rupee', symbol: '₹', usdRate: 0.012 },
+    { code: 'BRL', name: 'Brazilian Real', symbol: 'R$', usdRate: 0.20 },
+    { code: 'MXN', name: 'Mexican Peso', symbol: 'MX$', usdRate: 0.058 },
+    { code: 'TRY', name: 'Turkish Lira', symbol: '₺', usdRate: 0.031 }
+];
+
+const BANK_CARD_PRESETS = [
+    { id: 'visa-classic', name: 'Visa Classic', network: 'VISA', gradient: 'linear-gradient(130deg,#1f1f1f,#4b4b4b)' },
+    { id: 'visa-infinite', name: 'Visa Infinite', network: 'VISA', gradient: 'linear-gradient(130deg,#050505,#2a2a2a)' },
+    { id: 'mastercard-world', name: 'Mastercard World', network: 'MASTERCARD', gradient: 'linear-gradient(130deg,#2a2f35,#121418)' },
+    { id: 'mastercard-black', name: 'Mastercard Black', network: 'MASTERCARD', gradient: 'linear-gradient(130deg,#161616,#343434)' },
+    { id: 'amex-gold', name: 'Amex Gold', network: 'AMEX', gradient: 'linear-gradient(130deg,#5d4e2c,#c0a66a)' },
+    { id: 'amex-platinum', name: 'Amex Platinum', network: 'AMEX', gradient: 'linear-gradient(130deg,#5d636a,#c3c7cb)' },
+    { id: 'discover-it', name: 'Discover It', network: 'DISCOVER', gradient: 'linear-gradient(130deg,#1d2d4f,#64748b)' },
+    { id: 'jcb-premium', name: 'JCB Premium', network: 'JCB', gradient: 'linear-gradient(130deg,#1f3b2f,#495c4f)' },
+    { id: 'unionpay-dragon', name: 'UnionPay Dragon', network: 'UNIONPAY', gradient: 'linear-gradient(130deg,#1b2e5a,#5a6b95)' },
+    { id: 'mir-standard', name: 'MIR Standard', network: 'MIR', gradient: 'linear-gradient(130deg,#1a3f39,#3a7f6d)' },
+    { id: 'diners-club', name: 'Diners Club', network: 'DINERS', gradient: 'linear-gradient(130deg,#2c2c32,#48484f)' },
+    { id: 'maestro-edge', name: 'Maestro Edge', network: 'MAESTRO', gradient: 'linear-gradient(130deg,#2d2d2d,#656565)' },
+    { id: 'rupay-select', name: 'RuPay Select', network: 'RUPAY', gradient: 'linear-gradient(130deg,#22334f,#3f4f6a)' },
+    { id: 'elo-premium', name: 'Elo Premium', network: 'ELO', gradient: 'linear-gradient(130deg,#2f3e2b,#647454)' },
+    { id: 'hipercard', name: 'Hipercard', network: 'HIPERCARD', gradient: 'linear-gradient(130deg,#5a1f2f,#8a4862)' },
+    { id: 'troy-signature', name: 'Troy Signature', network: 'TROY', gradient: 'linear-gradient(130deg,#2b3d2f,#4f6656)' },
+    { id: 'interac-maple', name: 'Interac Maple', network: 'INTERAC', gradient: 'linear-gradient(130deg,#361f1f,#5f3a3a)' },
+    { id: 'laser-legacy', name: 'Laser Legacy', network: 'LASER', gradient: 'linear-gradient(130deg,#21254b,#434a7d)' },
+    { id: 'solo-vintage', name: 'Solo Vintage', network: 'SOLO', gradient: 'linear-gradient(130deg,#2f2920,#5e5340)' },
+    { id: 'obsidian-private', name: 'Obsidian Private', network: 'MASTERCARD', gradient: 'linear-gradient(130deg,#060606,#2b2b2b)' }
+];
+
+const WalletRuntime = {
+    editingGroupId: null,
+    incomingTransferMsgId: null,
+    topupTarget: { type: 'balance', id: null, groupId: 'default' },
+    selectedCardPresetId: null,
+    aiTransferChanged: false,
+    txManageMode: false,
+    txSelectedIds: new Set()
+};
+
+function generateRuntimeId(prefix) {
+    return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function normalizeCurrencyCode(code) {
+    return (code || 'USD').toString().trim().toUpperCase();
+}
+
+function limitNote(text, maxLen = 30) {
+    return (text || '').toString().replace(/\s+/g, ' ').trim().slice(0, maxLen);
+}
+
+function escapeToken(text) {
+    return (text || '').toString().replace(/[\r\n\[\]"]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function getWalletCurrencies() {
+    const wallet = (App.wallet && typeof App.wallet === 'object') ? App.wallet : { customCurrencies: [] };
+    const map = new Map();
+    BUILTIN_WALLET_CURRENCIES.forEach(c => map.set(c.code, { ...c }));
+    (wallet.customCurrencies || []).forEach(c => {
+        const code = normalizeCurrencyCode(c.code);
+        const rate = Number(c.usdRate);
+        if (!code || rate <= 0) return;
+        map.set(code, { code, name: c.name || code, symbol: c.symbol || code, usdRate: rate });
+    });
+    return Array.from(map.values());
+}
+
+function getWalletCurrency(code) {
+    const target = normalizeCurrencyCode(code);
+    return getWalletCurrencies().find(c => c.code === target) || { code: 'USD', name: 'US Dollar', symbol: '$', usdRate: 1 };
+}
+
+function hasWalletCurrency(code) {
+    const target = normalizeCurrencyCode(code);
+    return getWalletCurrencies().some(c => c.code === target);
+}
+
+function toUsd(amount, currencyCode) {
+    const c = getWalletCurrency(currencyCode);
+    const num = Number(amount);
+    if (!Number.isFinite(num) || !c.usdRate) return 0;
+    return num * c.usdRate;
+}
+
+function fromUsd(usd, currencyCode) {
+    const c = getWalletCurrency(currencyCode);
+    const num = Number(usd);
+    if (!Number.isFinite(num) || !c.usdRate) return 0;
+    return num / c.usdRate;
+}
+
+function formatAmount(amount, currencyCode, digits = 2) {
+    const c = getWalletCurrency(currencyCode);
+    const num = Number(amount);
+    if (!Number.isFinite(num)) return `0.00 ${c.code}`;
+    return `${num.toFixed(digits)} ${c.code}`;
+}
+
+function normalizeWalletCardRecord(card, fallbackGroupId = 'default') {
+    if (!card || typeof card !== 'object') return null;
+    const preset = BANK_CARD_PRESETS.find(p => p.id === card.templateId) || BANK_CARD_PRESETS[0];
+    const network = (card.network || preset.network || 'VISA').toString().trim().toUpperCase();
+    const rawNumber = (card.number || '').toString().trim();
+    return {
+        id: card.id || generateRuntimeId('card'),
+        templateId: preset.id,
+        alias: (card.alias || preset.name || 'CARD').toString().trim().slice(0, 24) || (preset.name || 'CARD'),
+        holder: (card.holder || 'CARD HOLDER').toString().trim().slice(0, 24) || 'CARD HOLDER',
+        network,
+        number: rawNumber || generateCardNumber(network),
+        expMonth: Math.min(12, Math.max(1, Number(card.expMonth) || 12)),
+        expYear: Math.max(2026, Number(card.expYear) || (new Date().getFullYear() + 3)),
+        cvc: String(Math.max(100, Math.min(999, Number(card.cvc) || 123))),
+        extra: limitNote(card.extra || '', 30),
+        balanceUsd: Math.max(0, Number(card.balanceUsd) || 0),
+        createdAt: Number(card.createdAt) || Date.now(),
+        groupId: (card.groupId || fallbackGroupId || 'default').toString()
+    };
+}
+
+function ensureWalletData() {
+    if (!App.wallet || typeof App.wallet !== 'object') App.wallet = {};
+    if (!Array.isArray(App.wallet.groups)) App.wallet.groups = [];
+    if (!App.wallet.groups.find(g => g?.id === 'default')) {
+        App.wallet.groups.unshift({ id: 'default', name: '默认钱包', members: [], createdAt: Date.now() });
+    }
+    if (!App.wallet.groupBalances || typeof App.wallet.groupBalances !== 'object') App.wallet.groupBalances = {};
+    if (!Array.isArray(App.wallet.cards)) App.wallet.cards = [];
+    if (!App.wallet.groupCards || typeof App.wallet.groupCards !== 'object' || Array.isArray(App.wallet.groupCards)) App.wallet.groupCards = {};
+    if (!Array.isArray(App.wallet.customCurrencies)) App.wallet.customCurrencies = [];
+    if (!Array.isArray(App.wallet.transactions)) App.wallet.transactions = [];
+    if (!App.wallet.transactionLimits || typeof App.wallet.transactionLimits !== 'object') App.wallet.transactionLimits = {};
+    if (!App.wallet.ui || typeof App.wallet.ui !== 'object') App.wallet.ui = {};
+    if (!['contacts', 'wallet'].includes(App.wallet.ui.activeTab)) App.wallet.ui.activeTab = 'contacts';
+    if (typeof App.wallet.lastTransferPayment !== 'string') App.wallet.lastTransferPayment = 'balance';
+
+    const charIds = new Set((App.characters || []).map(c => c.id));
+    const used = new Set();
+    const base = App.wallet.groups.find(g => g.id === 'default') || { id: 'default', name: '默认钱包', members: [] };
+    const custom = [];
+    App.wallet.groups.forEach(group => {
+        if (!group || !group.id || group.id === 'default') return;
+        const members = (group.members || []).filter(id => {
+            if (!charIds.has(id) || used.has(id)) return false;
+            used.add(id);
+            return true;
+        });
+        if (members.length > 0) custom.push({ id: group.id, name: group.name || '分组钱包', members, createdAt: group.createdAt || Date.now() });
+    });
+    App.wallet.groups = [{ id: 'default', name: base.name || '默认钱包', members: [], createdAt: base.createdAt || Date.now() }, ...custom];
+    App.wallet.groups.forEach(g => {
+        if (typeof App.wallet.groupBalances[g.id] !== 'number' || !Number.isFinite(App.wallet.groupBalances[g.id])) {
+            App.wallet.groupBalances[g.id] = 0;
+        }
+        App.wallet.transactionLimits[g.id] = normalizeWalletTransactionLimit(App.wallet.transactionLimits[g.id]);
+    });
+    Object.keys(App.wallet.groupBalances).forEach(id => {
+        if (!App.wallet.groups.some(g => g.id === id)) delete App.wallet.groupBalances[id];
+    });
+    Object.keys(App.wallet.transactionLimits).forEach(id => {
+        if (!App.wallet.groups.some(g => g.id === id)) delete App.wallet.transactionLimits[id];
+    });
+
+    const groupIdSet = new Set(App.wallet.groups.map(g => g.id));
+    const normalizedGroupCards = {};
+    const appendCardToGroup = (card, fallbackGroupId = 'default') => {
+        const normalized = normalizeWalletCardRecord(card, fallbackGroupId);
+        if (!normalized) return;
+        const targetGroupId = groupIdSet.has(normalized.groupId) ? normalized.groupId : (groupIdSet.has(fallbackGroupId) ? fallbackGroupId : 'default');
+        normalized.groupId = targetGroupId;
+        if (!Array.isArray(normalizedGroupCards[targetGroupId])) normalizedGroupCards[targetGroupId] = [];
+        if (!normalizedGroupCards[targetGroupId].some(existing => existing.id === normalized.id)) {
+            normalizedGroupCards[targetGroupId].push(normalized);
+        }
+    };
+
+    Object.entries(App.wallet.groupCards).forEach(([groupId, cards]) => {
+        if (!Array.isArray(cards)) return;
+        cards.forEach(card => appendCardToGroup(card, groupId));
+    });
+
+    if (Array.isArray(App.wallet.cards) && App.wallet.cards.length > 0) {
+        const migrateTargetGroupId = App.wallet.groups.some(g => g.id === App.wallet.activeGroupId) ? App.wallet.activeGroupId : 'default';
+        App.wallet.cards.forEach(card => appendCardToGroup(card, migrateTargetGroupId));
+    }
+
+    App.wallet.groups.forEach(g => {
+        if (!Array.isArray(normalizedGroupCards[g.id])) normalizedGroupCards[g.id] = [];
+    });
+    App.wallet.groupCards = normalizedGroupCards;
+    App.wallet.cards = [];
+
+    App.wallet.transactions = App.wallet.transactions
+        .filter(tx => tx && typeof tx === 'object')
+        .map(tx => {
+            const txGroupId = App.wallet.groups.some(g => g.id === tx.groupId) ? tx.groupId : 'default';
+            return {
+                ...tx,
+                id: tx.id || generateRuntimeId('wtx'),
+                groupId: txGroupId,
+                timestamp: Number(tx.timestamp) || Date.now(),
+                direction: tx.direction === 'in' ? 'in' : 'out',
+                amount: Number(tx.amount) || 0,
+                currency: normalizeCurrencyCode(tx.currency || 'USD'),
+                usdValue: Number(tx.usdValue) || 0
+            };
+        });
+
+    App.wallet.groups.forEach(g => applyWalletTransactionLimitForGroup(g.id, true));
+    if (App.wallet.transactions.length > 500) App.wallet.transactions.length = 500;
+    if (!App.wallet.groups.some(g => g.id === App.wallet.activeGroupId)) App.wallet.activeGroupId = 'default';
+    const currencyExists = getWalletCurrencies().some(c => c.code === normalizeCurrencyCode(App.wallet.displayCurrency));
+    if (!currencyExists) App.wallet.displayCurrency = 'USD';
+}
+
+function getWalletCustomGroups() {
+    ensureWalletData();
+    return App.wallet.groups.filter(g => g.id !== 'default');
+}
+
+function getAssignedCharacterIds(excludeGroupId = null) {
+    const set = new Set();
+    getWalletCustomGroups().forEach(group => {
+        if (excludeGroupId && group.id === excludeGroupId) return;
+        group.members.forEach(id => set.add(id));
+    });
+    return set;
+}
+
+function getGroupMemberIds(groupId) {
+    ensureWalletData();
+    if (groupId === 'default') {
+        const assigned = getAssignedCharacterIds();
+        return App.characters.map(c => c.id).filter(id => !assigned.has(id));
+    }
+    const group = App.wallet.groups.find(g => g.id === groupId);
+    return group ? group.members.slice() : [];
+}
+
+function getWalletGroupForChar(charId) {
+    ensureWalletData();
+    const group = getWalletCustomGroups().find(g => g.members.includes(charId));
+    return group ? group.id : 'default';
+}
+
+function getWalletGroupName(groupId) {
+    ensureWalletData();
+    const group = App.wallet.groups.find(g => g.id === groupId);
+    return group ? group.name : '默认钱包';
+}
+
+function getGroupBalanceUsd(groupId) {
+    ensureWalletData();
+    return Number(App.wallet.groupBalances[groupId]) || 0;
+}
+
+function setGroupBalanceUsd(groupId, value) {
+    ensureWalletData();
+    App.wallet.groupBalances[groupId] = Math.max(0, Number(value) || 0);
+}
+
+function getWalletCards(groupId = null) {
+    ensureWalletData();
+    const targetGroupId = groupId || App.wallet.activeGroupId || 'default';
+    return Array.isArray(App.wallet.groupCards[targetGroupId]) ? App.wallet.groupCards[targetGroupId] : [];
+}
+
+function getCardById(cardId, groupId = null) {
+    ensureWalletData();
+    if (!cardId) return null;
+    const hasSpecificGroup = !!groupId && App.wallet.groups.some(g => g.id === groupId);
+    if (hasSpecificGroup) {
+        return getWalletCards(groupId).find(c => c.id === cardId) || null;
+    }
+    for (const group of App.wallet.groups) {
+        const found = getWalletCards(group.id).find(c => c.id === cardId);
+        if (found) return found;
+    }
+    return null;
+}
+
+function normalizeWalletTransactionLimit(value) {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed) || parsed <= 0) return 0;
+    return Math.floor(parsed);
+}
+
+function getWalletTransactionsForGroup(groupId) {
+    ensureWalletData();
+    const targetGroupId = groupId || App.wallet.activeGroupId || 'default';
+    return App.wallet.transactions.filter(tx => (tx.groupId || 'default') === targetGroupId);
+}
+
+function getWalletTransactionLimit(groupId) {
+    ensureWalletData();
+    const targetGroupId = groupId || App.wallet.activeGroupId || 'default';
+    return normalizeWalletTransactionLimit(App.wallet.transactionLimits[targetGroupId]);
+}
+
+function applyWalletTransactionLimitForGroup(groupId, skipEnsure = false) {
+    if (!skipEnsure) ensureWalletData();
+    const targetGroupId = groupId || App.wallet.activeGroupId || 'default';
+    const limit = normalizeWalletTransactionLimit(App.wallet.transactionLimits[targetGroupId]);
+    if (limit === 0) return;
+
+    let kept = 0;
+    App.wallet.transactions = App.wallet.transactions.filter(tx => {
+        const txGroupId = tx.groupId || 'default';
+        if (txGroupId !== targetGroupId) return true;
+        kept += 1;
+        return kept <= limit;
+    });
+}
+
+function setWalletTransactionLimit(groupId, limit) {
+    ensureWalletData();
+    const targetGroupId = groupId || App.wallet.activeGroupId || 'default';
+    App.wallet.transactionLimits[targetGroupId] = normalizeWalletTransactionLimit(limit);
+    applyWalletTransactionLimitForGroup(targetGroupId, true);
+}
+
+function clearWalletTransactionsForActiveGroup() {
+    ensureWalletData();
+    const groupId = App.wallet.activeGroupId || 'default';
+    const rows = getWalletTransactionsForGroup(groupId);
+    if (rows.length === 0) {
+        showToast('当前分组暂无交易记录', 'error');
+        return;
+    }
+    if (!confirm(`确定清空当前分组的 ${rows.length} 条交易记录吗？`)) return;
+
+    App.wallet.transactions = App.wallet.transactions.filter(tx => (tx.groupId || 'default') !== groupId);
+    WalletRuntime.txManageMode = false;
+    WalletRuntime.txSelectedIds.clear();
+    renderWalletTransactionList();
+    saveData();
+    showToast('已清空当前分组交易记录', 'success');
+}
+
+function toggleWalletTransactionManageMode(forceState = null) {
+    ensureWalletData();
+    const rows = getWalletTransactionsForGroup(App.wallet.activeGroupId || 'default');
+    const nextState = typeof forceState === 'boolean' ? forceState : !WalletRuntime.txManageMode;
+    if (nextState && rows.length === 0) {
+        showToast('当前分组暂无交易记录', 'error');
+        return;
+    }
+    WalletRuntime.txManageMode = nextState;
+    WalletRuntime.txSelectedIds.clear();
+    renderWalletTransactionList();
+}
+
+function toggleWalletTransactionSelection(txId) {
+    if (!WalletRuntime.txManageMode || !txId) return;
+    if (WalletRuntime.txSelectedIds.has(txId)) WalletRuntime.txSelectedIds.delete(txId);
+    else WalletRuntime.txSelectedIds.add(txId);
+    renderWalletTransactionList();
+}
+
+function deleteSelectedWalletTransactions() {
+    ensureWalletData();
+    if (!WalletRuntime.txManageMode) return;
+    const selectedIds = Array.from(WalletRuntime.txSelectedIds);
+    if (selectedIds.length === 0) {
+        showToast('请先选择要删除的交易记录', 'error');
+        return;
+    }
+    if (!confirm(`确定删除选中的 ${selectedIds.length} 条交易记录吗？`)) return;
+
+    const groupId = App.wallet.activeGroupId || 'default';
+    const selectedSet = new Set(selectedIds);
+    App.wallet.transactions = App.wallet.transactions.filter(tx => {
+        if ((tx.groupId || 'default') !== groupId) return true;
+        return !selectedSet.has(tx.id);
+    });
+    WalletRuntime.txSelectedIds.clear();
+    if (getWalletTransactionsForGroup(groupId).length === 0) WalletRuntime.txManageMode = false;
+    renderWalletTransactionList();
+    saveData();
+    showToast('已删除选中交易记录', 'success');
+}
+
+function applyWalletTransactionLimitFromInput() {
+    ensureWalletData();
+    const input = document.getElementById('walletTxLimitInput');
+    if (!input) return;
+
+    const raw = (input.value || '').trim();
+    if (!raw) {
+        input.value = String(getWalletTransactionLimit());
+        return;
+    }
+    const parsed = Number(raw);
+    if (!Number.isFinite(parsed) || parsed < 0 || Math.floor(parsed) !== parsed) {
+        showToast('请输入 0 或正整数', 'error');
+        return;
+    }
+
+    const groupId = App.wallet.activeGroupId || 'default';
+    setWalletTransactionLimit(groupId, parsed);
+    WalletRuntime.txSelectedIds.clear();
+    if (getWalletTransactionsForGroup(groupId).length === 0) WalletRuntime.txManageMode = false;
+    renderWalletTransactionList();
+    saveData();
+    showToast(parsed === 0 ? '已设置为无限制' : `已设置保留前 ${parsed} 条`, 'success');
+}
+
+function setWalletTransactionLimitPreset(limit) {
+    const value = Math.max(0, Math.floor(Number(limit) || 0));
+    const input = document.getElementById('walletTxLimitInput');
+    if (input) input.value = String(value);
+    applyWalletTransactionLimitFromInput();
+}
+
+function recordWalletTransaction(payload) {
+    ensureWalletData();
+    const targetGroupId = payload.groupId || App.wallet.activeGroupId || 'default';
+    App.wallet.transactions.unshift({
+        id: generateRuntimeId('wtx'),
+        timestamp: Date.now(),
+        groupId: targetGroupId,
+        kind: payload.kind || 'other',
+        direction: payload.direction || 'out',
+        amount: Number(payload.amount) || 0,
+        currency: normalizeCurrencyCode(payload.currency || 'USD'),
+        usdValue: Number(payload.usdValue) || 0,
+        note: limitNote(payload.note || '', 60),
+        charId: payload.charId || null,
+        transferId: payload.transferId || null,
+        source: payload.source || null
+    });
+    applyWalletTransactionLimitForGroup(targetGroupId, true);
+    if (App.wallet.transactions.length > 500) App.wallet.transactions.length = 500;
+}
+
+function buildGroupAvatarMosaic(groupId) {
+    const members = getGroupMemberIds(groupId).slice(0, 9);
+    const cols = members.length <= 1 ? 1 : (members.length <= 4 ? 2 : 3);
+    const cells = members.map(id => {
+        const char = App.characters.find(c => c.id === id);
+        if (!char) return `<div class="wallet-group-avatar-cell">?</div>`;
+        if (char.avatarImage) return `<div class="wallet-group-avatar-cell"><img src="${char.avatarImage}" alt=""></div>`;
+        return `<div class="wallet-group-avatar-cell">${escapeHtml((char.avatar || char.name || '◇').slice(0, 1))}</div>`;
+    }).join('');
+    if (!cells) return `<div class="wallet-group-avatar grid-1"><div class="wallet-group-avatar-cell">∑</div></div>`;
+    return `<div class="wallet-group-avatar grid-${cols}">${cells}</div>`;
+}
+
+function renderWalletGroupStrip() {
+    const strip = document.getElementById('walletGroupStrip');
+    if (!strip) return;
+    ensureWalletData();
+    const html = App.wallet.groups.map(group => {
+        const active = group.id === App.wallet.activeGroupId ? 'active' : '';
+        return `<div class="wallet-group-chip ${active}" onclick="onWalletGroupChipClick('${group.id}')">
+            ${buildGroupAvatarMosaic(group.id)}
+            <div class="wallet-group-name">${escapeHtml(group.name || '分组')}</div>
+        </div>`;
+    }).join('');
+    strip.innerHTML = html + `<button class="wallet-group-add" onclick="openWalletGroupModal()">+</button>`;
+}
+
+function renderWalletBalanceCard() {
+    ensureWalletData();
+    const groupId = App.wallet.activeGroupId || 'default';
+    const balanceUsd = getGroupBalanceUsd(groupId);
+    const displayCurrency = getWalletCurrency(App.wallet.displayCurrency || 'USD').code;
+    const amount = fromUsd(balanceUsd, displayCurrency);
+    document.getElementById('walletBalanceValue').textContent = formatAmount(amount, displayCurrency);
+    const members = getGroupMemberIds(groupId);
+    document.getElementById('walletBalanceDesc').textContent = members.length > 0 ? `已绑定 ${members.length} 位角色` : '当前分组暂无绑定角色';
+
+    const select = document.getElementById('walletDisplayCurrency');
+    select.innerHTML = getWalletCurrencies().map(c => `<option value="${c.code}">${c.code}</option>`).join('');
+    select.value = displayCurrency;
+}
+
+function getCardPreset(card) {
+    return BANK_CARD_PRESETS.find(p => p.id === card.templateId) || BANK_CARD_PRESETS[0];
+}
+
+function renderWalletCardList() {
+    const container = document.getElementById('walletCardsScroll');
+    if (!container) return;
+    ensureWalletData();
+    const groupId = App.wallet.activeGroupId || 'default';
+    const cards = getWalletCards(groupId);
+    if (cards.length === 0) {
+        container.innerHTML = `<div class="wallet-empty-line">暂无银行卡，点击“添加银行卡”创建</div>`;
+        return;
+    }
+    container.innerHTML = cards.map(card => {
+        const preset = getCardPreset(card);
+        const tail = (card.number || '').replace(/\s+/g, '').slice(-4);
+        return `<div class="wallet-card-item" style="background:${preset.gradient}" onclick="openWalletTopupModal('card','${card.id}')">
+            <div class="wallet-card-network">${escapeHtml(card.alias || preset.name)}</div>
+            <div class="wallet-card-number">•••• •••• •••• ${escapeHtml(tail)}</div>
+            <div class="wallet-card-footer">
+                <span>${escapeHtml(card.holder || 'CARD HOLDER')}</span>
+                <span>${formatAmount(fromUsd(card.balanceUsd || 0, App.wallet.displayCurrency || 'USD'), App.wallet.displayCurrency || 'USD')}</span>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderWalletTransactionList() {
+    const list = document.getElementById('walletTransactionsList');
+    if (!list) return;
+    ensureWalletData();
+
+    const groupId = App.wallet.activeGroupId || 'default';
+    const rows = getWalletTransactionsForGroup(groupId);
+    const rowIdSet = new Set(rows.map(tx => tx.id));
+    WalletRuntime.txSelectedIds.forEach(id => {
+        if (!rowIdSet.has(id)) WalletRuntime.txSelectedIds.delete(id);
+    });
+    if (rows.length === 0) {
+        WalletRuntime.txManageMode = false;
+        WalletRuntime.txSelectedIds.clear();
+    }
+
+    const limitInput = document.getElementById('walletTxLimitInput');
+    if (limitInput && document.activeElement !== limitInput) {
+        limitInput.value = String(getWalletTransactionLimit(groupId));
+    }
+
+    const manageBtn = document.getElementById('walletTxManageBtn');
+    const clearBtn = document.getElementById('walletTxClearBtn');
+    const manageBar = document.getElementById('walletTxManageBar');
+    const manageInfo = document.getElementById('walletTxManageInfo');
+    if (manageBtn) {
+        manageBtn.textContent = WalletRuntime.txManageMode ? '完成' : '管理';
+        manageBtn.disabled = rows.length === 0;
+    }
+    if (clearBtn) clearBtn.disabled = rows.length === 0;
+    if (manageBar) manageBar.style.display = WalletRuntime.txManageMode ? 'flex' : 'none';
+    if (manageInfo) manageInfo.textContent = `已选 ${WalletRuntime.txSelectedIds.size} 条`;
+
+    if (rows.length === 0) {
+        list.innerHTML = `<div class="wallet-empty-line">当前分组暂无交易记录</div>`;
+        return;
+    }
+    const titleMap = {
+        'transfer-out': '转账支出',
+        'transfer-in': '收到转账',
+        'transfer-refund': '拒收退款',
+        'topup': '余额充值',
+        'topup-from-card': '银行卡转入',
+        'card-topup': '银行卡充值'
+    };
+    list.innerHTML = rows.map(tx => {
+        const sign = tx.direction === 'in' ? '+' : '-';
+        const cls = tx.direction === 'in' ? 'in' : 'out';
+        const amount = `${sign}${formatAmount(tx.amount || fromUsd(tx.usdValue || 0, tx.currency), tx.currency)}`;
+        const checked = WalletRuntime.txSelectedIds.has(tx.id);
+        const manageClass = WalletRuntime.txManageMode ? 'manage' : '';
+        const selectedClass = checked ? 'selected' : '';
+        const clickAttr = WalletRuntime.txManageMode ? `onclick="toggleWalletTransactionSelection('${tx.id}')"` : '';
+        const checkHtml = WalletRuntime.txManageMode ? `<div class="wallet-tx-check ${checked ? 'checked' : ''}"></div>` : '';
+        return `<div class="wallet-tx-item ${manageClass} ${selectedClass}" ${clickAttr}>
+            ${checkHtml}
+            <div class="wallet-tx-main">
+            <div class="wallet-tx-line">
+                <div class="wallet-tx-title">${titleMap[tx.kind] || '资金变动'}</div>
+                <div class="wallet-tx-amount ${cls}">${amount}</div>
+            </div>
+            <div class="wallet-tx-meta">${formatTime(tx.timestamp)}${tx.note ? ` · ${escapeHtml(tx.note)}` : ''}</div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderWalletPage() {
+    ensureWalletData();
+    renderWalletGroupStrip();
+    renderWalletBalanceCard();
+    renderWalletCardList();
+    renderWalletTransactionList();
+}
+
+function onWalletGroupChipClick(groupId) {
+    ensureWalletData();
+    if (!App.wallet.groups.some(g => g.id === groupId)) return;
+    const isDefaultGroup = groupId === 'default';
+    const wasActive = App.wallet.activeGroupId === groupId;
+    selectWalletGroup(groupId);
+    if (!isDefaultGroup && wasActive) openWalletGroupModal(groupId);
+}
+
+function selectWalletGroup(groupId) {
+    ensureWalletData();
+    if (!App.wallet.groups.some(g => g.id === groupId)) return;
+    const changed = App.wallet.activeGroupId !== groupId;
+    App.wallet.activeGroupId = groupId;
+    if (changed) {
+        WalletRuntime.txManageMode = false;
+        WalletRuntime.txSelectedIds.clear();
+    }
+    renderWalletPage();
+}
+
+function changeWalletDisplayCurrency(code) {
+    ensureWalletData();
+    App.wallet.displayCurrency = normalizeCurrencyCode(code);
+    renderWalletPage();
+}
+
+function switchMessagesTab(tab) {
+    ensureWalletData();
+    const target = tab === 'wallet' ? 'wallet' : 'contacts';
+    App.wallet.ui.activeTab = target;
+    document.getElementById('messagesTabContacts')?.classList.toggle('active', target === 'contacts');
+    document.getElementById('messagesTabWallet')?.classList.toggle('active', target === 'wallet');
+    document.getElementById('contactListContainer').style.display = target === 'contacts' ? 'block' : 'none';
+    document.getElementById('walletPageContainer').style.display = target === 'wallet' ? 'block' : 'none';
+    document.getElementById('messagesSearchContainer').style.display = target === 'contacts' ? 'block' : 'none';
+    if (target === 'contacts') renderContactList();
+    else renderWalletPage();
+}
+
+function populateCurrencySelect(selectId, defaultCode = 'USD') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    select.innerHTML = getWalletCurrencies().map(c => `<option value="${c.code}">${c.code} · ${escapeHtml(c.name)}</option>`).join('');
+    select.value = getWalletCurrency(defaultCode).code;
+}
+
+function openWalletGroupModal(groupId = null) {
+    ensureWalletData();
+    WalletRuntime.editingGroupId = groupId;
+    const isEdit = !!groupId;
+    const editingGroup = isEdit ? App.wallet.groups.find(g => g.id === groupId) : null;
+    document.getElementById('walletGroupModalTitle').textContent = isEdit ? '编辑钱包分组' : '创建钱包分组';
+    document.getElementById('walletGroupNameInput').value = editingGroup?.name || '';
+    document.getElementById('walletDeleteGroupBtn').style.display = isEdit ? 'block' : 'none';
+
+    const picker = document.getElementById('walletGroupRolePicker');
+    const assigned = getAssignedCharacterIds(isEdit ? groupId : null);
+    picker.innerHTML = App.characters.map(char => {
+        const checked = editingGroup?.members?.includes(char.id) ? 'checked' : '';
+        const disabled = assigned.has(char.id) ? 'disabled' : '';
+        const avatar = char.avatarImage ? `<img src="${char.avatarImage}" style="width:22px;height:22px;border-radius:6px;object-fit:cover">` : `<span>${escapeHtml((char.avatar || char.name || '◇').slice(0,1))}</span>`;
+        return `<label class="wallet-role-item ${disabled}">
+            <input type="checkbox" value="${char.id}" ${checked} ${disabled ? 'disabled' : ''}>
+            <span style="display:flex;align-items:center;gap:8px">${avatar}<span>${escapeHtml(char.nickname || char.name)}</span></span>
+        </label>`;
+    }).join('');
+    showModal('walletGroupModal');
+}
+
+function confirmWalletGroup() {
+    ensureWalletData();
+    const selected = Array.from(document.querySelectorAll('#walletGroupRolePicker input[type="checkbox"]:checked')).map(el => el.value);
+    if (selected.length < 1) {
+        showToast('至少选择 1 个角色', 'error');
+        return;
+    }
+    const name = (document.getElementById('walletGroupNameInput').value || '').trim() || `分组${getWalletCustomGroups().length + 1}`;
+    if (WalletRuntime.editingGroupId) {
+        const group = App.wallet.groups.find(g => g.id === WalletRuntime.editingGroupId);
+        if (!group) return;
+        group.name = name;
+        group.members = selected;
+    } else {
+        App.wallet.groups.push({ id: generateRuntimeId('group'), name, members: selected, createdAt: Date.now() });
+    }
+    const seen = new Set();
+    const custom = getWalletCustomGroups();
+    custom.forEach(group => {
+        group.members = group.members.filter(id => {
+            if (seen.has(id)) return false;
+            seen.add(id);
+            return true;
+        });
+    });
+    App.wallet.groups = [App.wallet.groups.find(g => g.id === 'default'), ...custom.filter(g => g.members.length > 0)];
+    ensureWalletData();
+    renderWalletPage();
+    hideModal('walletGroupModal');
+}
+
+function deleteWalletGroup() {
+    if (!WalletRuntime.editingGroupId) return;
+    const deletingGroupId = WalletRuntime.editingGroupId;
+    App.wallet.groups = App.wallet.groups.filter(g => g.id !== deletingGroupId);
+    App.wallet.transactions = App.wallet.transactions.filter(t => t.groupId !== deletingGroupId);
+    if (App.wallet.transactionLimits && typeof App.wallet.transactionLimits === 'object') {
+        delete App.wallet.transactionLimits[deletingGroupId];
+    }
+    if (App.wallet.groupCards && typeof App.wallet.groupCards === 'object') {
+        delete App.wallet.groupCards[deletingGroupId];
+    }
+    if (App.wallet.activeGroupId === deletingGroupId) App.wallet.activeGroupId = 'default';
+    WalletRuntime.txManageMode = false;
+    WalletRuntime.txSelectedIds.clear();
+    WalletRuntime.editingGroupId = null;
+    ensureWalletData();
+    renderWalletPage();
+    hideModal('walletGroupModal');
+}
+
+function openWalletTopupModal(type = 'balance', targetId = null) {
+    ensureWalletData();
+    const groupId = App.wallet.activeGroupId || 'default';
+    WalletRuntime.topupTarget = { type, id: targetId, groupId };
+    document.getElementById('walletTopupAmountInput').value = '';
+    populateCurrencySelect('walletTopupCurrencySelect', App.wallet.displayCurrency || 'USD');
+    populateCurrencySelect('walletCardInitialCurrencySelect', App.wallet.displayCurrency || 'USD');
+
+    const sourceSelect = document.getElementById('walletTopupSourceSelect');
+    const cardWrap = document.getElementById('walletTopupCardWrap');
+    const cardSelect = document.getElementById('walletTopupCardSelect');
+    const cards = getWalletCards(groupId);
+    cardSelect.innerHTML = cards.map(card => {
+        const label = `${card.alias || card.network} · ${card.number.slice(-4)}`;
+        return `<option value="${card.id}">${escapeHtml(label)}</option>`;
+    }).join('');
+    if (cards.length === 0) {
+        cardSelect.innerHTML = `<option value="">当前分组暂无银行卡</option>`;
+    }
+    const cardSourceOption = sourceSelect.querySelector('option[value="card"]');
+    if (cardSourceOption) cardSourceOption.disabled = cards.length === 0;
+
+    if (type === 'card') {
+        sourceSelect.value = 'manual';
+        sourceSelect.disabled = true;
+        cardWrap.style.display = 'none';
+        document.getElementById('walletTopupTitle').textContent = '银行卡充值';
+        document.getElementById('walletTopupTarget').textContent = '为该银行卡增加余额';
+    } else {
+        sourceSelect.disabled = false;
+        sourceSelect.value = 'manual';
+        document.getElementById('walletTopupTitle').textContent = '余额充值';
+        document.getElementById('walletTopupTarget').textContent = `当前分组：${getWalletGroupName(groupId)}`;
+    }
+    onWalletTopupSourceChange();
+    showModal('walletTopupModal');
+}
+
+function onWalletTopupSourceChange() {
+    const source = document.getElementById('walletTopupSourceSelect').value;
+    const showCard = source === 'card' && WalletRuntime.topupTarget.type !== 'card';
+    document.getElementById('walletTopupCardWrap').style.display = showCard ? 'block' : 'none';
+}
+
+function confirmWalletTopup() {
+    ensureWalletData();
+    const amount = Number(document.getElementById('walletTopupAmountInput').value);
+    const currency = normalizeCurrencyCode(document.getElementById('walletTopupCurrencySelect').value);
+    if (!Number.isFinite(amount) || amount <= 0) {
+        showToast('请输入有效金额', 'error');
+        return;
+    }
+    const usdValue = toUsd(amount, currency);
+    const source = document.getElementById('walletTopupSourceSelect').value;
+    const target = WalletRuntime.topupTarget;
+    const groupId = target.groupId || App.wallet.activeGroupId || 'default';
+
+    if (target.type === 'card') {
+        const card = getCardById(target.id, groupId);
+        if (!card) return;
+        card.balanceUsd = (Number(card.balanceUsd) || 0) + usdValue;
+        recordWalletTransaction({
+            groupId,
+            kind: 'card-topup',
+            direction: 'in',
+            amount,
+            currency,
+            usdValue,
+            note: '银行卡余额增加',
+            source: 'manual'
+        });
+    } else {
+        if (source === 'card') {
+            const selectedCardId = document.getElementById('walletTopupCardSelect').value;
+            const card = getCardById(selectedCardId, groupId);
+            if (!card) { showToast('请先选择银行卡', 'error'); return; }
+            if ((card.balanceUsd || 0) < usdValue) { showToast('银行卡余额不足', 'error'); return; }
+            card.balanceUsd -= usdValue;
+            recordWalletTransaction({
+                groupId,
+                kind: 'topup-from-card',
+                direction: 'in',
+                amount,
+                currency,
+                usdValue,
+                note: `来自银行卡 ${card.number.slice(-4)}`,
+                source: card.id
+            });
+        } else {
+            recordWalletTransaction({
+                groupId,
+                kind: 'topup',
+                direction: 'in',
+                amount,
+                currency,
+                usdValue,
+                note: '手动充值',
+                source: 'manual'
+            });
+        }
+        setGroupBalanceUsd(groupId, getGroupBalanceUsd(groupId) + usdValue);
+    }
+    hideModal('walletTopupModal');
+    renderWalletPage();
+}
+
+function openCreateCurrencyModal() {
+    document.getElementById('walletCurrencyCodeInput').value = '';
+    document.getElementById('walletCurrencyNameInput').value = '';
+    document.getElementById('walletCurrencyRateInput').value = '';
+    showModal('walletCurrencyModal');
+}
+
+function createWalletCurrency() {
+    ensureWalletData();
+    const code = normalizeCurrencyCode(document.getElementById('walletCurrencyCodeInput').value);
+    const name = (document.getElementById('walletCurrencyNameInput').value || '').trim();
+    const usdRate = Number(document.getElementById('walletCurrencyRateInput').value);
+    if (!/^[A-Z0-9]{2,10}$/.test(code)) { showToast('货币代码应为 2-10 位字母或数字', 'error'); return; }
+    if (!Number.isFinite(usdRate) || usdRate <= 0) { showToast('汇率必须大于 0', 'error'); return; }
+    if (getWalletCurrencies().some(c => c.code === code)) { showToast('该货币代码已存在', 'error'); return; }
+    App.wallet.customCurrencies.push({ code, name: name || code, usdRate, symbol: code });
+    hideModal('walletCurrencyModal');
+    renderWalletPage();
+    showToast('自定义货币已创建', 'success');
+}
+
+function renderCardPresetList() {
+    const list = document.getElementById('walletCardTemplateList');
+    if (!list) return;
+    list.innerHTML = BANK_CARD_PRESETS.map(preset => {
+        const selected = WalletRuntime.selectedCardPresetId === preset.id ? 'selected' : '';
+        return `<div class="wallet-card-template ${selected}" style="background:${preset.gradient}" onclick="selectBankCardPreset('${preset.id}', true)">
+            <div class="wallet-card-template-name">${escapeHtml(preset.name)}</div>
+            <div class="wallet-card-template-network">${escapeHtml(preset.network)}</div>
+        </div>`;
+    }).join('');
+}
+
+function selectBankCardPreset(id, playSound = true) {
+    WalletRuntime.selectedCardPresetId = id;
+    renderCardPresetList();
+    if (playSound) playCardSnapSound();
+}
+
+function playCardSnapSound() {
+    try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        const ctx = new AC();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = 600;
+        gain.gain.value = 0.02;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.03);
+    } catch (e) {}
+}
+
+function luhnCheckDigit(baseDigits) {
+    let sum = 0;
+    const parity = (baseDigits.length + 1) % 2;
+    for (let i = 0; i < baseDigits.length; i++) {
+        let digit = parseInt(baseDigits[i], 10);
+        if (i % 2 === parity) {
+            digit *= 2;
+            if (digit > 9) digit -= 9;
+        }
+        sum += digit;
+    }
+    return (10 - (sum % 10)) % 10;
+}
+
+function generateCardNumber(network) {
+    const net = (network || 'VISA').toUpperCase();
+    let prefix = '4';
+    let length = 16;
+    if (net === 'AMEX') { prefix = Math.random() > 0.5 ? '34' : '37'; length = 15; }
+    else if (net === 'MASTERCARD') prefix = String(51 + Math.floor(Math.random() * 5));
+    else if (net === 'DISCOVER') prefix = '6011';
+    else if (net === 'JCB') prefix = '35';
+    else if (net === 'UNIONPAY') prefix = '62';
+    else if (net === 'MIR') prefix = '2200';
+    else if (net === 'DINERS') { prefix = '36'; length = 14; }
+    else if (net === 'RUPAY') prefix = '60';
+    else if (net === 'HIPERCARD') prefix = '6062';
+
+    let base = prefix;
+    while (base.length < length - 1) base += Math.floor(Math.random() * 10).toString();
+    const full = base + luhnCheckDigit(base);
+    return full.match(/.{1,4}/g)?.join(' ') || full;
+}
+
+function openAddBankCardModal() {
+    ensureWalletData();
+    WalletRuntime.selectedCardPresetId = BANK_CARD_PRESETS[0].id;
+    renderCardPresetList();
+    populateCurrencySelect('walletCardInitialCurrencySelect', App.wallet.displayCurrency || 'USD');
+    document.getElementById('walletCardAliasInput').value = '';
+    document.getElementById('walletCardHolderInput').value = '';
+    document.getElementById('walletCardExpMonth').value = '';
+    document.getElementById('walletCardExpYear').value = '';
+    document.getElementById('walletCardCvcInput').value = '';
+    document.getElementById('walletCardExtraInput').value = '';
+    document.getElementById('walletCardInitialAmountInput').value = '';
+    showModal('addBankCardModal');
+}
+
+function confirmAddBankCard() {
+    ensureWalletData();
+    const groupId = App.wallet.activeGroupId || 'default';
+    const preset = BANK_CARD_PRESETS.find(p => p.id === WalletRuntime.selectedCardPresetId) || BANK_CARD_PRESETS[0];
+    const alias = (document.getElementById('walletCardAliasInput').value || '').trim();
+    const holder = (document.getElementById('walletCardHolderInput').value || '').trim() || 'CARD HOLDER';
+    const expMonth = Math.min(12, Math.max(1, Number(document.getElementById('walletCardExpMonth').value) || (Math.floor(Math.random() * 12) + 1)));
+    const expYear = Math.max(2026, Number(document.getElementById('walletCardExpYear').value) || (new Date().getFullYear() + 3));
+    const cvc = String(Math.max(100, Math.min(999, Number(document.getElementById('walletCardCvcInput').value) || (100 + Math.floor(Math.random() * 899)))));
+    const extra = limitNote(document.getElementById('walletCardExtraInput').value || '', 30);
+    const initAmount = Number(document.getElementById('walletCardInitialAmountInput').value) || 0;
+    const initCurrency = normalizeCurrencyCode(document.getElementById('walletCardInitialCurrencySelect').value || 'USD');
+
+    getWalletCards(groupId).push({
+        id: generateRuntimeId('card'),
+        templateId: preset.id,
+        alias: alias || preset.name,
+        holder,
+        network: preset.network,
+        number: generateCardNumber(preset.network),
+        expMonth,
+        expYear,
+        cvc,
+        extra,
+        balanceUsd: Math.max(0, toUsd(initAmount, initCurrency)),
+        createdAt: Date.now(),
+        groupId
+    });
+    hideModal('addBankCardModal');
+    renderWalletPage();
+    showToast('银行卡已添加', 'success');
+}
+
+function transferStatusText(status) {
+    if (status === 'accepted') return '已接受';
+    if (status === 'rejected') return '已拒绝';
+    return '等待处理';
+}
+
+function transferDecisionText(decision) {
+    return decision === 'accept' ? 'accepted' : 'rejected';
+}
+
+function buildTransferMessageToken(transfer) {
+    if (!transfer || typeof transfer !== 'object') return '[TRANSFER]';
+    if (transfer.kind === 'status') {
+        return `[TRANSFER_RESULT transfer_id=${escapeToken(transfer.relatedTransferId)} decision=${escapeToken(transfer.decision || transfer.status)} actor=${escapeToken(transfer.actor || '')} note="${escapeToken(transfer.note || '')}"]`;
+    }
+    return `[TRANSFER_REQUEST id=${escapeToken(transfer.id)} from=${escapeToken((transfer.direction || '').startsWith('user') ? 'user' : 'character')} to=${escapeToken((transfer.direction || '').endsWith('char') ? 'character' : 'user')} amount=${Number(transfer.amount || 0).toFixed(2)} currency=${escapeToken(transfer.currency || 'USD')} status=${escapeToken(transfer.status || 'pending')} note="${escapeToken(transfer.note || '')}" detail_note="${escapeToken(transfer.detailNote || '')}"]`;
+}
+
+function updateTransferMessageContent(msg) {
+    if (!msg?.transfer) return;
+    msg.content = buildTransferMessageToken(msg.transfer);
+}
+
+function transferPreviewText(msg) {
+    const t = msg?.transfer;
+    if (!t) return '转账';
+    if (t.kind === 'status') return `转账${t.decision === 'accepted' || t.status === 'accepted' ? '已接受' : '已拒绝'}`;
+    const amount = formatAmount(t.amount || 0, t.currency || 'USD');
+    return t.direction === 'user_to_char' ? `你转账 ${amount} · ${transferStatusText(t.status)}` : `收到转账 ${amount} · ${transferStatusText(t.status)}`;
+}
+
+function transferPlainText(msg) {
+    const t = msg?.transfer;
+    if (!t) return '转账消息';
+    if (t.kind === 'status') {
+        const d = t.decision === 'accepted' || t.status === 'accepted' ? '接受' : '拒绝';
+        return `转账${d} #${(t.relatedTransferId || '').slice(-6)} ${limitNote(t.note || '')}`.trim();
+    }
+    return `转账 ${formatAmount(t.amount || 0, t.currency || 'USD')} 状态:${transferStatusText(t.status)} ${limitNote(t.note || '')}`.trim();
+}
+
+function makeTransferMessage(char, sender, transferData) {
+    const msg = {
+        id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+        sender,
+        type: 'transfer',
+        content: '',
+        transfer: transferData,
+        timestamp: Date.now(),
+        virtualTimestamp: getVirtualTimestamp(char)
+    };
+    updateTransferMessageContent(msg);
+    return msg;
+}
+
+function refundUserTransfer(requestMsg) {
+    const t = requestMsg?.transfer;
+    if (!t || t.direction !== 'user_to_char' || t.refunded) return;
+    ensureWalletData();
+    const usdValue = Number(t.usdValue) || 0;
+    if (usdValue <= 0) return;
+    const rawGroupId = t.groupId || getWalletGroupForChar(t.charId);
+    const groupId = App.wallet.groups.some(g => g.id === rawGroupId) ? rawGroupId : 'default';
+    if (t.paymentSource === 'card' && t.paymentCardId) {
+        const card = getCardById(t.paymentCardId, groupId);
+        if (card) card.balanceUsd = (Number(card.balanceUsd) || 0) + usdValue;
+        else setGroupBalanceUsd(groupId, getGroupBalanceUsd(groupId) + usdValue);
+    } else {
+        setGroupBalanceUsd(groupId, getGroupBalanceUsd(groupId) + usdValue);
+    }
+    t.refunded = true;
+    recordWalletTransaction({
+        groupId,
+        kind: 'transfer-refund',
+        direction: 'in',
+        amount: t.amount,
+        currency: t.currency,
+        usdValue,
+        note: '转账被拒绝，已退款',
+        transferId: t.id,
+        charId: t.charId,
+        source: t.paymentSource
+    });
+}
+
+function creditIncomingTransfer(requestMsg) {
+    const t = requestMsg?.transfer;
+    if (!t || t.direction !== 'char_to_user' || t.credited) return;
+    const groupId = getWalletGroupForChar(t.charId);
+    const usdValue = Number(t.usdValue) || 0;
+    setGroupBalanceUsd(groupId, getGroupBalanceUsd(groupId) + usdValue);
+    t.groupId = groupId;
+    t.credited = true;
+    recordWalletTransaction({
+        groupId,
+        kind: 'transfer-in',
+        direction: 'in',
+        amount: t.amount,
+        currency: t.currency,
+        usdValue,
+        note: '角色转账已入账',
+        transferId: t.id,
+        charId: t.charId,
+        source: 'character'
+    });
+}
+
+function createTransferStatusMessage(char, requestMsg, decision, actor, noteText) {
+    const request = requestMsg.transfer;
+    const status = transferDecisionText(decision);
+    const sender = actor === 'char' ? 'char' : 'user';
+    const msg = makeTransferMessage(char, sender, {
+        id: generateRuntimeId('txs'),
+        kind: 'status',
+        relatedTransferId: request.id,
+        decision: status,
+        status,
+        actor,
+        amount: request.amount,
+        currency: request.currency,
+        direction: request.direction,
+        note: limitNote(noteText || ''),
+        charId: request.charId
+    });
+    char.messages.push(msg);
+}
+
+function applyTransferDecision(char, transferId, decision, actor, noteText = '') {
+    if (!char || !transferId) return false;
+    const target = char.messages.find(m => m.type === 'transfer' && m.transfer?.kind === 'request' && m.transfer?.id === transferId);
+    if (!target || target.transfer.status !== 'pending') return false;
+
+    const status = transferDecisionText(decision);
+    target.transfer.status = status;
+    target.transfer.decidedBy = actor;
+    target.transfer.decidedAt = Date.now();
+    target.transfer.decisionNote = limitNote(noteText || '');
+
+    if (target.transfer.direction === 'user_to_char' && status === 'rejected') refundUserTransfer(target);
+    if (target.transfer.direction === 'char_to_user' && status === 'accepted') creditIncomingTransfer(target);
+
+    updateTransferMessageContent(target);
+    createTransferStatusMessage(char, target, decision, actor, noteText);
+    WalletRuntime.aiTransferChanged = true;
+    return true;
+}
+
+function createAITransferRequest(char, amount, currency, note, detailNote) {
+    const numericAmount = Number(amount);
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) return;
+    const currencyCode = normalizeCurrencyCode(currency);
+    if (!hasWalletCurrency(currencyCode)) return;
+    const transfer = {
+        id: generateRuntimeId('tx'),
+        kind: 'request',
+        direction: 'char_to_user',
+        amount: Number(numericAmount.toFixed(2)),
+        currency: currencyCode,
+        note: limitNote(note || ''),
+        detailNote: limitNote(detailNote || ''),
+        status: 'pending',
+        charId: char.id,
+        groupId: getWalletGroupForChar(char.id),
+        usdValue: toUsd(numericAmount, currencyCode)
+    };
+    char.messages.push(makeTransferMessage(char, 'char', transfer));
+    WalletRuntime.aiTransferChanged = true;
+}
+
+function processAITransferCommands(responseText, char) {
+    if (!responseText) return '';
+    let cleaned = responseText;
+    const actionRegex = /\[TRANSFER_ACTION\s*[:：]\s*(ACCEPT|REJECT)\s*[:：]\s*([a-zA-Z0-9_-]+)(?:\s*[:：]\s*([^\]]{0,60}))?\s*\]/gi;
+    cleaned = cleaned.replace(actionRegex, (full, action, transferId, note) => {
+        applyTransferDecision(char, transferId, action.toLowerCase() === 'accept' ? 'accept' : 'reject', 'char', limitNote(note || ''));
+        return '';
+    });
+    const sendRegex = /\[TRANSFER_SEND\s*[:：]\s*([0-9]+(?:\.[0-9]{1,2})?)\s*[:：]\s*([A-Za-z0-9]{2,10})\s*[:：]\s*([^\]:]{0,60})(?:\s*[:：]\s*([^\]]{0,60}))?\s*\]/gi;
+    cleaned = cleaned.replace(sendRegex, (full, amount, currency, note, detail) => {
+        createAITransferRequest(char, Number(amount), currency, note, detail || '');
+        return '';
+    });
+    cleaned = cleaned.replace(/\|\|\|\s*\|\|\|/g, '|||').replace(/^\s*\|\|\|/, '').replace(/\|\|\|\s*$/, '').trim();
+    return cleaned;
+}
+
+function openTransferModal() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) { showToast('请先进入一个聊天', 'error'); return; }
+    ensureWalletData();
+    document.getElementById('extensionPanel')?.classList.remove('active');
+    document.getElementById('transferAmountInput').value = '';
+    document.getElementById('transferNoteInput').value = '';
+    populateCurrencySelect('transferCurrencySelect', App.wallet.displayCurrency || 'USD');
+    populateTransferPaymentOptions();
+    updateTransferBalanceHint();
+    showModal('transferModal');
+}
+
+function populateTransferPaymentOptions() {
+    ensureWalletData();
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    const groupId = char ? getWalletGroupForChar(char.id) : (App.wallet.activeGroupId || 'default');
+    const cards = getWalletCards(groupId);
+    const select = document.getElementById('transferPaymentSelect');
+    const options = [`<option value="balance">钱包余额</option>`];
+    cards.forEach(card => {
+        options.push(`<option value="card:${card.id}">银行卡 · ${escapeHtml(card.alias || card.network)} · ${escapeHtml(card.number.slice(-4))}</option>`);
+    });
+    select.innerHTML = options.join('');
+    const preferred = App.wallet.lastTransferPayment;
+    const exists = Array.from(select.options || []).some(opt => opt.value === preferred);
+    select.value = exists ? preferred : 'balance';
+}
+
+function updateTransferBalanceHint() {
+    ensureWalletData();
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    const groupId = getWalletGroupForChar(char.id);
+    const currency = normalizeCurrencyCode(document.getElementById('transferCurrencySelect').value || 'USD');
+    const source = document.getElementById('transferPaymentSelect').value || 'balance';
+    let availableUsd = 0;
+    let sourceText = '';
+    if (source.startsWith('card:')) {
+        const card = getCardById(source.slice(5), groupId);
+        availableUsd = card ? card.balanceUsd : 0;
+        sourceText = card ? `银行卡 ${card.number.slice(-4)}` : '银行卡';
+    } else {
+        availableUsd = getGroupBalanceUsd(groupId);
+        sourceText = `钱包分组「${getWalletGroupName(groupId)}」`;
+    }
+    document.getElementById('transferBalanceHint').textContent = `${sourceText} 可用余额：${formatAmount(fromUsd(availableUsd, currency), currency)}`;
+}
+
+function submitTransferRequest() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    ensureWalletData();
+    const amount = Number(document.getElementById('transferAmountInput').value);
+    const currency = normalizeCurrencyCode(document.getElementById('transferCurrencySelect').value);
+    const note = limitNote(document.getElementById('transferNoteInput').value, 30);
+    const payment = document.getElementById('transferPaymentSelect').value || 'balance';
+    if (!Number.isFinite(amount) || amount <= 0) { showToast('请输入有效金额', 'error'); return; }
+    if (!hasWalletCurrency(currency)) { showToast('币种不可用', 'error'); return; }
+
+    const usdValue = toUsd(amount, currency);
+    const groupId = getWalletGroupForChar(char.id);
+    let paymentSource = 'balance';
+    let paymentCardId = null;
+    if (payment.startsWith('card:')) {
+        const card = getCardById(payment.slice(5), groupId);
+        if (!card) { showToast('银行卡不存在', 'error'); return; }
+        if ((card.balanceUsd || 0) < usdValue) { showToast('银行卡余额不足', 'error'); return; }
+        card.balanceUsd -= usdValue;
+        paymentSource = 'card';
+        paymentCardId = card.id;
+    } else {
+        if (getGroupBalanceUsd(groupId) < usdValue) { showToast('钱包余额不足', 'error'); return; }
+        setGroupBalanceUsd(groupId, getGroupBalanceUsd(groupId) - usdValue);
+    }
+
+    const transfer = {
+        id: generateRuntimeId('tx'),
+        kind: 'request',
+        direction: 'user_to_char',
+        amount: Number(amount.toFixed(2)),
+        currency,
+        note,
+        detailNote: '',
+        status: 'pending',
+        charId: char.id,
+        groupId,
+        usdValue,
+        paymentSource,
+        paymentCardId,
+        refunded: false
+    };
+    char.messages.push(makeTransferMessage(char, 'user', transfer));
+    recordWalletTransaction({
+        groupId,
+        kind: 'transfer-out',
+        direction: 'out',
+        amount: transfer.amount,
+        currency,
+        usdValue,
+        note: note || '聊天转账',
+        transferId: transfer.id,
+        charId: char.id,
+        source: paymentSource === 'card' ? paymentCardId : 'balance'
+    });
+    App.wallet.lastTransferPayment = payment;
+    hideModal('transferModal');
+    renderMessages();
+    renderWalletPage();
+    saveData();
+    if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) triggerAIReply();
+}
+
+function openIncomingTransferDecision(msgId) {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    const msg = char.messages.find(m => m.id === msgId);
+    if (!msg || msg.type !== 'transfer' || msg.transfer?.kind !== 'request') return;
+    if (msg.transfer.direction !== 'char_to_user' || msg.transfer.status !== 'pending') return;
+    WalletRuntime.incomingTransferMsgId = msgId;
+    document.getElementById('incomingTransferDecisionAmount').textContent = formatAmount(msg.transfer.amount, msg.transfer.currency);
+    document.getElementById('incomingTransferDecisionNote').textContent = msg.transfer.note ? `备注：${msg.transfer.note}` : '无备注';
+    document.getElementById('incomingTransferDecisionExtra').textContent = msg.transfer.detailNote ? `附言：${msg.transfer.detailNote}` : '';
+    showModal('incomingTransferDecisionModal');
+}
+
+function decideIncomingTransfer(decision) {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char || !WalletRuntime.incomingTransferMsgId) return;
+    const msg = char.messages.find(m => m.id === WalletRuntime.incomingTransferMsgId);
+    if (!msg || msg.type !== 'transfer') return;
+    const transferId = msg.transfer?.id;
+    if (!transferId) return;
+    applyTransferDecision(char, transferId, decision === 'accept' ? 'accept' : 'reject', 'user', '');
+    WalletRuntime.incomingTransferMsgId = null;
+    hideModal('incomingTransferDecisionModal');
+    renderMessages();
+    renderWalletPage();
+    saveData();
+}
+
+function buildMessageAvatarHtml(char, senderType) {
+    if (char.showAvatar === false) return '';
+    const avatarShape = char.avatarShape || 'circle';
+    const showBorder = char.showBorder;
+    const borderColor = char.borderColor || '#ffffff';
+    const avatarImg = senderType === 'sent' ? char.userAvatar : char.avatarImage;
+    const avatarContent = avatarImg ? `<img src="${avatarImg}">` : (char.avatar || '◇');
+    const borderStyle = showBorder ? `border: 2px solid ${borderColor}` : '';
+    return `<div class="message-avatar ${avatarShape}" style="${borderStyle}">${avatarContent}</div>`;
+}
+
+function buildTransferBubbleHtml(msg, char) {
+    const senderType = msg.sender === 'user' ? 'sent' : 'received';
+    const avatarHtml = buildMessageAvatarHtml(char, senderType);
+    const t = msg.transfer || {};
+    const status = t.status || 'pending';
+    const displayTs = getMessageDisplayTime(msg, char);
+    const time = new Date(displayTs).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    const badgeClass = status === 'accepted' ? 'accepted' : status === 'rejected' ? 'rejected' : '';
+    const incomingPending = t.kind === 'request' && t.direction === 'char_to_user' && status === 'pending' && msg.sender === 'char';
+    const clickClass = incomingPending ? 'clickable' : '';
+    const clickHandler = incomingPending ? `onclick="openIncomingTransferDecision('${msg.id}')"` : '';
+
+    let label = '转账';
+    let amount = formatAmount(t.amount || 0, t.currency || 'USD');
+    let note = '';
+    let extra = '';
+    let badge = transferStatusText(status);
+    if (t.kind === 'status') {
+        label = t.decision === 'accepted' || t.status === 'accepted' ? '转账已接受' : '转账已拒绝';
+        badge = t.decision === 'accepted' || t.status === 'accepted' ? '已接受' : '已拒绝';
+        note = t.note || '';
+        extra = t.relatedTransferId ? `关联 #${escapeHtml(t.relatedTransferId.slice(-6))}` : '';
+    } else {
+        label = t.direction === 'user_to_char' ? '你发起的转账' : '角色发起转账';
+        note = t.note || '';
+        extra = t.detailNote || '';
+    }
+
+    return `<div class="message-wrapper ${senderType}" data-id="${msg.id}">
+        ${senderType === 'received' ? avatarHtml : ''}
+        <div class="message-checkbox" onclick="toggleMsgSelect('${msg.id}')"></div>
+        <div class="transfer-bubble status-${status} ${clickClass}" oncontextmenu="showContextMenu(event, '${msg.id}')" ontouchstart="startLongPress('${msg.id}')" ontouchend="endLongPress()" ontouchmove="endLongPress()" ${clickHandler}>
+            <div class="transfer-bubble-head">
+                <span class="transfer-bubble-label">${escapeHtml(label)}</span>
+                <span class="transfer-bubble-amount">${escapeHtml(amount)}</span>
+            </div>
+            ${note ? `<div class="transfer-bubble-note">${escapeHtml(note)}</div>` : ''}
+            ${extra ? `<div class="transfer-bubble-extra">${escapeHtml(extra)}</div>` : ''}
+            <div class="transfer-bubble-foot">
+                <span class="transfer-badge ${badgeClass}">${escapeHtml(badge)}</span>
+                <span class="transfer-id-text">#${escapeHtml((t.relatedTransferId || t.id || '').slice(-6))}</span>
+            </div>
+            <div class="message-time">${time}</div>
+        </div>
+        ${senderType === 'sent' ? avatarHtml : ''}
+    </div>`;
+}
+
+function enhanceTransferMessageRendering() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    char.messages.forEach(msg => {
+        if (msg.type !== 'transfer') return;
+        const el = document.querySelector(`.message-wrapper[data-id="${msg.id}"]`);
+        if (!el) return;
+        el.outerHTML = buildTransferBubbleHtml(msg, char);
+    });
+}
+
+renderContactList = function() {
+    ensureWalletData();
+    const list = document.getElementById('contactList');
+    const empty = document.getElementById('emptyContactState');
+    if (App.characters.length === 0) { list.style.display = 'none'; empty.style.display = 'flex'; return; }
+    list.style.display = 'flex'; empty.style.display = 'none';
+    list.innerHTML = App.characters.map(c => {
+        const lastMsg = c.messages?.[c.messages.length - 1];
+        let preview = 'No messages';
+        if (lastMsg) {
+            if (lastMsg.type === 'transfer') preview = transferPreviewText(lastMsg);
+            else preview = (lastMsg.content || '[Image]').substring(0, 30);
+        }
+        const time = lastMsg ? formatTime(lastMsg.timestamp) : '';
+        const avatarHtml = c.avatarImage ? `<img src="${c.avatarImage}" alt="">` : (c.avatar || '◇');
+        return `<div class="contact-item" onclick="openChat('${c.id}')"><div class="contact-avatar">${avatarHtml}</div><div class="contact-info"><div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-preview">${escapeHtml(preview)}</div></div><span class="contact-time">${time}</span></div>`;
+    }).join('');
+};
+
+const originalOpenPageForWallet = openPage;
+openPage = function(id) {
+    originalOpenPageForWallet(id);
+    if (id === 'messagesPage') {
+        ensureWalletData();
+        renderWalletPage();
+        switchMessagesTab(App.wallet.ui.activeTab || 'contacts');
+    }
+};
+
+const originalRenderMessagesForWallet = renderMessages;
+renderMessages = function() {
+    originalRenderMessagesForWallet.apply(this, arguments);
+    enhanceTransferMessageRendering();
+};
+
+const originalBuildAPIMessagesForTransfer = buildAPIMessages;
+buildAPIMessages = function(char) {
+    ensureWalletData();
+    const messages = originalBuildAPIMessagesForTransfer(char);
+    if (messages && messages[0] && typeof messages[0].content === 'string') {
+        const currencyList = getWalletCurrencies().map(c => c.code).join(', ');
+        messages[0].content += `\n\n[Transfer Protocol]
+If transfer items appear in history, they are shown as [TRANSFER_REQUEST ...] or [TRANSFER_RESULT ...].
+ACCEPT format: [TRANSFER_ACTION:ACCEPT:transfer_id:optional_note]
+REJECT format: [TRANSFER_ACTION:REJECT:transfer_id:optional_note]
+Not required to decide immediately; postponing is allowed.
+If character sends money to user (rare): [TRANSFER_SEND:amount:currency:note:optional_detail_note]
+Available currency codes: ${currencyList}
+Keep notes <=30 chars and avoid transfer spam.`;
+    }
+    return messages;
+};
+
+const originalParseAIResponseForTransfer = parseAIResponse;
+parseAIResponse = function(responseText, char) {
+    const cleaned = processAITransferCommands(responseText || '', char);
+    const parsed = originalParseAIResponseForTransfer(cleaned, char) || [];
+    return parsed.map(item => {
+        if (typeof item.content === 'string') {
+            item.content = item.content
+                .replace(/\[TRANSFER_ACTION:[^\]]*\]/gi, '')
+                .replace(/\[TRANSFER_SEND:[^\]]*\]/gi, '')
+                .trim();
+        }
+        return item;
+    }).filter(item => item.type === 'sticker' || (item.content && item.content.trim()));
+};
+
+const originalTriggerAIReplyForTransfer = triggerAIReply;
+triggerAIReply = async function() {
+    WalletRuntime.aiTransferChanged = false;
+    await originalTriggerAIReplyForTransfer.apply(this, arguments);
+    if (WalletRuntime.aiTransferChanged) {
+        renderMessages();
+        renderWalletPage();
+        await saveData();
+    }
+};
+
+const originalShowContextMenuForTransfer = showContextMenu;
+showContextMenu = function(e, msgId) {
+    originalShowContextMenuForTransfer(e, msgId);
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    const msg = char?.messages.find(m => m.id === msgId);
+    if (!msg || msg.type !== 'transfer') return;
+    document.querySelector('#contextMenu .context-menu-item:nth-child(1)')?.classList.remove('disabled');
+    document.querySelector('#contextMenu .context-menu-item:nth-child(2)')?.classList.remove('disabled');
+    document.querySelector('#contextMenu .context-menu-item:nth-child(3)')?.classList.add('disabled');
+};
+
+const originalCopyMessageTextForTransfer = copyMessageText;
+copyMessageText = function() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
+    if (msg?.type === 'transfer') {
+        navigator.clipboard.writeText(transferPlainText(msg));
+        showToast('Copied', 'success');
+        hideContextMenu();
+        return;
+    }
+    originalCopyMessageTextForTransfer.apply(this, arguments);
+};
+
+const originalEditMessageForTransfer = editMessage;
+editMessage = function() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
+    if (msg?.type === 'transfer') {
+        hideContextMenu();
+        showToast('转账消息不可编辑', 'error');
+        return;
+    }
+    originalEditMessageForTransfer.apply(this, arguments);
+};
+
+const originalQuoteMessageForTransfer = quoteMessage;
+quoteMessage = function() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    const msg = char?.messages.find(m => m.id === App.contextMenuMsgId);
+    if (msg?.type === 'transfer') {
+        App.currentQuote = msg;
+        document.getElementById('quotePreviewBar').classList.add('active');
+        document.getElementById('quotePreviewContent').textContent = transferPlainText(msg).slice(0, 50);
+        hideContextMenu();
+        return;
+    }
+    originalQuoteMessageForTransfer.apply(this, arguments);
+};
+
+document.getElementById('transferCurrencySelect')?.addEventListener('change', updateTransferBalanceHint);
+document.getElementById('transferPaymentSelect')?.addEventListener('change', updateTransferBalanceHint);
+
+const originalLoadDataForWallet = loadData;
+loadData = async function() {
+    const result = await originalLoadDataForWallet.apply(this, arguments);
+    ensureWalletData();
+    return result;
+};
+
+const originalSaveDataForWallet = saveData;
+saveData = async function() {
+    ensureWalletData();
+    return originalSaveDataForWallet.apply(this, arguments);
+};
 
     </script>
 </body>
