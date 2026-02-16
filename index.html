@@ -157,6 +157,7 @@
             background: rgba(255, 255, 255, 0.15);
             border-radius: 2px; z-index: 1001;
         }
+        .home-indicator.hidden { display: none !important; }
 
         .page {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -7527,9 +7528,10 @@ function getLanguageName(code, useNative = false) {
         function applyStatusBarVisibility() {
             const statusBar = document.getElementById('statusBar');
             const homeScreen = document.getElementById('homeScreen');
+            const homeIndicator = document.querySelector('.home-indicator');
             const toggle = document.getElementById('hideStatusBarToggle');
-            if (App.settings.hideStatusBar) { statusBar.classList.add('hidden'); homeScreen.classList.add('no-statusbar'); toggle?.classList.add('active'); }
-            else { statusBar.classList.remove('hidden'); homeScreen.classList.remove('no-statusbar'); toggle?.classList.remove('active'); }
+            if (App.settings.hideStatusBar) { statusBar.classList.add('hidden'); homeScreen.classList.add('no-statusbar'); homeIndicator?.classList.add('hidden'); toggle?.classList.add('active'); }
+            else { statusBar.classList.remove('hidden'); homeScreen.classList.remove('no-statusbar'); homeIndicator?.classList.remove('hidden'); toggle?.classList.remove('active'); }
         }
 
         async function saveData() {
@@ -9882,6 +9884,36 @@ if (!char.timePerception?.enabled) {
 
                                 const parsed = parseAIResponse(responseText, char);
                 for (const p of parsed) {
+                    if (p?.type === 'transfer-decision') {
+                        const changed = applyTransferDecision(
+                            char,
+                            (p.transferId || '').trim(),
+                            p.decision === 'reject' ? 'reject' : 'accept',
+                            'char',
+                            limitNote(p.note || '')
+                        );
+                        if (changed) {
+                            await new Promise(r => setTimeout(r, 220));
+                            renderMessages();
+                        }
+                        continue;
+                    }
+
+                    if (p?.type === 'transfer-send') {
+                        const created = createAITransferRequest(
+                            char,
+                            Number(p.amount || 0),
+                            p.currency || 'USD',
+                            p.note || '',
+                            p.detailNote || ''
+                        );
+                        if (created) {
+                            await new Promise(r => setTimeout(r, 220));
+                            renderMessages();
+                        }
+                        continue;
+                    }
+
                     if (!p.content && p.type !== 'sticker') continue;
 
                     const msg = {
@@ -10840,6 +10872,7 @@ async function requestAICallDecision(char) {
             let content = msg.content || '';
             if (msg.type === 'scene-image') content = `[Scene: ${content}]`;
             else if (msg.type === 'voice') content = `[Voice: ${content}]`;
+            else if (msg.type === 'transfer') content = `[Transfer Event] ${transferPlainText(msg)} | ${buildTransferMessageToken(msg.transfer || {})}`;
             if (content.trim()) {
                 messages.push({ role, content });
             }
@@ -11431,6 +11464,12 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
     }
     // ========== 总结注入结束 ==========
 
+    prompt += `
+
+[TRANSFER CONTEXT IN TEXT HISTORY]
+If you see [TRANSFER_REQUEST ...] or [TRANSFER_RESULT ...], they represent wallet transfer events in past text chat.
+Treat them as context about money sent/accepted/rejected, and do not output transfer tags during the live call.`;
+
     // 防止混用短信格式的强化提示
     prompt += `
 
@@ -11567,6 +11606,12 @@ ${char.systemPrompt ? `\n[Additional Instructions]\n${char.systemPrompt}` : ''}`
     }
     // ========== 总结注入结束 ==========
 
+    prompt += `
+
+[TRANSFER CONTEXT IN TEXT HISTORY]
+If you see [TRANSFER_REQUEST ...] or [TRANSFER_RESULT ...], they represent wallet transfer events in past text chat.
+Treat them as context about money sent/accepted/rejected, and do not output transfer tags during the live call.`;
+
     // 防止混用短信格式的强化提示
     prompt += `
 
@@ -11609,6 +11654,8 @@ function buildVoiceCallAPIMessages(char, systemPrompt) {
         textContent = `(shared a scene: ${m.content || ''})`;
     } else if (m.type === 'voice') {
         textContent = `(voice message: ${m.content || ''})`;
+    } else if (m.type === 'transfer') {
+        textContent = `(transfer event: ${transferPlainText(m)} | ${buildTransferMessageToken(m.transfer || {})})`;
     } else if (m.image && !m.content) {
         textContent = '(shared an image)';
     }
@@ -15554,9 +15601,9 @@ function applyTransferDecision(char, transferId, decision, actor, noteText = '')
 
 function createAITransferRequest(char, amount, currency, note, detailNote) {
     const numericAmount = Number(amount);
-    if (!Number.isFinite(numericAmount) || numericAmount <= 0) return;
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) return false;
     const currencyCode = normalizeCurrencyCode(currency);
-    if (!hasWalletCurrency(currencyCode)) return;
+    if (!hasWalletCurrency(currencyCode)) return false;
     const transfer = {
         id: generateRuntimeId('tx'),
         kind: 'request',
@@ -15572,23 +15619,150 @@ function createAITransferRequest(char, amount, currency, note, detailNote) {
     };
     char.messages.push(makeTransferMessage(char, 'char', transfer));
     WalletRuntime.aiTransferChanged = true;
+    return true;
 }
 
-function processAITransferCommands(responseText, char) {
-    if (!responseText) return '';
-    let cleaned = responseText;
-    const actionRegex = /\[TRANSFER_ACTION\s*[:：]\s*(ACCEPT|REJECT)\s*[:：]\s*([a-zA-Z0-9_-]+)(?:\s*[:：]\s*([^\]]{0,60}))?\s*\]/gi;
-    cleaned = cleaned.replace(actionRegex, (full, action, transferId, note) => {
-        applyTransferDecision(char, transferId, action.toLowerCase() === 'accept' ? 'accept' : 'reject', 'char', limitNote(note || ''));
-        return '';
-    });
-    const sendRegex = /\[TRANSFER_SEND\s*[:：]\s*([0-9]+(?:\.[0-9]{1,2})?)\s*[:：]\s*([A-Za-z0-9]{2,10})\s*[:：]\s*([^\]:]{0,60})(?:\s*[:：]\s*([^\]]{0,60}))?\s*\]/gi;
-    cleaned = cleaned.replace(sendRegex, (full, amount, currency, note, detail) => {
-        createAITransferRequest(char, Number(amount), currency, note, detail || '');
-        return '';
-    });
-    cleaned = cleaned.replace(/\|\|\|\s*\|\|\|/g, '|||').replace(/^\s*\|\|\|/, '').replace(/\|\|\|\s*$/, '').trim();
-    return cleaned;
+function normalizeTransferDecisionValue(value) {
+    const raw = (value || '').toString().trim().toLowerCase();
+    if (!raw) return null;
+    if (raw.includes('接受') || raw.includes('接收') || raw.startsWith('accept') || raw === 'received') return 'accept';
+    if (raw.includes('拒') || raw.startsWith('reject') || raw.startsWith('declin') || raw.startsWith('refus')) return 'reject';
+    return null;
+}
+
+function parseTransferTokenAttributes(rawText) {
+    const attrs = {};
+    const text = (rawText || '').toString();
+    const attrRegex = /([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|[^\s\]]+)/g;
+    let match;
+    while ((match = attrRegex.exec(text)) !== null) {
+        const key = match[1].toLowerCase();
+        let val = match[2] || '';
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith('\'') && val.endsWith('\''))) {
+            val = val.slice(1, -1);
+        }
+        val = val
+            .replace(/\\(["'])/g, '$1')
+            .replace(/\\n/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+        attrs[key] = val;
+    }
+    return attrs;
+}
+
+function parseTransferCommandToken(rawToken) {
+    const token = (rawToken || '').toString().trim().replace(/［/g, '[').replace(/］/g, ']');
+    if (!token.startsWith('[') || !token.endsWith(']')) return null;
+    const inner = token.slice(1, -1).trim();
+    const headMatch = inner.match(/^([A-Za-z_]+)/);
+    if (!headMatch) return null;
+    const head = headMatch[1].toUpperCase();
+    const rest = inner.slice(headMatch[0].length).trim();
+
+    if (head === 'TRANSFER_ACTION') {
+        const legacy = rest.match(/^[:：]\s*(ACCEPT|REJECT)\s*[:：]\s*([a-zA-Z0-9_-]+)(?:\s*[:：]\s*([\s\S]{0,80}))?\s*$/i);
+        if (legacy) {
+            return {
+                type: 'transfer-decision',
+                transferId: legacy[2],
+                decision: legacy[1].toLowerCase() === 'accept' ? 'accept' : 'reject',
+                note: limitNote(legacy[3] || '')
+            };
+        }
+        const attrs = parseTransferTokenAttributes(rest);
+        const transferId = (attrs.transfer_id || attrs.id || attrs.tx_id || attrs.tx || '').trim();
+        const decision = normalizeTransferDecisionValue(attrs.decision || attrs.action || attrs.result || attrs.status);
+        if (transferId && decision) {
+            return {
+                type: 'transfer-decision',
+                transferId,
+                decision,
+                note: limitNote(attrs.note || attrs.reason || '')
+            };
+        }
+        return null;
+    }
+
+    if (head === 'TRANSFER_RESULT' || head === 'TRANSFER_DECISION') {
+        const legacy = rest.match(/^[:：]\s*(ACCEPT(?:ED)?|REJECT(?:ED)?)\s*[:：]\s*([a-zA-Z0-9_-]+)(?:\s*[:：]\s*([\s\S]{0,80}))?\s*$/i);
+        if (legacy) {
+            const decision = normalizeTransferDecisionValue(legacy[1]);
+            if (!decision) return null;
+            return {
+                type: 'transfer-decision',
+                transferId: legacy[2],
+                decision,
+                note: limitNote(legacy[3] || '')
+            };
+        }
+        const attrs = parseTransferTokenAttributes(rest);
+        const transferId = (attrs.transfer_id || attrs.id || attrs.related_transfer_id || attrs.tx_id || attrs.tx || '').trim();
+        const decision = normalizeTransferDecisionValue(attrs.decision || attrs.action || attrs.result || attrs.status);
+        if (transferId && decision) {
+            return {
+                type: 'transfer-decision',
+                transferId,
+                decision,
+                note: limitNote(attrs.note || attrs.reason || '')
+            };
+        }
+        return null;
+    }
+
+    if (head === 'TRANSFER_SEND') {
+        const legacy = rest.match(/^[:：]\s*([0-9]+(?:\.[0-9]{1,2})?)\s*[:：]\s*([A-Za-z0-9]{2,10})\s*[:：]\s*([^\]:]{0,60})(?:\s*[:：]\s*([^\]]{0,60}))?\s*$/i);
+        if (legacy) {
+            return {
+                type: 'transfer-send',
+                amount: Number(Number(legacy[1]).toFixed(2)),
+                currency: normalizeCurrencyCode(legacy[2]),
+                note: limitNote(legacy[3] || ''),
+                detailNote: limitNote(legacy[4] || '')
+            };
+        }
+        const attrs = parseTransferTokenAttributes(rest);
+        const amount = Number(attrs.amount || attrs.money || attrs.value || '');
+        if (!Number.isFinite(amount) || amount <= 0) return null;
+        return {
+            type: 'transfer-send',
+            amount: Number(amount.toFixed(2)),
+            currency: normalizeCurrencyCode(attrs.currency || attrs.ccy || attrs.code || 'USD'),
+            note: limitNote(attrs.note || attrs.remark || ''),
+            detailNote: limitNote(attrs.detail_note || attrs.detail || attrs.extra_note || attrs.extra || '')
+        };
+    }
+
+    return null;
+}
+
+function processAITransferCommands(responseText) {
+    if (!responseText) return { cleanedText: '', commands: [] };
+    const normalizedText = responseText.toString().replace(/［/g, '[').replace(/］/g, ']');
+    const tokenRegex = /\[\s*(TRANSFER_ACTION|TRANSFER_SEND|TRANSFER_RESULT|TRANSFER_DECISION)[^\]]*\]/gi;
+    const commands = [];
+    let cleanedText = '';
+    let lastIndex = 0;
+    let match;
+
+    while ((match = tokenRegex.exec(normalizedText)) !== null) {
+        cleanedText += normalizedText.slice(lastIndex, match.index);
+        const parsed = parseTransferCommandToken(match[0]);
+        if (parsed) {
+            cleanedText += `|||__TRANSFER_CMD_${commands.length}__|||`;
+            commands.push(parsed);
+        }
+        lastIndex = tokenRegex.lastIndex;
+    }
+
+    cleanedText += normalizedText.slice(lastIndex);
+    cleanedText = cleanedText
+        .replace(/\|\|\|\s*\|\|\|/g, '|||')
+        .replace(/^\s*\|\|\|/, '')
+        .replace(/\|\|\|\s*$/, '')
+        .trim();
+
+    return { cleanedText, commands };
 }
 
 function openTransferModal() {
@@ -15701,7 +15875,6 @@ function submitTransferRequest() {
     renderMessages();
     renderWalletPage();
     saveData();
-    if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) triggerAIReply();
 }
 
 function openIncomingTransferDecision(msgId) {
@@ -15843,31 +16016,77 @@ buildAPIMessages = function(char) {
     const messages = originalBuildAPIMessagesForTransfer(char);
     if (messages && messages[0] && typeof messages[0].content === 'string') {
         const currencyList = getWalletCurrencies().map(c => c.code).join(', ');
+        const pendingRequests = (char?.messages || [])
+            .filter(m => m?.type === 'transfer' && m.transfer?.kind === 'request' && m.transfer?.direction === 'user_to_char' && m.transfer?.status === 'pending')
+            .slice(-10);
         messages[0].content += `\n\n[Transfer Protocol]
 If transfer items appear in history, they are shown as [TRANSFER_REQUEST ...] or [TRANSFER_RESULT ...].
-ACCEPT format: [TRANSFER_ACTION:ACCEPT:transfer_id:optional_note]
-REJECT format: [TRANSFER_ACTION:REJECT:transfer_id:optional_note]
+Preferred decision format: [TRANSFER_ACTION:ACCEPT:transfer_id:optional_note] or [TRANSFER_ACTION:REJECT:transfer_id:optional_note]
+Also accepted format: [TRANSFER_RESULT transfer_id=... decision=accepted|rejected note="..."]
+Decision tokens can appear at the start, middle, or end of your reply.
 Not required to decide immediately; postponing is allowed.
 If character sends money to user (rare): [TRANSFER_SEND:amount:currency:note:optional_detail_note]
 Available currency codes: ${currencyList}
 Keep notes <=30 chars and avoid transfer spam.`;
+        if (pendingRequests.length > 0) {
+            const pendingLines = pendingRequests.map(msg => {
+                const t = msg.transfer;
+                return `- id=${t.id} amount=${Number(t.amount || 0).toFixed(2)} ${t.currency || 'USD'} note="${escapeToken(t.note || '')}"`;
+            }).join('\n');
+            messages[0].content += `\n\n[Pending Transfer Requests]
+These user->character transfers are still pending:
+${pendingLines}
+You may decide any subset now, or continue chatting and decide later.`;
+        }
     }
     return messages;
 };
 
 const originalParseAIResponseForTransfer = parseAIResponse;
 parseAIResponse = function(responseText, char) {
-    const cleaned = processAITransferCommands(responseText || '', char);
-    const parsed = originalParseAIResponseForTransfer(cleaned, char) || [];
-    return parsed.map(item => {
+    const transferPayload = processAITransferCommands(responseText || '');
+    const cleanedText = transferPayload.cleanedText || '';
+    const commands = Array.isArray(transferPayload.commands) ? transferPayload.commands : [];
+    const markerRegex = /__TRANSFER_CMD_(\d+)__/g;
+    const ordered = [];
+    let cursor = 0;
+    let marker;
+
+    while ((marker = markerRegex.exec(cleanedText)) !== null) {
+        const chunk = cleanedText.slice(cursor, marker.index);
+        if (chunk && chunk.trim()) {
+            const parsedChunk = originalParseAIResponseForTransfer(chunk, char) || [];
+            parsedChunk.forEach(item => ordered.push(item));
+        }
+        const command = commands[Number(marker[1])];
+        if (command) ordered.push(command);
+        cursor = markerRegex.lastIndex;
+    }
+
+    const tail = cleanedText.slice(cursor);
+    if (tail && tail.trim()) {
+        const parsedTail = originalParseAIResponseForTransfer(tail, char) || [];
+        parsedTail.forEach(item => ordered.push(item));
+    }
+
+    return ordered.map(item => {
+        if (!item || typeof item !== 'object') return item;
+        if (item.type === 'transfer-decision' || item.type === 'transfer-send') return item;
         if (typeof item.content === 'string') {
             item.content = item.content
-                .replace(/\[TRANSFER_ACTION:[^\]]*\]/gi, '')
-                .replace(/\[TRANSFER_SEND:[^\]]*\]/gi, '')
+                .replace(/\[\s*TRANSFER_[^\]]*\]/gi, '')
                 .trim();
         }
         return item;
-    }).filter(item => item.type === 'sticker' || (item.content && item.content.trim()));
+    }).filter(item =>
+        item &&
+        (
+            item.type === 'sticker' ||
+            item.type === 'transfer-decision' ||
+            item.type === 'transfer-send' ||
+            (item.content && item.content.trim())
+        )
+    );
 };
 
 const originalTriggerAIReplyForTransfer = triggerAIReply;
