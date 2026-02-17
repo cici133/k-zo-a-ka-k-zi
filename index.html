@@ -5675,8 +5675,8 @@
         <div class="page" id="messagesPage">
             <div class="nav-bar">
                 <button class="nav-btn" onclick="closePage('messagesPage')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>back</button>
-                <span class="nav-title">消息</span>
-                <button class="nav-btn" onclick="showModal('createCharacterModal')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                <span class="nav-title" id="messagesNavTitle">消息</span>
+                <button class="nav-btn" id="messagesAddCharacterBtn" onclick="showModal('createCharacterModal')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
             </div>
             <div id="messagesSearchContainer" style="padding:0 16px 14px">
                 <input type="text" class="search-field" id="contactSearch" placeholder="搜索..." oninput="filterContacts()">
@@ -15115,9 +15115,17 @@ function changeWalletDisplayCurrency(code) {
 }
 
 function switchMessagesTab(tab) {
-    ensureWalletData();
     const target = tab === 'wallet' ? 'wallet' : 'contacts';
+    const title = document.getElementById('messagesNavTitle');
+    if (title) title.textContent = target === 'wallet' ? '钱包' : '消息';
     App.wallet.ui.activeTab = target;
+    const addBtn = document.getElementById('messagesAddCharacterBtn');
+    if (addBtn) {
+        const showAdd = target === 'contacts';
+        addBtn.style.visibility = showAdd ? 'visible' : 'hidden';
+        addBtn.style.pointerEvents = showAdd ? 'auto' : 'none';
+    }
+    ensureWalletData();
     document.getElementById('messagesTabContacts')?.classList.toggle('active', target === 'contacts');
     document.getElementById('messagesTabWallet')?.classList.toggle('active', target === 'wallet');
     document.getElementById('contactListContainer').style.display = target === 'contacts' ? 'block' : 'none';
@@ -15999,8 +16007,19 @@ openPage = function(id) {
     originalOpenPageForWallet(id);
     if (id === 'messagesPage') {
         ensureWalletData();
+        App.wallet.ui.activeTab = 'contacts';
         renderWalletPage();
-        switchMessagesTab(App.wallet.ui.activeTab || 'contacts');
+        switchMessagesTab('contacts');
+    }
+};
+
+const originalClosePageForWallet = closePage;
+closePage = function(id) {
+    originalClosePageForWallet(id);
+    if (id === 'messagesPage') {
+        ensureWalletData();
+        App.wallet.ui.activeTab = 'contacts';
+        switchMessagesTab('contacts');
     }
 };
 
