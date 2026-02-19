@@ -533,6 +533,12 @@
             gap: 10px;
             margin-bottom: 10px;
         }
+        .wallet-role-head-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
         .wallet-role-active-wrap {
             display: flex;
             align-items: center;
@@ -610,6 +616,16 @@
             cursor: pointer;
             white-space: nowrap;
         }
+        .wallet-role-fullscreen-btn {
+            border: 1px solid var(--border-subtle);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-secondary);
+            font-size: calc(11px * var(--font-scale));
+            padding: 6px 11px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
         .wallet-role-status {
             border: 1px solid var(--border-subtle);
             border-radius: 12px;
@@ -650,6 +666,58 @@
             color: var(--text-tertiary);
             font-size: calc(12px * var(--font-scale));
             line-height: 1.65;
+        }
+        .wallet-role-fullscreen-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 6000;
+            background: rgba(8, 8, 10, 0.98);
+            display: none;
+            flex-direction: column;
+            padding-top: calc(var(--safe-top) + 8px);
+            padding-bottom: calc(var(--safe-bottom) + 8px);
+        }
+        .wallet-role-fullscreen-layer.active { display: flex; }
+        .wallet-role-fullscreen-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 0 12px 10px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .wallet-role-fullscreen-title {
+            color: var(--text-primary);
+            font-size: calc(13px * var(--font-scale));
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+            flex: 1;
+        }
+        .wallet-role-fullscreen-close {
+            border: 1px solid var(--border-accent);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-size: calc(12px * var(--font-scale));
+            padding: 7px 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .wallet-role-fullscreen-mount {
+            flex: 1;
+            min-height: 0;
+            padding: 8px;
+        }
+        .wallet-role-fullscreen-mount .wallet-role-frame {
+            width: 100%;
+            height: 100%;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .role-wallet-bilingual-wrap {
             border: 1px solid var(--border-subtle);
@@ -6035,13 +6103,24 @@
                             <div class="wallet-role-active" id="walletRoleActiveInfo"></div>
                             <button class="wallet-role-add-btn" onclick="openRoleWalletGenerateModal()" title="添加角色页面">+</button>
                         </div>
-                        <button class="wallet-role-translate-btn" id="walletRoleTranslateBtn" style="display:none" onclick="toggleActiveRoleWalletTranslation()">翻译</button>
+                        <div class="wallet-role-head-actions">
+                            <button class="wallet-role-translate-btn" id="walletRoleTranslateBtn" style="display:none" onclick="toggleActiveRoleWalletTranslation()">翻译</button>
+                            <button class="wallet-role-fullscreen-btn" id="walletRoleFullscreenBtn" style="display:none" onclick="toggleRoleWalletFullscreen()">全屏</button>
+                        </div>
                     </div>
                     <div class="wallet-role-status" id="walletRoleStatus">点击左侧翻转按钮进入角色钱包模式后，可通过 + 选择角色并生成页面。</div>
                     <div class="wallet-role-frame-wrap" id="walletRoleFrameWrap" style="display:none">
                         <iframe class="wallet-role-frame" id="walletRoleFrame" sandbox="allow-scripts"></iframe>
                     </div>
                     <div class="wallet-role-placeholder" id="walletRolePlaceholder">还没有角色钱包页面。点击「+」选择通讯录角色并开始生成。</div>
+                </div>
+
+                <div class="wallet-role-fullscreen-layer" id="walletRoleFullscreenLayer">
+                    <div class="wallet-role-fullscreen-bar">
+                        <div class="wallet-role-fullscreen-title" id="walletRoleFullscreenTitle">角色钱包全屏</div>
+                        <button class="wallet-role-fullscreen-close" onclick="toggleRoleWalletFullscreen(false)">退出全屏</button>
+                    </div>
+                    <div class="wallet-role-fullscreen-mount" id="walletRoleFullscreenMount"></div>
                 </div>
 
                 <div style="height:80px"></div>
@@ -14891,7 +14970,9 @@ const WalletRuntime = {
     txManageMode: false,
     txSelectedIds: new Set(),
     roleModalSelectedCharId: null,
-    roleGeneratingByCharId: {}
+    roleGeneratingByCharId: {},
+    roleFullscreenActive: false,
+    roleFullscreenPlaceholderEl: null
 };
 
 const ROLE_WALLET_MAX_CONTEXT_CHARS = 32000;
@@ -15559,6 +15640,7 @@ function setRoleWalletActiveChar(charId) {
 function setWalletPerspective(mode, shouldSave = true) {
     const state = getRoleWalletState();
     const next = mode === 'role' ? 'role' : 'user';
+    if (next !== 'role') toggleRoleWalletFullscreen(false);
     if (state.perspective === next) {
         renderWalletPage();
         return;
@@ -15662,6 +15744,71 @@ function renderRoleWalletActionButtons() {
     if (deleteBtn) deleteBtn.disabled = !char || generating || !record;
 }
 
+function updateRoleWalletFullscreenButton() {
+    const btn = document.getElementById('walletRoleFullscreenBtn');
+    if (!btn) return;
+    const state = getRoleWalletState();
+    const isRole = state.perspective === 'role';
+    const char = getRoleWalletActiveChar();
+    const record = char ? state.records[char.id] : null;
+    const hasHtml = !!(record?.htmlSource && record.htmlSource.trim());
+    btn.style.display = isRole ? 'inline-flex' : 'none';
+    btn.disabled = !hasHtml;
+    btn.textContent = WalletRuntime.roleFullscreenActive ? '退出全屏' : '全屏';
+}
+
+function syncRoleWalletFullscreenTitle() {
+    const title = document.getElementById('walletRoleFullscreenTitle');
+    if (!title) return;
+    const char = getRoleWalletActiveChar();
+    title.textContent = char ? `${char.nickname || char.name} · 钱包全屏` : '角色钱包全屏';
+}
+
+function toggleRoleWalletFullscreen(force = null) {
+    const layer = document.getElementById('walletRoleFullscreenLayer');
+    const mount = document.getElementById('walletRoleFullscreenMount');
+    const frame = document.getElementById('walletRoleFrame');
+    const frameWrap = document.getElementById('walletRoleFrameWrap');
+    if (!layer || !mount || !frame || !frameWrap) return;
+
+    const shouldOpen = typeof force === 'boolean' ? force : !WalletRuntime.roleFullscreenActive;
+    if (shouldOpen) {
+        if (!frame.srcdoc || !frame.srcdoc.trim()) {
+            showToast('当前无可全屏查看的页面', 'error');
+            return;
+        }
+        if (!WalletRuntime.roleFullscreenPlaceholderEl) {
+            WalletRuntime.roleFullscreenPlaceholderEl = document.createElement('div');
+            WalletRuntime.roleFullscreenPlaceholderEl.style.display = 'none';
+        }
+        const holder = WalletRuntime.roleFullscreenPlaceholderEl;
+        if (!holder.isConnected && frame.parentNode) {
+            frame.parentNode.insertBefore(holder, frame);
+        }
+        mount.appendChild(frame);
+        layer.classList.add('active');
+        WalletRuntime.roleFullscreenActive = true;
+        syncRoleWalletFullscreenTitle();
+        updateRoleWalletFullscreenButton();
+        return;
+    }
+
+    if (!WalletRuntime.roleFullscreenActive) {
+        updateRoleWalletFullscreenButton();
+        return;
+    }
+    const holder = WalletRuntime.roleFullscreenPlaceholderEl;
+    if (holder?.parentNode) {
+        holder.parentNode.insertBefore(frame, holder);
+        holder.parentNode.removeChild(holder);
+    } else {
+        frameWrap.appendChild(frame);
+    }
+    layer.classList.remove('active');
+    WalletRuntime.roleFullscreenActive = false;
+    updateRoleWalletFullscreenButton();
+}
+
 function renderRoleWalletFrame() {
     const state = getRoleWalletState();
     const status = document.getElementById('walletRoleStatus');
@@ -15678,6 +15825,8 @@ function renderRoleWalletFrame() {
         frameWrap.style.display = 'none';
         placeholder.style.display = 'block';
         translateBtn.style.display = 'none';
+        toggleRoleWalletFullscreen(false);
+        updateRoleWalletFullscreenButton();
         return;
     }
 
@@ -15688,6 +15837,8 @@ function renderRoleWalletFrame() {
         frameWrap.style.display = 'none';
         placeholder.style.display = 'block';
         translateBtn.style.display = 'none';
+        toggleRoleWalletFullscreen(false);
+        updateRoleWalletFullscreenButton();
         return;
     }
 
@@ -15719,6 +15870,8 @@ function renderRoleWalletFrame() {
     if (!hasHtml) {
         frameWrap.style.display = 'none';
         placeholder.style.display = 'block';
+        toggleRoleWalletFullscreen(false);
+        updateRoleWalletFullscreenButton();
         return;
     }
 
@@ -15729,6 +15882,8 @@ function renderRoleWalletFrame() {
         frame.srcdoc = html;
         frame.dataset.fingerprint = fingerprint;
     }
+    syncRoleWalletFullscreenTitle();
+    updateRoleWalletFullscreenButton();
 }
 
 function renderRoleWalletPerspective() {
@@ -16482,6 +16637,7 @@ function changeWalletDisplayCurrency(code) {
 
 function switchMessagesTab(tab) {
     const target = tab === 'wallet' ? 'wallet' : 'contacts';
+    if (target !== 'wallet') toggleRoleWalletFullscreen(false);
     const title = document.getElementById('messagesNavTitle');
     if (title) title.textContent = target === 'wallet' ? '钱包' : '消息';
     App.wallet.ui.activeTab = target;
@@ -17381,6 +17537,7 @@ openPage = function(id) {
 
 const originalClosePageForWallet = closePage;
 closePage = function(id) {
+    if (id === 'messagesPage') toggleRoleWalletFullscreen(false);
     originalClosePageForWallet(id);
     if (id === 'messagesPage') {
         ensureWalletData();
