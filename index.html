@@ -403,6 +403,280 @@
         }
 
         .wallet-page-content { padding-bottom: 16px; }
+        .wallet-mode-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .wallet-mode-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex: 1;
+        }
+        .wallet-flip-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            border: 1px solid var(--border-accent);
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: calc(15px * var(--font-scale));
+            flex-shrink: 0;
+            transition: var(--transition-fast);
+        }
+        .wallet-flip-btn:active { transform: scale(0.94); }
+        .wallet-mode-label {
+            color: var(--text-secondary);
+            font-size: calc(12px * var(--font-scale));
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .wallet-role-actions {
+            display: none;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .wallet-role-actions.active { display: flex; }
+        .wallet-role-action-btn {
+            border: 1px solid var(--border-subtle);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-secondary);
+            font-size: calc(11px * var(--font-scale));
+            padding: 7px 11px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        .wallet-role-action-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        .wallet-role-action-btn.danger {
+            border-color: rgba(199, 80, 80, 0.5);
+            color: #f0aaaa;
+            background: rgba(199, 80, 80, 0.12);
+        }
+        .wallet-role-perspective {
+            display: none;
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+        }
+        .wallet-role-perspective.active { display: block; }
+        .wallet-role-generated-strip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+        .wallet-role-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            font-size: calc(11px * var(--font-scale));
+            padding: 5px 10px 5px 6px;
+            cursor: pointer;
+            flex-shrink: 0;
+            max-width: 170px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .wallet-role-chip.active {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+        }
+        .wallet-role-chip-avatar {
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+        }
+        .wallet-role-chip-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .wallet-role-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .wallet-role-active-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            flex: 1;
+        }
+        .wallet-role-active {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            flex: 1;
+        }
+        .wallet-role-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: calc(13px * var(--font-scale));
+            flex-shrink: 0;
+        }
+        .wallet-role-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .wallet-role-namebox {
+            min-width: 0;
+            flex: 1;
+        }
+        .wallet-role-name {
+            color: var(--text-primary);
+            font-size: calc(13px * var(--font-scale));
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .wallet-role-sub {
+            color: var(--text-tertiary);
+            font-size: calc(10px * var(--font-scale));
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .wallet-role-add-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            border: 1px dashed var(--border-accent);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            font-size: 22px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .wallet-role-translate-btn {
+            border: 1px solid var(--border-subtle);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-secondary);
+            font-size: calc(11px * var(--font-scale));
+            padding: 6px 11px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .wallet-role-status {
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            font-size: calc(11px * var(--font-scale));
+            line-height: 1.55;
+            padding: 10px 11px;
+            margin-bottom: 10px;
+        }
+        .wallet-role-status.error {
+            border-color: rgba(199, 80, 80, 0.45);
+            color: #efb1b1;
+            background: rgba(199, 80, 80, 0.08);
+        }
+        .wallet-role-status.success {
+            border-color: rgba(90, 158, 111, 0.45);
+            color: #9fddb0;
+            background: rgba(90, 158, 111, 0.08);
+        }
+        .wallet-role-frame-wrap {
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 18px;
+            background: #f4f2ee;
+            overflow: hidden;
+        }
+        .wallet-role-frame {
+            width: 100%;
+            height: min(1000px, 72vh);
+            border: 0;
+            background: #f4f2ee;
+        }
+        .wallet-role-placeholder {
+            border: 1px dashed var(--border-subtle);
+            border-radius: 14px;
+            padding: 22px 14px;
+            text-align: center;
+            color: var(--text-tertiary);
+            font-size: calc(12px * var(--font-scale));
+            line-height: 1.65;
+        }
+        .role-wallet-bilingual-wrap {
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: calc(12px * var(--font-scale));
+        }
+        .role-wallet-lang-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+        .role-wallet-style-input {
+            width: 100%;
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            background: var(--bg-glass);
+            color: var(--text-primary);
+            padding: 10px 12px;
+            font-size: calc(12px * var(--font-scale));
+            resize: vertical;
+            min-height: 88px;
+        }
         .wallet-group-strip {
             display: flex;
             align-items: center;
@@ -5690,54 +5964,86 @@
                 <div class="contact-list" id="contactList" style="display:none"></div>
             </div>
             <div class="page-content wallet-page-content" id="walletPageContainer" style="padding-top:0;display:none">
-                <div class="wallet-group-strip" id="walletGroupStrip"></div>
-                <div class="wallet-balance-card" id="walletBalanceCard">
-                    <div class="wallet-balance-head">
-                        <div class="wallet-balance-title">钱包余额</div>
-                        <select class="wallet-currency-select" id="walletDisplayCurrency" onchange="changeWalletDisplayCurrency(this.value)"></select>
-                    </div>
-                    <div class="wallet-balance-value" id="walletBalanceValue">0.00 USD</div>
-                    <div class="wallet-balance-desc" id="walletBalanceDesc">未分组角色钱包</div>
-                    <div class="wallet-action-row">
-                        <button class="wallet-action-btn" onclick="openWalletTopupModal('balance')">充值余额</button>
-                        <button class="wallet-action-btn" onclick="openCreateCurrencyModal()">创建货币</button>
+                <div class="wallet-mode-toolbar">
+                    <div class="wallet-mode-left">
+                        <button class="wallet-flip-btn" id="walletFlipBtn" onclick="toggleWalletPerspective()" title="翻转钱包视角">↺</button>
+                        <div class="wallet-mode-label" id="walletModeLabel">我的钱包视角</div>
                     </div>
                 </div>
-                <div class="wallet-section">
-                    <div class="wallet-section-head">
-                        <span class="wallet-section-title">银行卡</span>
-                        <button class="wallet-inline-btn" onclick="openAddBankCardModal()">添加银行卡</button>
-                    </div>
-                    <div class="wallet-cards-scroll" id="walletCardsScroll"></div>
+
+                <div class="wallet-role-actions" id="walletRoleActions">
+                    <button class="wallet-role-action-btn" id="walletRoleRefreshFullBtn" onclick="refreshActiveRoleWallet('full')">完全刷新</button>
+                    <button class="wallet-role-action-btn" id="walletRoleRefreshPartialBtn" onclick="refreshActiveRoleWallet('partial')">有限更新</button>
+                    <button class="wallet-role-action-btn danger" id="walletRoleDeleteBtn" onclick="deleteActiveRoleWalletPage()">删除页面</button>
                 </div>
-                <div class="wallet-section">
-                    <div class="wallet-section-head">
-                        <span class="wallet-section-title">交易记录</span>
-                        <div class="wallet-tx-head-actions">
-                            <button class="wallet-inline-btn" id="walletTxManageBtn" onclick="toggleWalletTransactionManageMode()">管理</button>
-                            <button class="wallet-inline-btn" id="walletTxClearBtn" onclick="clearWalletTransactionsForActiveGroup()">全部删除</button>
+
+                <div id="walletUserPerspective">
+                    <div class="wallet-group-strip" id="walletGroupStrip"></div>
+                    <div class="wallet-balance-card" id="walletBalanceCard">
+                        <div class="wallet-balance-head">
+                            <div class="wallet-balance-title">钱包余额</div>
+                            <select class="wallet-currency-select" id="walletDisplayCurrency" onchange="changeWalletDisplayCurrency(this.value)"></select>
+                        </div>
+                        <div class="wallet-balance-value" id="walletBalanceValue">0.00 USD</div>
+                        <div class="wallet-balance-desc" id="walletBalanceDesc">未分组角色钱包</div>
+                        <div class="wallet-action-row">
+                            <button class="wallet-action-btn" onclick="openWalletTopupModal('balance')">充值余额</button>
+                            <button class="wallet-action-btn" onclick="openCreateCurrencyModal()">创建货币</button>
                         </div>
                     </div>
-                    <div class="wallet-tx-limit-row">
-                        <span class="wallet-tx-limit-label">保留条数（0 为无限制）</span>
-                        <input type="number" min="0" step="1" class="wallet-tx-limit-input" id="walletTxLimitInput" placeholder="0" onkeydown="if(event.key==='Enter') applyWalletTransactionLimitFromInput()">
-                        <button class="wallet-inline-btn" onclick="applyWalletTransactionLimitFromInput()">应用</button>
-                    </div>
-                    <div class="wallet-tx-limit-presets">
-                        <button class="wallet-tx-preset" onclick="setWalletTransactionLimitPreset(30)">30</button>
-                        <button class="wallet-tx-preset" onclick="setWalletTransactionLimitPreset(50)">50</button>
-                        <button class="wallet-tx-preset" onclick="setWalletTransactionLimitPreset(100)">100</button>
-                        <button class="wallet-tx-preset" onclick="setWalletTransactionLimitPreset(0)">无限制</button>
-                    </div>
-                    <div class="wallet-tx-manage-bar" id="walletTxManageBar" style="display:none">
-                        <span class="wallet-tx-manage-info" id="walletTxManageInfo">已选 0 条</span>
-                        <div class="wallet-tx-manage-actions">
-                            <button class="wallet-inline-btn" onclick="deleteSelectedWalletTransactions()">删除选中</button>
-                            <button class="wallet-inline-btn" onclick="toggleWalletTransactionManageMode(false)">完成</button>
+                    <div class="wallet-section">
+                        <div class="wallet-section-head">
+                            <span class="wallet-section-title">银行卡</span>
+                            <button class="wallet-inline-btn" onclick="openAddBankCardModal()">添加银行卡</button>
                         </div>
+                        <div class="wallet-cards-scroll" id="walletCardsScroll"></div>
                     </div>
-                    <div class="wallet-transactions" id="walletTransactionsList"></div>
+                    <div class="wallet-section">
+                        <div class="wallet-section-head">
+                            <span class="wallet-section-title">交易记录</span>
+                            <div class="wallet-tx-head-actions">
+                                <button class="wallet-inline-btn" id="walletTxManageBtn" onclick="toggleWalletTransactionManageMode()">管理</button>
+                                <button class="wallet-inline-btn" id="walletTxClearBtn" onclick="clearWalletTransactionsForActiveGroup()">全部删除</button>
+                            </div>
+                        </div>
+                        <div class="wallet-tx-limit-row">
+                            <span class="wallet-tx-limit-label">保留条数（0 为无限制）</span>
+                            <input type="number" min="0" step="1" class="wallet-tx-limit-input" id="walletTxLimitInput" placeholder="0" onkeydown="if(event.key==='Enter') applyWalletTransactionLimitFromInput()">
+                            <button class="wallet-inline-btn" onclick="applyWalletTransactionLimitFromInput()">应用</button>
+                        </div>
+                        <div class="wallet-tx-limit-presets">
+                            <button class="wallet-tx-preset" onclick="setWalletTransactionLimitPreset(30)">30</button>
+                            <button class="wallet-tx-preset" onclick="setWalletTransactionLimitPreset(50)">50</button>
+                            <button class="wallet-tx-preset" onclick="setWalletTransactionLimitPreset(100)">100</button>
+                            <button class="wallet-tx-preset" onclick="setWalletTransactionLimitPreset(0)">无限制</button>
+                        </div>
+                        <div class="wallet-tx-manage-bar" id="walletTxManageBar" style="display:none">
+                            <span class="wallet-tx-manage-info" id="walletTxManageInfo">已选 0 条</span>
+                            <div class="wallet-tx-manage-actions">
+                                <button class="wallet-inline-btn" onclick="deleteSelectedWalletTransactions()">删除选中</button>
+                                <button class="wallet-inline-btn" onclick="toggleWalletTransactionManageMode(false)">完成</button>
+                            </div>
+                        </div>
+                        <div class="wallet-transactions" id="walletTransactionsList"></div>
+                    </div>
                 </div>
+
+                <div class="wallet-role-perspective" id="walletRolePerspective">
+                    <div class="wallet-role-generated-strip" id="walletRoleGeneratedStrip"></div>
+                    <div class="wallet-role-head">
+                        <div class="wallet-role-active-wrap">
+                            <div class="wallet-role-active" id="walletRoleActiveInfo"></div>
+                            <button class="wallet-role-add-btn" onclick="openRoleWalletGenerateModal()" title="添加角色页面">+</button>
+                        </div>
+                        <button class="wallet-role-translate-btn" id="walletRoleTranslateBtn" style="display:none" onclick="toggleActiveRoleWalletTranslation()">翻译</button>
+                    </div>
+                    <div class="wallet-role-status" id="walletRoleStatus">点击左侧翻转按钮进入角色钱包模式后，可通过 + 选择角色并生成页面。</div>
+                    <div class="wallet-role-frame-wrap" id="walletRoleFrameWrap" style="display:none">
+                        <iframe class="wallet-role-frame" id="walletRoleFrame" sandbox="allow-scripts"></iframe>
+                    </div>
+                    <div class="wallet-role-placeholder" id="walletRolePlaceholder">还没有角色钱包页面。点击「+」选择通讯录角色并开始生成。</div>
+                </div>
+
                 <div style="height:80px"></div>
             </div>
             <div class="messages-bottom-tabs">
@@ -6925,6 +7231,46 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="roleWalletGenerateModal">
+        <div class="modal">
+            <div class="modal-title">生成角色钱包页面</div>
+            <div class="wallet-role-picker" id="roleWalletGeneratePicker" style="margin-top:0"></div>
+
+            <div class="input-group" style="margin-top:12px">
+                <label class="input-label">页面风格（可选，留空则使用默认高级风）</label>
+                <textarea id="roleWalletStyleInput" class="role-wallet-style-input" placeholder="例如：ins杂志风、奶油白+墨绿、瑞士私人银行报表质感"></textarea>
+            </div>
+
+            <div class="role-wallet-bilingual-wrap" style="margin-top:12px">
+                <span>双语模式</span>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                    <input type="checkbox" id="roleWalletBilingualToggle" onchange="toggleRoleWalletBilingualFields()">
+                    <span>启用</span>
+                </label>
+            </div>
+
+            <div class="role-wallet-lang-row" id="roleWalletLangRow" style="display:none;margin-top:10px">
+                <div class="input-group" style="margin-top:0">
+                    <label class="input-label">原界面语言</label>
+                    <select class="select-field" id="roleWalletSourceLangSelect"></select>
+                </div>
+                <div class="input-group" style="margin-top:0">
+                    <label class="input-label">翻译语言</label>
+                    <select class="select-field" id="roleWalletTargetLangSelect"></select>
+                </div>
+            </div>
+
+            <div class="wallet-tip-text">
+                生成时会注入角色设定、近期聊天和时间线，并按固定框架输出完整页面（含背景、模块、交互与彩蛋）。
+            </div>
+
+            <div class="modal-btns" style="margin-top:16px">
+                <button class="modal-btn cancel" onclick="hideModal('roleWalletGenerateModal')">取消</button>
+                <button class="modal-btn confirm" onclick="confirmRoleWalletGenerate()">确定生成</button>
+            </div>
+        </div>
+    </div>
+
 <!-- 时区地点搜索弹窗 -->
 <div class="modal-overlay timezone-search-modal" id="timezoneSearchModal">
     <div class="modal">
@@ -7506,6 +7852,7 @@ function getLanguageName(code, useNative = false) {
                 updateStorageDisplay();
                 renderFontList();
                 updateApiPresetSelect();
+                initRoleWalletUI();
                 initColorPicker();
             } catch (e) { console.error('Init failed:', e); showToast('Initialization failed', 'error'); }
         });
@@ -14542,8 +14889,32 @@ const WalletRuntime = {
     selectedCardPresetId: null,
     aiTransferChanged: false,
     txManageMode: false,
-    txSelectedIds: new Set()
+    txSelectedIds: new Set(),
+    roleModalSelectedCharId: null,
+    roleGeneratingByCharId: {}
 };
+
+const ROLE_WALLET_MAX_CONTEXT_CHARS = 32000;
+const ROLE_WALLET_MAX_OUTPUT_TOKENS = 32000;
+const ROLE_WALLET_FETCH_TIMEOUT_MS = 180000;
+const ROLE_WALLET_DEFAULT_STYLE_PROMPT = 'ins 杂志排版、高级金融报告质感、奶油白与浅灰绿配色、优雅但不阴暗、层次丰富并保持小屏可读性。';
+
+function normalizeRoleWalletLanguage(code, fallback = 'en') {
+    const normalized = (code || '').toString().trim().toLowerCase();
+    if (LANGUAGE_OPTIONS.some(item => item.code === normalized)) return normalized;
+    return LANGUAGE_OPTIONS.some(item => item.code === fallback) ? fallback : 'en';
+}
+
+function formatRoleWalletDateTime(ts) {
+    if (!ts) return '--';
+    const d = new Date(ts);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const h = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `${y}-${m}-${day} ${h}:${min}`;
+}
 
 function generateRuntimeId(prefix) {
     return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -14642,6 +15013,13 @@ function ensureWalletData() {
     if (!App.wallet.ui || typeof App.wallet.ui !== 'object') App.wallet.ui = {};
     if (!['contacts', 'wallet'].includes(App.wallet.ui.activeTab)) App.wallet.ui.activeTab = 'contacts';
     if (typeof App.wallet.lastTransferPayment !== 'string') App.wallet.lastTransferPayment = 'balance';
+    if (!App.wallet.rolePeek || typeof App.wallet.rolePeek !== 'object' || Array.isArray(App.wallet.rolePeek)) App.wallet.rolePeek = {};
+    if (!App.wallet.rolePeek.records || typeof App.wallet.rolePeek.records !== 'object' || Array.isArray(App.wallet.rolePeek.records)) App.wallet.rolePeek.records = {};
+    if (!App.wallet.rolePeek.translationModeByChar || typeof App.wallet.rolePeek.translationModeByChar !== 'object' || Array.isArray(App.wallet.rolePeek.translationModeByChar)) {
+        App.wallet.rolePeek.translationModeByChar = {};
+    }
+    if (!['user', 'role'].includes(App.wallet.rolePeek.perspective)) App.wallet.rolePeek.perspective = 'user';
+    if (typeof App.wallet.rolePeek.activeCharId !== 'string') App.wallet.rolePeek.activeCharId = '';
 
     const charIds = new Set((App.characters || []).map(c => c.id));
     const used = new Set();
@@ -14720,6 +15098,57 @@ function ensureWalletData() {
     if (!App.wallet.groups.some(g => g.id === App.wallet.activeGroupId)) App.wallet.activeGroupId = 'default';
     const currencyExists = getWalletCurrencies().some(c => c.code === normalizeCurrencyCode(App.wallet.displayCurrency));
     if (!currencyExists) App.wallet.displayCurrency = 'USD';
+
+    const validStatuses = new Set(['idle', 'generating', 'ready', 'error']);
+    const records = App.wallet.rolePeek.records;
+    Object.keys(records).forEach(charId => {
+        const raw = records[charId];
+        if (!charIds.has(charId) || !raw || typeof raw !== 'object') {
+            delete records[charId];
+            return;
+        }
+        const normalized = {
+            charId,
+            status: validStatuses.has(raw.status) ? raw.status : 'idle',
+            htmlSource: typeof raw.htmlSource === 'string' ? raw.htmlSource : '',
+            htmlTranslated: typeof raw.htmlTranslated === 'string' ? raw.htmlTranslated : '',
+            bilingualEnabled: !!raw.bilingualEnabled,
+            sourceLang: normalizeRoleWalletLanguage(raw.sourceLang, 'en'),
+            targetLang: normalizeRoleWalletLanguage(raw.targetLang, 'zh'),
+            stylePrompt: (raw.stylePrompt || '').toString().trim().slice(0, 260),
+            generatedAt: Number(raw.generatedAt) || 0,
+            updatedAt: Number(raw.updatedAt) || 0,
+            lastError: (raw.lastError || '').toString().slice(0, 600),
+            lastMode: raw.lastMode === 'partial' ? 'partial' : 'full',
+            model: (raw.model || '').toString().slice(0, 120),
+            contextChars: Math.max(0, Number(raw.contextChars) || 0)
+        };
+        if (normalized.status === 'ready' && !normalized.htmlSource) normalized.status = 'error';
+        if (normalized.status === 'generating') {
+            normalized.status = 'error';
+            normalized.lastError = normalized.lastError || '上次生成被中断，请重新生成。';
+        }
+        if (!normalized.bilingualEnabled) normalized.htmlTranslated = '';
+        if (normalized.sourceLang === normalized.targetLang) {
+            normalized.targetLang = normalized.sourceLang === 'zh' ? 'en' : 'zh';
+        }
+        records[charId] = normalized;
+    });
+
+    Object.keys(App.wallet.rolePeek.translationModeByChar).forEach(charId => {
+        if (!charIds.has(charId)) delete App.wallet.rolePeek.translationModeByChar[charId];
+        else if (!['source', 'target'].includes(App.wallet.rolePeek.translationModeByChar[charId])) {
+            App.wallet.rolePeek.translationModeByChar[charId] = 'source';
+        }
+    });
+
+    if (!App.wallet.rolePeek.activeCharId || !charIds.has(App.wallet.rolePeek.activeCharId)) {
+        const availableRecord = Object.keys(records).find(charId => charIds.has(charId));
+        App.wallet.rolePeek.activeCharId = availableRecord || '';
+    }
+    if (App.wallet.rolePeek.perspective === 'role' && App.characters.length === 0) {
+        App.wallet.rolePeek.perspective = 'user';
+    }
 }
 
 function getWalletCustomGroups() {
@@ -15079,12 +15508,949 @@ function renderWalletTransactionList() {
     }).join('');
 }
 
+function initRoleWalletUI() {
+    populateRoleWalletLanguageSelects();
+    toggleRoleWalletBilingualFields();
+}
+
+function populateRoleWalletLanguageSelects() {
+    const srcSelect = document.getElementById('roleWalletSourceLangSelect');
+    const targetSelect = document.getElementById('roleWalletTargetLangSelect');
+    if (!srcSelect || !targetSelect) return;
+    const optionsHtml = LANGUAGE_OPTIONS.map(lang => `<option value="${lang.code}">${escapeHtml(lang.nativeName)} (${escapeHtml(lang.name)})</option>`).join('');
+    srcSelect.innerHTML = optionsHtml;
+    targetSelect.innerHTML = optionsHtml;
+    if (!srcSelect.value) srcSelect.value = 'en';
+    if (!targetSelect.value) targetSelect.value = 'zh';
+}
+
+function toggleRoleWalletBilingualFields() {
+    const toggle = document.getElementById('roleWalletBilingualToggle');
+    const langRow = document.getElementById('roleWalletLangRow');
+    if (!toggle || !langRow) return;
+    langRow.style.display = toggle.checked ? 'grid' : 'none';
+}
+
+function getRoleWalletState() {
+    ensureWalletData();
+    return App.wallet.rolePeek;
+}
+
+function getRoleWalletRecord(charId) {
+    if (!charId) return null;
+    const state = getRoleWalletState();
+    return state.records[charId] || null;
+}
+
+function getRoleWalletActiveChar() {
+    const state = getRoleWalletState();
+    return App.characters.find(c => c.id === state.activeCharId) || null;
+}
+
+function setRoleWalletActiveChar(charId) {
+    const state = getRoleWalletState();
+    if (!charId || !App.characters.some(c => c.id === charId)) return;
+    state.activeCharId = charId;
+    if (!['source', 'target'].includes(state.translationModeByChar[charId])) {
+        state.translationModeByChar[charId] = 'source';
+    }
+}
+
+function setWalletPerspective(mode, shouldSave = true) {
+    const state = getRoleWalletState();
+    const next = mode === 'role' ? 'role' : 'user';
+    if (state.perspective === next) {
+        renderWalletPage();
+        return;
+    }
+    state.perspective = next;
+    if (next === 'role' && !state.activeCharId) {
+        const fallback = Object.keys(state.records).find(charId => App.characters.some(c => c.id === charId)) || (App.characters[0]?.id || '');
+        if (fallback) state.activeCharId = fallback;
+    }
+    renderWalletPage();
+    if (shouldSave) saveData();
+}
+
+function toggleWalletPerspective() {
+    const state = getRoleWalletState();
+    if (state.perspective === 'user') {
+        if (App.characters.length === 0) {
+            showToast('通讯录暂无角色，无法生成角色钱包', 'error');
+            return;
+        }
+        setWalletPerspective('role');
+    } else {
+        setWalletPerspective('user');
+    }
+}
+
+function getRoleWalletRecordStatusText(record) {
+    if (!record) return '未生成';
+    if (record.status === 'generating') return '生成中';
+    if (record.status === 'error') return '生成异常';
+    if (record.status === 'ready') return '已生成';
+    return '待生成';
+}
+
+function renderWalletPerspectiveToolbar() {
+    const state = getRoleWalletState();
+    const isRole = state.perspective === 'role';
+    const label = document.getElementById('walletModeLabel');
+    const btn = document.getElementById('walletFlipBtn');
+    if (label) label.textContent = isRole ? '角色钱包视角（偷窥模式）' : '我的钱包视角';
+    if (btn) {
+        btn.title = isRole ? '翻回用户钱包' : '翻到角色钱包';
+        btn.textContent = isRole ? '↩' : '↺';
+    }
+}
+
+function renderRoleWalletGeneratedStrip() {
+    const strip = document.getElementById('walletRoleGeneratedStrip');
+    if (!strip) return;
+    const state = getRoleWalletState();
+    const ids = Object.keys(state.records).filter(charId => App.characters.some(c => c.id === charId));
+    if (ids.length === 0) {
+        strip.innerHTML = `<div class="wallet-empty-line" style="padding:6px 0 2px">暂无已生成角色页面</div>`;
+        return;
+    }
+    ids.sort((a, b) => {
+        const ra = state.records[a];
+        const rb = state.records[b];
+        return (rb.updatedAt || rb.generatedAt || 0) - (ra.updatedAt || ra.generatedAt || 0);
+    });
+    strip.innerHTML = ids.map(charId => {
+        const char = App.characters.find(c => c.id === charId);
+        if (!char) return '';
+        const record = state.records[charId];
+        const active = state.activeCharId === charId ? 'active' : '';
+        const avatar = char.avatarImage
+            ? `<span class="wallet-role-chip-avatar"><img src="${char.avatarImage}" alt=""></span>`
+            : `<span class="wallet-role-chip-avatar">${escapeHtml((char.avatar || char.name || '◇').slice(0, 1))}</span>`;
+        const status = record.status === 'generating' ? ' · 生成中' : (record.status === 'error' ? ' · 异常' : '');
+        return `<button class="wallet-role-chip ${active}" onclick="switchActiveRoleWalletChar('${charId}')">${avatar}${escapeHtml(char.nickname || char.name)}${escapeHtml(status)}</button>`;
+    }).join('');
+}
+
+function renderRoleWalletActiveInfo() {
+    const box = document.getElementById('walletRoleActiveInfo');
+    if (!box) return;
+    const state = getRoleWalletState();
+    const char = getRoleWalletActiveChar();
+    if (!char) {
+        box.innerHTML = `<div class="wallet-role-namebox"><div class="wallet-role-name">未选择角色</div><div class="wallet-role-sub">点击 + 选择角色并生成页面</div></div>`;
+        return;
+    }
+    const record = state.records[char.id];
+    const avatar = char.avatarImage
+        ? `<div class="wallet-role-avatar"><img src="${char.avatarImage}" alt=""></div>`
+        : `<div class="wallet-role-avatar">${escapeHtml((char.avatar || char.name || '◇').slice(0, 1))}</div>`;
+    const generatedAt = record?.generatedAt ? ` · ${formatRoleWalletDateTime(record.generatedAt)}` : '';
+    box.innerHTML = `${avatar}<div class="wallet-role-namebox"><div class="wallet-role-name">${escapeHtml(char.nickname || char.name)}</div><div class="wallet-role-sub">${getRoleWalletRecordStatusText(record)}${generatedAt}</div></div>`;
+}
+
+function renderRoleWalletActionButtons() {
+    const state = getRoleWalletState();
+    const fullBtn = document.getElementById('walletRoleRefreshFullBtn');
+    const partialBtn = document.getElementById('walletRoleRefreshPartialBtn');
+    const deleteBtn = document.getElementById('walletRoleDeleteBtn');
+    const char = getRoleWalletActiveChar();
+    const record = char ? state.records[char.id] : null;
+    const generating = !!(char && WalletRuntime.roleGeneratingByCharId[char.id]);
+    if (fullBtn) fullBtn.disabled = !char || generating;
+    if (partialBtn) partialBtn.disabled = !char || generating || !record?.htmlSource;
+    if (deleteBtn) deleteBtn.disabled = !char || generating || !record;
+}
+
+function renderRoleWalletFrame() {
+    const state = getRoleWalletState();
+    const status = document.getElementById('walletRoleStatus');
+    const frameWrap = document.getElementById('walletRoleFrameWrap');
+    const frame = document.getElementById('walletRoleFrame');
+    const placeholder = document.getElementById('walletRolePlaceholder');
+    const translateBtn = document.getElementById('walletRoleTranslateBtn');
+    if (!status || !frameWrap || !frame || !placeholder || !translateBtn) return;
+
+    const char = getRoleWalletActiveChar();
+    if (!char) {
+        status.className = 'wallet-role-status';
+        status.textContent = '请先选择一个通讯录角色。';
+        frameWrap.style.display = 'none';
+        placeholder.style.display = 'block';
+        translateBtn.style.display = 'none';
+        return;
+    }
+
+    const record = state.records[char.id];
+    if (!record) {
+        status.className = 'wallet-role-status';
+        status.textContent = `未找到「${char.nickname || char.name}」的钱包页面，点击 + 开始生成。`;
+        frameWrap.style.display = 'none';
+        placeholder.style.display = 'block';
+        translateBtn.style.display = 'none';
+        return;
+    }
+
+    const canTranslate = !!(record.bilingualEnabled && record.htmlTranslated);
+    const mode = canTranslate && state.translationModeByChar[char.id] === 'target' ? 'target' : 'source';
+    if (!canTranslate) state.translationModeByChar[char.id] = 'source';
+    translateBtn.style.display = record.bilingualEnabled ? 'inline-flex' : 'none';
+    translateBtn.disabled = !canTranslate;
+    translateBtn.textContent = mode === 'target'
+        ? `切回${getLanguageName(record.sourceLang || 'en', true)}`
+        : `翻译为${getLanguageName(record.targetLang || 'zh', true)}`;
+
+    const html = mode === 'target' && record.htmlTranslated ? record.htmlTranslated : record.htmlSource;
+    const hasHtml = !!(html && html.trim());
+
+    if (record.status === 'generating') {
+        status.className = 'wallet-role-status';
+        status.textContent = `正在生成「${char.nickname || char.name}」的钱包页面，可切出页面继续等待。开始时间：${formatRoleWalletDateTime(record.updatedAt || Date.now())}`;
+    } else if (record.status === 'error' && !hasHtml) {
+        status.className = 'wallet-role-status error';
+        status.textContent = record.lastError || '生成失败，请重试。';
+    } else {
+        status.className = record.lastError ? 'wallet-role-status error' : 'wallet-role-status success';
+        status.textContent = record.lastError
+            ? `${record.lastError} | 最近生成：${formatRoleWalletDateTime(record.generatedAt)}`
+            : `最近生成：${formatRoleWalletDateTime(record.generatedAt)} · 模型：${record.model || App.settings.modelName || '--'} · 上下文字符：${record.contextChars || 0}`;
+    }
+
+    if (!hasHtml) {
+        frameWrap.style.display = 'none';
+        placeholder.style.display = 'block';
+        return;
+    }
+
+    placeholder.style.display = 'none';
+    frameWrap.style.display = 'block';
+    const fingerprint = `${mode}:${html.length}:${(record.generatedAt || record.updatedAt || 0)}`;
+    if (frame.dataset.fingerprint !== fingerprint) {
+        frame.srcdoc = html;
+        frame.dataset.fingerprint = fingerprint;
+    }
+}
+
+function renderRoleWalletPerspective() {
+    renderRoleWalletGeneratedStrip();
+    renderRoleWalletActiveInfo();
+    renderRoleWalletActionButtons();
+    renderRoleWalletFrame();
+}
+
 function renderWalletPage() {
     ensureWalletData();
+    renderWalletPerspectiveToolbar();
+    const state = getRoleWalletState();
+    const isRole = state.perspective === 'role';
+    const userPerspective = document.getElementById('walletUserPerspective');
+    const rolePerspective = document.getElementById('walletRolePerspective');
+    const roleActions = document.getElementById('walletRoleActions');
+
+    if (userPerspective) userPerspective.style.display = isRole ? 'none' : 'block';
+    if (rolePerspective) rolePerspective.classList.toggle('active', isRole);
+    if (roleActions) roleActions.classList.toggle('active', isRole);
+
+    if (isRole) {
+        renderRoleWalletPerspective();
+        return;
+    }
+
     renderWalletGroupStrip();
     renderWalletBalanceCard();
     renderWalletCardList();
     renderWalletTransactionList();
+}
+
+function switchActiveRoleWalletChar(charId) {
+    if (!charId) return;
+    const char = App.characters.find(item => item.id === charId);
+    if (!char) return;
+    setRoleWalletActiveChar(charId);
+    renderWalletPage();
+    saveData();
+}
+
+function toggleActiveRoleWalletTranslation() {
+    const state = getRoleWalletState();
+    const char = getRoleWalletActiveChar();
+    if (!char) return;
+    const record = state.records[char.id];
+    if (!record || !record.bilingualEnabled || !record.htmlTranslated) {
+        showToast('当前角色未启用双语翻译', 'error');
+        return;
+    }
+    state.translationModeByChar[char.id] = state.translationModeByChar[char.id] === 'target' ? 'source' : 'target';
+    renderWalletPage();
+    saveData();
+}
+
+function openRoleWalletGenerateModal(preselectedCharId = null) {
+    if (!App.characters.length) {
+        showToast('请先创建至少一个角色', 'error');
+        return;
+    }
+    populateRoleWalletLanguageSelects();
+    const state = getRoleWalletState();
+    const targetId = preselectedCharId || state.activeCharId || App.characters[0].id;
+    WalletRuntime.roleModalSelectedCharId = App.characters.some(c => c.id === targetId) ? targetId : App.characters[0].id;
+    renderRoleWalletGeneratePicker();
+
+    const record = getRoleWalletRecord(WalletRuntime.roleModalSelectedCharId);
+    document.getElementById('roleWalletStyleInput').value = record?.stylePrompt || '';
+    document.getElementById('roleWalletBilingualToggle').checked = !!record?.bilingualEnabled;
+    document.getElementById('roleWalletSourceLangSelect').value = normalizeRoleWalletLanguage(record?.sourceLang || 'en', 'en');
+    document.getElementById('roleWalletTargetLangSelect').value = normalizeRoleWalletLanguage(record?.targetLang || 'zh', 'zh');
+    toggleRoleWalletBilingualFields();
+    showModal('roleWalletGenerateModal');
+}
+
+function renderRoleWalletGeneratePicker() {
+    const picker = document.getElementById('roleWalletGeneratePicker');
+    if (!picker) return;
+    const selectedId = WalletRuntime.roleModalSelectedCharId;
+    picker.innerHTML = App.characters.map(char => {
+        const checked = char.id === selectedId ? 'checked' : '';
+        const avatar = char.avatarImage
+            ? `<img src="${char.avatarImage}" style="width:22px;height:22px;border-radius:6px;object-fit:cover" alt="">`
+            : `<span>${escapeHtml((char.avatar || char.name || '◇').slice(0, 1))}</span>`;
+        const record = getRoleWalletRecord(char.id);
+        const badge = record ? `<span style="color:var(--text-tertiary);font-size:calc(10px * var(--font-scale))">${escapeHtml(getRoleWalletRecordStatusText(record))}</span>` : '';
+        return `<label class="wallet-role-item" onclick="selectRoleWalletGenerateChar('${char.id}')">
+            <input type="radio" name="roleWalletGenerateChar" value="${char.id}" ${checked}>
+            <span style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%">
+                <span style="display:flex;align-items:center;gap:8px">${avatar}<span>${escapeHtml(char.nickname || char.name)}</span></span>
+                ${badge}
+            </span>
+        </label>`;
+    }).join('');
+}
+
+function selectRoleWalletGenerateChar(charId) {
+    if (!charId) return;
+    WalletRuntime.roleModalSelectedCharId = charId;
+    const record = getRoleWalletRecord(charId);
+    if (record) {
+        document.getElementById('roleWalletStyleInput').value = record.stylePrompt || '';
+        document.getElementById('roleWalletBilingualToggle').checked = !!record.bilingualEnabled;
+        document.getElementById('roleWalletSourceLangSelect').value = normalizeRoleWalletLanguage(record.sourceLang || 'en', 'en');
+        document.getElementById('roleWalletTargetLangSelect').value = normalizeRoleWalletLanguage(record.targetLang || 'zh', 'zh');
+    }
+    toggleRoleWalletBilingualFields();
+    renderRoleWalletGeneratePicker();
+}
+
+function confirmRoleWalletGenerate() {
+    const charId = WalletRuntime.roleModalSelectedCharId;
+    const char = App.characters.find(item => item.id === charId);
+    if (!char) {
+        showToast('请选择角色', 'error');
+        return;
+    }
+
+    const bilingualEnabled = !!document.getElementById('roleWalletBilingualToggle')?.checked;
+    const sourceLang = normalizeRoleWalletLanguage(document.getElementById('roleWalletSourceLangSelect')?.value || 'en', 'en');
+    let targetLang = normalizeRoleWalletLanguage(document.getElementById('roleWalletTargetLangSelect')?.value || 'zh', 'zh');
+    if (sourceLang === targetLang) targetLang = sourceLang === 'zh' ? 'en' : 'zh';
+    const stylePrompt = (document.getElementById('roleWalletStyleInput')?.value || '').toString().trim().slice(0, 260);
+
+    if (!confirm(`确定开始生成「${char.nickname || char.name}」的角色钱包页面吗？\n生成过程会注入近期聊天与角色设定。`)) return;
+    hideModal('roleWalletGenerateModal');
+    setRoleWalletActiveChar(charId);
+    setWalletPerspective('role', false);
+    startRoleWalletGeneration(charId, {
+        refreshMode: 'full',
+        bilingualEnabled,
+        sourceLang,
+        targetLang,
+        stylePrompt
+    });
+}
+
+function refreshActiveRoleWallet(mode = 'full') {
+    const char = getRoleWalletActiveChar();
+    if (!char) {
+        openRoleWalletGenerateModal();
+        return;
+    }
+    const record = getRoleWalletRecord(char.id);
+    const refreshMode = mode === 'partial' ? 'partial' : 'full';
+    if (refreshMode === 'partial' && !record?.htmlSource) {
+        showToast('暂无可更新的页面，请先完全生成', 'error');
+        return;
+    }
+    const ok = refreshMode === 'partial'
+        ? confirm(`确定对「${char.nickname || char.name}」执行有限更新吗？\n将尽量保持原 HTML 结构，仅更新数据与时间线。`)
+        : confirm(`确定完全刷新「${char.nickname || char.name}」页面吗？\n旧内容会被新内容覆盖，无法回退。`);
+    if (!ok) return;
+    startRoleWalletGeneration(char.id, {
+        refreshMode,
+        bilingualEnabled: !!record?.bilingualEnabled,
+        sourceLang: record?.sourceLang || 'en',
+        targetLang: record?.targetLang || 'zh',
+        stylePrompt: record?.stylePrompt || ''
+    });
+}
+
+function deleteActiveRoleWalletPage() {
+    const state = getRoleWalletState();
+    const char = getRoleWalletActiveChar();
+    if (!char) {
+        showToast('当前没有可删除的角色页面', 'error');
+        return;
+    }
+    if (!state.records[char.id]) {
+        showToast('该角色尚未生成页面', 'error');
+        return;
+    }
+    if (!confirm(`确定删除「${char.nickname || char.name}」的角色钱包页面吗？`)) return;
+    delete state.records[char.id];
+    delete state.translationModeByChar[char.id];
+    const remaining = Object.keys(state.records).filter(charId => App.characters.some(item => item.id === charId));
+    state.activeCharId = remaining[0] || '';
+    if (!remaining.length) state.perspective = 'user';
+    renderWalletPage();
+    saveData();
+    showToast('角色钱包页面已删除', 'success');
+}
+
+function fetchWithTimeout(url, options, timeoutMs = ROLE_WALLET_FETCH_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
+
+function buildRoleWalletChatContext(char, maxChars = ROLE_WALLET_MAX_CONTEXT_CHARS) {
+    const lines = [];
+    let used = 0;
+    const source = Array.isArray(char?.messages) ? char.messages.slice(-Math.max(App.settings.maxContextMessages || 200, 400)) : [];
+    for (let i = source.length - 1; i >= 0; i -= 1) {
+        const msg = source[i];
+        if (!msg || typeof msg !== 'object') continue;
+        const ts = getMessageDisplayTime(msg, char);
+        const d = new Date(ts || Date.now());
+        const prefix = `[${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}]`;
+        const role = msg.sender === 'user' ? (char.userNick || 'User') : (char.nickname || char.name || 'Character');
+        let content = '';
+        if (msg.type === 'transfer') content = transferPlainText(msg);
+        else if (msg.type === 'scene-image') content = `[场景图] ${msg.content || ''}`;
+        else if (msg.type === 'voice') content = `[语音] ${msg.content || ''}`;
+        else if (msg.type === 'sticker') content = `[表情] ${msg.content || ''}`;
+        else content = msg.content || '';
+        content = content.toString().replace(/\s+/g, ' ').trim().slice(0, 420);
+        if (!content) continue;
+        const line = `${prefix} ${role}: ${content}`;
+        if ((used + line.length > maxChars) && lines.length >= 18) break;
+        lines.push(line);
+        used += line.length;
+    }
+    lines.reverse();
+    return { text: lines.join('\n'), chars: used, count: lines.length };
+}
+
+function countRoleWalletSections(html) {
+    if (!html) return 0;
+    const sectionCount = (html.match(/<section\b/gi) || []).length;
+    const articleCount = (html.match(/<article\b/gi) || []).length;
+    const moduleCount = (html.match(/class=["'][^"']*(module|panel|card|block|section)[^"']*["']/gi) || []).length;
+    return sectionCount + articleCount + moduleCount;
+}
+
+function ensureRoleWalletRenderGuardStyle(doc) {
+    if (!doc?.head) return;
+    if (doc.getElementById('role-wallet-render-guard')) return;
+    const style = doc.createElement('style');
+    style.id = 'role-wallet-render-guard';
+    style.textContent = `
+* { box-sizing: border-box; }
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+}
+body {
+    max-width: 390px;
+    margin: 0 auto;
+}
+img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+}
+`;
+    doc.head.appendChild(style);
+}
+
+function normalizeRoleWalletHtml(rawHtml) {
+    const text = (rawHtml || '').toString().trim();
+    if (!text) throw new Error('模型返回内容为空');
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/html');
+    if (!doc || !doc.documentElement || !doc.body) throw new Error('无法解析 HTML');
+    if (!doc.head) {
+        const head = doc.createElement('head');
+        doc.documentElement.insertBefore(head, doc.body);
+    }
+    if (!doc.querySelector('meta[charset]')) {
+        const meta = doc.createElement('meta');
+        meta.setAttribute('charset', 'UTF-8');
+        doc.head.insertBefore(meta, doc.head.firstChild);
+    }
+    if (!doc.querySelector('meta[name="viewport"]')) {
+        const viewport = doc.createElement('meta');
+        viewport.setAttribute('name', 'viewport');
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+        doc.head.appendChild(viewport);
+    }
+    ensureRoleWalletRenderGuardStyle(doc);
+    return `<!DOCTYPE html>\n${doc.documentElement.outerHTML}`;
+}
+
+function extractRoleWalletHtmlFromModel(raw) {
+    let text = (raw || '').toString().trim();
+    if (!text) return '';
+    const marker = text.match(/\[ROLE_WALLET_HTML_BEGIN\]([\s\S]*?)\[ROLE_WALLET_HTML_END\]/i);
+    if (marker?.[1]) text = marker[1].trim();
+    const fenced = text.match(/```(?:html)?\s*([\s\S]*?)```/i);
+    if (fenced?.[1]) text = fenced[1].trim();
+    const doctypeHtml = text.match(/<!DOCTYPE html[\s\S]*<\/html>/i);
+    if (doctypeHtml?.[0]) return doctypeHtml[0].trim();
+    const html = text.match(/<html[\s\S]*<\/html>/i);
+    if (html?.[0]) return html[0].trim();
+    const body = text.match(/<body[\s\S]*<\/body>/i);
+    if (body?.[0]) {
+        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>${body[0]}</html>`;
+    }
+    if (text.startsWith('<')) return text;
+    return '';
+}
+
+function buildRoleWalletPrompt(char, record, refreshMode, contextInfo, previousHtml = '') {
+    const richText = [char.description, char.scenario, char.systemPrompt].filter(Boolean).join('\n');
+    const sourceLangName = getLanguageName(record.sourceLang || 'en', true);
+    const targetLangName = getLanguageName(record.targetLang || 'zh', true);
+    const timeInfo = getPerceivedTime(char);
+    const timeLine = timeInfo
+        ? `${timeInfo.year}/${String(timeInfo.month || 1).padStart(2, '0')}/${String(timeInfo.day || 1).padStart(2, '0')} ${String(timeInfo.hour || 0).padStart(2, '0')}:${String(timeInfo.minute || 0).padStart(2, '0')} ${timeInfo.period || ''}`
+        : '未启用时间感知（可按系统时间推进）';
+    const styleDirective = (record.stylePrompt || '').trim() || ROLE_WALLET_DEFAULT_STYLE_PROMPT;
+    const previousLimited = previousHtml ? previousHtml.slice(0, 18000) : '';
+    const modeHint = refreshMode === 'partial'
+        ? `这是“有限更新模式”：请尽量保持原页面结构、主容器、模块顺序、主要 class/id 不变，只更新数据内容、金额、时间线、记录、彩蛋状态。`
+        : `这是“完全刷新模式”：允许重做结构与视觉，但必须保留指定框架模块数量与交互复杂度。`;
+
+    return `你现在是一个高质量前端页面生成器。请为角色生成“通讯录角色钱包窥探页面”。
+
+[输出规则 - 必须遵守]
+1) 只输出完整 HTML 文档，禁止 Markdown、禁止代码块标记、禁止解释文字。
+2) 输出必须包含: <!DOCTYPE html>、<html>、<head>、<style>、<body>、必要的 <script>。
+3) 页面必须是完整背景+完整排版，不是几个零散模块。
+4) 手机宽度适配：主体最大宽度 390px，禁止超出横向滚动。
+5) 页面风格：${styleDirective}
+6) 页面文案语言使用：${sourceLangName}。
+7) 至少包含 10 个以上信息板块，且必须可滚动、可交互（点击切换/展开/标签页/彩蛋）。
+8) 交易记录必须给出 10~15 条，包含消费/转账来源/收款对象/时间/金额。
+9) 保留一个“小号/副账号切换”交互模块。
+10) 允许使用独立字体与风格，不需要跟随全局字体。
+
+[必须覆盖的核心板块]
+- 角色身份头图（头像、状态、净资产估算）
+- 私人银行账户（Private Banking Accounts，按角色财富等级差异化）
+- 财富管理账户（Wealth Management Accounts）
+- 家族办公室账户（Family Office Bank Accounts）
+- 多账户组合总览（存款/投资/信托）
+- 跨境转账与外币账户（含多币种）
+- 银行卡列表 + 点击查看明细流水
+- 最近购买记录（10~15）
+- 支付/收款对象来源追踪
+- 钱包私聊/暗线记录
+- 备忘录与 tips
+- 可挖掘彩蛋（点击触发）
+
+[角色设定]
+角色名: ${char.nickname || char.name}
+角色补充设定:
+${richText || '（无额外设定）'}
+
+[时间线参考]
+${timeLine}
+
+[最近聊天上下文]
+共 ${contextInfo.count} 条，约 ${contextInfo.chars} 字符：
+${contextInfo.text || '（暂无聊天内容）'}
+
+[本次模式]
+${modeHint}
+
+${refreshMode === 'partial' ? `[原始页面 HTML 片段]\n${previousLimited}\n` : ''}
+
+[双语要求]
+双语模式: ${record.bilingualEnabled ? `开启，后续将翻译到 ${targetLangName}` : '关闭'}
+你只需输出原始语言版本页面。`;
+}
+
+async function fetchRoleWalletHTMLFromAI(char, record, refreshMode, previousHtml = '') {
+    if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
+        throw new Error('API 未配置完整');
+    }
+    const contextInfo = buildRoleWalletChatContext(char, ROLE_WALLET_MAX_CONTEXT_CHARS);
+    const prompt = buildRoleWalletPrompt(char, record, refreshMode, contextInfo, previousHtml);
+    const messages = [
+        {
+            role: 'system',
+            content: 'You are a strict HTML generator. Return one complete HTML document only. No markdown, no explanations.'
+        },
+        {
+            role: 'user',
+            content: prompt
+        }
+    ];
+
+    const res = await fetchWithTimeout(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${App.settings.apiKey}`
+        },
+        body: JSON.stringify({
+            model: App.settings.modelName,
+            messages,
+            temperature: App.settings.temperature,
+            max_tokens: ROLE_WALLET_MAX_OUTPUT_TOKENS
+        })
+    }, ROLE_WALLET_FETCH_TIMEOUT_MS);
+
+    if (!res.ok) {
+        const detail = await res.text();
+        throw new Error(`HTTP ${res.status}: ${(detail || '').slice(0, 500)}`);
+    }
+
+    const data = await res.json();
+    let content = data?.choices?.[0]?.message?.content || '';
+    const reasoningContent = data?.choices?.[0]?.message?.reasoning_content || '';
+    if (!content.trim() && reasoningContent) content = reasoningContent;
+    if (!content.trim()) throw new Error('模型返回空内容');
+
+    const extracted = extractRoleWalletHtmlFromModel(content);
+    if (!extracted) throw new Error('未能从模型响应中提取 HTML');
+    const normalized = normalizeRoleWalletHtml(extracted);
+    const sectionCount = countRoleWalletSections(normalized);
+    if (normalized.length < 2200 || sectionCount < 10) {
+        throw new Error(`生成内容过短或模块不足（长度=${normalized.length}，模块统计=${sectionCount}）`);
+    }
+
+    return {
+        htmlSource: normalized,
+        contextChars: contextInfo.chars
+    };
+}
+
+function seedRoleWalletTransactions(char, count = 12) {
+    const merchants = ['Lumiere Market', 'Northline Bistro', 'Aero Lounge', 'Velvet Pharmacy', 'Raven Club', 'Atlas Travel Desk', 'Metro Fresh', 'Sable Atelier', 'Harbor Fuel', 'Midnight Deli'];
+    const notes = ['日常采购', '跨境服务费', '订阅续费', '礼物与鲜花', '加急物流', '聚会支出', '私人司机', '设备升级', '家庭调拨', '匿名转账'];
+    let seed = [...(char.id || 'char')].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) + 97;
+    const random = () => {
+        seed = (seed * 1664525 + 1013904223) % 4294967296;
+        return seed / 4294967296;
+    };
+    const now = Date.now();
+    const rows = [];
+    for (let i = 0; i < count; i += 1) {
+        const out = random() > 0.32;
+        const amount = (out ? 80 + random() * 4200 : 120 + random() * 6800).toFixed(2);
+        const merchant = merchants[Math.floor(random() * merchants.length)];
+        const note = notes[Math.floor(random() * notes.length)];
+        const ago = Math.floor((i * 4 + random() * 5) * 3600 * 1000);
+        rows.push({
+            time: formatRoleWalletDateTime(now - ago),
+            direction: out ? 'out' : 'in',
+            amount,
+            currency: random() > 0.5 ? 'USD' : (random() > 0.5 ? 'EUR' : 'CNY'),
+            merchant,
+            note
+        });
+    }
+    return rows;
+}
+
+function buildRoleWalletFallbackHtml(char, record, errorReason = '') {
+    const displayName = escapeHtml(char.nickname || char.name || '角色');
+    const avatar = char.avatarImage
+        ? `<img src="${char.avatarImage}" alt="" style="width:100%;height:100%;object-fit:cover">`
+        : `<span>${escapeHtml((char.avatar || char.name || '◇').slice(0, 1))}</span>`;
+    const txHtml = seedRoleWalletTransactions(char, 12).map(item => {
+        const sign = item.direction === 'out' ? '-' : '+';
+        const cls = item.direction === 'out' ? 'out' : 'in';
+        return `<div class="tx ${cls}">
+            <div><div class="tx-title">${escapeHtml(item.merchant)}</div><div class="tx-meta">${escapeHtml(item.note)} · ${escapeHtml(item.time)}</div></div>
+            <div class="tx-amt">${sign}${escapeHtml(item.amount)} ${escapeHtml(item.currency)}</div>
+        </div>`;
+    }).join('');
+    const warn = errorReason ? `AI 生成失败，已启用兜底模板：${escapeHtml(errorReason)}` : 'AI 兜底模板';
+
+    return `<!DOCTYPE html>
+<html lang="${normalizeRoleWalletLanguage(record?.sourceLang || 'en', 'en')}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box}html,body{margin:0;padding:0;width:100%;min-height:100%}body{max-width:390px;margin:0 auto;font-family:"Cormorant Garamond","Inter","PingFang SC",sans-serif;background:linear-gradient(160deg,#f7f3eb 0%,#ece7de 60%,#e7efe7 100%);color:#252525}
+.page{padding:14px;min-height:100vh}.card{margin-top:10px;border:1px solid rgba(37,37,37,.14);border-radius:16px;background:rgba(255,255,255,.72);padding:12px}
+.hero{display:flex;align-items:center;gap:10px}.avatar{width:52px;height:52px;border-radius:14px;border:1px solid rgba(37,37,37,.14);overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff}
+h1{margin:0;font-size:22px}.sub{font-size:12px;color:#676b66}.tags{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}.tag{border:1px solid rgba(37,37,37,.14);border-radius:999px;padding:4px 9px;font-size:11px;background:rgba(255,255,255,.65)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.tile{border:1px solid rgba(37,37,37,.14);border-radius:12px;padding:8px;background:rgba(255,255,255,.65)}.tile-k{font-size:11px;color:#666}.tile-v{font-size:15px;font-weight:600;margin-top:4px}
+.tabs{display:flex;gap:8px;margin-bottom:8px}.t{border:1px solid rgba(37,37,37,.14);border-radius:999px;padding:5px 10px;background:#fff;font-size:11px;cursor:pointer}.t.active{background:#d7e4dc}
+.panel{display:none;font-size:12px;line-height:1.6;color:#3a403d}.panel.active{display:block}
+.cards{display:flex;gap:8px;overflow-x:auto}.bank{min-width:176px;border-radius:14px;padding:9px;border:1px solid rgba(0,0,0,.18);background:linear-gradient(140deg,#2f3f3a,#536d65);color:#fff;cursor:pointer;font-size:12px}.bank:nth-child(2){background:linear-gradient(140deg,#3e3b2f,#7f7252)}.bank:nth-child(3){background:linear-gradient(140deg,#2b2c3d,#49556d)}
+.detail{margin-top:8px;border:1px dashed rgba(37,37,37,.2);border-radius:10px;padding:8px;font-size:11px;color:#666}
+.tx{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid rgba(37,37,37,.14);border-radius:12px;padding:8px;background:rgba(255,255,255,.72);margin-bottom:8px}.tx-title{font-size:13px}.tx-meta{font-size:11px;color:#666}.tx-amt{font-size:13px;font-weight:600;white-space:nowrap}.tx.out .tx-amt{color:#8f4343}.tx.in .tx-amt{color:#2f6d49}
+.note{font-size:12px;line-height:1.6;color:#3a403d}.egg{margin-top:8px;border:1px dashed rgba(37,37,37,.2);border-radius:10px;padding:8px;font-size:11px;color:#666;display:none}.btn{border:1px solid rgba(37,37,37,.14);border-radius:999px;padding:6px 11px;background:#fff;font-size:11px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="page">
+<section class="card"><div class="hero"><div class="avatar">${avatar}</div><div><h1>${displayName}</h1><div class="sub">Role Wallet Intelligence Snapshot</div></div></div><div class="tags"><span class="tag">Private Banking</span><span class="tag">Wealth Mgmt</span><span class="tag">Family Office</span><span class="tag">Cross-Border FX</span></div></section>
+<section class="card"><div class="grid"><div class="tile"><div class="tile-k">总资产估算</div><div class="tile-v">$ 12.84M</div></div><div class="tile"><div class="tile-k">可动用现金</div><div class="tile-v">$ 1.37M</div></div><div class="tile"><div class="tile-k">本周支出</div><div class="tile-v">$ 24.6K</div></div><div class="tile"><div class="tile-k">跨境转账频率</div><div class="tile-v">High</div></div></div></section>
+<section class="card"><h2 style="margin:0 0 8px;font-size:16px">Private Banking / Wealth / Family Office</h2><div class="tabs"><button class="t active" data-k="w">Wealth</button><button class="t" data-k="f">Family</button><button class="t" data-k="a">Alt</button></div><div class="panel active" data-p="w">投资组合、信托入口、另类资产通道已合并，现金仓位较高。</div><div class="panel" data-p="f">单一账户管理 4 位家庭成员资金与信托，近期有教育拨款审批。</div><div class="panel" data-p="a">检测到副账号 NightLedger，近72小时出现3笔匿名收款。</div></section>
+<section class="card"><h2 style="margin:0 0 8px;font-size:16px">Cross-Border & FX</h2><div class="grid"><div class="tile"><div class="tile-k">Wise</div><div class="tile-v">USD/EUR/JPY</div></div><div class="tile"><div class="tile-k">Revolut</div><div class="tile-v">GBP/CNY</div></div><div class="tile"><div class="tile-k">平均时效</div><div class="tile-v">4h 18m</div></div><div class="tile"><div class="tile-k">费率等级</div><div class="tile-v">Priority</div></div></div></section>
+<section class="card"><h2 style="margin:0 0 8px;font-size:16px">Bank Cards</h2><div class="cards"><div class="bank" data-b="1">Obsidian **** 2049</div><div class="bank" data-b="2">Lausanne Gold **** 8831</div><div class="bank" data-b="3">Travel FX **** 3170</div></div><div class="detail" id="d">点击银行卡查看该卡最近交易。</div></section>
+<section class="card"><h2 style="margin:0 0 8px;font-size:16px">Recent Purchase & Transfer (12)</h2>${txHtml}</section>
+<section class="card"><h2 style="margin:0 0 8px;font-size:16px">Wallet Private Chats</h2><div class="note">19:42 与物流代办确认加急包裹。<br>20:13 与匿名联系人讨论跨境收款分流。<br>21:06 与副账号发生短时会话。</div></section>
+<section class="card"><h2 style="margin:0 0 8px;font-size:16px">Memo / Tips / Easter Egg</h2><div class="note">${warn}</div><button class="btn" id="eggBtn">挖掘彩蛋</button><div class="egg" id="egg">发现“超市黏液材料大采购”异常消费链路，付款对象与小号账户有交叉。</div></section>
+</div>
+<script>
+(() => {
+const tabs=[...document.querySelectorAll('.t')], panels=[...document.querySelectorAll('.panel')];
+tabs.forEach(btn=>btn.addEventListener('click',()=>{const k=btn.dataset.k;tabs.forEach(i=>i.classList.toggle('active',i===btn));panels.forEach(i=>i.classList.toggle('active',i.dataset.p===k));}));
+const detail={1:'Obsidian: 21:10 Raven Club $420 / 20:12 匿名转账 $1200',2:'Lausanne Gold: 19:08 Sable Atelier $980 / 17:43 Atlas Travel $640',3:'Travel FX: 22:22 FX Conversion 3,400 EUR / 16:30 Hotel PreAuth $300'};
+document.querySelectorAll('.bank').forEach(item=>item.addEventListener('click',()=>{document.getElementById('d').textContent=detail[item.dataset.b]||'暂无数据';}));
+document.getElementById('eggBtn')?.addEventListener('click',()=>{const el=document.getElementById('egg');el.style.display=el.style.display==='block'?'none':'block';});
+})();
+<\\/script>
+</body>
+</html>`;
+}
+
+function collectTranslatableTargets(doc) {
+    const targets = [];
+    if (!doc?.body) return targets;
+    const skipTags = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE', 'PRE']);
+    const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+            if (!node?.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+            const parent = node.parentElement;
+            if (!parent || skipTags.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
+            if (parent.closest('[data-no-translate="1"]')) return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+        }
+    });
+    while (walker.nextNode()) {
+        const node = walker.currentNode;
+        targets.push({ type: 'text', node, value: node.nodeValue });
+    }
+
+    const attrs = ['placeholder', 'title', 'aria-label'];
+    doc.body.querySelectorAll('*').forEach(el => {
+        if (skipTags.has(el.tagName) || el.closest('[data-no-translate="1"]')) return;
+        attrs.forEach(attr => {
+            const value = el.getAttribute(attr);
+            if (!value || !value.trim()) return;
+            targets.push({ type: 'attr', el, attr, value });
+        });
+    });
+    return targets;
+}
+
+function extractJSONArray(text) {
+    const raw = (text || '').toString().trim();
+    if (!raw) return null;
+    try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
+    } catch (e) {}
+    const start = raw.indexOf('[');
+    const end = raw.lastIndexOf(']');
+    if (start >= 0 && end > start) {
+        const candidate = raw.slice(start, end + 1);
+        try {
+            const parsed = JSON.parse(candidate);
+            if (Array.isArray(parsed)) return parsed;
+        } catch (e) {}
+    }
+    return null;
+}
+
+async function requestBatchTranslation(texts, sourceLang, targetLang) {
+    if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
+        throw new Error('API 未配置，无法执行双语翻译');
+    }
+    const sourceName = getLanguageName(sourceLang, true);
+    const targetName = getLanguageName(targetLang, true);
+    const res = await fetchWithTimeout(`${App.settings.apiBaseUrl}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${App.settings.apiKey}`
+        },
+        body: JSON.stringify({
+            model: App.settings.modelName,
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are a strict translation engine. Return only a JSON array with the same length as input. No markdown.'
+                },
+                {
+                    role: 'user',
+                    content: `Translate the following JSON string array from ${sourceName} to ${targetName}. Keep order unchanged, keep numbers/codes/URLs untouched, and output ONLY JSON array.\n\n${JSON.stringify(texts)}`
+                }
+            ],
+            temperature: App.settings.temperature,
+            max_tokens: ROLE_WALLET_MAX_OUTPUT_TOKENS
+        })
+    }, ROLE_WALLET_FETCH_TIMEOUT_MS);
+
+    if (!res.ok) {
+        const detail = await res.text();
+        throw new Error(`翻译请求失败 HTTP ${res.status}: ${(detail || '').slice(0, 500)}`);
+    }
+    const data = await res.json();
+    const content = data?.choices?.[0]?.message?.content || '';
+    const arr = extractJSONArray(content);
+    if (!arr || !Array.isArray(arr)) throw new Error('翻译结果不是有效 JSON 数组');
+    if (arr.length < texts.length) throw new Error(`翻译数量不足：期望 ${texts.length}，返回 ${arr.length}`);
+    return arr.slice(0, texts.length).map(item => (item == null ? '' : String(item)));
+}
+
+async function buildRoleWalletTranslatedVersion(sourceHtml, sourceLang, targetLang) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(sourceHtml, 'text/html');
+    const targets = collectTranslatableTargets(doc);
+    if (!targets.length) return sourceHtml;
+    const unique = [];
+    const indexMap = new Map();
+    targets.forEach(target => {
+        const key = target.value;
+        if (!indexMap.has(key)) {
+            indexMap.set(key, unique.length);
+            unique.push(key);
+        }
+        target.index = indexMap.get(key);
+    });
+    const translated = await requestBatchTranslation(unique, sourceLang, targetLang);
+    targets.forEach(target => {
+        const nextValue = translated[target.index];
+        if (typeof nextValue !== 'string' || !nextValue.trim()) return;
+        if (target.type === 'text') target.node.nodeValue = nextValue;
+        if (target.type === 'attr') target.el.setAttribute(target.attr, nextValue);
+    });
+    ensureRoleWalletRenderGuardStyle(doc);
+    return `<!DOCTYPE html>\n${doc.documentElement.outerHTML}`;
+}
+
+async function runRoleWalletGenerationPipeline(char, record, refreshMode, previousHtml) {
+    const generated = await fetchRoleWalletHTMLFromAI(char, record, refreshMode, previousHtml);
+    let htmlTranslated = '';
+    let warning = '';
+    if (record.bilingualEnabled) {
+        try {
+            htmlTranslated = await buildRoleWalletTranslatedVersion(
+                generated.htmlSource,
+                normalizeRoleWalletLanguage(record.sourceLang || 'en', 'en'),
+                normalizeRoleWalletLanguage(record.targetLang || 'zh', 'zh')
+            );
+        } catch (err) {
+            warning = `双语翻译失败：${(err?.message || 'unknown').slice(0, 220)}`;
+        }
+    }
+    return {
+        htmlSource: generated.htmlSource,
+        htmlTranslated,
+        warning,
+        contextChars: generated.contextChars || 0
+    };
+}
+
+function startRoleWalletGeneration(charId, options = {}) {
+    const char = App.characters.find(item => item.id === charId);
+    if (!char) {
+        showToast('角色不存在', 'error');
+        return;
+    }
+    if (WalletRuntime.roleGeneratingByCharId[charId]) {
+        showToast('该角色页面正在生成中', 'error');
+        return;
+    }
+
+    const state = getRoleWalletState();
+    const existing = state.records[charId] || {};
+    const refreshMode = options.refreshMode === 'partial' ? 'partial' : 'full';
+    const sourceLang = normalizeRoleWalletLanguage(options.sourceLang || existing.sourceLang || 'en', 'en');
+    let targetLang = normalizeRoleWalletLanguage(options.targetLang || existing.targetLang || 'zh', 'zh');
+    if (sourceLang === targetLang) targetLang = sourceLang === 'zh' ? 'en' : 'zh';
+    const record = {
+        charId,
+        status: 'generating',
+        htmlSource: typeof existing.htmlSource === 'string' ? existing.htmlSource : '',
+        htmlTranslated: typeof existing.htmlTranslated === 'string' ? existing.htmlTranslated : '',
+        bilingualEnabled: !!options.bilingualEnabled,
+        sourceLang,
+        targetLang,
+        stylePrompt: (options.stylePrompt || existing.stylePrompt || '').toString().trim().slice(0, 260),
+        generatedAt: existing.generatedAt || 0,
+        updatedAt: Date.now(),
+        lastError: '',
+        lastMode: refreshMode,
+        model: App.settings.modelName || '',
+        contextChars: 0
+    };
+    if (!record.bilingualEnabled) record.htmlTranslated = '';
+    state.records[charId] = record;
+    state.activeCharId = charId;
+    state.perspective = 'role';
+    state.translationModeByChar[charId] = 'source';
+    WalletRuntime.roleGeneratingByCharId[charId] = true;
+    renderWalletPage();
+    saveData();
+
+    runRoleWalletGenerationPipeline(char, record, refreshMode, existing.htmlSource || '')
+        .then(result => {
+            const latest = state.records[charId] || record;
+            latest.status = 'ready';
+            latest.htmlSource = result.htmlSource;
+            latest.htmlTranslated = result.htmlTranslated || '';
+            latest.generatedAt = Date.now();
+            latest.updatedAt = Date.now();
+            latest.lastError = result.warning || '';
+            latest.lastMode = refreshMode;
+            latest.model = App.settings.modelName || '';
+            latest.contextChars = result.contextChars || 0;
+            state.records[charId] = latest;
+            state.translationModeByChar[charId] = 'source';
+            showToast(refreshMode === 'partial' ? '角色钱包页面已更新' : '角色钱包页面已生成', 'success');
+        })
+        .catch(err => {
+            const latest = state.records[charId] || record;
+            const message = (err?.message || 'unknown error').slice(0, 500);
+            let fallback = '';
+            try {
+                fallback = normalizeRoleWalletHtml(buildRoleWalletFallbackHtml(char, latest, message));
+            } catch (e) {}
+            latest.status = fallback ? 'ready' : 'error';
+            if (fallback) latest.htmlSource = fallback;
+            latest.htmlTranslated = '';
+            latest.updatedAt = Date.now();
+            latest.generatedAt = latest.generatedAt || Date.now();
+            latest.lastError = `生成失败：${message}${fallback ? '（已自动使用兜底模板）' : ''}`;
+            latest.model = App.settings.modelName || '';
+            state.records[charId] = latest;
+            showToast(fallback ? '生成失败，已切换兜底模板' : '生成失败，请检查 API 与模型', 'error');
+        })
+        .finally(() => {
+            delete WalletRuntime.roleGeneratingByCharId[charId];
+            renderWalletPage();
+            saveData();
+        });
 }
 
 function onWalletGroupChipClick(groupId) {
