@@ -673,52 +673,45 @@
             left: 0;
             right: 0;
             bottom: 0;
-            z-index: 6000;
-            background: rgba(8, 8, 10, 0.98);
+            z-index: 12000;
+            background: #000;
             display: none;
-            flex-direction: column;
-            padding-top: calc(var(--safe-top) + 8px);
-            padding-bottom: calc(var(--safe-bottom) + 8px);
-        }
-        .wallet-role-fullscreen-layer.active { display: flex; }
-        .wallet-role-fullscreen-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 0 12px 10px;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        .wallet-role-fullscreen-title {
-            color: var(--text-primary);
-            font-size: calc(13px * var(--font-scale));
-            white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis;
-            min-width: 0;
-            flex: 1;
         }
+        .wallet-role-fullscreen-layer.active { display: block; }
+        .wallet-role-fullscreen-bar {
+            position: absolute;
+            top: calc(var(--safe-top) + 10px);
+            right: 10px;
+            z-index: 2;
+        }
+        .wallet-role-fullscreen-title { display: none; }
         .wallet-role-fullscreen-close {
             border: 1px solid var(--border-accent);
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(20, 20, 22, 0.7);
             color: var(--text-primary);
-            font-size: calc(12px * var(--font-scale));
-            padding: 7px 12px;
+            font-size: calc(13px * var(--font-scale));
+            padding: 9px 12px;
             cursor: pointer;
-            flex-shrink: 0;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
         .wallet-role-fullscreen-mount {
-            flex: 1;
-            min-height: 0;
-            padding: 8px;
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            padding: 0;
         }
         .wallet-role-fullscreen-mount .wallet-role-frame {
             width: 100%;
             height: 100%;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0;
+            border: 0;
+            display: block;
+            background: #000;
         }
+        .page#messagesPage.role-wallet-fullscreen .messages-bottom-tabs { display: none !important; }
         .role-wallet-bilingual-wrap {
             border: 1px solid var(--border-subtle);
             border-radius: 12px;
@@ -15769,6 +15762,7 @@ function toggleRoleWalletFullscreen(force = null) {
     const mount = document.getElementById('walletRoleFullscreenMount');
     const frame = document.getElementById('walletRoleFrame');
     const frameWrap = document.getElementById('walletRoleFrameWrap');
+    const messagesPage = document.getElementById('messagesPage');
     if (!layer || !mount || !frame || !frameWrap) return;
 
     const shouldOpen = typeof force === 'boolean' ? force : !WalletRuntime.roleFullscreenActive;
@@ -15787,6 +15781,7 @@ function toggleRoleWalletFullscreen(force = null) {
         }
         mount.appendChild(frame);
         layer.classList.add('active');
+        messagesPage?.classList.add('role-wallet-fullscreen');
         WalletRuntime.roleFullscreenActive = true;
         syncRoleWalletFullscreenTitle();
         updateRoleWalletFullscreenButton();
@@ -15794,6 +15789,7 @@ function toggleRoleWalletFullscreen(force = null) {
     }
 
     if (!WalletRuntime.roleFullscreenActive) {
+        messagesPage?.classList.remove('role-wallet-fullscreen');
         updateRoleWalletFullscreenButton();
         return;
     }
@@ -15805,6 +15801,7 @@ function toggleRoleWalletFullscreen(force = null) {
         frameWrap.appendChild(frame);
     }
     layer.classList.remove('active');
+    messagesPage?.classList.remove('role-wallet-fullscreen');
     WalletRuntime.roleFullscreenActive = false;
     updateRoleWalletFullscreenButton();
 }
