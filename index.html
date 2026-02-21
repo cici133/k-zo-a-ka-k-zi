@@ -9457,6 +9457,10 @@ if (msgType === 'sticker' || msg.type === 'sticker') {
                     let quotedContent = quotedMsg.content || '';
                     // 清理引用内容中的格式标记
                     quotedContent = quotedContent.replace(/^\[Q:#\d+\]\s*/i, '');
+                    quotedContent = quotedContent
+                        .replace(/^\s*[\[［]\s*\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}\s+\d{1,2}:\d{2}\s*[\]］]\s*#\d+\s*[:：]\s*/i, '')
+                        .replace(/^\s*[\[［]\s*\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}\s+\d{1,2}:\d{2}\s*[\]］]\s*/i, '')
+                        .replace(/^\s*#\d+\s*[:：]\s*/i, '');
                     quotedContent = quotedContent.replace(/^\[(IMG|VOICE):\s*/i, '').replace(/\]$/, '');
                     quoteHtml = `<div class="message-quote">${escapeHtml(quotedContent.substring(0, 50))}</div>`;
                 }
@@ -10145,13 +10149,25 @@ The timestamps and #N: numbers are ONLY for helping you understand conversation 
         function parseAIResponse(responseText, char) {
     const parts = responseText.split('|||').map(p => p.trim()).filter(p => p);
     const results = [];
+    const stripLeadingChatMeta = (text) => {
+        let cleaned = (text || '').toString().trim();
+        for (let i = 0; i < 3; i++) {
+            const next = cleaned
+                .replace(/^\s*[\[［]\s*\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}\s+\d{1,2}:\d{2}\s*[\]］]\s*#\d+\s*[:：]\s*/i, '')
+                .replace(/^\s*[\[［]\s*\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}\s+\d{1,2}:\d{2}\s*[\]］]\s*/i, '')
+                .replace(/^\s*#\d+\s*[:：]\s*/i, '');
+            if (next === cleaned) break;
+            cleaned = next.trimStart();
+        }
+        return cleaned.trim();
+    };
 
     for (const part of parts) {
         let content = part.trim();
         let quoteId = null;
 
-        // ===== 第1步：先清理 #N: 前缀 =====
-        content = content.replace(/^#\d+:\s*/, '');
+        // ===== 第1步：先清理时间戳/#N元数据前缀 =====
+        content = stripLeadingChatMeta(content);
         if (!content) continue;
 
         // ===== 第2步：检查引用格式 [Q:#N] =====
@@ -10166,8 +10182,8 @@ The timestamps and #N: numbers are ONLY for helping you understand conversation 
             if (!content) continue;
         }
 
-        // ===== 第3步：再次清理残留的编号 =====
-        content = content.replace(/^#\d+:\s*/, '');
+        // ===== 第3步：再次清理残留的时间戳/编号 =====
+        content = stripLeadingChatMeta(content);
         if (!content) continue;
 
         // ===== 第4步：处理表情包（支持多种格式）=====
@@ -10252,7 +10268,7 @@ The timestamps and #N: numbers are ONLY for helping you understand conversation 
         }
 
         // 清理剩余内容
-        remainingContent = remainingContent.replace(/^#\d+:\s*/, '').replace(/^:\d+\s*/, '').replace(/^["']|["']$/g, '').trim();
+        remainingContent = stripLeadingChatMeta(remainingContent).replace(/^:\d+\s*/, '').replace(/^["']|["']$/g, '').trim();
 
         // 如果找到了表情包
         if (foundStickers.length > 0) {
@@ -10295,7 +10311,7 @@ The timestamps and #N: numbers are ONLY for helping you understand conversation 
 
         // ===== 第7步：处理普通文本 =====
         content = remainingContent || content;
-        content = content.replace(/^#\d+:\s*/, '').replace(/^:\d+\s*/, '').replace(/^\d+:\s*$/, '').replace(/^["']|["']$/g, '').trim();
+        content = stripLeadingChatMeta(content).replace(/^:\d+\s*/, '').replace(/^\d+:\s*$/, '').replace(/^["']|["']$/g, '').trim();
 
         // 过滤垃圾内容
         if (!content || /^[:#]?\d+[:#]?$/.test(content) || /^:\d+$/.test(content)) {
