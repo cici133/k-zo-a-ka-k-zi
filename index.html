@@ -9457,10 +9457,6 @@ if (msgType === 'sticker' || msg.type === 'sticker') {
                     let quotedContent = quotedMsg.content || '';
                     // 清理引用内容中的格式标记
                     quotedContent = quotedContent.replace(/^\[Q:#\d+\]\s*/i, '');
-                    quotedContent = quotedContent
-                        .replace(/^\s*[\[［]\s*\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}\s+\d{1,2}:\d{2}\s*[\]］]\s*#\d+\s*[:：]\s*/i, '')
-                        .replace(/^\s*[\[［]\s*\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}\s+\d{1,2}:\d{2}\s*[\]］]\s*/i, '')
-                        .replace(/^\s*#\d+\s*[:：]\s*/i, '');
                     quotedContent = quotedContent.replace(/^\[(IMG|VOICE):\s*/i, '').replace(/\]$/, '');
                     quoteHtml = `<div class="message-quote">${escapeHtml(quotedContent.substring(0, 50))}</div>`;
                 }
@@ -9988,7 +9984,9 @@ This indicates the character sent multiple messages, simulating consecutive mess
 About quoting messages (USE EXTREMELY RARELY):
 Use [Q:#N] to quote the Nth message.
 Example: "[Q:#5] I agree with this|||but there's more…"
-
+After [Q:#N], write ONLY your new reply content. Do NOT repeat/copy the quoted message text itself.
+WRONG: "[Q:#5] <same text as message #5>"
+CORRECT: "[Q:#5] <your response to message #5>"
 ⚠️ CRITICAL QUOTING RULES:
 - Quoting is an EXCEPTIONAL action, NOT a default behavior
 - In real texting, people almost NEVER use the quote/reply feature — they just respond naturally
@@ -10151,6 +10149,7 @@ The timestamps and #N: numbers are ONLY for helping you understand conversation 
     const results = [];
     const stripLeadingChatMeta = (text) => {
         let cleaned = (text || '').toString().trim();
+        if (/^\[Q:#\d+\]\s*/i.test(cleaned)) return cleaned;
         for (let i = 0; i < 3; i++) {
             const next = cleaned
                 .replace(/^\s*[\[［]\s*\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}\s+\d{1,2}:\d{2}\s*[\]］]\s*#\d+\s*[:：]\s*/i, '')
