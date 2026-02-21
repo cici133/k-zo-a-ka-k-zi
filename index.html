@@ -7321,6 +7321,17 @@
                 </label>
             </div>
 
+            <div id="roleWalletSingleLangWrap" style="margin-top:10px">
+                <div class="input-group" style="margin-top:0">
+                    <label class="input-label">页面语言（单语模式）</label>
+                    <select class="select-field" id="roleWalletSingleLangSelect" onchange="onRoleWalletSingleLangSelectChange()"></select>
+                </div>
+                <div class="input-group" id="roleWalletSingleLangCustomWrap" style="display:none;margin-top:10px">
+                    <label class="input-label">自定义语言</label>
+                    <input type="text" class="modal-input" id="roleWalletSingleLangCustomInput" placeholder="例如：Swahili / Kiswahili / Yoruba" maxlength="40" style="margin-bottom:0">
+                </div>
+            </div>
+
             <div class="role-wallet-lang-row" id="roleWalletLangRow" style="display:none;margin-top:10px">
                 <div class="input-group" style="margin-top:0">
                     <label class="input-label">原界面语言</label>
@@ -7870,6 +7881,67 @@ const LANGUAGE_OPTIONS = [
     { code: 'ms', name: 'Malay', nativeName: '马来语' },
     { code: 'fil', name: 'Filipino', nativeName: '菲律宾语' }
 ];
+
+const ROLE_WALLET_SINGLE_LANG_CUSTOM_VALUE = '__custom__';
+const ROLE_WALLET_EXTRA_LANGUAGE_OPTIONS = [
+    { code: 'fa', name: 'Persian', nativeName: '波斯语' },
+    { code: 'ur', name: 'Urdu', nativeName: '乌尔都语' },
+    { code: 'bn', name: 'Bengali', nativeName: '孟加拉语' },
+    { code: 'ta', name: 'Tamil', nativeName: '泰米尔语' },
+    { code: 'te', name: 'Telugu', nativeName: '泰卢固语' },
+    { code: 'mr', name: 'Marathi', nativeName: '马拉地语' },
+    { code: 'gu', name: 'Gujarati', nativeName: '古吉拉特语' },
+    { code: 'pa', name: 'Punjabi', nativeName: '旁遮普语' },
+    { code: 'sw', name: 'Swahili', nativeName: '斯瓦希里语' },
+    { code: 'am', name: 'Amharic', nativeName: '阿姆哈拉语' },
+    { code: 'yo', name: 'Yoruba', nativeName: '约鲁巴语' },
+    { code: 'ha', name: 'Hausa', nativeName: '豪萨语' },
+    { code: 'ig', name: 'Igbo', nativeName: '伊博语' },
+    { code: 'zu', name: 'Zulu', nativeName: '祖鲁语' },
+    { code: 'xh', name: 'Xhosa', nativeName: '科萨语' },
+    { code: 'af', name: 'Afrikaans', nativeName: '南非语' },
+    { code: 'km', name: 'Khmer', nativeName: '高棉语' },
+    { code: 'lo', name: 'Lao', nativeName: '老挝语' },
+    { code: 'my', name: 'Burmese', nativeName: '缅甸语' },
+    { code: 'ne', name: 'Nepali', nativeName: '尼泊尔语' },
+    { code: 'si', name: 'Sinhala', nativeName: '僧伽罗语' },
+    { code: 'mn', name: 'Mongolian', nativeName: '蒙古语' },
+    { code: 'kk', name: 'Kazakh', nativeName: '哈萨克语' },
+    { code: 'uz', name: 'Uzbek', nativeName: '乌兹别克语' },
+    { code: 'az', name: 'Azerbaijani', nativeName: '阿塞拜疆语' },
+    { code: 'hy', name: 'Armenian', nativeName: '亚美尼亚语' },
+    { code: 'ka', name: 'Georgian', nativeName: '格鲁吉亚语' },
+    { code: 'et', name: 'Estonian', nativeName: '爱沙尼亚语' },
+    { code: 'lv', name: 'Latvian', nativeName: '拉脱维亚语' },
+    { code: 'lt', name: 'Lithuanian', nativeName: '立陶宛语' },
+    { code: 'is', name: 'Icelandic', nativeName: '冰岛语' },
+    { code: 'ga', name: 'Irish', nativeName: '爱尔兰语' },
+    { code: 'cy', name: 'Welsh', nativeName: '威尔士语' },
+    { code: 'eu', name: 'Basque', nativeName: '巴斯克语' },
+    { code: 'gl', name: 'Galician', nativeName: '加利西亚语' },
+    { code: 'bs', name: 'Bosnian', nativeName: '波斯尼亚语' },
+    { code: 'sr', name: 'Serbian', nativeName: '塞尔维亚语' },
+    { code: 'hr', name: 'Croatian', nativeName: '克罗地亚语' },
+    { code: 'sk', name: 'Slovak', nativeName: '斯洛伐克语' },
+    { code: 'sl', name: 'Slovenian', nativeName: '斯洛文尼亚语' },
+    { code: 'mk', name: 'Macedonian', nativeName: '马其顿语' },
+    { code: 'sq', name: 'Albanian', nativeName: '阿尔巴尼亚语' },
+    { code: 'mt', name: 'Maltese', nativeName: '马耳他语' }
+];
+const ROLE_WALLET_LANGUAGE_OPTIONS = (() => {
+    const map = new Map();
+    [...LANGUAGE_OPTIONS, ...ROLE_WALLET_EXTRA_LANGUAGE_OPTIONS].forEach(lang => {
+        const code = (lang?.code || '').toString().trim().toLowerCase();
+        if (!code || map.has(code)) return;
+        map.set(code, {
+            code,
+            name: (lang?.name || code).toString(),
+            nativeName: (lang?.nativeName || lang?.name || code).toString()
+        });
+    });
+    return Array.from(map.values());
+})();
+const ROLE_WALLET_LANGUAGE_CODE_SET = new Set(ROLE_WALLET_LANGUAGE_OPTIONS.map(item => item.code));
 
 // 获取语言显示名称的辅助函数
 function getLanguageName(code, useNative = false) {
@@ -14971,12 +15043,33 @@ const WalletRuntime = {
 const ROLE_WALLET_MAX_CONTEXT_CHARS = 32000;
 const ROLE_WALLET_MAX_OUTPUT_TOKENS = 32000;
 const ROLE_WALLET_FETCH_TIMEOUT_MS = 180000;
-const ROLE_WALLET_DEFAULT_STYLE_PROMPT = 'ins 杂志排版、高级金融报告质感、奶油白与浅灰绿配色、优雅但不阴暗、层次丰富并保持小屏可读性。';
+const ROLE_WALLET_DEFAULT_STYLE_PROMPT = 'ins 杂志排版与高级金融报告质感；无论用户风格要求如何都保持高级感与复杂层次；配色需主色/辅色/强调色/中性色精确统一；按钮与关键图标禁止使用 Emoji；同时保证小屏可读性。';
 
 function normalizeRoleWalletLanguage(code, fallback = 'en') {
     const normalized = (code || '').toString().trim().toLowerCase();
     if (LANGUAGE_OPTIONS.some(item => item.code === normalized)) return normalized;
     return LANGUAGE_OPTIONS.some(item => item.code === fallback) ? fallback : 'en';
+}
+
+function sanitizeRoleWalletCustomLanguage(value, maxLen = 40) {
+    return (value || '').toString().replace(/\s+/g, ' ').trim().slice(0, maxLen);
+}
+
+function normalizeRoleWalletSourceLanguage(value, fallback = 'en') {
+    const normalized = sanitizeRoleWalletCustomLanguage(value, 40);
+    if (!normalized) return fallback ? normalizeRoleWalletLanguage(fallback, 'en') : '';
+    const code = normalized.toLowerCase();
+    if (ROLE_WALLET_LANGUAGE_CODE_SET.has(code)) return code;
+    return normalized;
+}
+
+function getRoleWalletSourceLanguageName(value, useNative = false) {
+    const normalized = sanitizeRoleWalletCustomLanguage(value, 40);
+    if (!normalized) return getLanguageName('en', useNative);
+    const code = normalized.toLowerCase();
+    const lang = ROLE_WALLET_LANGUAGE_OPTIONS.find(item => item.code === code);
+    if (lang) return useNative ? lang.nativeName : lang.name;
+    return normalized;
 }
 
 function formatRoleWalletDateTime(ts) {
@@ -15187,7 +15280,7 @@ function ensureWalletData() {
             htmlSource: typeof raw.htmlSource === 'string' ? raw.htmlSource : '',
             htmlTranslated: typeof raw.htmlTranslated === 'string' ? raw.htmlTranslated : '',
             bilingualEnabled: !!raw.bilingualEnabled,
-            sourceLang: normalizeRoleWalletLanguage(raw.sourceLang, 'en'),
+            sourceLang: normalizeRoleWalletSourceLanguage(raw.sourceLang, 'en'),
             targetLang: normalizeRoleWalletLanguage(raw.targetLang, 'zh'),
             stylePrompt: (raw.stylePrompt || '').toString().trim().slice(0, 260),
             generatedAt: Number(raw.generatedAt) || 0,
@@ -15199,8 +15292,11 @@ function ensureWalletData() {
         };
         if (normalized.status === 'ready' && !normalized.htmlSource) normalized.status = 'error';
         if (normalized.status === 'generating') {
-            normalized.status = 'error';
-            normalized.lastError = normalized.lastError || '上次生成被中断，请重新生成。';
+            const runtimeGenerating = !!(WalletRuntime?.roleGeneratingByCharId && WalletRuntime.roleGeneratingByCharId[charId]);
+            if (!runtimeGenerating) {
+                normalized.status = 'error';
+                normalized.lastError = normalized.lastError || '上次生成被中断，请重新生成。';
+            }
         }
         if (!normalized.bilingualEnabled) normalized.htmlTranslated = '';
         if (normalized.sourceLang === normalized.targetLang) {
@@ -15584,25 +15680,76 @@ function renderWalletTransactionList() {
 
 function initRoleWalletUI() {
     populateRoleWalletLanguageSelects();
+    setRoleWalletSingleLanguageValue('en');
     toggleRoleWalletBilingualFields();
 }
 
 function populateRoleWalletLanguageSelects() {
     const srcSelect = document.getElementById('roleWalletSourceLangSelect');
     const targetSelect = document.getElementById('roleWalletTargetLangSelect');
+    const singleSelect = document.getElementById('roleWalletSingleLangSelect');
     if (!srcSelect || !targetSelect) return;
     const optionsHtml = LANGUAGE_OPTIONS.map(lang => `<option value="${lang.code}">${escapeHtml(lang.nativeName)} (${escapeHtml(lang.name)})</option>`).join('');
     srcSelect.innerHTML = optionsHtml;
     targetSelect.innerHTML = optionsHtml;
+    if (singleSelect) {
+        const singleOptionsHtml = ROLE_WALLET_LANGUAGE_OPTIONS.map(lang => `<option value="${lang.code}">${escapeHtml(lang.nativeName)} (${escapeHtml(lang.name)})</option>`).join('');
+        singleSelect.innerHTML = `<option value="${ROLE_WALLET_SINGLE_LANG_CUSTOM_VALUE}">其他语言（手动输入）</option>${singleOptionsHtml}`;
+    }
     if (!srcSelect.value) srcSelect.value = 'en';
     if (!targetSelect.value) targetSelect.value = 'zh';
+    if (singleSelect && !singleSelect.value) singleSelect.value = 'en';
+    onRoleWalletSingleLangSelectChange();
+}
+
+function setRoleWalletSingleLanguageValue(value) {
+    const singleSelect = document.getElementById('roleWalletSingleLangSelect');
+    const customInput = document.getElementById('roleWalletSingleLangCustomInput');
+    if (!singleSelect || !customInput) return;
+    const normalized = normalizeRoleWalletSourceLanguage(value || 'en', 'en');
+    if (ROLE_WALLET_LANGUAGE_CODE_SET.has(normalized.toLowerCase())) {
+        singleSelect.value = normalized.toLowerCase();
+        customInput.value = '';
+    } else {
+        singleSelect.value = ROLE_WALLET_SINGLE_LANG_CUSTOM_VALUE;
+        customInput.value = normalized;
+    }
+    onRoleWalletSingleLangSelectChange();
+}
+
+function onRoleWalletSingleLangSelectChange() {
+    const singleSelect = document.getElementById('roleWalletSingleLangSelect');
+    const customWrap = document.getElementById('roleWalletSingleLangCustomWrap');
+    const customInput = document.getElementById('roleWalletSingleLangCustomInput');
+    if (!singleSelect || !customWrap || !customInput) return;
+    const isCustom = singleSelect.value === ROLE_WALLET_SINGLE_LANG_CUSTOM_VALUE;
+    customWrap.style.display = isCustom ? 'block' : 'none';
+    customInput.disabled = !isCustom;
+}
+
+function getRoleWalletSingleModeSourceLanguage() {
+    const singleSelect = document.getElementById('roleWalletSingleLangSelect');
+    const customInput = document.getElementById('roleWalletSingleLangCustomInput');
+    const selected = (singleSelect?.value || 'en').toString().trim();
+    if (selected === ROLE_WALLET_SINGLE_LANG_CUSTOM_VALUE) {
+        const custom = normalizeRoleWalletSourceLanguage(customInput?.value || '', '');
+        return custom || '';
+    }
+    return normalizeRoleWalletSourceLanguage(selected, 'en');
 }
 
 function toggleRoleWalletBilingualFields() {
     const toggle = document.getElementById('roleWalletBilingualToggle');
     const langRow = document.getElementById('roleWalletLangRow');
+    const singleWrap = document.getElementById('roleWalletSingleLangWrap');
+    const singleSelect = document.getElementById('roleWalletSingleLangSelect');
+    const customInput = document.getElementById('roleWalletSingleLangCustomInput');
     if (!toggle || !langRow) return;
     langRow.style.display = toggle.checked ? 'grid' : 'none';
+    if (singleWrap) singleWrap.style.display = toggle.checked ? 'none' : 'block';
+    if (singleSelect) singleSelect.disabled = !!toggle.checked;
+    onRoleWalletSingleLangSelectChange();
+    if (customInput) customInput.disabled = !!toggle.checked || customInput.disabled;
 }
 
 function getRoleWalletState() {
@@ -15953,6 +16100,7 @@ function openRoleWalletGenerateModal(preselectedCharId = null) {
     document.getElementById('roleWalletBilingualToggle').checked = !!record?.bilingualEnabled;
     document.getElementById('roleWalletSourceLangSelect').value = normalizeRoleWalletLanguage(record?.sourceLang || 'en', 'en');
     document.getElementById('roleWalletTargetLangSelect').value = normalizeRoleWalletLanguage(record?.targetLang || 'zh', 'zh');
+    setRoleWalletSingleLanguageValue(record?.sourceLang || 'en');
     toggleRoleWalletBilingualFields();
     showModal('roleWalletGenerateModal');
 }
@@ -15987,6 +16135,7 @@ function selectRoleWalletGenerateChar(charId) {
         document.getElementById('roleWalletBilingualToggle').checked = !!record.bilingualEnabled;
         document.getElementById('roleWalletSourceLangSelect').value = normalizeRoleWalletLanguage(record.sourceLang || 'en', 'en');
         document.getElementById('roleWalletTargetLangSelect').value = normalizeRoleWalletLanguage(record.targetLang || 'zh', 'zh');
+        setRoleWalletSingleLanguageValue(record.sourceLang || 'en');
     }
     toggleRoleWalletBilingualFields();
     renderRoleWalletGeneratePicker();
@@ -16001,9 +16150,15 @@ function confirmRoleWalletGenerate() {
     }
 
     const bilingualEnabled = !!document.getElementById('roleWalletBilingualToggle')?.checked;
-    const sourceLang = normalizeRoleWalletLanguage(document.getElementById('roleWalletSourceLangSelect')?.value || 'en', 'en');
+    const sourceLang = bilingualEnabled
+        ? normalizeRoleWalletLanguage(document.getElementById('roleWalletSourceLangSelect')?.value || 'en', 'en')
+        : getRoleWalletSingleModeSourceLanguage();
+    if (!sourceLang) {
+        showToast('请输入单语模式的页面语言', 'error');
+        return;
+    }
     let targetLang = normalizeRoleWalletLanguage(document.getElementById('roleWalletTargetLangSelect')?.value || 'zh', 'zh');
-    if (sourceLang === targetLang) targetLang = sourceLang === 'zh' ? 'en' : 'zh';
+    if (bilingualEnabled && sourceLang === targetLang) targetLang = sourceLang === 'zh' ? 'en' : 'zh';
     const stylePrompt = (document.getElementById('roleWalletStyleInput')?.value || '').toString().trim().slice(0, 260);
 
     if (!confirm(`确定开始生成「${char.nickname || char.name}」的角色钱包页面吗？\n生成过程会注入近期聊天与角色设定。`)) return;
@@ -16180,7 +16335,7 @@ function extractRoleWalletHtmlFromModel(raw) {
 
 function buildRoleWalletPrompt(char, record, refreshMode, contextInfo, previousHtml = '') {
     const richText = [char.description, char.scenario, char.systemPrompt].filter(Boolean).join('\n');
-    const sourceLangName = getLanguageName(record.sourceLang || 'en', true);
+    const sourceLangName = getRoleWalletSourceLanguageName(record.sourceLang || 'en', true);
     const targetLangName = getLanguageName(record.targetLang || 'zh', true);
     const timeInfo = getPerceivedTime(char);
     const timeLine = timeInfo
@@ -16200,11 +16355,15 @@ function buildRoleWalletPrompt(char, record, refreshMode, contextInfo, previousH
 3) 页面必须是完整背景+完整排版，不是几个零散模块。
 4) 手机宽度适配：主体最大宽度 390px，禁止超出横向滚动。
 5) 页面风格：${styleDirective}
-6) 页面文案语言使用：${sourceLangName}。
-7) 至少包含 10 个以上信息板块，且必须可滚动、可交互（点击切换/展开/标签页/彩蛋）。
-8) 交易记录必须给出 10~15 条，包含消费/转账来源/收款对象/时间/金额。
-9) 保留一个“小号/副账号切换”交互模块。
-10) 允许使用独立字体与风格，不需要跟随全局字体。
+6) 不允许用 Emoji 充当按钮、图标或关键视觉元素；按钮与图标必须使用精致组件、线性图标、矢量形状或 SVG。
+7) 即使用户指定任意风格，也必须保持高级感、复杂层次、专业质感与精细排版，禁止“廉价模板感”。
+8) 配色必须极度讲究：明确主色/辅色/强调色/中性色，并在状态色、层级、对比度上形成自洽体系。
+9) 页面文案语言使用：${sourceLangName}。
+10) 至少包含 14 个以上信息板块，且必须可滚动、可交互（点击切换/展开/标签页/彩蛋）。
+11) 交易记录必须给出 12~18 条，包含消费/转账来源/收款对象/时间/金额。
+12) 保留一个“小号/副账号切换”交互模块，且切换后需联动至少 2 个板块的数据变化。
+13) 至少包含 6 种交互形态：标签页、折叠面板、筛选切换、卡片详情展开、时间轴切换、彩蛋解锁/密码触发。
+14) 允许使用独立字体与风格，不需要跟随全局字体。
 
 [必须覆盖的核心板块]
 - 角色身份头图（头像、状态、净资产估算）
@@ -16214,11 +16373,24 @@ function buildRoleWalletPrompt(char, record, refreshMode, contextInfo, previousH
 - 多账户组合总览（存款/投资/信托）
 - 跨境转账与外币账户（含多币种）
 - 银行卡列表 + 点击查看明细流水
-- 最近购买记录（10~15）
+- 最近购买记录（12~18）
 - 支付/收款对象来源追踪
 - 钱包私聊/暗线记录
 - 备忘录与 tips
 - 可挖掘彩蛋（点击触发）
+- 现金流与预算预测（7日/30日）
+- 风险雷达与异常交易告警（至少 3 条）
+- 资产波动时间轴（天/周/月切换）
+- 秘密档案（可解锁，至少 2 条隐藏线索）
+- 角色小记（char memo，第一人称，3 条，每条 30~70 字）
+- 第三人称观察记录（2 段，每段 60~120 字，具文学性但贴合钱包线索）
+
+[文案密度与叙事规则]
+- “今日状态焦点”模块：20~50 字，要求具体且专业。
+- “内心独白碎片”模块：至少 6 句，允许混乱跳跃但必须符合角色设定与文化背景，不得 OOC。
+- “备忘录”模块：3 条，允许轻微黑色幽默与讽刺语气，但仍要符合角色人设。
+- “秘密线索”每条 20~60 字，至少 2 条，且可通过点击/解锁交互显示。
+- 模块文案避免空泛套话，所有描述需与角色设定、近期聊天、时间线产生对应关系。
 
 [角色设定]
 角色名: ${char.nickname || char.name}
@@ -16537,15 +16709,18 @@ function startRoleWalletGeneration(charId, options = {}) {
     const state = getRoleWalletState();
     const existing = state.records[charId] || {};
     const refreshMode = options.refreshMode === 'partial' ? 'partial' : 'full';
-    const sourceLang = normalizeRoleWalletLanguage(options.sourceLang || existing.sourceLang || 'en', 'en');
+    const bilingualEnabled = !!options.bilingualEnabled;
+    const sourceLang = bilingualEnabled
+        ? normalizeRoleWalletLanguage(options.sourceLang || existing.sourceLang || 'en', 'en')
+        : normalizeRoleWalletSourceLanguage(options.sourceLang || existing.sourceLang || 'en', 'en');
     let targetLang = normalizeRoleWalletLanguage(options.targetLang || existing.targetLang || 'zh', 'zh');
-    if (sourceLang === targetLang) targetLang = sourceLang === 'zh' ? 'en' : 'zh';
+    if (bilingualEnabled && sourceLang === targetLang) targetLang = sourceLang === 'zh' ? 'en' : 'zh';
     const record = {
         charId,
         status: 'generating',
         htmlSource: typeof existing.htmlSource === 'string' ? existing.htmlSource : '',
         htmlTranslated: typeof existing.htmlTranslated === 'string' ? existing.htmlTranslated : '',
-        bilingualEnabled: !!options.bilingualEnabled,
+        bilingualEnabled,
         sourceLang,
         targetLang,
         stylePrompt: (options.stylePrompt || existing.stylePrompt || '').toString().trim().slice(0, 260),
