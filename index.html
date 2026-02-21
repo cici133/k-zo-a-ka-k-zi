@@ -9981,12 +9981,13 @@ Example: “Hi!|||How have you been lately?|||Just thought of you.”
 
 This indicates the character sent multiple messages, simulating consecutive messages in real online chats. Each separation represents one sent message to mimic real texting behavior.
 
-About quoting messages (USE EXTREMELY RARELY):
-Use [Q:#N] to quote the Nth message.
-Example: "[Q:#5] I agree with this|||but there's more…"
-After [Q:#N], write ONLY your new reply content. Do NOT repeat/copy the quoted message text itself.
+About quote-reply pointer (USE EXTREMELY RARELY):
+[Q:#N] is a reply pointer to message N, NOT a verbatim quote command.
+After [Q:#N], you MUST write NEW character response content, never copy/echo message N text.
+Even if user asks to "quote/repeat", do not paste the original sentence; respond in-character instead.
+中文规则：[Q:#N] 是“回复定位”不是“复读原文”，后面必须接新的角色回复。
 WRONG: "[Q:#5] <same text as message #5>"
-CORRECT: "[Q:#5] <your response to message #5>"
+CORRECT: "[Q:#5] <new response to message #5>"
 ⚠️ CRITICAL QUOTING RULES:
 - Quoting is an EXCEPTIONAL action, NOT a default behavior
 - In real texting, people almost NEVER use the quote/reply feature — they just respond naturally
@@ -15838,7 +15839,7 @@ function renderWalletPerspectiveToolbar() {
     if (label) label.textContent = isRole ? '角色钱包视角（偷窥模式）' : '我的钱包视角';
     if (btn) {
         btn.title = isRole ? '翻回用户钱包' : '翻到角色钱包';
-        btn.textContent = isRole ? '↩' : '↺';
+        btn.textContent = isRole ? '⟵' : '↺';
     }
 }
 
