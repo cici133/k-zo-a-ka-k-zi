@@ -1576,6 +1576,23 @@
             max-width: 200px;
             padding: 12px 16px;
         }
+        .voice-message.tts-loading .voice-play-btn {
+            border-color: rgba(201, 169, 98, 0.5);
+            box-shadow: 0 0 0 1px rgba(201, 169, 98, 0.25);
+            animation: ttsPulse 1.1s ease-in-out infinite;
+        }
+        .voice-message.tts-ready .voice-play-btn {
+            border-color: rgba(90, 158, 111, 0.7);
+            box-shadow: 0 0 12px rgba(90, 158, 111, 0.35);
+        }
+        @keyframes ttsPulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.06); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+
+        .minimax-role-settings { display: none; }
+        .minimax-role-settings.active { display: block; }
 
         .typing-indicator {
             display: inline-flex; gap: 4px; padding: 12px 16px;
@@ -1952,6 +1969,21 @@
         .slider-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
         .slider-label { font-size: calc(12px * var(--font-scale)); color: var(--text-secondary); }
         .slider-value { font-size: calc(12px * var(--font-scale)); color: var(--text-primary); font-weight: 500; }
+        .slider-value-input {
+            width: 110px;
+            padding: 3px 8px;
+            font-size: calc(12px * var(--font-scale));
+            color: var(--text-primary);
+            font-weight: 500;
+            text-align: right;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.15);
+        }
+        .slider-value-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.35);
+        }
 
         .slider-input {
             width: 100%; height: 4px;
@@ -2814,6 +2846,15 @@
     align-items: flex-end;
     text-align: right;
 }
+        .voice-call-message-row {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+        .voice-call-message-item.user-msg .voice-call-message-row {
+    justify-content: flex-end;
+}
         .voice-call-message-content {
     font-size: calc(15px * var(--font-scale));
     color: var(--text-primary);
@@ -2821,6 +2862,43 @@
     word-wrap: break-word;
     word-break: break-word;
     max-width: 100%;
+    flex: 1;
+}
+        .voice-call-listen-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.86);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+        .voice-call-listen-btn svg {
+    width: 13px;
+    height: 13px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+}
+        .voice-call-listen-btn:active {
+    transform: scale(0.92);
+}
+        .voice-call-listen-btn.loading {
+    opacity: 0.75;
+    animation: ttsPulse 1.1s ease-in-out infinite;
+}
+        .voice-call-listen-btn.error {
+    border-color: rgba(199, 80, 80, 0.65);
+    color: rgba(255, 160, 160, 0.92);
+}
+        .voice-call-listen-btn.ready {
+    border-color: rgba(90, 158, 111, 0.75);
+    color: rgba(170, 255, 190, 0.92);
 }
         .voice-call-message-item.focused .voice-call-message-content {
     font-size: calc(17px * var(--font-scale));
@@ -2834,6 +2912,7 @@
 }
         .voice-call-message-item.user-msg .voice-call-message-content {
             color: rgba(200, 220, 255, 0.95);
+            flex: 0 1 auto;
         }
         .voice-call-focus-indicator {
             position: absolute;
@@ -5886,6 +5965,38 @@
                     <div class="log-container" id="debugLog"><div class="log-entry info">等待中...</div></div>
                 </div>
 
+                <p class="settings-group-title">MiniMax TTS（总设置）</p>
+                <div class="settings-group" style="padding:16px">
+                    <div class="input-group">
+                        <label class="input-label">服务区域</label>
+                        <select class="select-field" id="miniMaxRegion" onchange="onMiniMaxRegionChange()">
+                            <option value="cn">国区（api.minimaxi.com）</option>
+                            <option value="global">国际（api.minimax.io）</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">MiniMax API Key</label>
+                        <input type="password" class="input-field" id="miniMaxApiKey" placeholder="留空则使用主 API Key">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">项目ID（Group/Project ID）</label>
+                        <input type="text" class="input-field" id="miniMaxProjectId" placeholder="可选，部分国区方案会用到">
+                    </div>
+                    <button class="btn btn-secondary" onclick="fetchMiniMaxTTSModels()" id="fetchMiniMaxTtsModelsBtn">获取 TTS 模型</button>
+                    <div id="miniMaxTtsModelListContainer" style="display:none">
+                        <label class="input-label" style="margin-top:16px">TTS 模型列表</label>
+                        <div class="model-list" id="miniMaxTtsModelList"></div>
+                    </div>
+                    <div class="input-group" style="margin-top:16px">
+                        <label class="input-label">使用模型</label>
+                        <input type="text" class="input-field" id="miniMaxTtsModel" placeholder="如 speech-2.8-turbo / speech-02-turbo">
+                    </div>
+                    <div class="action-hint" style="margin-top:12px">
+                        <span class="action-hint-icon">🔊</span>
+                        <span class="action-hint-text">角色ID请在角色设置里填写（映射 MiniMax voice_id）</span>
+                    </div>
+                </div>
+
                 <p class="settings-group-title">对话</p>
                 <div class="settings-group" style="padding:16px">
                     <div class="input-group">
@@ -5947,9 +6058,9 @@
                     <div class="slider-container">
                         <div class="slider-header">
                             <span class="slider-label">最大 Token 数</span>
-                            <span class="slider-value" id="maxTokensValue">2048</span>
+                            <input type="number" class="slider-value-input" id="maxTokensValue" min="256" max="100000" step="1" value="2048" oninput="updateMaxTokensFromInput()" onchange="updateMaxTokensFromInput(true)" onblur="updateMaxTokensFromInput(true)">
                         </div>
-                        <input type="range" class="slider-input" id="maxTokens" min="256" max="8192" step="256" value="2048" oninput="document.getElementById('maxTokensValue').textContent=this.value">
+                        <input type="range" class="slider-input" id="maxTokens" min="256" max="100000" step="1" value="2048" oninput="updateMaxTokensFromSlider()">
                     </div>
                 </div>
 
@@ -6477,6 +6588,35 @@
                 <p class="settings-group-title">关联的世界书</p>
                 <div class="settings-group" style="padding:16px"><div class="worldbook-multi-select" id="worldbookMultiSelect"></div></div>
 
+<p class="settings-group-title">MiniMax 角色语音</p>
+<div class="settings-group" style="padding:16px">
+    <div class="settings-item" style="padding:0 0 12px 0">
+        <div class="settings-item-left">
+            <span class="settings-item-label">语音条启用 MiniMax TTS</span>
+            <div class="settings-item-desc">仅在角色发送语音条时触发，点击语音条可播放/重播</div>
+        </div>
+        <div class="toggle-switch" id="minimaxVoiceToggle" onclick="toggleMiniMaxVoiceSettings()"></div>
+    </div>
+
+    <div class="minimax-role-settings" id="miniMaxRoleSettingsContainer">
+        <div class="input-group">
+            <label class="input-label">角色ID（voice_id）</label>
+            <input type="text" class="input-field" id="minimaxRoleId" placeholder="填写该角色的 MiniMax voice_id">
+        </div>
+        <div class="input-group">
+            <label class="input-label">语言（language_boost）</label>
+            <select class="select-field" id="minimaxLanguageSelect"></select>
+        </div>
+        <div class="slider-container">
+            <div class="slider-header">
+                <span class="slider-label">语速</span>
+                <span class="slider-value" id="minimaxSpeedValue">1.0</span>
+            </div>
+            <input type="range" class="slider-input" id="minimaxSpeed" min="0.5" max="2" step="0.05" value="1" oninput="updateMiniMaxSpeedPreview()">
+        </div>
+    </div>
+</div>
+
 <p class="settings-group-title">语音通话设置</p>
 <div class="settings-group" style="padding:16px">
     <div class="settings-item" style="padding:0 0 12px 0">
@@ -6485,6 +6625,14 @@
             <div class="settings-item-desc">在语音通话时启用翻译</div>
         </div>
         <div class="toggle-switch" id="bilingualToggle" onclick="toggleBilingualMode()"></div>
+    </div>
+
+    <div class="settings-item" style="padding:0 0 12px 0">
+        <div class="settings-item-left">
+            <span class="settings-item-label">语音通话启用角色 TTS</span>
+            <div class="settings-item-desc">仅为 AI 的 speech 文本生成角色语音，支持小听筒重播</div>
+        </div>
+        <div class="toggle-switch" id="voiceCallTtsToggle" onclick="toggleVoiceCallTTSMode()"></div>
     </div>
 
     <div class="bilingual-settings-container" id="bilingualSettingsContainer">
@@ -7812,7 +7960,7 @@ https://example.com/other.jpg"></textarea>
 
         const App = {
             characters: [], worldbooks: [], currentCharId: null, currentWbId: null,
-            currentEntryIndex: -1, pendingDeleteType: null, pendingDeleteId: null, models: [],
+            currentEntryIndex: -1, pendingDeleteType: null, pendingDeleteId: null, models: [], miniMaxTTSModels: [],
             connectionStatus: 'disconnected', isSelectMode: false, selectedMsgs: new Set(),
             lastAIStart: -1, tempWallpaper: null, tempIcons: {}, 
 stickers: [],
@@ -7827,7 +7975,13 @@ tempStickerData: null,
     apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048,
     maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false,
     selectedFontId: null, fontScale: 1,
-    voiceCallSummaryPrompt: ''
+    voiceCallSummaryPrompt: '',
+    miniMaxTTS: {
+        region: 'cn',
+        apiKey: '',
+        projectId: '',
+        model: 'speech-2.8-turbo'
+    }
 },
             globalCssPresets: [],
             apiPresets: [],
@@ -7881,6 +8035,22 @@ const LANGUAGE_OPTIONS = [
     { code: 'ms', name: 'Malay', nativeName: '马来语' },
     { code: 'fil', name: 'Filipino', nativeName: '菲律宾语' }
 ];
+
+const MINIMAX_TTS_LANGUAGE_OPTIONS = [
+    { value: 'auto', label: '自动检测 (auto)' },
+    { value: 'Chinese', label: '中文 (Chinese)' },
+    { value: 'Chinese,Yue', label: '粤语 (Chinese,Yue)' },
+    { value: 'English', label: '英语 (English)' },
+    { value: 'Japanese', label: '日语 (Japanese)' },
+    { value: 'Korean', label: '韩语 (Korean)' },
+    { value: 'Thai', label: '泰语 (Thai)' },
+    { value: 'Vietnamese', label: '越南语 (Vietnamese)' }
+];
+
+const MINIMAX_TTS_DEFAULT_MODELS = {
+    cn: ['speech-2.8-turbo', 'speech-2.8-hd', 'speech-2.6-hd'],
+    global: ['speech-02-turbo', 'speech-02-hd', 'speech-01-hd']
+};
 
 const ROLE_WALLET_SINGLE_LANG_CUSTOM_VALUE = '__custom__';
 const ROLE_WALLET_EXTRA_LANGUAGE_OPTIONS = [
@@ -7948,6 +8118,65 @@ function getLanguageName(code, useNative = false) {
     const lang = LANGUAGE_OPTIONS.find(l => l.code === code);
     if (!lang) return code;
     return useNative ? lang.nativeName : lang.name;
+}
+
+function normalizeMiniMaxRegion(region) {
+    return region === 'global' ? 'global' : 'cn';
+}
+
+function getDefaultMiniMaxModel(region = 'cn') {
+    const key = normalizeMiniMaxRegion(region);
+    return MINIMAX_TTS_DEFAULT_MODELS[key]?.[0] || 'speech-2.8-turbo';
+}
+
+function ensureMiniMaxGlobalSettings() {
+    if (!App.settings.miniMaxTTS || typeof App.settings.miniMaxTTS !== 'object') {
+        App.settings.miniMaxTTS = {};
+    }
+    const cfg = App.settings.miniMaxTTS;
+    cfg.region = normalizeMiniMaxRegion(cfg.region);
+    cfg.apiKey = (cfg.apiKey || '').toString().trim();
+    cfg.projectId = (cfg.projectId || '').toString().trim();
+    cfg.model = (cfg.model || '').toString().trim() || getDefaultMiniMaxModel(cfg.region);
+    return cfg;
+}
+
+function ensureCharacterMiniMaxTTS(char) {
+    if (!char || typeof char !== 'object') {
+        return { enabled: false, voiceCallEnabled: false, roleId: '', language: 'auto', speed: 1 };
+    }
+    if (!char.miniMaxTTS || typeof char.miniMaxTTS !== 'object') {
+        char.miniMaxTTS = {};
+    }
+    const cfg = char.miniMaxTTS;
+    cfg.enabled = Boolean(cfg.enabled);
+    cfg.voiceCallEnabled = Boolean(cfg.voiceCallEnabled);
+    cfg.roleId = (cfg.roleId || '').toString().trim();
+    cfg.language = (cfg.language || 'auto').toString();
+    if (!MINIMAX_TTS_LANGUAGE_OPTIONS.some(item => item.value === cfg.language)) {
+        cfg.language = 'auto';
+    }
+    const speed = Number(cfg.speed);
+    cfg.speed = Number.isFinite(speed) ? Math.max(0.5, Math.min(2, speed)) : 1;
+    return cfg;
+}
+
+function getMiniMaxBaseUrls(region = 'cn') {
+    if (normalizeMiniMaxRegion(region) === 'global') {
+        return ['https://api.minimax.io'];
+    }
+    return ['https://api.minimaxi.com', 'https://api.minimaxi.chat'];
+}
+
+function buildMiniMaxTTSUrl(baseUrl, projectId = '') {
+    const url = new URL('/v1/t2a_v2', baseUrl);
+    if (projectId) url.searchParams.set('GroupId', projectId);
+    return url.toString();
+}
+
+function getMiniMaxEffectiveApiKey() {
+    const globalCfg = ensureMiniMaxGlobalSettings();
+    return globalCfg.apiKey || (App.settings.apiKey || '').trim();
 }
 
         const GRADIENTS = {
@@ -8060,6 +8289,7 @@ function getLanguageName(code, useNative = false) {
         if (characters) App.characters = characters;
         if (worldbooks) App.worldbooks = worldbooks;
         if (settings) App.settings = { ...App.settings, ...settings };
+        ensureMiniMaxGlobalSettings();
         if (icons) App.appIcons = { ...App.appIcons, ...icons };
         if (presets) App.globalCssPresets = presets;
         if (apiPresets) App.apiPresets = apiPresets;
@@ -8074,6 +8304,7 @@ function getLanguageName(code, useNative = false) {
         App.characters.forEach(c => {
             if (c.worldbookId && !c.worldbookIds) c.worldbookIds = [c.worldbookId];
             if (!c.worldbookIds) c.worldbookIds = [];
+            ensureCharacterMiniMaxTTS(c);
             if (!c.bubbleStyle) c.bubbleStyle = 'none';
             if (!c.bubbleColors) c.bubbleColors = { ...DEFAULT_BUBBLE_COLORS };
             if (c.glassBorder === undefined) c.glassBorder = false;
@@ -8158,6 +8389,30 @@ if (!c.timePerception) {
 
         async function saveMainSettings() {
             App.settings.fontScale = parseFloat(document.getElementById('fontScaleSlider').value);
+
+            App.settings.apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
+            App.settings.apiKey = document.getElementById('apiKey').value.trim();
+            App.settings.modelName = document.getElementById('modelName').value.trim();
+            App.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
+
+            const temperatureValue = parseFloat(document.getElementById('temperature').value);
+            App.settings.temperature = Number.isFinite(temperatureValue) ? temperatureValue : 0.7;
+            document.getElementById('tempValue').textContent = App.settings.temperature;
+
+            updateMaxTokensFromInput(true);
+            App.settings.maxTokens = clampMaxTokens(document.getElementById('maxTokens').value) || 2048;
+            syncMaxTokensControls(App.settings.maxTokens);
+
+            if (!App.settings.secondaryApi) App.settings.secondaryApi = {};
+            App.settings.secondaryApi.baseUrl = document.getElementById('secondaryApiBaseUrl').value.trim();
+            App.settings.secondaryApi.apiKey = document.getElementById('secondaryApiKey').value.trim();
+            App.settings.secondaryApi.modelName = document.getElementById('secondaryModelName').value.trim();
+
+            saveMiniMaxGlobalSettingsFromUI();
+
+            App.connectionStatus = (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) ? 'connected' : 'disconnected';
+            updateConnectionUI();
+
             applyFontScale();
             await saveData();
             showToast('Settings saved', 'success');
@@ -8940,6 +9195,51 @@ function updateSolidBorderPreview() {
         window.addEventListener('beforeunload', () => { saveData(); });
         setInterval(() => { if (App.dataLoaded) saveData(); }, 30000);
 
+        const MAX_TOKENS_MIN = 256;
+        const MAX_TOKENS_MAX = 100000;
+
+        function clampMaxTokens(value) {
+            const parsed = Number(value);
+            if (!Number.isFinite(parsed)) return null;
+            return Math.min(MAX_TOKENS_MAX, Math.max(MAX_TOKENS_MIN, Math.round(parsed)));
+        }
+
+        function syncMaxTokensControls(value) {
+            const normalized = clampMaxTokens(value);
+            if (normalized === null) return null;
+            const slider = document.getElementById('maxTokens');
+            const input = document.getElementById('maxTokensValue');
+            if (slider) slider.value = normalized;
+            if (input) input.value = normalized;
+            return normalized;
+        }
+
+        function updateMaxTokensFromSlider() {
+            const slider = document.getElementById('maxTokens');
+            const input = document.getElementById('maxTokensValue');
+            if (!slider || !input) return;
+            input.value = slider.value;
+            App.settings.maxTokens = clampMaxTokens(slider.value) || 2048;
+        }
+
+        function updateMaxTokensFromInput(forceClamp = false) {
+            const input = document.getElementById('maxTokensValue');
+            const slider = document.getElementById('maxTokens');
+            if (!input || !slider) return;
+            const raw = input.value.trim();
+            if (!raw) return;
+            const parsed = Number(raw);
+            if (!Number.isFinite(parsed)) return;
+
+            let value = Math.round(parsed);
+            if (forceClamp) value = Math.min(MAX_TOKENS_MAX, Math.max(MAX_TOKENS_MIN, value));
+            else if (value < MAX_TOKENS_MIN || value > MAX_TOKENS_MAX) return;
+
+            slider.value = value;
+            if (forceClamp) input.value = value;
+            App.settings.maxTokens = value;
+        }
+
         function loadSettingsUI() {
             document.getElementById('apiBaseUrl').value = App.settings.apiBaseUrl || '';
             document.getElementById('apiKey').value = App.settings.apiKey || '';
@@ -8947,10 +9247,133 @@ function updateSolidBorderPreview() {
             document.getElementById('maxContextMessages').value = App.settings.maxContextMessages || 200;
             document.getElementById('temperature').value = App.settings.temperature;
             document.getElementById('tempValue').textContent = App.settings.temperature;
-            document.getElementById('maxTokens').value = App.settings.maxTokens;
-            document.getElementById('maxTokensValue').textContent = App.settings.maxTokens;
+            App.settings.maxTokens = syncMaxTokensControls(App.settings.maxTokens ?? 2048) || 2048;
             document.getElementById('fontScaleSlider').value = App.settings.fontScale || 1;
             document.getElementById('fontScaleValue').textContent = Math.round((App.settings.fontScale || 1) * 100) + '%';
+            loadMiniMaxGlobalSettingsToUI();
+        }
+
+        function onMiniMaxRegionChange() {
+            const region = normalizeMiniMaxRegion(document.getElementById('miniMaxRegion')?.value || 'cn');
+            const modelInput = document.getElementById('miniMaxTtsModel');
+            if (modelInput && !modelInput.value.trim()) {
+                modelInput.value = getDefaultMiniMaxModel(region);
+            }
+        }
+
+        function loadMiniMaxGlobalSettingsToUI() {
+            const cfg = ensureMiniMaxGlobalSettings();
+            const regionSelect = document.getElementById('miniMaxRegion');
+            const keyInput = document.getElementById('miniMaxApiKey');
+            const projectInput = document.getElementById('miniMaxProjectId');
+            const modelInput = document.getElementById('miniMaxTtsModel');
+            if (regionSelect) regionSelect.value = cfg.region;
+            if (keyInput) keyInput.value = cfg.apiKey || '';
+            if (projectInput) projectInput.value = cfg.projectId || '';
+            if (modelInput) modelInput.value = cfg.model || getDefaultMiniMaxModel(cfg.region);
+        }
+
+        function saveMiniMaxGlobalSettingsFromUI() {
+            const cfg = ensureMiniMaxGlobalSettings();
+            const region = normalizeMiniMaxRegion(document.getElementById('miniMaxRegion')?.value || cfg.region);
+            cfg.region = region;
+            cfg.apiKey = (document.getElementById('miniMaxApiKey')?.value || '').trim();
+            cfg.projectId = (document.getElementById('miniMaxProjectId')?.value || '').trim();
+            cfg.model = (document.getElementById('miniMaxTtsModel')?.value || '').trim() || getDefaultMiniMaxModel(region);
+            const modelInput = document.getElementById('miniMaxTtsModel');
+            if (modelInput) modelInput.value = cfg.model;
+            return cfg;
+        }
+
+        function selectMiniMaxTTSModel(id) {
+            const model = (id || '').toString().trim();
+            if (!model) return;
+            document.getElementById('miniMaxTtsModel').value = model;
+            document.querySelectorAll('#miniMaxTtsModelList .model-item').forEach(el => {
+                el.classList.toggle('selected', el.textContent.trim() === model);
+            });
+            addLog(`MiniMax TTS model selected: ${model}`, 'info');
+        }
+
+        function extractMiniMaxModelIds(data) {
+            const source = Array.isArray(data?.data) ? data.data : (Array.isArray(data?.models) ? data.models : []);
+            const ids = source.map(item => {
+                if (typeof item === 'string') return item;
+                return item?.id || item?.model || item?.name || '';
+            }).map(v => (v || '').toString().trim()).filter(Boolean);
+            return Array.from(new Set(ids));
+        }
+
+        async function fetchMiniMaxTTSModels() {
+            const cfg = saveMiniMaxGlobalSettingsFromUI();
+            const apiKey = getMiniMaxEffectiveApiKey();
+            if (!apiKey) {
+                showToast('请先填写 MiniMax API Key（或主 API Key）', 'error');
+                return;
+            }
+
+            const region = normalizeMiniMaxRegion(cfg.region);
+            const baseUrls = getMiniMaxBaseUrls(region);
+            const endpointSet = new Set();
+            baseUrls.forEach(base => {
+                const urlWithGroup = new URL('/v1/models', base);
+                if (cfg.projectId) urlWithGroup.searchParams.set('GroupId', cfg.projectId);
+                endpointSet.add(urlWithGroup.toString());
+                endpointSet.add(new URL('/v1/models', base).toString());
+            });
+
+            const endpoints = Array.from(endpointSet);
+            let modelIds = [];
+            let lastError = null;
+
+            addLog('Fetching MiniMax TTS models...', 'info');
+
+            for (const endpoint of endpoints) {
+                try {
+                    const res = await fetch(endpoint, {
+                        headers: { 'Authorization': `Bearer ${apiKey}` }
+                    });
+                    if (!res.ok) {
+                        const errText = await res.text();
+                        throw new Error(`HTTP ${res.status} ${(errText || '').slice(0, 120)}`.trim());
+                    }
+                    const data = await res.json();
+                    const ids = extractMiniMaxModelIds(data);
+                    if (ids.length > 0) {
+                        modelIds = ids;
+                        break;
+                    }
+                } catch (err) {
+                    lastError = err;
+                }
+            }
+
+            const regionDefaults = MINIMAX_TTS_DEFAULT_MODELS[region] || MINIMAX_TTS_DEFAULT_MODELS.cn;
+            if (!modelIds.length) {
+                modelIds = [...regionDefaults];
+                addLog(`MiniMax model fetch failed, fallback to defaults${lastError ? ': ' + lastError.message : ''}`, 'warning');
+            }
+
+            const filtered = modelIds.filter(id => /speech|voice|tts|audio/i.test(id));
+            const finalList = (filtered.length ? filtered : modelIds).slice(0, 100);
+            App.miniMaxTTSModels = finalList.map(id => ({ id }));
+
+            const container = document.getElementById('miniMaxTtsModelListContainer');
+            const list = document.getElementById('miniMaxTtsModelList');
+            container.style.display = 'block';
+            list.innerHTML = finalList.map(id => {
+                const encoded = encodeURIComponent(id);
+                return `<div class="model-item" onclick="selectMiniMaxTTSModel(decodeURIComponent('${encoded}'))"><span class="model-item-name">${escapeHtml(id)}</span></div>`;
+            }).join('');
+
+            const currentModel = (document.getElementById('miniMaxTtsModel').value || '').trim();
+            if (!currentModel && finalList.length > 0) {
+                selectMiniMaxTTSModel(finalList[0]);
+            } else if (currentModel) {
+                selectMiniMaxTTSModel(currentModel);
+            }
+
+            addLog(`MiniMax TTS models ready: ${finalList.length}`, 'success');
         }
 
         function applyGlobalFont() {
@@ -9105,6 +9528,329 @@ function clearCallDecisionLog() {
     }
 }
 
+const MiniMaxTTSRuntime = {
+    pending: new Map(),
+    cache: new Map(),
+    lastAudio: null
+};
+
+function summarizeMiniMaxTTSError(err) {
+    const msg = (err?.message || 'unknown').toString().replace(/\s+/g, ' ').trim();
+    return msg.slice(0, 120) || 'unknown';
+}
+
+function buildMiniMaxVoiceCacheKey(char, msg, charCfg, globalCfg) {
+    return [
+        char?.id || '',
+        msg?.id || '',
+        charCfg?.roleId || '',
+        charCfg?.language || 'auto',
+        String(charCfg?.speed || 1),
+        globalCfg?.region || 'cn',
+        globalCfg?.model || ''
+    ].join('|');
+}
+
+function isHexString(value) {
+    return /^[0-9a-fA-F]+$/.test(value) && value.length % 2 === 0;
+}
+
+function hexToUint8Array(hex) {
+    const len = hex.length / 2;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+    }
+    return bytes;
+}
+
+function base64ToUint8Array(base64) {
+    const normalized = (base64 || '').replace(/\s+/g, '').replace(/-/g, '+').replace(/_/g, '/');
+    const binary = atob(normalized);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+}
+
+function blobToDataUrl(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error || new Error('Failed to convert blob to data URL'));
+        reader.readAsDataURL(blob);
+    });
+}
+
+function extractMiniMaxAudioPayload(data) {
+    return (data?.data?.audio || data?.audio || data?.data?.audio_base64 || data?.data?.audioBase64 || '').toString().trim();
+}
+
+async function parseMiniMaxAudioDataUrl(data) {
+    const rawAudio = extractMiniMaxAudioPayload(data);
+    if (!rawAudio) {
+        const statusMsg = data?.base_resp?.status_msg || data?.message || 'audio payload is empty';
+        throw new Error(statusMsg);
+    }
+
+    const compact = rawAudio.startsWith('data:') ? rawAudio.split(',').pop() : rawAudio;
+    let bytes;
+    if (isHexString(compact)) bytes = hexToUint8Array(compact);
+    else bytes = base64ToUint8Array(compact);
+
+    const formatRaw = (data?.data?.audio_format || data?.audio_setting?.format || 'mp3').toString().toLowerCase();
+    const mime = formatRaw.includes('wav') || formatRaw === 'pcm' ? 'audio/wav' : 'audio/mp3';
+    const blob = new Blob([bytes], { type: mime });
+    return await blobToDataUrl(blob);
+}
+
+async function playMiniMaxAudioDataUrl(dataUrl, options = {}) {
+    if (!dataUrl) throw new Error('audio data is empty');
+
+    if (options.interrupt !== false && MiniMaxTTSRuntime.lastAudio) {
+        try { MiniMaxTTSRuntime.lastAudio.pause(); } catch {}
+    }
+
+    const audio = new Audio(dataUrl);
+    MiniMaxTTSRuntime.lastAudio = audio;
+
+    return new Promise(async (resolve, reject) => {
+        let settled = false;
+        const done = (ok, err) => {
+            if (settled) return;
+            settled = true;
+            audio.onended = null;
+            audio.onerror = null;
+            audio.onpause = null;
+            if (MiniMaxTTSRuntime.lastAudio === audio) MiniMaxTTSRuntime.lastAudio = null;
+            if (ok) resolve(true);
+            else reject(err || new Error('audio playback failed'));
+        };
+
+        audio.onended = () => done(true);
+        audio.onerror = () => done(false, new Error('audio playback failed'));
+        audio.onpause = () => {
+            if (audio.currentTime > 0 && !audio.ended) done(true);
+        };
+
+        try {
+            await audio.play();
+        } catch (err) {
+            done(false, err);
+        }
+    });
+}
+
+async function requestMiniMaxTTSAudio(text, char) {
+    const plainText = (text || '').toString().trim();
+    if (!plainText) throw new Error('TTS text is empty');
+
+    const globalCfg = ensureMiniMaxGlobalSettings();
+    const charCfg = ensureCharacterMiniMaxTTS(char);
+    const apiKey = getMiniMaxEffectiveApiKey();
+    if (!apiKey) throw new Error('MiniMax API Key not configured');
+    if (!charCfg.roleId) throw new Error('角色ID未填写');
+
+    const region = normalizeMiniMaxRegion(globalCfg.region);
+    const model = (globalCfg.model || '').trim() || getDefaultMiniMaxModel(region);
+    const speed = Math.max(0.5, Math.min(2, Number(charCfg.speed) || 1));
+
+    const body = {
+        model,
+        text: plainText,
+        stream: false,
+        language_boost: charCfg.language || 'auto',
+        voice_setting: {
+            voice_id: charCfg.roleId,
+            speed,
+            vol: 1,
+            pitch: 0
+        },
+        audio_setting: {
+            sample_rate: 32000,
+            bitrate: 128000,
+            format: 'mp3',
+            channel: 1
+        }
+    };
+
+    const baseUrls = getMiniMaxBaseUrls(region);
+    let lastErr = null;
+
+    for (const baseUrl of baseUrls) {
+        const endpoint = buildMiniMaxTTSUrl(baseUrl, globalCfg.projectId || '');
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (!res.ok) {
+                const errText = await res.text();
+                throw new Error(`HTTP ${res.status} ${(errText || '').slice(0, 160)}`.trim());
+            }
+
+            const data = await res.json();
+            const statusCode = Number(data?.base_resp?.status_code || 0);
+            if (statusCode !== 0 && data?.base_resp?.status_msg) {
+                throw new Error(data.base_resp.status_msg);
+            }
+
+            const audioDataUrl = await parseMiniMaxAudioDataUrl(data);
+            return { audioDataUrl, raw: data };
+        } catch (err) {
+            lastErr = err;
+        }
+    }
+
+    throw lastErr || new Error('MiniMax TTS request failed');
+}
+
+async function requestMiniMaxTTSAudioWithRetry(text, char, retries = 1) {
+    let lastErr = null;
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+            return await requestMiniMaxTTSAudio(text, char);
+        } catch (err) {
+            lastErr = err;
+            if (attempt < retries) {
+                await new Promise(resolve => setTimeout(resolve, 420));
+            }
+        }
+    }
+    throw lastErr || new Error('MiniMax TTS request failed');
+}
+
+async function triggerMiniMaxTTSForVoiceMessage(voiceMsgEl) {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+
+    const msgId = (voiceMsgEl?.dataset?.id || '').toString();
+    const msg = char.messages.find(m => m.id === msgId);
+    if (!msg || msg.sender !== 'char') return;
+
+    const voiceText = msg.type === 'voice'
+        ? (msg.content || '')
+        : (((msg.content || '').match(/^\[VOICE:\s*(.+?)\s*\]$/is) || [])[1] || '');
+    if (!voiceText.trim()) return;
+
+    const charCfg = ensureCharacterMiniMaxTTS(char);
+    if (!charCfg.enabled) return;
+    if (!charCfg.roleId) {
+        showToast('请在角色设置里填写 MiniMax 角色ID', 'error');
+        return;
+    }
+
+    const globalCfg = ensureMiniMaxGlobalSettings();
+    const cacheKey = buildMiniMaxVoiceCacheKey(char, msg, charCfg, globalCfg);
+
+    try {
+        voiceMsgEl.classList.add('tts-loading');
+
+        let audioDataUrl = MiniMaxTTSRuntime.cache.get(cacheKey);
+        if (!audioDataUrl) {
+            if (!MiniMaxTTSRuntime.pending.has(cacheKey)) {
+                const pending = requestMiniMaxTTSAudioWithRetry(voiceText, char, 1)
+                    .then(result => result.audioDataUrl)
+                    .finally(() => MiniMaxTTSRuntime.pending.delete(cacheKey));
+                MiniMaxTTSRuntime.pending.set(cacheKey, pending);
+            }
+            audioDataUrl = await MiniMaxTTSRuntime.pending.get(cacheKey);
+            MiniMaxTTSRuntime.cache.set(cacheKey, audioDataUrl);
+        }
+
+        voiceMsgEl.classList.add('tts-ready');
+        await playMiniMaxAudioDataUrl(audioDataUrl, { interrupt: true });
+    } catch (err) {
+        if (err?.name === 'NotAllowedError') {
+            showToast('浏览器阻止了自动播放，请再点一次语音条', 'info');
+        } else {
+            showToast(`MiniMax TTS 错误：${summarizeMiniMaxTTSError(err)}`, 'error');
+        }
+    } finally {
+        voiceMsgEl.classList.remove('tts-loading');
+    }
+}
+
+function shouldUseVoiceCallMiniMaxTTS(char) {
+    const cfg = ensureCharacterMiniMaxTTS(char);
+    return cfg.enabled && cfg.voiceCallEnabled && !!cfg.roleId;
+}
+
+function enqueueVoiceCallTTSPlayback(audioDataUrl) {
+    if (!audioDataUrl || !VoiceCallState) return;
+    if (!Array.isArray(VoiceCallState.ttsQueue)) VoiceCallState.ttsQueue = [];
+    VoiceCallState.ttsQueue.push(audioDataUrl);
+    drainVoiceCallTTSQueue();
+}
+
+async function drainVoiceCallTTSQueue() {
+    if (!VoiceCallState || VoiceCallState.ttsQueueRunning) return;
+    VoiceCallState.ttsQueueRunning = true;
+
+    while (VoiceCallState.isInCall && Array.isArray(VoiceCallState.ttsQueue) && VoiceCallState.ttsQueue.length > 0) {
+        const audioDataUrl = VoiceCallState.ttsQueue.shift();
+        try {
+            await playMiniMaxAudioDataUrl(audioDataUrl, { interrupt: false });
+        } catch (err) {
+            if (err?.name === 'NotAllowedError') {
+                showToast('浏览器阻止自动播放，可点击小听筒重播', 'info');
+                break;
+            }
+            console.error('Voice call TTS playback error:', err);
+        }
+    }
+
+    VoiceCallState.ttsQueueRunning = false;
+}
+
+async function replayVoiceCallMessageTTS(index) {
+    if (!VoiceCallState?.isInCall) return;
+    const char = App.characters.find(c => c.id === VoiceCallState.charId);
+    if (!char) return;
+
+    const msg = VoiceCallState.currentSession?.messages?.[index];
+    if (!msg || msg.sender === 'user' || msg.type !== 'speech') return;
+
+    const cfg = ensureCharacterMiniMaxTTS(char);
+    if (!cfg.enabled || !cfg.voiceCallEnabled) {
+        showToast('该角色未开启语音通话 TTS', 'info');
+        return;
+    }
+    if (!cfg.roleId) {
+        showToast('请在角色设置填写 MiniMax 角色ID', 'error');
+        return;
+    }
+
+    if (msg.ttsLoading) {
+        showToast('语音生成中，请稍候', 'info');
+        return;
+    }
+
+    try {
+        if (!msg.ttsAudioDataUrl) {
+            msg.ttsLoading = true;
+            renderVoiceCallMessages(false);
+            const tts = await requestMiniMaxTTSAudioWithRetry(msg.content || '', char, 1);
+            msg.ttsAudioDataUrl = tts.audioDataUrl;
+            msg.ttsError = '';
+            msg.ttsLoading = false;
+            renderVoiceCallMessages(false);
+        }
+
+        await playMiniMaxAudioDataUrl(msg.ttsAudioDataUrl, { interrupt: true });
+    } catch (err) {
+        msg.ttsLoading = false;
+        msg.ttsError = summarizeMiniMaxTTSError(err);
+        renderVoiceCallMessages(false);
+        showToast(`语音通话 TTS 错误：${msg.ttsError}`, 'error');
+    }
+}
 
         async function fetchModels() {
             const baseUrl = document.getElementById('apiBaseUrl').value.trim();
@@ -9154,7 +9900,10 @@ function clearCallDecisionLog() {
             App.settings.modelName = document.getElementById('modelName').value.trim();
             App.settings.maxContextMessages = parseInt(document.getElementById('maxContextMessages').value) || 200;
             App.settings.temperature = parseFloat(document.getElementById('temperature').value);
-            App.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
+            updateMaxTokensFromInput(true);
+            App.settings.maxTokens = clampMaxTokens(document.getElementById('maxTokens').value) || 2048;
+            syncMaxTokensControls(App.settings.maxTokens);
+            saveMiniMaxGlobalSettingsFromUI();
             if (App.settings.apiBaseUrl && App.settings.apiKey && App.settings.modelName) App.connectionStatus = 'connected';
             updateConnectionUI();
             await saveData();
@@ -9270,6 +10019,13 @@ function clearCallDecisionLog() {
         enabled: false,
         nativeLanguage: 'en',
         translationLanguage: 'zh'
+    },
+                miniMaxTTS: {
+        enabled: false,
+        voiceCallEnabled: false,
+        roleId: '',
+        language: 'auto',
+        speed: 1
     },
                 bubbleStyle: 'none', bubbleColors: { ...DEFAULT_BUBBLE_COLORS }, glassBorder: false, glassBorderWidth: 1,
 fadeUserBorder: false,
@@ -9572,15 +10328,17 @@ function renderStickerMessage(msg, type, avatarHtml, time, timeClass) {
     }
 }
 
-        function toggleVoiceText(el) {
+        async function toggleVoiceText(el) {
     const voiceMsg = el.classList.contains('voice-message') ? el : el.closest('.voice-message');
-    if (voiceMsg) {
-        playClickSound();
-        const textContent = voiceMsg.querySelector('.voice-text-content');
-        if (textContent) {
-            textContent.classList.toggle('visible');
-        }
+    if (!voiceMsg) return;
+
+    playClickSound();
+    const textContent = voiceMsg.querySelector('.voice-text-content');
+    if (textContent) {
+        textContent.classList.toggle('visible');
     }
+
+    await triggerMiniMaxTTSForVoiceMessage(voiceMsg);
 }
 
         function viewImage(src) {
@@ -10524,6 +11282,9 @@ if (!char.timePerception?.enabled) {
             // Worldbook multi-select
             renderWorldbookMultiSelect(char);
 
+// 初始化MiniMax角色语音设置
+initMiniMaxRoleSettings(char);
+
 // 初始化双语设置
 initBilingualSettings(char);
 
@@ -10534,6 +11295,63 @@ initTimePerceptionUI(char);
 initAIStickerSettingsUI(char);
             document.getElementById('characterSettingsPage').classList.add('active');
         }
+
+function initMiniMaxRoleSettings(char) {
+    const cfg = ensureCharacterMiniMaxTTS(char);
+    const voiceToggle = document.getElementById('minimaxVoiceToggle');
+    const callToggle = document.getElementById('voiceCallTtsToggle');
+    const container = document.getElementById('miniMaxRoleSettingsContainer');
+    const roleIdInput = document.getElementById('minimaxRoleId');
+    const langSelect = document.getElementById('minimaxLanguageSelect');
+    const speedInput = document.getElementById('minimaxSpeed');
+
+    if (voiceToggle) voiceToggle.classList.toggle('active', cfg.enabled);
+    if (callToggle) callToggle.classList.toggle('active', cfg.voiceCallEnabled);
+    if (container) container.classList.toggle('active', cfg.enabled);
+    if (roleIdInput) roleIdInput.value = cfg.roleId || '';
+
+    if (langSelect) {
+        if (!langSelect.dataset.loaded) {
+            langSelect.innerHTML = MINIMAX_TTS_LANGUAGE_OPTIONS.map(item =>
+                `<option value="${item.value}">${item.label}</option>`
+            ).join('');
+            langSelect.dataset.loaded = '1';
+        }
+        langSelect.value = cfg.language || 'auto';
+    }
+
+    if (speedInput) speedInput.value = cfg.speed || 1;
+    updateMiniMaxSpeedPreview();
+}
+
+function toggleMiniMaxVoiceSettings() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    const cfg = ensureCharacterMiniMaxTTS(char);
+    const toggle = document.getElementById('minimaxVoiceToggle');
+    const container = document.getElementById('miniMaxRoleSettingsContainer');
+    toggle.classList.toggle('active');
+    cfg.enabled = toggle.classList.contains('active');
+    if (container) container.classList.toggle('active', cfg.enabled);
+}
+
+function toggleVoiceCallTTSMode() {
+    const char = App.characters.find(c => c.id === App.currentCharId);
+    if (!char) return;
+    const cfg = ensureCharacterMiniMaxTTS(char);
+    const toggle = document.getElementById('voiceCallTtsToggle');
+    toggle.classList.toggle('active');
+    cfg.voiceCallEnabled = toggle.classList.contains('active');
+}
+
+function updateMiniMaxSpeedPreview() {
+    const speedInput = document.getElementById('minimaxSpeed');
+    const speedValue = document.getElementById('minimaxSpeedValue');
+    if (!speedInput || !speedValue) return;
+    const speed = Math.max(0.5, Math.min(2, Number(speedInput.value) || 1));
+    speedInput.value = speed;
+    speedValue.textContent = speed.toFixed(2).replace(/\.00$/, '.0').replace(/(\.\d)0$/, '$1');
+}
 
 // 初始化双语设置UI
 function initBilingualSettings(char) {
@@ -10714,6 +11532,14 @@ function updateBilingualPreview() {
             char.avatarShape = document.querySelector('#avatarShapeOptions .shape-option.selected')?.dataset.shape || 'circle';
             char.showBorder = document.getElementById('showBorderToggle').classList.contains('active');
             char.borderColor = document.getElementById('borderColorPicker').value;
+
+// 保存 MiniMax 角色语音设置
+const miniMaxCfg = ensureCharacterMiniMaxTTS(char);
+miniMaxCfg.enabled = document.getElementById('minimaxVoiceToggle').classList.contains('active');
+miniMaxCfg.voiceCallEnabled = document.getElementById('voiceCallTtsToggle').classList.contains('active');
+miniMaxCfg.roleId = (document.getElementById('minimaxRoleId').value || '').trim();
+miniMaxCfg.language = document.getElementById('minimaxLanguageSelect').value || 'auto';
+miniMaxCfg.speed = Math.max(0.5, Math.min(2, Number(document.getElementById('minimaxSpeed').value) || 1));
 
 // 保存双语设置
 if (!char.bilingualSettings) {
@@ -11208,7 +12034,7 @@ char.aiStickerSettings.count = parseInt(document.getElementById('aiStickerCount'
             if (!confirm('Delete ALL data? This cannot be undone!')) return;
             if (!confirm('Are you absolutely sure?')) return;
             App.characters = []; App.worldbooks = [];
-            App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null, fontScale: 1 };
+            App.settings = { apiBaseUrl: '', apiKey: '', modelName: '', temperature: 0.7, maxTokens: 2048, maxContextMessages: 200, wallpaper: 'gradient1', wallpaperData: null, hideStatusBar: false, selectedFontId: null, fontScale: 1, voiceCallSummaryPrompt: '', miniMaxTTS: { region: 'cn', apiKey: '', projectId: '', model: 'speech-2.8-turbo' } };
             App.appIcons = { settings: null, messages: null, worldbook: null, photos: null, fonts: null };
             App.globalCssPresets = []; App.apiPresets = []; App.fonts = [...DEFAULT_FONTS];
             App.wallet = null;
@@ -11229,7 +12055,9 @@ char.aiStickerSettings.count = parseInt(document.getElementById('aiStickerCount'
     currentRecordId: null,
     currentSummary: null,
     charId: null,
-    focusedMsgIndex: null  // 新增：用户点击选中的消息索引
+    focusedMsgIndex: null,  // 新增：用户点击选中的消息索引
+    ttsQueue: [],
+    ttsQueueRunning: false
 };
 
         // 初始化语音通话记录数组（存储在角色数据中）
@@ -11267,6 +12095,8 @@ VoiceCallState.isInCall = false;
 VoiceCallState.isMinimized = false;
 VoiceCallState.duration = 0;
 VoiceCallState.currentSession = null;
+VoiceCallState.ttsQueue = [];
+VoiceCallState.ttsQueueRunning = false;
 VoiceCallState.charId = App.currentCharId;  // 新增：保存当前角色ID，使语音通话操作不依赖当前页面
     if (VoiceCallState.timer) {
         clearInterval(VoiceCallState.timer);
@@ -11524,7 +12354,12 @@ VoiceCallState.isInCall = false;
 VoiceCallState.isMinimized = false;
 VoiceCallState.duration = 0;
 VoiceCallState.currentSession = null;
+VoiceCallState.ttsQueue = [];
+VoiceCallState.ttsQueueRunning = false;
 VoiceCallState.charId = null;  // 【修复】重置charId
+if (MiniMaxTTSRuntime.lastAudio) {
+    try { MiniMaxTTSRuntime.lastAudio.pause(); } catch {}
+}
 
     if (VoiceCallState.timer) {
         clearInterval(VoiceCallState.timer);
@@ -11548,7 +12383,12 @@ async function handleCallRejected(char) {
     VoiceCallState.isWaiting = false;
     VoiceCallState.isInCall = false;
     VoiceCallState.isMinimized = false;
+    VoiceCallState.ttsQueue = [];
+    VoiceCallState.ttsQueueRunning = false;
     VoiceCallState.charId = null;  // 【修复】重置charId
+if (MiniMaxTTSRuntime.lastAudio) {
+    try { MiniMaxTTSRuntime.lastAudio.pause(); } catch {}
+}
 
     // 隐藏所有界面
     document.getElementById('voiceCallWaitingOverlay').classList.remove('active');
@@ -11588,6 +12428,11 @@ async function handleCallRejected(char) {
         startTime: Date.now(),
         messages: []
     };
+    VoiceCallState.ttsQueue = [];
+    VoiceCallState.ttsQueueRunning = false;
+    if (MiniMaxTTSRuntime.lastAudio) {
+        try { MiniMaxTTSRuntime.lastAudio.pause(); } catch {}
+    }
 
             // 隐藏等待界面
             document.getElementById('voiceCallWaitingOverlay').classList.remove('active');
@@ -11646,7 +12491,12 @@ async function cancelVoiceCall() {
     VoiceCallState.isWaiting = false;
     VoiceCallState.isInCall = false;
     VoiceCallState.isMinimized = false;
+    VoiceCallState.ttsQueue = [];
+    VoiceCallState.ttsQueueRunning = false;
     VoiceCallState.charId = null;  // 【修复】重置charId
+if (MiniMaxTTSRuntime.lastAudio) {
+    try { MiniMaxTTSRuntime.lastAudio.pause(); } catch {}
+}
 
     // 隐藏所有界面
     document.getElementById('voiceCallWaitingOverlay').classList.remove('active');
@@ -11718,6 +12568,7 @@ async function cancelVoiceCall() {
             if (!content || !VoiceCallState.isInCall) return;
 
             const msg = {
+                id: 'vcmsg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
                 sender: 'user',
                 type: 'speech',
                 content,
@@ -11754,6 +12605,8 @@ function renderVoiceCallMessages(scrollToBottom = false) {
         VoiceCallState.focusedMsgIndex = messages.length - 1;
     }
 
+    const callTtsEnabled = shouldUseVoiceCallMiniMaxTTS(char);
+
     container.innerHTML = messages.map((msg, idx) => {
         const isUser = msg.sender === 'user';
         const isSound = msg.type === 'sound';
@@ -11778,8 +12631,18 @@ function renderVoiceCallMessages(scrollToBottom = false) {
             `;
         }
 
+        let listenBtnHtml = '';
+        if (callTtsEnabled && !isUser && msg.type === 'speech') {
+            const stateClass = msg.ttsLoading ? ' loading' : (msg.ttsAudioDataUrl ? ' ready' : (msg.ttsError ? ' error' : ''));
+            const title = msg.ttsLoading ? 'TTS 生成中' : (msg.ttsAudioDataUrl ? '重播角色语音' : '生成角色语音');
+            listenBtnHtml = `<button class="voice-call-listen-btn${stateClass}" onclick="event.stopPropagation(); replayVoiceCallMessageTTS(${idx})" title="${title}"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 1 0 8"/><path d="M15 10a3 3 0 0 1 0 4"/><path d="M5 10v4"/><path d="M8 8v8"/></svg></button>`;
+        }
+
         return `<div class="${classes}" onclick="selectVoiceCallMessage(${idx})">
-            <div class="voice-call-message-content">${escapeHtml(msg.content)}</div>
+            <div class="voice-call-message-row">
+                <div class="voice-call-message-content">${escapeHtml(msg.content)}</div>
+                ${listenBtnHtml}
+            </div>
             ${translationHtml}
             <div class="voice-call-focus-indicator"></div>
         </div>`;
@@ -11804,6 +12667,11 @@ function selectVoiceCallMessage(index) {
 async function triggerVoiceCallAIReply() {
     const char = App.characters.find(c => c.id === VoiceCallState.charId);
     if (!char || !VoiceCallState.isInCall) return;
+
+    const miniCfg = ensureCharacterMiniMaxTTS(char);
+    if (miniCfg.enabled && miniCfg.voiceCallEnabled && !miniCfg.roleId) {
+        showToast('语音通话 TTS 已开启，但角色ID未填写', 'error');
+    }
 
     if (!App.settings.apiBaseUrl || !App.settings.apiKey || !App.settings.modelName) {
         showToast('API not configured', 'error');
@@ -11839,6 +12707,8 @@ async function triggerVoiceCallAIReply() {
         // 使用支持双语的解析函数
         const parsed = parseVoiceCallResponse(responseText, isBilingual);
 
+        const useVoiceCallTTS = shouldUseVoiceCallMiniMaxTTS(char);
+
         for (const item of parsed) {
             if (item.type === 'hangup') {
                 await endVoiceCall(true);
@@ -11846,6 +12716,7 @@ async function triggerVoiceCallAIReply() {
             }
 
             const msgData = {
+                id: 'vcmsg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
                 sender: 'char',
                 type: item.type,
                 content: item.content,
@@ -11857,11 +12728,28 @@ async function triggerVoiceCallAIReply() {
                 msgData.translation = item.translation;
             }
 
-            VoiceCallState.currentSession.messages.push(msgData);
-VoiceCallState.focusedMsgIndex = VoiceCallState.currentSession.messages.length - 1;
+            // 语音通话角色TTS：仅处理 AI 的 speech 原文，不处理 sound / translation
+            if (useVoiceCallTTS && item.type === 'speech' && (item.content || '').trim()) {
+                try {
+                    const tts = await requestMiniMaxTTSAudioWithRetry(item.content, char, 1);
+                    msgData.ttsAudioDataUrl = tts.audioDataUrl;
+                    msgData.ttsError = '';
+                } catch (err) {
+                    msgData.ttsError = summarizeMiniMaxTTSError(err);
+                }
+            }
 
-await new Promise(r => setTimeout(r, 300));
-renderVoiceCallMessages(true);  // 新消息时滚动到底部
+            VoiceCallState.currentSession.messages.push(msgData);
+            VoiceCallState.focusedMsgIndex = VoiceCallState.currentSession.messages.length - 1;
+            renderVoiceCallMessages(true);
+
+            if (msgData.ttsAudioDataUrl) {
+                enqueueVoiceCallTTSPlayback(msgData.ttsAudioDataUrl);
+            } else if (msgData.ttsError) {
+                showToast(`语音通话 TTS 失败：${msgData.ttsError}`, 'error');
+            }
+
+            await new Promise(r => setTimeout(r, 220));
         }
 
     } catch (e) {
@@ -12310,8 +13198,8 @@ function parseVoiceCallResponse(responseText, isBilingual = false) {
     }
 
     // 如果没有解析出任何内容，将整个响应作为speech（但要清理）
-    if (results.length === 0 && cleanedResponse.trim()) {
-        let cleanText = cleanedResponse.trim()
+    if (results.length === 0 && cleanedText.trim()) {
+        let cleanText = cleanedText.trim()
             .replace(/^["']|["']$/g, '')
             .replace(/^\*|\*$/g, '')
             .replace(/\[STICKER:[^\]]*\]/gi, '')
@@ -12372,7 +13260,12 @@ async function endVoiceCall(aiInitiated = false) {
     VoiceCallState.isMinimized = false;
     VoiceCallState.duration = 0;
     VoiceCallState.currentSession = null;
+VoiceCallState.ttsQueue = [];
+VoiceCallState.ttsQueueRunning = false;
     VoiceCallState.charId = null;  // 【修复】重置charId
+if (MiniMaxTTSRuntime.lastAudio) {
+    try { MiniMaxTTSRuntime.lastAudio.pause(); } catch {}
+}
 
     // 【关键】先隐藏所有语音通话界面
     document.getElementById('voiceCallActiveOverlay').classList.remove('active');
@@ -12403,7 +13296,13 @@ async function endVoiceCall(aiInitiated = false) {
                 startTime: VoiceCallState.currentSession.startTime,
                 endTime: Date.now(),
                 duration: VoiceCallState.duration,
-                messages: VoiceCallState.currentSession.messages,
+                messages: (VoiceCallState.currentSession.messages || []).map(m => {
+                    const sanitized = { ...m };
+                    delete sanitized.ttsAudioDataUrl;
+                    delete sanitized.ttsLoading;
+                    delete sanitized.ttsError;
+                    return sanitized;
+                }),
                 summary: null
             };
 
@@ -12421,8 +13320,13 @@ function closeVoiceCallEndModal() {
     VoiceCallState.isMinimized = false;
     VoiceCallState.duration = 0;
     VoiceCallState.currentSession = null;
+VoiceCallState.ttsQueue = [];
+VoiceCallState.ttsQueueRunning = false;
     VoiceCallState.timer = null;
     VoiceCallState.charId = null;  // 【修复】重置charId
+if (MiniMaxTTSRuntime.lastAudio) {
+    try { MiniMaxTTSRuntime.lastAudio.pause(); } catch {}
+}
 
     // 【修复】只有当前在聊天页面时才渲染消息
     if (App.currentCharId) {
