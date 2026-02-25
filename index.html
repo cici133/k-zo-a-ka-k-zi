@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="NOIR">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#f7f7f7">
@@ -59,9 +59,8 @@
             font-size: calc(14px * var(--font-scale));
         }
 
-        /* iOS standalone: force the app canvas to bleed into top/bottom safe areas */
-        html.ios-standalone-fullscreen #wallpaperLayer,
-        html.ios-standalone-fullscreen .phone-container {
+        /* iOS standalone: only expand wallpaper layer; keep app container anchored */
+        html.ios-standalone-fullscreen #wallpaperLayer {
             top: calc(-1 * var(--safe-top));
             bottom: calc(-1 * var(--safe-bottom));
             height: auto;
@@ -6416,7 +6415,7 @@
     height: 100%;
 }
 .trv-chat-head {
-    padding: calc(var(--safe-top) * 0.42 + 2px) 10px 7px;
+    padding: calc(clamp(0px, var(--safe-top), 56px) + 4px) 10px 7px;
     border-bottom: 1px solid rgba(20,20,20,0.1);
     background: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.76) 100%);
     box-shadow: 0 2px 8px rgba(22, 16, 16, 0.07);
@@ -6572,7 +6571,7 @@
 }
 
 .trv-chat-input {
-    padding: 7px 10px calc(7px + var(--safe-bottom));
+    padding: 7px 10px calc(7px + clamp(0px, var(--safe-bottom), 34px));
     background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(248,244,238,0.94) 100%);
     border-top: 1px solid rgba(20,20,20,0.1);
     backdrop-filter: blur(8px);
@@ -24199,6 +24198,7 @@ saveData = async function() {
     </script>
 </body>
 </html>
+
 
 
 
