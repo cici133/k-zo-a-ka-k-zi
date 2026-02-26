@@ -41,6 +41,7 @@
             --blur-light: 15px;
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --app-vh: 100vh;
             --font-serif: 'Cormorant Garamond', 'Noto Serif SC', Georgia, serif;
             --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
             --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -49,9 +50,9 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html { height: 100%; height: -webkit-fill-available; }
+        html { height: 100%; min-height: var(--app-vh); }
         body {
-            height: 100%; min-height: 100vh; min-height: -webkit-fill-available;
+            height: var(--app-vh); min-height: var(--app-vh);
             overflow: hidden; font-family: var(--font-sans);
             background: var(--bg-primary); color: var(--text-primary);
             overscroll-behavior: none; position: relative; width: 100%;
@@ -67,13 +68,13 @@
         }
 
         #wallpaperLayer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            position: fixed; inset: 0; min-height: var(--app-vh); z-index: 0;
             background: linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%);
         }
 
         .phone-container {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%; height: 100%; margin: 0; overflow: hidden; z-index: 1;
+            position: fixed; inset: 0; min-height: var(--app-vh);
+            margin: 0; overflow: hidden; z-index: 1;
         }
 
         .status-bar {
@@ -166,8 +167,7 @@
         .home-indicator.hidden { display: none !important; }
 
         .page {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%; height: 100%;
+            position: fixed; inset: 0; min-height: var(--app-vh);
             background: rgba(10, 10, 10, 0.92);
             backdrop-filter: blur(var(--blur-heavy));
             -webkit-backdrop-filter: blur(var(--blur-heavy));
@@ -9512,9 +9512,27 @@ const DEFAULT_BUBBLE_COLORS = {
             document.documentElement.classList.add('ios-standalone-fullscreen');
         }
 
+        function syncAppViewportHeight() {
+            const vv = window.visualViewport;
+            const h = Math.round((vv && vv.height) ? vv.height : window.innerHeight || 0);
+            if (!h) return;
+            document.documentElement.style.setProperty('--app-vh', `${h}px`);
+        }
+
+        function initAppViewportHeightSync() {
+            syncAppViewportHeight();
+            window.addEventListener('resize', syncAppViewportHeight, { passive: true });
+            window.addEventListener('orientationchange', syncAppViewportHeight, { passive: true });
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', syncAppViewportHeight);
+                window.visualViewport.addEventListener('scroll', syncAppViewportHeight);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 applyIosStandaloneFullscreenFix();
+                initAppViewportHeightSync();
                 await openDB();
                 await loadData();
                 updateTime();
