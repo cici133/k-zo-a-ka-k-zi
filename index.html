@@ -66,6 +66,9 @@
             bottom: calc(-1 * var(--safe-bottom));
             height: auto;
         }
+        html.ios-standalone-fullscreen .phone-container {
+            bottom: calc(-1 * var(--safe-bottom));
+        }
 
         #wallpaperLayer {
             position: fixed; inset: 0; min-height: var(--app-vh); z-index: 0;
@@ -13643,13 +13646,17 @@ char.aiStickerSettings.count = parseInt(document.getElementById('aiStickerCount'
         // Wallpaper functions
         function applyWallpaper() {
             const layer = document.getElementById('wallpaperLayer');
+            let backgroundValue = '';
             if (App.settings.wallpaperData) {
-                layer.style.background = `url(${App.settings.wallpaperData}) center/cover no-repeat`;
+                backgroundValue = `url(${App.settings.wallpaperData}) center/cover no-repeat`;
             } else if (App.settings.wallpaper && GRADIENTS[App.settings.wallpaper]) {
-                layer.style.background = GRADIENTS[App.settings.wallpaper];
+                backgroundValue = GRADIENTS[App.settings.wallpaper];
             } else {
-                layer.style.background = GRADIENTS.gradient1;
+                backgroundValue = GRADIENTS.gradient1;
             }
+            layer.style.background = backgroundValue;
+            document.documentElement.style.background = backgroundValue;
+            document.body.style.background = backgroundValue;
         }
 
         function highlightWallpaper() {
