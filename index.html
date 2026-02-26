@@ -50,6 +50,9 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        @supports (height: 100lvh) {
+            :root { --app-vh: 100lvh; }
+        }
         html { height: 100%; min-height: var(--app-vh); }
         body {
             height: var(--app-vh); min-height: var(--app-vh);
@@ -9516,24 +9519,53 @@ const DEFAULT_BUBBLE_COLORS = {
             document.documentElement.classList.add('ios-standalone-fullscreen');
         }
 
-        function syncAppViewportHeight() {
+        let appVhBaseline = 0;
+        let appVhOrientation = '';
+        function syncAppViewportHeight(force = false) {
+            const supportsLargeVh = typeof CSS !== 'undefined'
+                && typeof CSS.supports === 'function'
+                && CSS.supports('height: 100lvh');
+            if (supportsLargeVh) {
+                document.documentElement.style.setProperty('--app-vh', '100lvh');
+                return;
+            }
+
+            const orientation = window.matchMedia && window.matchMedia('(orientation: portrait)').matches
+                ? 'portrait'
+                : 'landscape';
+            if (orientation !== appVhOrientation) {
+                appVhOrientation = orientation;
+                appVhBaseline = 0;
+            }
+
             const layoutHeight = Math.round(window.innerHeight || 0);
             const vv = window.visualViewport;
             const vvHeight = vv ? Math.round((vv.height || 0) / (vv.scale || 1)) : 0;
             const docHeight = Math.round(document.documentElement.clientHeight || 0);
-            const h = Math.max(layoutHeight, vvHeight, docHeight);
+            const current = Math.max(layoutHeight, vvHeight, docHeight);
+            const activeTag = (document.activeElement?.tagName || '').toUpperCase();
+            const keyboardLikely = !!(vv && layoutHeight - vvHeight > 120 && (activeTag === 'INPUT' || activeTag === 'TEXTAREA'));
+            if (force || !keyboardLikely) appVhBaseline = Math.max(appVhBaseline, current);
+            const h = keyboardLikely ? current : Math.max(current, appVhBaseline);
             if (!h) return;
             document.documentElement.style.setProperty('--app-vh', `${h}px`);
         }
 
         function initAppViewportHeightSync() {
-            syncAppViewportHeight();
+            syncAppViewportHeight(true);
             window.addEventListener('resize', syncAppViewportHeight, { passive: true });
             window.addEventListener('orientationchange', syncAppViewportHeight, { passive: true });
+            window.addEventListener('pageshow', () => syncAppViewportHeight(true), { passive: true });
+            window.addEventListener('focus', () => syncAppViewportHeight(true), { passive: true });
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) syncAppViewportHeight(true);
+            });
             if (window.visualViewport) {
                 window.visualViewport.addEventListener('resize', syncAppViewportHeight);
                 window.visualViewport.addEventListener('scroll', syncAppViewportHeight);
             }
+            setTimeout(() => syncAppViewportHeight(true), 120);
+            setTimeout(() => syncAppViewportHeight(true), 420);
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -24227,6 +24259,27 @@ saveData = async function() {
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
