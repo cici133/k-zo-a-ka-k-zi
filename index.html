@@ -67,6 +67,7 @@
             height: auto;
         }
         html.ios-standalone-fullscreen .phone-container {
+            top: calc(-1 * var(--safe-top));
             bottom: calc(-1 * var(--safe-bottom));
         }
 
@@ -9516,8 +9517,11 @@ const DEFAULT_BUBBLE_COLORS = {
         }
 
         function syncAppViewportHeight() {
+            const layoutHeight = Math.round(window.innerHeight || 0);
             const vv = window.visualViewport;
-            const h = Math.round((vv && vv.height) ? vv.height : window.innerHeight || 0);
+            const vvHeight = vv ? Math.round((vv.height || 0) / (vv.scale || 1)) : 0;
+            const docHeight = Math.round(document.documentElement.clientHeight || 0);
+            const h = Math.max(layoutHeight, vvHeight, docHeight);
             if (!h) return;
             document.documentElement.style.setProperty('--app-vh', `${h}px`);
         }
@@ -24223,3 +24227,20 @@ saveData = async function() {
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
